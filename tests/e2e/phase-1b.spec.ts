@@ -3,7 +3,7 @@ import type { Page } from '@playwright/test';
 import { readFile, mkdir, mkdtemp } from 'node:fs/promises';
 import { resolve } from 'node:path';
 
-async function importHistorical(page: Page, save = false) {
+async function importHistorical(page: Page, save = false, symbol = 'BTC/USDT') {
   await page.goto('/#/datasets');
   await page
     .getByRole('button', { name: '真实历史样本 · BTCUSDT · 1 小时' })
@@ -14,7 +14,7 @@ async function importHistorical(page: Page, save = false) {
   await page.getByLabel('预期固定周期（秒）').fill('3600');
   await page.getByRole('button', { name: '检查并生成导入报告' }).click();
   await expect(page.getByText('检查完成（仅文件内）')).toBeVisible();
-  await page.getByLabel('币种 / 交易对（自述，不认证来源）').fill('BTC/USDT');
+  await page.getByLabel('币种 / 交易对（自述，不认证来源）').fill(symbol);
   await page.getByRole('checkbox', { name: /我已阅读 .* 项警告/ }).check();
   await page
     .getByRole('button', {
@@ -543,4 +543,30 @@ test('两个已保存数据集间明确选择，图表与指标使用对应数�
   await page.mouse.move(0, 0);
   await expect(page.getByTestId('chart-readout')).toContainText('2024-10-28');
   await expect(page.getByTestId('rsi-value')).not.toContainText('NA');
+});
+
+test('已保存长名称数据集在390px下不会撑宽数据中心或行情中心', async ({
+  page,
+}) => {
+  await importHistorical(page, true, 'ACCEPTANCE' + 'X'.repeat(68));
+  await expect(
+    page.getByRole('status').filter({ hasText: '已保存数据集' }),
+  ).toBeVisible();
+  await page.setViewportSize({ width: 390, height: 844 });
+  await expect
+    .poll(() =>
+      page.evaluate(() => document.documentElement.scrollWidth <= innerWidth),
+    )
+    .toBe(true);
+  await selectSaved(page);
+  await page.getByRole('button', { name: '打开选中数据集' }).click();
+  await expect(page.getByTestId('market-canvas')).toHaveAttribute(
+    'data-ready',
+    'true',
+  );
+  await expect
+    .poll(() =>
+      page.evaluate(() => document.documentElement.scrollWidth <= innerWidth),
+    )
+    .toBe(true);
 });
