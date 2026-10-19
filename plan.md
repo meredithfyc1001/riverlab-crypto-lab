@@ -69,4 +69,4 @@ check 包含格式、lint、单元/页面集成测试、严格类型、构建和
 
 - 2026-10-19：用户确认 1A Windows 验收、PR #2 合并并正式授权 1B；分支实施、PR #3 待审。
 
-Phase 1B 已实现接口和限制详见 [设计与契约](docs/phase-1b-design.md)，用户验收见 [Windows 清单](docs/phase-1b-acceptance.md)。下一行动为本机完整检查、三组 CI 和 PR #3 审查；Phase 2 仍需用户后续明确授权。
+Phase 1B 已实现接口和限制详见 [设计与契约](docs/phase-1b-design.md)，用户验收见 [Windows 清单](docs/phase-1b-acceptance.md)。本机完整检查及工程提交三组 CI 已通过（证据见 progress）。[PR #3](https://github.com/meredithfyc1001/riverlab-crypto-lab/pull/3) 保持 Draft，下一行动为用户 Windows 清单验收和审查；后续文档提交的最新检查见 PR Checks。Phase 2 仍需用户后续明确授权。

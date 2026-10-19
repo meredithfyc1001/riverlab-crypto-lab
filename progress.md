@@ -7,7 +7,7 @@
 - 已阅读 AGENTS、plan、本文件、原规划和 1A 数据接口。先更新授权/计划，随后实施 1B，目标 PR #3 待审；无 Phase 2、交易、Release 或部署。
 - 已完成：本地打包 Lightweight Charts 5.2.1、OHLC/量/交互、纯 TS MA/EMA/Wilder RSI、IndexedDB 显式保存/打开/删除、JSON 备份校验/显式恢复、新数据契约与 app 装配。1A 核心解析和质量逻辑未改，上限保持。
 - npm ci 已成功；生产代码最终完整 npm run check 通过 9 文件/117 项 Vitest、16 项 E2E，格式/lint/严格类型/构建全通过，无失败/跳过。日志 work/phase-1b-final-check.log（本机临时证据）。随后仅将持久浏览器测试的临时配置改为 work/ 短路径，避免 Windows 嵌套长路径；独立类型检查和该测试已复验通过（1/1，日志 work/phase-1b-short-profile-check.log）。
-- 27 条本地文档链接与原规划 SHA256 核对通过。PR #3 尚待创建；Ubuntu/Windows 三组 CI 待运行，Phase 1B 用户 Windows 手工未测试，清单见 docs/phase-1b-acceptance.md。不得用 1A 用户通过替代本轮验收。
+- 27 条本地文档链接与原规划 SHA256 核对通过。[PR #3](https://github.com/meredithfyc1001/riverlab-crypto-lab/pull/3) 已创建，open/draft，待用户审查；工程提交3ac1469三组CI全部通过（下节证据），此后仅文档归档，最新提交状态见 PR Checks。Phase 1B 用户 Windows 手工未测试，清单见 docs/phase-1b-acceptance.md。不得用 1A 用户通过替代本轮验收。
 
 ## Phase 1B 实施和测试事实
 
@@ -24,6 +24,22 @@
 - 人工 React 复核：无条件 Hooks、纯计算 memo、feature props 经 app、异步失败显式状态、Worker generation/终止、图表取消/移除/分帧事件、稳定 dataset id、输入可访问 label、事务完成后列表更新。四项 ESLint API 探针拒绝 core→infrastructure、core→indexedDB、shared→infrastructure、feature→兄弟模块，全部符合预期。
 
 遗留与下一步：浏览器存储并非永久可靠；同源/配置隔离，跨标签页列表无实时同步需刷新；单序列绘图、JSON和克隆仍在主线程，非无限/流式方案。未实测用户 Windows、真实磁盘耗尽、断电、所有受管/隐私策略、移动触屏、file://、单 HTML/PWA/安装器；原生2025微秒归档仍未补充。先执行 Phase 1B Windows 清单并审查 PR #3；通过后另行授权 Phase 2 事件/账本/回测设计，本轮不开发。
+
+## Phase 1B 工程提交 CI 归档
+
+- 工程提交 **3ac1469f2f90c88957a2f32471d7b2bd29608644**；[CI run 39242981786](https://github.com/meredithfyc1001/riverlab-crypto-lab/actions/runs/39242981786) completed/success。已读取三组实际日志，各9文件/117项 Vitest、16项 E2E，0失败/跳过，npm ci、格式/lint/类型/构建通过。
+- [Ubuntu Chromium](https://github.com/meredithfyc1001/riverlab-crypto-lab/actions/runs/39242981786/job/118028005532)、[Windows Chrome](https://github.com/meredithfyc1001/riverlab-crypto-lab/actions/runs/39242981786/job/118028005377)、[Windows Edge](https://github.com/meredithfyc1001/riverlab-crypto-lab/actions/runs/39242981786/job/118028005247)。Windows CI 不是用户实机手工验收，具体浏览器版本未采集，不补写。
+- 三组均实际执行浏览器进程关闭/同配置重开、外网 origin 阻断、原1A回归、图表/指标、IndexedDB、JSON恢复和50,000根合成性能测试。报告及性能 JSON 由 workflow artifact 保存14天。
+
+| 平台            | 重开+图表就绪 ms | 缩放 ms | 备份预检/恢复 ms | 定时器最大间隔 ms | 四时点最大观测JS堆 bytes |
+| --------------- | ---------------: | ------: | ---------------: | ----------------: | -----------------------: |
+| Ubuntu Chromium |              827 |      75 |        148 / 415 |             270.3 |                217061820 |
+| Windows Chrome  |              647 |      72 |         84 / 621 |             183.6 |                261459008 |
+| Windows Edge    |              978 |     163 |        223 / 665 |             316.2 |                245772928 |
+
+规模相同：50,000根，CSV1,600,036bytes、JSON4,401,567bytes。并非性能保证或真实行情测量，堆值不是进程总内存/精确峰值。完整各阶段耗时随日志保留。
+
+PR #3 保持 open/draft；远端 main 仍为 c17c0a4ba4084bad06e572da48d3da1fb5cf4720，未直接修改。随后仅归档本文档/计划，最新文档提交 CI 以 [PR Checks](https://github.com/meredithfyc1001/riverlab-crypto-lab/pull/3/checks) 为准；不自动合并、Release 或部署。下一行动：用户按独立 Phase 1B 清单验收并审查；Phase 2 未启动。
 
 ## Phase 1A 与 Phase 0 历史归档（以下保留当时事实）
 
