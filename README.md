@@ -1,6 +1,6 @@
 # RiverLab Crypto Lab
 
-中文、Windows 优先、离线优先的历史数据研究工具。Phase 0 已验收并合并；Phase 1A 已合并并由用户验收；当前为 **Phase 1B 图表与本地存储**：保留 CSV 映射/UTC/质量检查，新增 OHLC/成交量、MA/EMA/RSI、IndexedDB 数据集与 JSON 备份恢复。回测和回放尚未开发。
+中文、Windows 优先、离线优先的历史数据研究工具。Phase 0/1A 已合并并由用户总体验收；Phase 1B 已合并、云端技术复核通过，用户 Windows 实机未执行。当前 **Phase 2A** 增加纯 TypeScript 确定性成交内核和虚拟账本，固定信号用于测试，尚无回测 UI 或正式策略。保留 CSV/UTC/质量、OHLC/成交量、MA/EMA/RSI、IndexedDB 与 JSON 备份恢复。
 
 **仅供学习研究 · 不提供投资建议 · 历史表现不代表未来表现。** 不连接真实账户、不接收密钥、不处理真实资金。
 
@@ -77,7 +77,8 @@ Edge/Chrome 打开 http://127.0.0.1:4173。可断开外部网络后刷新和操�
 - [plan.md](plan.md)：范围、路线与验收；[原始规划](docs/product-plan-v0.1.md) 保留附件全文。
 - [progress.md](progress.md)：停点、实际验证和遗留问题。
 - [architecture.md](docs/architecture.md)：可行性与边界；[testing-checklist.md](docs/testing-checklist.md)：Windows 实测清单。
-- [Phase 1B Windows 验收](docs/phase-1b-acceptance.md)：本轮用户手工清单，尚待执行。
-- [data-import-format.md](docs/data-import-format.md)：本轮已实现的 CSV 支持范围与不确定性；[backtest-assumptions.md](docs/backtest-assumptions.md)：尚未实现的回测约束。
+- [Phase 1B Windows 验收](docs/phase-1b-acceptance.md)：用户手工清单，尚待执行。
+- [data-import-format.md](docs/data-import-format.md)：CSV 支持范围与不确定性；[backtest-assumptions.md](docs/backtest-assumptions.md)：模拟约束与未实现项。
+- [Phase 2A 设计](docs/phase-2a-design.md)和[固定案例验收](docs/phase-2a-acceptance.md)：成交模型、18位定点精度、可复现身份与测试命令。
 
 独立分支、待审 PR，用户 Windows 验收后再评审合并。

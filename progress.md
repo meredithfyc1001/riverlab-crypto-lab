@@ -1,5 +1,25 @@
 # RiverLab Crypto Lab 进度
 
+## 当前恢复入口：Phase 2A（2026-10-19）
+
+- 已 fetch origin/main 并核实 GitHub PR #3 merged=true；合并 SHA 3282475ecea8f0c42332eab8515e90b74cef6bde，UTC 14:37:28。初始 work 分支干净；从 origin/main 建立 feat/phase-2a-deterministic-backtest，目标独立 PR #4，不直接修改 main。
+- Phase 1B 云端技术复核通过；用户 Windows 实机尚未执行，不伪造验收。已重新读取 CI run 39269144185 三个 job：Ubuntu Chromium / Windows Chrome / Windows Edge 均 success，npm ci/check 步骤均成功。
+- 已完整阅读 AGENTS、plan、本文件、原始产品规划、Phase 1 数据/保存契约及代码，先审查设计再实施；保留旧功能、测试、失败事实和用户验收边界。下方均为历史时间点记录。
+- 本轮仅 2A 内核/固定信号/虚拟账本；正式策略、止盈止损、收益面板在 2B/2C。CI 尚待执行，不将历史结果当作本轮结果。
+
+## Phase 2A 实施与验证（进行中）
+
+- 新增 core/backtests 的事件/执行/定点/配置/身份/账本审计模块；不改原 UI、CSV、图表、指标、存储或备份逻辑。SHA-256 使用固定 @noble/hashes 2.4.0，锁文件只增加该依赖，无新交易/联网能力。
+- npm ci --cache work/npm-cache 已通过，259 packages，日志 work/phase-2a-npm-ci.log。最初沙箱 Git fetch 无法连代理，使用受支持 network 权限后成功；没有更换代理或读取凭据。
+- 首轮类型检查发现测试直接写 readonly volume，已改为替换测试副本。随后 typecheck/lint 通过。首轮38项核心测试因共享 tests/setup.ts 在 Node 环境访问 window 而全部标记失败；另缺口测试截止时间先触发未完成根，已将截止时间覆盖缺口末根。只给共享清理增加 Node 判断，浏览器原清理与断言不变；失败日志 work/phase-2a-first-unit.log 保留。
+- 设计/字段独立自查发现初稿按执行根的整根 volume=0 拒单会偷看开盘时尚未知的成交量，已移除：执行函数仅接收 open，H/L/C/volume 均不参与成交；明确无限流动性/忽略成交量假设（包括零量），加入改变 volume 不影响成交回归。没有用未来高低价裁剪滑点价格。
+- 首次完整check因新写自查文档未格式化而停在format:check，未进入后续测试；随后格式化，失败日志 work/phase-2a-full-check.log 保留，完整复验使用新日志。
+- 修复后 Node 核心专项39/39通过，日志 work/phase-2a-unit-fixed.log；随后新增派生数值上限回归，需随完整检查复验。派生现金/数量/市值/权益小于10^78，超限阻断整次运行，不裁剪或返回部分结果。
+- 完整复验格式/lint通过，159项中156通过、数据中心3项5000ms超时，未进入构建/E2E（work/phase-2a-final-check.log）。未修改实现/断言/超时；同一数据中心文件独立复验4/4通过、测试部分4.19秒（work/phase-2a-dataset-recheck.log）。已确认 src/app/features/infrastructure/data/indicators 与原集成/E2E文件均无变化，随后完整重跑。
+- 已实际执行 Python Decimal 80位独立直接公式，buy/sell/totalFees 与固定JSON完全一致；不调用 TS 内核生成参考。原产品规划 SHA256 仍为 0a3081d44d3557e6d0f1b1eda3378c2e83282b3c6677dcd45b88a3190b86f84b。
+
+## Phase 1 历史记录
+
 ## 最新技术验收复核（2026-10-19）
 
 用户要求协助验收，并明确暂时不能在Windows上运行，先获取复核结果。基线4515782和三组旧CI已核实，重新npm ci及119/16完整检查通过；新人工样本发现保存长名称后的390px横向溢出（实测489px），未沿用旧绿灯作无条件通过。已限制select宽度并允许长标题换行，新增回归修正前失败、修正后完整119项Vitest/17项E2E及格式/lint/类型/构建通过。随后加强78字符无空格币种，构建及针对回归1/1通过。
