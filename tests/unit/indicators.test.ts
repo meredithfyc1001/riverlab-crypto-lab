@@ -141,3 +141,22 @@ describe('纯指标：固定独立数值与因果性', () => {
     expect(result.rsi.at(-1)!.value).toBe(50);
   });
 });
+
+it('极大价格离开 MA 窗口后，后续小价格均值不因减法抵消归零', () => {
+  const result = calculateIndicators(candles([1e308, 1e308, 1, 1]), 60000, {
+    ma: 2,
+    ema: 2,
+    rsi: 2,
+  });
+  expect(result.ma.at(-1)!.value).toBe(1);
+});
+it('EMA 周期1精确等于当前收盘价，包括大幅尺度变化', () => {
+  const closes = [1e308, 1, 1e-300, 100];
+  const result = calculateIndicators(candles(closes), 60000, {
+    ma: 1,
+    ema: 1,
+    rsi: 1,
+  });
+  expect(result.ema.map((point) => point.value)).toEqual(closes);
+  expect(result.ma.map((point) => point.value)).toEqual(closes);
+});

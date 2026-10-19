@@ -12,6 +12,52 @@ export interface Indicators {
 export function validPeriod(period: number): boolean {
   return Number.isInteger(period) && period >= 1 && period <= 50_000;
 }
+/** Convex mean using the smaller endpoint as base, avoiding cancellation at weight=1. */
+function blend(previous: number, next: number, weight: number): number {
+  return next >= previous
+    ? previous + (next - previous) * weight
+    : next + (previous - next) * (1 - weight);
+}
+/** Two aggregate stacks remove old values without subtracting them from a large sum.
+ * Each entry moves at most once: amortized O(1) per candle, O(period) working memory.
+ */
+class RollingMean {
+  private incoming: { value: number; mean: number }[] = [];
+  private outgoing: { value: number; mean: number }[] = [];
+  constructor(private readonly period: number) {}
+  reset() {
+    this.incoming = [];
+    this.outgoing = [];
+  }
+  private push(stack: { value: number; mean: number }[], value: number) {
+    const count = stack.length;
+    stack.push({
+      value,
+      mean: count
+        ? blend(stack[count - 1].mean, value, 1 / (count + 1))
+        : value,
+    });
+  }
+  add(value: number): number {
+    if (this.period === 1) return value;
+    this.push(this.incoming, value);
+    if (this.incoming.length + this.outgoing.length > this.period) {
+      if (!this.outgoing.length)
+        while (this.incoming.length)
+          this.push(this.outgoing, this.incoming.pop()!.value);
+      this.outgoing.pop();
+    }
+    const a = this.incoming.at(-1),
+      b = this.outgoing.at(-1);
+    if (!a) return b!.mean;
+    if (!b) return a.mean;
+    return blend(
+      a.mean,
+      b.mean,
+      this.outgoing.length / (this.incoming.length + this.outgoing.length),
+    );
+  }
+}
 /** Close-only, causal indicators. A missing bar resets all warm-up state. */
 export function calculateIndicators(
   candles: readonly Candle[],
@@ -23,8 +69,8 @@ export function calculateIndicators(
   if (!Number.isSafeInteger(intervalMs) || intervalMs <= 0)
     throw new Error('指标需要已确认的正整数毫秒周期。');
   const result: Indicators = { ma: [], ema: [], rsi: [] };
+  const maWindow = new RollingMean(periods.ma);
   let start = 0,
-    maMean = 0,
     emaSeed = 0,
     ema: number | null = null;
   let gain = 0,
@@ -43,22 +89,18 @@ export function calculateIndicators(
       c.timestampUtcMs - candles[i - 1].timestampUtcMs !== intervalMs
     ) {
       start = i;
-      maMean = 0;
+      maWindow.reset();
       emaSeed = 0;
       ema = null;
       gain = 0;
       loss = 0;
     }
     const count = i - start + 1;
-    // Means avoid overflow from summing very large, individually finite prices.
-    if (count <= periods.ma) maMean += (c.close - maMean) / count;
-    else
-      maMean +=
-        c.close / periods.ma - candles[i - periods.ma].close / periods.ma;
+    const maMean = maWindow.add(c.close);
     if (count <= periods.ema) {
-      emaSeed += (c.close - emaSeed) / count;
+      emaSeed = blend(emaSeed, c.close, 1 / count);
       if (count === periods.ema) ema = emaSeed;
-    } else if (ema !== null) ema += (c.close - ema) * (2 / (periods.ema + 1));
+    } else if (ema !== null) ema = blend(ema, c.close, 2 / (periods.ema + 1));
     let rsi: number | null = null;
     if (count > 1) {
       const delta = c.close - candles[i - 1].close;
@@ -66,8 +108,8 @@ export function calculateIndicators(
         down = Math.max(-delta, 0);
       const changes = count - 1;
       if (changes <= periods.rsi) {
-        gain += (up - gain) / changes;
-        loss += (down - loss) / changes;
+        gain = blend(gain, up, 1 / changes);
+        loss = blend(loss, down, 1 / changes);
       } else {
         gain = gain * ((periods.rsi - 1) / periods.rsi) + up / periods.rsi;
         loss = loss * ((periods.rsi - 1) / periods.rsi) + down / periods.rsi;

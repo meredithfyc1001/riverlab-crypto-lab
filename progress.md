@@ -6,8 +6,8 @@
 - 用户明确确认 Phase 1A Windows 验收通过。仅记录总体通过，不补写未提供的逐项结果/版本。下方旧记录是各时间点历史，不代表最新状态。
 - 已阅读 AGENTS、plan、本文件、原规划和 1A 数据接口。先更新授权/计划，随后实施 1B，目标 PR #3 待审；无 Phase 2、交易、Release 或部署。
 - 已完成：本地打包 Lightweight Charts 5.2.1、OHLC/量/交互、纯 TS MA/EMA/Wilder RSI、IndexedDB 显式保存/打开/删除、JSON 备份校验/显式恢复、新数据契约与 app 装配。1A 核心解析和质量逻辑未改，上限保持。
-- npm ci 已成功；生产代码最终完整 npm run check 通过 9 文件/117 项 Vitest、16 项 E2E，格式/lint/严格类型/构建全通过，无失败/跳过。日志 work/phase-1b-final-check.log（本机临时证据）。随后仅将持久浏览器测试的临时配置改为 work/ 短路径，避免 Windows 嵌套长路径；独立类型检查和该测试已复验通过（1/1，日志 work/phase-1b-short-profile-check.log）。
-- 27 条本地文档链接与原规划 SHA256 核对通过。[PR #3](https://github.com/meredithfyc1001/riverlab-crypto-lab/pull/3) 已创建，open/draft，待用户审查；工程提交3ac1469三组CI全部通过（下节证据），此后仅文档归档，最新提交状态见 PR Checks。Phase 1B 用户 Windows 手工未测试，清单见 docs/phase-1b-acceptance.md。不得用 1A 用户通过替代本轮验收。
+- npm ci 已成功；数值边界修正后完整 npm run check 通过 **9文件/119项 Vitest、16项 E2E**，格式/lint/严格类型/构建全通过，无失败/跳过。日志 work/phase-1b-numeric-final-check.log（本机临时证据）。持久浏览器测试使用 work/ 短路径避免 Windows 嵌套路径问题。修正后的跨平台最终结果/日志见 PR #3 Checks；下方117项CI归档仅为修正前版本。
+- 27 条本地文档链接与原规划 SHA256 核对通过。[PR #3](https://github.com/meredithfyc1001/riverlab-crypto-lab/pull/3) 已创建，open/draft，待用户审查；工程提交3ac1469三组CI全部通过（下节证据）；随后数值边界修正见专项记录，最新提交状态见 PR Checks。Phase 1B 用户 Windows 手工未测试，清单见 docs/phase-1b-acceptance.md。不得用 1A 用户通过替代本轮验收。
 
 ## Phase 1B 实施和测试事实
 
@@ -20,10 +20,14 @@
 - 第一轮 50,000 根人工合成：CSV 1,600,036 bytes；同步连续构建图表约3,041ms，10ms定时器最大间隔2,749.8ms。按序列分段让出浏览器后复验降至约310–596ms；不降采样/不截断。
 - 完整检查中的 50,000 根实测（Linux Node24.19.0 / Chromium154.0.8037.57）：检查预览484ms，质量报告361ms，重新检查+保存971ms，重新打开+图表就绪1594ms，缩放304ms；JSON4,401,567bytes，导出377ms，恢复预检165ms，明确恢复495ms。四时点 CDP 观测最大 JS 堆252,986,748 bytes（约241.3MiB，非进程总内存或精确峰值），定时器最大间隔407.1ms。性能受机器负载影响；完整输出随测试 artifact保存。
 - 实际浏览器覆盖：关闭持久配置浏览器进程后重启并恢复；阻断全部非本机 origin 后导入/保存/重开/图表/导出/恢复，无外部请求；两个数据集选择；损坏已存记录拒绝；删除失败保留记录；实际 Worker/哈希/亚秒/原1A/壳测试均保留。配额/拒写通过异常注入验证，不冒充实际填满磁盘或全部隐私模式测试。
-- 最终生产代码复验 117/16 全通过；50,000根：预览523ms、报告341ms、准备+保存532ms、重开+图表895ms、缩放129ms、JSON导出359ms、预检146ms、恢复525ms；最大观测 JS 堆256,907,272bytes（约245.0MiB），定时器最大间隔243.6ms。与上轮数值均为实际记录，不选择性隐去较慢结果。最终构建70 modules、Worker11.77kB、应用JS452.93kB（gzip147.85kB）、CSS16.19kB；没有外部运行依赖。
+- 边界修正前生产代码复验 117/16 全通过；50,000根：预览523ms、报告341ms、准备+保存532ms、重开+图表895ms、缩放129ms、JSON导出359ms、预检146ms、恢复525ms；最大观测 JS 堆256,907,272bytes（约245.0MiB），定时器最大间隔243.6ms。与上轮数值均为实际记录，不选择性隐去较慢结果。当时构建70 modules、Worker11.77kB、应用JS452.93kB（gzip147.85kB）、CSS16.19kB；没有外部运行依赖。
 - 人工 React 复核：无条件 Hooks、纯计算 memo、feature props 经 app、异步失败显式状态、Worker generation/终止、图表取消/移除/分帧事件、稳定 dataset id、输入可访问 label、事务完成后列表更新。四项 ESLint API 探针拒绝 core→infrastructure、core→indexedDB、shared→infrastructure、feature→兄弟模块，全部符合预期。
 
 遗留与下一步：浏览器存储并非永久可靠；同源/配置隔离，跨标签页列表无实时同步需刷新；单序列绘图、JSON和克隆仍在主线程，非无限/流式方案。未实测用户 Windows、真实磁盘耗尽、断电、所有受管/隐私策略、移动触屏、file://、单 HTML/PWA/安装器；原生2025微秒归档仍未补充。先执行 Phase 1B Windows 清单并审查 PR #3；通过后另行授权 Phase 2 事件/账本/回测设计，本轮不开发。
+
+## 收尾数值边界修正（仍在 PR #3）
+
+三组初版 CI 通过后，人工复核发现极大有限价格离开滚动 MA 窗口时减法更新会丢失小值，EMA周期1也可能因相减抵消归零。先新增两项回归实际复现（18通过/2失败，work/phase-1b-numeric-regression-before.log），再将 MA 改为双栈聚合均值（摊销 O(n)、额外 O(N) 内存），EMA/初始化使用以较小端点为基准的凸组合。定义、初始化、因果性和缺口规则不变；原1A质量约定不变，没有丢弃或修复行情。该修正后已完整复验：119项 Vitest、16项 E2E及格式/lint/类型/构建全通过。50,000根：预览524ms、报告441ms、准备保存565ms、重开图表991ms、缩放102ms、导出420ms、备份预检131ms、恢复574ms，最大观测JS堆256,444,160bytes，定时器最大间隔273.7ms。构建JS453.56kB/gzip148.08kB，CSS16.19kB，Worker11.77kB。最终CI以PR Checks为准，下方117项证据仅为修正前版本。
 
 ## Phase 1B 工程提交 CI 归档
 
