@@ -35,7 +35,7 @@ export function analyzeCsv(text: string, options: ImportOptions): ImportReport {
     if (issues.length < MAX_ISSUES) {
       const row =
         issue.line === undefined ? undefined : rowsByLine.get(issue.line);
-      const raw = issue.raw ?? row?.cells.join(options.delimiter);
+      const raw = issue.raw ?? row?.raw;
       issues.push({ ...issue, raw: raw?.slice(0, 240) });
     }
   }
@@ -128,7 +128,7 @@ export function analyzeCsv(text: string, options: ImportOptions): ImportReport {
   if (mappingValid)
     for (const row of rows) {
       if (row.malformed) continue;
-      const raw = row.cells.join(options.delimiter);
+      const raw = row.raw;
       if (row.cells.length !== document.headers.length) {
         add({
           severity: 'error',

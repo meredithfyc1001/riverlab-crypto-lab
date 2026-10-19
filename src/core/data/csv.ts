@@ -38,6 +38,7 @@ export function parseCsv(text: string, settings: CsvSettings): CsvDocument {
   const records: CsvRecord[] = [];
   let line = 1;
   let startLine = 1;
+  let recordStart = 0;
   let cells: string[] = [];
   let cell = '';
   let state: 'bare' | 'quoted' | 'closed' = 'bare';
@@ -55,10 +56,10 @@ export function parseCsv(text: string, settings: CsvSettings): CsvDocument {
       });
     malformed = true;
   }
-  function finishRecord() {
+  function finishRecord(raw: string) {
     cells.push(cell);
     if (cells.length === 1 && !touched && !cell.trim()) blankLines++;
-    else records.push({ line: startLine, cells, malformed });
+    else records.push({ line: startLine, cells, malformed, raw });
     cells = [];
     cell = '';
     state = 'bare';
@@ -80,10 +81,11 @@ export function parseCsv(text: string, settings: CsvSettings): CsvDocument {
         line++;
       } else cell += char;
     } else if (newline) {
-      finishRecord();
+      finishRecord(input.slice(recordStart, i));
       if (char === '\r' && input[i + 1] === '\n') i++;
       line++;
       startLine = line;
+      recordStart = i + 1;
       if (records.length > MAX_DATA_ROWS + (settings.hasHeader ? 1 : 0)) {
         truncated = true;
         issues.push({
@@ -127,7 +129,7 @@ export function parseCsv(text: string, settings: CsvSettings): CsvDocument {
     (touched || cell.length > 0 || cells.length > 0 || state !== 'bare')
   ) {
     if (state === 'quoted') formatError('双引号未闭合；后续内容无法可靠分行。');
-    finishRecord();
+    finishRecord(input.slice(recordStart));
   }
   if (records.length > MAX_DATA_ROWS + (settings.hasHeader ? 1 : 0)) {
     truncated = true;

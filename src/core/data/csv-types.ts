@@ -36,6 +36,8 @@ export interface CsvRecord {
   line: number;
   cells: string[];
   malformed: boolean;
+  /** 原始记录文本（不含终止换行），保留引号/转义与内部换行。 */
+  raw: string;
 }
 export interface CsvDocument {
   headers: string[];

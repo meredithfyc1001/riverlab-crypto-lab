@@ -37,9 +37,19 @@ describe('严格 CSV 与映射', () => {
     );
     expect(result.headers).toEqual(['name', 'value']);
     expect(result.records).toEqual([
-      { line: 2, cells: ['hello,world', 'a"b'], malformed: false },
-      { line: 3, cells: ['two\nlines', '2'], malformed: false },
-      { line: 5, cells: ['last', '3'], malformed: false },
+      {
+        line: 2,
+        cells: ['hello,world', 'a"b'],
+        malformed: false,
+        raw: '"hello,world","a""b"',
+      },
+      {
+        line: 3,
+        cells: ['two\nlines', '2'],
+        malformed: false,
+        raw: '"two\r\nlines",2',
+      },
+      { line: 5, cells: ['last', '3'], malformed: false, raw: 'last,3' },
     ]);
     expect(result.issues).toEqual([]);
   });
@@ -241,6 +251,23 @@ describe('时间单位、精度与 UTC', () => {
 });
 
 describe('质量报告与不确定性', () => {
+  it('错误明细保留原文引号、转义与记录内换行，不重新拼接字段', () => {
+    for (const raw of [
+      `${baseTime},"bad""quote\r\nvalue",104,99,102,20`,
+      `${baseTime},"closed"bad,104,99,102,20`,
+    ]) {
+      for (const ending of ['', '\r\n']) {
+        const report = analyzeCsv(header + '\r\n' + raw + ending, options);
+        const issue = report.issues.find(
+          (item) =>
+            item.code ===
+            (raw.includes('closed') ? 'CSV_FORMAT' : 'INVALID_PRICE'),
+        );
+        expect(issue?.line).toBe(2);
+        expect(issue?.raw).toBe(raw);
+      }
+    }
+  });
   it('价格错误不能掩盖重复时间，重复行仍带原始内容', () => {
     const report = analyzeCsv(
       csv(line(baseTime), line(baseTime, '-1,104,99,102,20')),

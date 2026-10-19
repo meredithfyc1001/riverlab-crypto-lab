@@ -178,6 +178,24 @@ test('错误样本保留错误行、重复和缺口，390px 报告无页面溢�
     fullPage: true,
     animations: 'disabled',
   });
+  const quotedRow = '1735689600000,"bad""quote",104,99,102,20';
+  await page.getByLabel('选择本地 CSV').setInputFiles({
+    name: 'quoted-error.csv',
+    mimeType: 'text/csv',
+    buffer: Buffer.from('timestamp,open,high,low,close,volume\n' + quotedRow),
+  });
+  await expect(
+    page.getByText('读到 1 条数据记录。', { exact: false }),
+  ).toBeVisible();
+  await page.getByLabel('预期固定周期（秒）').fill('60');
+  await page.getByRole('button', { name: '检查并生成导入报告' }).click();
+  await expect(
+    page
+      .locator('.issue-table tr')
+      .filter({ hasText: 'INVALID_PRICE' })
+      .locator('td')
+      .last(),
+  ).toHaveText(quotedRow);
 });
 
 test('空文件、非法 UTF-8 与超限文件清楚阻断并清除旧结果', async ({ page }) => {

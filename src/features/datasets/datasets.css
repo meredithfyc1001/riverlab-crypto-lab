@@ -212,6 +212,9 @@
   color: var(--amber);
   font-size: 10px;
 }
+.issue-table td:last-child {
+  white-space: pre-wrap;
+}
 .issue-table td p {
   margin-top: 5px;
 }
