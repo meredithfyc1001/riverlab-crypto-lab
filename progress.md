@@ -5,9 +5,10 @@
 - 已 fetch origin/main 并核实 GitHub PR #3 merged=true；合并 SHA 3282475ecea8f0c42332eab8515e90b74cef6bde，UTC 14:37:28。初始 work 分支干净；从 origin/main 建立 feat/phase-2a-deterministic-backtest，目标独立 PR #4，不直接修改 main。
 - Phase 1B 云端技术复核通过；用户 Windows 实机尚未执行，不伪造验收。已重新读取 CI run 39269144185 三个 job：Ubuntu Chromium / Windows Chrome / Windows Edge 均 success，npm ci/check 步骤均成功。
 - 已完整阅读 AGENTS、plan、本文件、原始产品规划、Phase 1 数据/保存契约及代码，先审查设计再实施；保留旧功能、测试、失败事实和用户验收边界。下方均为历史时间点记录。
-- 本轮仅 2A 内核/固定信号/虚拟账本；正式策略、止盈止损、收益面板在 2B/2C。CI 尚待执行，不将历史结果当作本轮结果。
+- 本轮完成 2A 内核/固定信号/虚拟账本，工程提交 fd9aed7edb151e4a705dd30a3ed125d9374ef841。正式策略、止盈止损、收益面板在 2B/2C；不宣称整个M2完成。
+- [PR #4](https://github.com/meredithfyc1001/riverlab-crypto-lab/pull/4) 已创建，open/draft，待审，未合并/发布/部署。工程提交三平台CI均成功（下节实际日志）；本机常规浏览器受到超时影响，保留失败；相同提交的临时内存目录复验也有旧UI测试超时，详见下节。本机完整check不标记通过。
 
-## Phase 2A 实施与验证（进行中）
+## Phase 2A 实施与验证
 
 - 新增 core/backtests 的事件/执行/定点/配置/身份/账本审计模块；不改原 UI、CSV、图表、指标、存储或备份逻辑。SHA-256 使用固定 @noble/hashes 2.4.0，锁文件只增加该依赖，无新交易/联网能力。
 - npm ci --cache work/npm-cache 已通过，259 packages，日志 work/phase-2a-npm-ci.log。最初沙箱 Git fetch 无法连代理，使用受支持 network 权限后成功；没有更换代理或读取凭据。
@@ -17,6 +18,17 @@
 - 修复后 Node 核心专项39/39通过，日志 work/phase-2a-unit-fixed.log；随后新增派生数值上限回归，需随完整检查复验。派生现金/数量/市值/权益小于10^78，超限阻断整次运行，不裁剪或返回部分结果。
 - 完整复验格式/lint通过，159项中156通过、数据中心3项5000ms超时，未进入构建/E2E（work/phase-2a-final-check.log）。未修改实现/断言/超时；同一数据中心文件独立复验4/4通过、测试部分4.19秒（work/phase-2a-dataset-recheck.log）。已确认 src/app/features/infrastructure/data/indicators 与原集成/E2E文件均无变化，随后完整重跑。
 - 已实际执行 Python Decimal 80位独立直接公式，buy/sell/totalFees 与固定JSON完全一致；不调用 TS 内核生成参考。原产品规划 SHA256 仍为 0a3081d44d3557e6d0f1b1eda3378c2e83282b3c6677dcd45b88a3190b86f84b。
+
+## Phase 2A 工程提交CI与本机边界
+
+- 工程提交 fd9aed7edb151e4a705dd30a3ed125d9374ef841 的 [CI run 39275693273](https://github.com/meredithfyc1001/riverlab-crypto-lab/actions/runs/39275693273) completed/success。已读取三组实际日志，每组 **10文件/159项Vitest +17项E2E全部通过**，无失败/跳过；npm ci、格式/lint、独立core/app/test严格类型与构建全部通过。
+- [Ubuntu Chromium](https://github.com/meredithfyc1001/riverlab-crypto-lab/actions/runs/39275693273/job/118139304755)、[Windows Chrome](https://github.com/meredithfyc1001/riverlab-crypto-lab/actions/runs/39275693273/job/118139304507)、[Windows Edge](https://github.com/meredithfyc1001/riverlab-crypto-lab/actions/runs/39275693273/job/118139304143)。原0/1A/1B共119项Vitest及全部17项E2E保留，新增40项内核测试。
+- 本机再次完整重跑：159/159测试、格式/lint、严格类型和生产构建通过；E2E在30秒整项期限出现旧CSV/图表/存储案例超时。trace显示等待UI操作时用尽总期限，没有数值/账本断言失败。出现多项超时后中止剩余浏览器运行，报告为3通过/4失败/10未运行，退出130；不记作完整通过（work/phase-2a-complete-check.log及test-results/）。没有改断言、默认超时或生产功能。
+- 本机 Linux / Node24.19.0 / Chromium154.0.8037.57，CPU额度2核。工作区overlayfs与CI表现差异尚未归因，不将推测写成结论。为排查文件系统影响，git archive同一fd9aed7到/tmp内存目录并复制npm ci恢复的依赖，执行原npm run check：格式/lint通过，158/159通过、旧数据中心1项5000ms超时，未进入构建/E2E（exit1）。迁到tmpfs未消除问题，不能确认文件系统为根因；不继续放宽检查或重复运行。临时路径 work/phase-2a-tmp-check-path.txt，日志 work/phase-2a-tmp-check.log。
+- 本轮成功的完整 `npm ci` / `npm run check` 证据为上述三个独立CI runner；本机只确认159项测试/类型/构建曾全部通过，不能把中止的浏览器套件记作17项通过。最终文档提交最新CI以PR Checks为准。
+- 设计/成交模型/精度/固定案例和实现后自查见 [2A设计](docs/phase-2a-design.md)、[清单](docs/phase-2a-acceptance.md)、[自查](docs/phase-2a-review.md)。独立Decimal直接公式、Node SHA-256对照及历史前缀验证已执行通过。
+- 尚无正式策略、止盈止损/双触发、收益/基准/回撤面板、实验持久化/导出、Worker执行适配或浏览器内核大数据性能承诺。来源Number精度不能恢复；开盘模型忽略流动性/成交量/市场冲击；截止时间是调用方声明。完整M2在后续验收。
+- Phase1B用户Windows实机仍未测试；Phase2A也没有用户手工验收结果。CI与云端证据不代替用户机器。下方均保留历史时间点的事实。
 
 ## Phase 1 历史记录
 

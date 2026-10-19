@@ -72,3 +72,5 @@ check 包含格式、lint、单元/页面集成测试、严格类型、构建和
 - 2026-10-19：用户确认 1A Windows 验收、PR #2 合并并正式授权 1B；分支实施、PR #3 待审。
 
 Phase 1B 接口和限制详见 [设计与契约](docs/phase-1b-design.md)，用户验收见 [Windows 清单](docs/phase-1b-acceptance.md)。PR #3 已合并，云端技术复核通过，Windows 用户实机未测试；2A 授权不代表补签此验收。
+
+Phase 2A 内核已完成，[PR #4](https://github.com/meredithfyc1001/riverlab-crypto-lab/pull/4) 保持Draft待审。工程提交三平台CI均159/17通过；本机超时与复验按progress如实记录。Phase2B建议先建立仅历史前缀的策略接口与参数校验，再实施三策略及止盈止损的跳空/同根双触发保守规则；Phase2C补公平基准/统计NA、回测界面和实验档案。用户1B Windows实机仍待执行，不以2A技术证据补签。
