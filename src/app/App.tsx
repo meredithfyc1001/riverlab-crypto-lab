@@ -3,9 +3,13 @@ import { pages, pageFromHash } from './navigation';
 import { syntheticExample } from './synthetic-example';
 import { SyntheticPreview } from '../components/SyntheticPreview';
 import { RiskNotice } from '../components/RiskNotice';
+import { ChartCenter } from '../features/charts';
+import { useDatasetLibrary } from './useDatasetLibrary';
+import { DatasetLibrary } from '../features/datasets';
 import { DatasetCenter } from '../features/datasets';
 
 export function App() {
+  const library = useDatasetLibrary();
   const [activeId, setActiveId] = useState(() =>
     pageFromHash(window.location.hash),
   );
@@ -69,7 +73,7 @@ export function App() {
         </nav>
         <div className="sidebar-bottom">
           <span className="status-dot" /> 离线优先 · 本地研究
-          <small>v0.1.0 / Phase 1A 数据导入</small>
+          <small>v0.1.0 / Phase 1B 数据基础</small>
         </div>
       </aside>
 
@@ -101,7 +105,7 @@ export function App() {
               <h1>{activePage.label}</h1>
               <p className="page-description">{activePage.description}</p>
             </div>
-            <span className="badge">Phase 1A · 数据导入</span>
+            <span className="badge">Phase 1B · 图表与存储</span>
           </div>
 
           {activeId === 'overview' ? (
@@ -133,9 +137,9 @@ export function App() {
                 <section className="stat-card">
                   <span>项目阶段</span>
                   <strong>
-                    数据导入 <small>Phase 1A</small>
+                    图表与存储 <small>Phase 1B</small>
                   </strong>
-                  <p>CSV 映射、UTC 规范化与数据质量报告</p>
+                  <p>历史图表、基础指标与本地数据集</p>
                 </section>
                 <section className="stat-card">
                   <span>研究数据</span>
@@ -187,7 +191,19 @@ export function App() {
               <SyntheticPreview dataset={syntheticExample} />
             </>
           ) : activeId === 'datasets' ? (
-            <DatasetCenter />
+            <>
+              <DatasetLibrary {...library} />
+              <DatasetCenter onPrepared={library.prepared} />
+            </>
+          ) : activeId === 'charts' ? (
+            <>
+              <DatasetLibrary {...library} />
+              <ChartCenter
+                key={library.dataset?.id ?? 'empty'}
+                dataset={library.dataset}
+                theme={theme}
+              />
+            </>
           ) : (
             <>
               <section

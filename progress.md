@@ -1,5 +1,58 @@
 # RiverLab Crypto Lab 进度
 
+## 最新技术验收复核（2026-10-19）
+
+用户要求协助验收，并明确暂时不能在Windows上运行，先获取复核结果。基线4515782和三组旧CI已核实，重新npm ci及119/16完整检查通过；新人工样本发现保存长名称后的390px横向溢出（实测489px），未沿用旧绿灯作无条件通过。已限制select宽度并允许长标题换行，新增回归修正前失败、修正后完整119项Vitest/17项E2E及格式/lint/类型/构建通过。随后加强78字符无空格币种，构建及针对回归1/1通过。
+
+独立7根人工样本的MA3=106、EMA3=105.708333333333、Wilder RSI3=82.8947368421053，与手算参考一致；UTC转换、保存/导出/关闭页面重开/删除/显式恢复通过，外部请求与页面异常均0。50,000根合成重开图表910ms、缩放114ms、定时器最大间隔262.8ms；完整结果/失败事实/未测范围见 [技术验收复核](docs/phase-1b-agent-acceptance.md)。当前修改仍在PR #3，不改main，不代替Windows用户实机签署。新增回归后的最终跨平台状态以PR Checks为准；下方119/16与117/16保留为之前版本历史。
+
+## 当前恢复入口：Phase 1B（2026-10-19）
+
+- GitHub PR #2 merged=true，实际合并 c17c0a4ba4084bad06e572da48d3da1fb5cf4720，UTC 10:44:13。已 fetch origin/main 并从该提交创建 feat/phase-1b-charts-storage；初始工作区干净，不直接修改 main。
+- 用户明确确认 Phase 1A Windows 验收通过。仅记录总体通过，不补写未提供的逐项结果/版本。下方旧记录是各时间点历史，不代表最新状态。
+- 已阅读 AGENTS、plan、本文件、原规划和 1A 数据接口。先更新授权/计划，随后实施 1B，目标 PR #3 待审；无 Phase 2、交易、Release 或部署。
+- 已完成：本地打包 Lightweight Charts 5.2.1、OHLC/量/交互、纯 TS MA/EMA/Wilder RSI、IndexedDB 显式保存/打开/删除、JSON 备份校验/显式恢复、新数据契约与 app 装配。1A 核心解析和质量逻辑未改，上限保持。
+- npm ci 已成功；数值边界修正后完整 npm run check 通过 **9文件/119项 Vitest、16项 E2E**，格式/lint/严格类型/构建全通过，无失败/跳过。日志 work/phase-1b-numeric-final-check.log（本机临时证据）。持久浏览器测试使用 work/ 短路径避免 Windows 嵌套路径问题。修正后的跨平台最终结果/日志见 PR #3 Checks；下方117项CI归档仅为修正前版本。
+- 27 条本地文档链接与原规划 SHA256 核对通过。[PR #3](https://github.com/meredithfyc1001/riverlab-crypto-lab/pull/3) 已创建，open/draft，待用户审查；工程提交3ac1469三组CI全部通过（下节证据）；随后数值边界修正见专项记录，最新提交状态见 PR Checks。Phase 1B 用户 Windows 手工未测试，清单见 docs/phase-1b-acceptance.md。不得用 1A 用户通过替代本轮验收。
+
+## Phase 1B 实施和测试事实
+
+- 文档先行提交 8e8c38a，完整阅读原规划，核实 PR #2 合并与 1A 用户总体验收；不补写浏览器版本或逐项通过。
+- MA：N 根收盘价 SMA；EMA 首 N 根 SMA 初始化，α=2/(N+1)；RSI 首 N 个差值初始化后 Wilder，α=1/N，常量50/单涨100/单跌0。独立 Decimal 60位闭式参考逐点核验、历史前缀不变、缺口重置、样本不足 NA。
+- 图表：UTC 毫秒转秒仅在适配边界，支持亚秒读数；MA/EMA 叠加、RSI 独立面板；缺口提示并最多一个空白位置，不扩展假行情；深浅/390px/缩放/平移/十字准星。极小价格采用科学计数，超出可靠刻度范围明确失败。
+- 存储：原生 IndexedDB 两 store 原子事务，complete 后成功；拒写/配额/abort/同步异常不假成功。重新打开校验结构/价格/UTC/质量；备份20 MiB独立格式上限，CSV仍10 MiB/50,000根；恢复前校验并再次确认为新副本。保存全部已检查记录和警告，无错误子集；不保存原 CSV。
+- 首轮新增指标测试 111/112 通过，一处手填 EMA 种子期望值错误（独立参考已经通过），核算首14根均值后改为45.114285714285714；修正事务闭包的 TypeScript 可空检查后复验全部通过。
+- 首轮 1B 浏览器4/7：指针停留自动进入十字准星，末根断言需先移开；一条手填末根价格修为原 CSV 的69962.21；恢复状态 locator不唯一。随后MA断言错误匹配EMA子串，改为独立指标节点；删除失败测试停留数据中心却期待行情空状态，改为明确进入行情。保留功能断言，修正后完整16/16通过，未跳过。
+- 第一轮 50,000 根人工合成：CSV 1,600,036 bytes；同步连续构建图表约3,041ms，10ms定时器最大间隔2,749.8ms。按序列分段让出浏览器后复验降至约310–596ms；不降采样/不截断。
+- 完整检查中的 50,000 根实测（Linux Node24.19.0 / Chromium154.0.8037.57）：检查预览484ms，质量报告361ms，重新检查+保存971ms，重新打开+图表就绪1594ms，缩放304ms；JSON4,401,567bytes，导出377ms，恢复预检165ms，明确恢复495ms。四时点 CDP 观测最大 JS 堆252,986,748 bytes（约241.3MiB，非进程总内存或精确峰值），定时器最大间隔407.1ms。性能受机器负载影响；完整输出随测试 artifact保存。
+- 实际浏览器覆盖：关闭持久配置浏览器进程后重启并恢复；阻断全部非本机 origin 后导入/保存/重开/图表/导出/恢复，无外部请求；两个数据集选择；损坏已存记录拒绝；删除失败保留记录；实际 Worker/哈希/亚秒/原1A/壳测试均保留。配额/拒写通过异常注入验证，不冒充实际填满磁盘或全部隐私模式测试。
+- 边界修正前生产代码复验 117/16 全通过；50,000根：预览523ms、报告341ms、准备+保存532ms、重开+图表895ms、缩放129ms、JSON导出359ms、预检146ms、恢复525ms；最大观测 JS 堆256,907,272bytes（约245.0MiB），定时器最大间隔243.6ms。与上轮数值均为实际记录，不选择性隐去较慢结果。当时构建70 modules、Worker11.77kB、应用JS452.93kB（gzip147.85kB）、CSS16.19kB；没有外部运行依赖。
+- 人工 React 复核：无条件 Hooks、纯计算 memo、feature props 经 app、异步失败显式状态、Worker generation/终止、图表取消/移除/分帧事件、稳定 dataset id、输入可访问 label、事务完成后列表更新。四项 ESLint API 探针拒绝 core→infrastructure、core→indexedDB、shared→infrastructure、feature→兄弟模块，全部符合预期。
+
+遗留与下一步：浏览器存储并非永久可靠；同源/配置隔离，跨标签页列表无实时同步需刷新；单序列绘图、JSON和克隆仍在主线程，非无限/流式方案。未实测用户 Windows、真实磁盘耗尽、断电、所有受管/隐私策略、移动触屏、file://、单 HTML/PWA/安装器；原生2025微秒归档仍未补充。先执行 Phase 1B Windows 清单并审查 PR #3；通过后另行授权 Phase 2 事件/账本/回测设计，本轮不开发。
+
+## 收尾数值边界修正（仍在 PR #3）
+
+三组初版 CI 通过后，人工复核发现极大有限价格离开滚动 MA 窗口时减法更新会丢失小值，EMA周期1也可能因相减抵消归零。先新增两项回归实际复现（18通过/2失败，work/phase-1b-numeric-regression-before.log），再将 MA 改为双栈聚合均值（摊销 O(n)、额外 O(N) 内存），EMA/初始化使用以较小端点为基准的凸组合。定义、初始化、因果性和缺口规则不变；原1A质量约定不变，没有丢弃或修复行情。该修正后已完整复验：119项 Vitest、16项 E2E及格式/lint/类型/构建全通过。50,000根：预览524ms、报告441ms、准备保存565ms、重开图表991ms、缩放102ms、导出420ms、备份预检131ms、恢复574ms，最大观测JS堆256,444,160bytes，定时器最大间隔273.7ms。构建JS453.56kB/gzip148.08kB，CSS16.19kB，Worker11.77kB。最终CI以PR Checks为准，下方117项证据仅为修正前版本。
+
+## Phase 1B 工程提交 CI 归档
+
+- 工程提交 **3ac1469f2f90c88957a2f32471d7b2bd29608644**；[CI run 39242981786](https://github.com/meredithfyc1001/riverlab-crypto-lab/actions/runs/39242981786) completed/success。已读取三组实际日志，各9文件/117项 Vitest、16项 E2E，0失败/跳过，npm ci、格式/lint/类型/构建通过。
+- [Ubuntu Chromium](https://github.com/meredithfyc1001/riverlab-crypto-lab/actions/runs/39242981786/job/118028005532)、[Windows Chrome](https://github.com/meredithfyc1001/riverlab-crypto-lab/actions/runs/39242981786/job/118028005377)、[Windows Edge](https://github.com/meredithfyc1001/riverlab-crypto-lab/actions/runs/39242981786/job/118028005247)。Windows CI 不是用户实机手工验收，具体浏览器版本未采集，不补写。
+- 三组均实际执行浏览器进程关闭/同配置重开、外网 origin 阻断、原1A回归、图表/指标、IndexedDB、JSON恢复和50,000根合成性能测试。报告及性能 JSON 由 workflow artifact 保存14天。
+
+| 平台            | 重开+图表就绪 ms | 缩放 ms | 备份预检/恢复 ms | 定时器最大间隔 ms | 四时点最大观测JS堆 bytes |
+| --------------- | ---------------: | ------: | ---------------: | ----------------: | -----------------------: |
+| Ubuntu Chromium |              827 |      75 |        148 / 415 |             270.3 |                217061820 |
+| Windows Chrome  |              647 |      72 |         84 / 621 |             183.6 |                261459008 |
+| Windows Edge    |              978 |     163 |        223 / 665 |             316.2 |                245772928 |
+
+规模相同：50,000根，CSV1,600,036bytes、JSON4,401,567bytes。并非性能保证或真实行情测量，堆值不是进程总内存/精确峰值。完整各阶段耗时随日志保留。
+
+PR #3 保持 open/draft；远端 main 仍为 c17c0a4ba4084bad06e572da48d3da1fb5cf4720，未直接修改。随后仅归档本文档/计划，最新文档提交 CI 以 [PR Checks](https://github.com/meredithfyc1001/riverlab-crypto-lab/pull/3/checks) 为准；不自动合并、Release 或部署。下一行动：用户按独立 Phase 1B 清单验收并审查；Phase 2 未启动。
+
+## Phase 1A 与 Phase 0 历史归档（以下保留当时事实）
+
 ## 当前恢复入口（2026-10-19，Asia/Shanghai）
 
 - 已同步并核对 main：6ffe6a3186699ae85a26331efa932c3bcec500a2，即 PR #1 实际合并提交。GitHub 显示 merged=true，合并时间北京时间 2026-10-19 17:57:48。

@@ -1,0 +1,141 @@
+.chart-center {
+  display: grid;
+  gap: 20px;
+  min-width: 0;
+}
+.chart-center .panel,
+.dataset-library {
+  padding: 24px;
+  min-width: 0;
+}
+.indicator-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px;
+  margin: 20px 0;
+}
+.indicator-controls > div {
+  display: grid;
+  gap: 10px;
+  width: 140px;
+}
+.indicator-controls input[type='number'] {
+  width: 100%;
+  padding: 8px;
+  color: var(--text);
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+}
+.market-canvas {
+  width: 100%;
+  min-width: 0;
+  overflow: hidden;
+}
+.chart-readout {
+  display: grid;
+  gap: 8px;
+  font-variant-numeric: tabular-nums;
+  font-size: 13px;
+  padding: 12px 0;
+  min-height: 100px;
+  overflow-wrap: anywhere;
+}
+.dataset-facts p,
+.dataset-library p {
+  overflow-wrap: anywhere;
+  line-height: 1.7;
+}
+.dataset-library {
+  margin-bottom: 20px;
+}
+.dataset-library select {
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  padding: 10px;
+  background: var(--bg);
+  color: var(--text);
+  border: 1px solid var(--border);
+}
+.dataset-library .sample-actions {
+  margin: 16px 0;
+}
+.dataset-library input[type='file'] {
+  max-width: 100%;
+}
+@media (max-width: 600px) {
+  .chart-center .panel,
+  .dataset-library {
+    padding: 14px;
+  }
+  .indicator-controls {
+    gap: 12px;
+  }
+  .indicator-controls > div {
+    width: 80px;
+  }
+}
+.chart-center button,
+.dataset-library button {
+  background: var(--panel-hover);
+  border: 1px solid var(--border);
+  color: var(--text);
+  border-radius: 5px;
+  padding: 9px 12px;
+  font-size: 12px;
+  line-height: 1.5;
+}
+.chart-center button:hover:enabled,
+.dataset-library button:hover:enabled {
+  border-color: var(--accent);
+}
+.chart-center button:disabled,
+.dataset-library button:disabled {
+  cursor: default;
+  opacity: 0.5;
+}
+.dataset-library fieldset {
+  border: 0;
+  margin: 0;
+  padding: 0;
+  min-width: 0;
+}
+.dataset-library label,
+.indicator-controls label {
+  display: grid;
+  gap: 9px;
+  font-size: 12px;
+  color: var(--muted);
+  min-width: 0;
+}
+.dataset-library .checkbox-label,
+.indicator-controls .checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 12px 0;
+}
+.dataset-library input[type='checkbox'],
+.indicator-controls input[type='checkbox'] {
+  accent-color: var(--accent);
+}
+.dataset-library details,
+.chart-center details {
+  font-size: 12px;
+  line-height: 1.9;
+  margin: 14px 0;
+}
+.dataset-library summary,
+.chart-center summary {
+  color: var(--accent);
+  cursor: pointer;
+}
+.dataset-library [role='status'] {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.dataset-facts h2 {
+  overflow-wrap: anywhere;
+}

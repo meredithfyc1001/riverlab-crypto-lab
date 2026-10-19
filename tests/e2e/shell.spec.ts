@@ -47,6 +47,10 @@ test('生产包仅使用本机资源，可导航、刷新、后退并切换主�
       await expect(
         page.getByRole('heading', { name: '导入历史 K 线 CSV' }),
       ).toBeVisible();
+    else if (label === '行情中心')
+      await expect(
+        page.getByRole('heading', { name: '尚无可显示的数据' }),
+      ).toBeVisible();
     else await expect(page.getByText(`${label}框架已就绪`)).toBeVisible();
     await expect(page.getByLabel('研究风险提示')).toContainText(
       '不提供投资建议',

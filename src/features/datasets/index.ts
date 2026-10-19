@@ -8,3 +8,5 @@ export const datasetsPage = {
 } as const;
 
 export { DatasetCenter } from './DatasetCenter';
+
+export { DatasetLibrary } from './DatasetLibrary';

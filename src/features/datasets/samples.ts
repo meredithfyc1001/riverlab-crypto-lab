@@ -4,13 +4,8 @@ import ms from './samples/synthetic-ms.csv?raw';
 import us from './samples/synthetic-us.csv?raw';
 import errors from './samples/error-cases.csv?raw';
 
-export interface DataSource {
-  kind: 'historical' | 'synthetic' | 'error-fixture' | 'user-unverified';
-  label: string;
-  note: string;
-  url?: string;
-  expectedSha256?: string;
-}
+import type { DataSource } from '../../core/data/dataset';
+export type { DataSource } from '../../core/data/dataset';
 export interface BuiltInSample {
   id: string;
   name: string;

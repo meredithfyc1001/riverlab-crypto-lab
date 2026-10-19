@@ -11,17 +11,15 @@ export interface CsvJob {
   settings: CsvSettings;
   options?: ImportOptions;
   expectedSha256?: string;
+  includeCandles?: boolean;
 }
-export interface FileIdentity {
-  name: string;
-  bytes: number;
-  sha256: string;
-  parserVersion: 'csv-v1';
-}
+import type { FileIdentity } from '../../core/data/dataset';
+export type { FileIdentity } from '../../core/data/dataset';
 export type ReportView = Omit<ImportReport, 'candles'>;
 export type CsvResult = { identity: FileIdentity } & (
   | { kind: 'inspection'; inspection: CsvInspection }
   | { kind: 'report'; report: ReportView }
+  | { kind: 'ready'; report: ImportReport }
 );
 export type CsvResponse =
   { ok: true; result: CsvResult } | { ok: false; error: string };

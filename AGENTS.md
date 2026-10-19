@@ -1,6 +1,6 @@
 # RiverLab Crypto Lab 工作指令
 
-作用于整个独立仓库。用户于 2026-10-19 正式授权 **Phase 1**，本轮只实施 **Phase 1A：CSV 导入、字段映射、UTC 时间与数据质量报告**。先读 [progress.md](progress.md)、[plan.md](plan.md) 和相关专题。附件全文保存在 [原始规划 v0.1](docs/product-plan-v0.1.md)。用户当前明确指令优先。
+作用于整个独立仓库。用户于 2026-10-19 正式授权 **Phase 1**，本轮只实施 **Phase 1B：OHLC/成交量、MA/EMA/RSI、本地数据集保存与备份恢复**。先读 [progress.md](progress.md)、[plan.md](plan.md) 和相关专题。附件全文保存在 [原始规划 v0.1](docs/product-plan-v0.1.md)。用户当前明确指令优先。
 
 ## 范围与研发节奏
 
@@ -8,9 +8,11 @@
 - Phase 0 已验收并合并：PR #1，实际合并提交 6ffe6a3186699ae85a26331efa932c3bcec500a2。用户确认 Windows Edge/Chrome 本地测试通过；未提供的逐项结果/版本不补写。
 - Phase 1A 包含 CSV 历史 K 线导入/映射、毫秒/微秒识别和 UTC 毫秒规范化、错误行/重复/缺口/OHLCV 检查、导入摘要与质量报告、来源可追溯的真实/合成/错误样本。
 - 时间单位或周期有歧义必须要求确认，无法证明完整性时明确提示；不得静默猜测、排序、去重、补价或把错误数据报告为完整。
-- 本轮不开发 K 线图、技术指标、回测引擎、实时抓取、ZIP 导入、实验存储、回放或其他后续功能。
+- Phase 1A 用户 Windows 验收通过（用户明确反馈，未提供逐项/版本）；PR #2 已合并，实际提交 c17c0a4ba4084bad06e572da48d3da1fb5cf4720。保留全部导入和质量约定及 10 MiB / 50,000 行上限。
+- Phase 1B：本地打包图表、纯 TS 无未来数据指标、IndexedDB 明确保存/重开/删除、带来源和质量信息的备份恢复、数据流程与性能验证。
+- 本轮不开发策略信号、回测引擎、模拟账户/下单、实时抓取、ZIP 导入、回放或 Phase 2。
 - 禁止真实账户、API Key、私钥、助记词、充值提现、真实订单或资金处理。未来网络数据能力必须独立评估和授权。
-- 从已同步 main 建立 feat/phase-1a-csv-import，提交独立 PR #2。本轮已授权提交、推送和建 PR；不直接修改 main，不自动合并、创建 tag、Release 或部署，等待用户审查。
+- 从已同步 main 建立 feat/phase-1b-charts-storage，提交独立 PR #3。本轮已授权提交、推送和建 PR；不直接修改 main，不自动合并、创建 tag、Release 或部署，等待用户审查。
 - 不擅自改变路线、删减需求或将建议写为已确认。正常范围内实现与修复无需反复确认。
 
 ## 工程约束
@@ -31,6 +33,6 @@
 2. 缺浏览器时按 README 安装或显式选择系统 Chromium；Windows 优先测试 chrome 和 msedge。
 3. 更新 progress.md：命令、实际平台、成功/失败/未测、环境限制、停点和下一行动。修复后保留失败事实，不伪造证据。
 4. Linux Chromium、Windows CI 和用户 Windows 实机结果分开记录。仅本机资源的 HTTP 测试不等于 file://、单文件或完整离线发行验收。
-5. M0 已由用户验收。Phase 1A 独立验收，不以 Phase 0 或 CI 成绩补写用户未报告的逐项结果；后续 Phase 1B 在下一轮指令中接续。
+5. M0 与 Phase 1A 用户总体验收通过，未提供的逐项结果不补写。Phase 1B 的本机、三组 CI、用户 Windows 手工结果分别记录；不得用 CI 代替用户验收。
 
 plan 保存约定，progress 保存事实，docs 保存专题。新会话从工程文件恢复，不依赖聊天摘要。
