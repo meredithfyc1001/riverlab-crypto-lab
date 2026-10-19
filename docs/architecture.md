@@ -1,4 +1,4 @@
-# 架构与 Phase 0 可行性
+# 架构与可行性（Phase 1A）
 
 已完整阅读原始规划 v0.1，参考 meredithfyc1001/riverlab-gto 的 AGENTS.md、package.json。迁移文档恢复、PR、验证如实记录和 Windows 优先验收流程，不复制扑克逻辑、数据或单 HTML 源码结构。新项目有独立 Git 历史。
 
@@ -6,34 +6,36 @@ React 19、TypeScript 5.9 strict、Vite 7 可满足浏览器本地研究工具�
 
 ## 模块职责
 
-| 目录                     | 职责                     | 当前交付                           |
-| ------------------------ | ------------------------ | ---------------------------------- |
-| src/app                  | 路由、主题、装配         | 可运行界面，无业务计算             |
-| src/components           | 共用展示                 | 风险提示、只读示例表               |
-| src/features/datasets    | 数据中心                 | 页面元信息，导入待实现             |
-| src/features/charts      | 行情中心                 | 页面元信息，图表待实现             |
-| src/features/strategies  | 策略中心                 | 页面元信息                         |
-| src/features/backtests   | 回测中心                 | 页面元信息                         |
-| src/features/risk        | 风险中心                 | 页面元信息                         |
-| src/features/experiments | 实验中心                 | 页面元信息                         |
-| src/features/replay      | 历史回放                 | 页面元信息                         |
-| src/core/data            | 行情/来源模型、未来校验  | Candle/SyntheticDataset 类型与职责 |
-| src/core/strategies      | 未来策略版本、参数、信号 | 职责声明，无算法                   |
-| src/core/backtests       | 未来事件、模拟成交、账本 | 职责声明，无引擎                   |
-| src/core/risk            | 未来风险指标与口径       | 职责声明，无计算                   |
-| src/shared               | 不依赖上层的共用契约     | 模块边界类型                       |
+| 目录                     | 职责                     | 当前交付                                         |
+| ------------------------ | ------------------------ | ------------------------------------------------ |
+| src/app                  | 路由、主题、装配         | 可运行界面，无业务计算                           |
+| src/components           | 共用展示                 | 风险提示、只读示例表                             |
+| src/features/datasets    | 数据中心与浏览器适配     | CSV 文件选择/映射/确认、Worker、报告、来源身份   |
+| src/features/charts      | 行情中心                 | 页面元信息，图表待实现                           |
+| src/features/strategies  | 策略中心                 | 页面元信息                                       |
+| src/features/backtests   | 回测中心                 | 页面元信息                                       |
+| src/features/risk        | 风险中心                 | 页面元信息                                       |
+| src/features/experiments | 实验中心                 | 页面元信息                                       |
+| src/features/replay      | 历史回放                 | 页面元信息                                       |
+| src/core/data            | 纯 TS 解析与质量         | 严格 CSV、时间单位/UTC、OHLCV/重复/缺口/行级报告 |
+| src/core/strategies      | 未来策略版本、参数、信号 | 职责声明，无算法                                 |
+| src/core/backtests       | 未来事件、模拟成交、账本 | 职责声明，无引擎                                 |
+| src/core/risk            | 未来风险指标与口径       | 职责声明，无计算                                 |
+| src/shared               | 不依赖上层的共用契约     | 模块边界类型                                     |
 
 依赖方向：app → features/components/core/shared；features → components/core/shared；components → core/shared；core → core/shared；shared 不依赖上层。兄弟功能模块不互相导入，由 app 装配，功能模块经 index.ts 暴露入口。核心跨域依赖须单向、通过公开契约；未来策略信号与执行分离，风险只读结果。
 
-core 独立 TypeScript 配置不含 DOM，ESLint 禁止 React/UI 与浏览器全局。Phase 0 不预建大型账本/事件接口，避免冻结未经验证的 Phase 2 模型；后续可按原规划细分指标、执行、组合与统计。
+core 独立 TypeScript 配置不含 DOM，ESLint 禁止 React/UI 与浏览器全局。Phase 1A 新增解析和质量检查，未引入大型账本/事件接口；后续可按原规划细分指标、执行、组合与统计。测试独立 tsconfig.test.json 引用 Node 测试类型，不把它们引入 app/core 的全局类型环境。
 
 ## 运行与数据
 
 八个 hash 入口无需服务器路径重写，刷新/前进/后退可用。默认深色，可切浅色；主题不持久化，不读写存储。未知 hash 回到工作台。无账户、密钥、网络行情或订单。
 
-4 条固定 DEMO/USDT 人工合成 OHLCV 仅用于展示和工程烟测，不是真实行情、导入器、图表或研究结果。UTC 毫秒，显示 UTC。无 CDN、远程字体、遥测、服务端或交易 SDK。
+工作台保留 4 条固定合成示例；数据中心提供 CSV 导入与质量报告。时间规范化为 UTC 整毫秒，无法判断的单位/周期要求确认。历史存档、人工合成、错误测试与用户未核实来源分别标记，不把样本当作研究结果。无 CDN、远程字体、遥测、服务端或交易 SDK。
 
-后续考虑 IndexedDB 配合显式文件导入/导出，检测拒写、配额、清理与隐私模式，失败不能显示成功。大文件流式/Worker、decimal/整数账本在对应阶段独立选型；当前不宣称存储容量回退与金额精度已验证。
+文件解码、SHA256、解析与检查在独立 Worker 中运行。core 是纯同步 TS，Worker 只是浏览器适配器；结果只发送报告与有上限预览，完整候选数组不发送 UI。换文件、取消和卸载终止 Worker，generation 标识拒绝迟到结果；任何配置改变使旧报告失效。支持 10 MiB / 50,000 行，45 秒超时；无 Worker 不退回主线程重计算，给出明确失败提示。
+
+后续考虑 IndexedDB 配合文件导出，检测拒写、配额和隐私模式，失败不能显示成功。当前报告只保留在数据中心页面会话，未持久化；流式存储、decimal/整数账本、无限文件均未实现。
 
 ## 可行性限制
 

@@ -1,4 +1,4 @@
-name: Phase 0 quality
+name: Project quality
 
 on:
   pull_request:
