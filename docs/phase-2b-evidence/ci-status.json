@@ -1,0 +1,36 @@
+{
+  "observedAt": "2026-10-19 16:17:24 UTC",
+  "commit": "509164f5c2aa27ec4083a45696a27ff5ad8b8f3f",
+  "runId": 39283091782,
+  "response": {
+    "jobs": [
+      {
+        "id": 118161397623,
+        "name": "Check / ubuntu-latest / chromium",
+        "status": "queued",
+        "conclusion": null,
+        "run_id": 39283091782,
+        "logs_url": null,
+        "steps": null
+      },
+      {
+        "id": 118161397975,
+        "name": "Check / windows-latest / msedge",
+        "status": "queued",
+        "conclusion": null,
+        "run_id": 39283091782,
+        "logs_url": null,
+        "steps": null
+      },
+      {
+        "id": 118161398163,
+        "name": "Check / windows-latest / chrome",
+        "status": "queued",
+        "conclusion": null,
+        "run_id": 39283091782,
+        "logs_url": null,
+        "steps": null
+      }
+    ]
+  }
+}

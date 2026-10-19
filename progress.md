@@ -2,7 +2,7 @@
 
 ## 当前恢复入口：Phase 2B（2026-10-19）
 
-- 初始 work 分支干净；已 fetch origin/main，核实 PR #4 merged=true，实际合并 a7b57cbecf7b25cd50da6647426e99ca6738dfa5，UTC 15:49:17。从该提交建立 feat/phase-2b-strategies-risk；目标独立待审 PR #5，不修改main、不合并/发布/部署。
+- 初始 work 分支干净；已 fetch origin/main，核实 PR #4 merged=true，实际合并 a7b57cbecf7b25cd50da6647426e99ca6738dfa5，UTC 15:49:17。从该提交建立 feat/phase-2b-strategies-risk；[PR #5](https://github.com/meredithfyc1001/riverlab-crypto-lab/pull/5)已创建，open/draft，工程提交509164f5c2aa27ec4083a45696a27ff5ad8b8f3f；不修改main、不合并/发布/部署。
 - 重新读取最终 CI run 39277844255 的三个job：Ubuntu Chromium 118146578981、Windows Chrome 118146578936、Windows Edge 118146578753，均completed/success，npm ci/check步骤成功；随后已重新读取三个job原始日志，逐一确认每组159项Vitest及17项E2E通过，无失败/跳过。
 - 2A Codex本机完整check未通过：旧UI 5000ms及浏览器30s超时、一次浏览器中止；原日志路径/数量/失败事实在下文完整保留。Windows用户1B/2A未测试，2B亦未测试，不以CI替代。
 - 已阅读AGENTS、plan、progress、Phase2A设计/自查、原规划相关条款及回测/账本/指标/数据契约与测试。先更新2B设计，随后只交付三策略与风控执行内核。
@@ -18,7 +18,8 @@
 - 原2A专项40/40、新增首轮93/93通过；加入3组完整引擎逐前缀因果测试后，首次完整PLAYWRIGHT_CHROMIUM_EXECUTABLE=/usr/bin/chromium npm run check通过：12文件/255项Vitest、17项E2E、格式/lint/strict类型/构建全通过，0失败/跳过，日志work/phase-2b-full-check.log。该记录为下述激活边界修正之前，不冒充最终代码验证。
 - 自查发现新仓买滑点很大、stop已高于open时，原稿按更好的stop退出会高估结果。新增回归先复现44通过/1失败（[activation-before.log](docs/phase-2b-evidence/activation-before.log)）；随后新仓保护激活立即检查open并按已知open退出。同根两笔开盘事件明确保持先买后保护顺序；没有改断言/阈值。修正后三核心文件137/137通过，日志work/phase-2b-activation-fixed.log。
 - 修正后最终完整check退出0：12文件/256项Vitest（原159全部保留，新增97项）、17项E2E、格式/lint/核心+应用+测试strict类型/构建全部通过，无失败/跳过。本机Linux、Node24.19.0、Chromium154.0.8037.57，[完整原日志](docs/phase-2b-evidence/local-final-check.log)随仓库保存。2B这次通过不覆盖2A当时本机超时事实，也不等于Windows用户测试。
-- 三平台CI待PR创建后由实际job和日志确认；尚不声明2B CI通过。PR保持Draft待审，不自动合并/发布/部署。
+- [PR #5](https://github.com/meredithfyc1001/riverlab-crypto-lab/pull/5)已创建，open/draft，未合并/发布/部署。工程提交509164f5c2aa27ec4083a45696a27ff5ad8b8f3f的[CI run 39283091782](https://github.com/meredithfyc1001/riverlab-crypto-lab/actions/runs/39283091782)于UTC16:08:19触发；持续轮询至UTC16:17后仍是queued，三个job均未开始、steps为空，conclusion=null。这不是测试通过或失败，也不称为测试超时；尚无2B跨平台通过证据。原始工具状态快照随[ci-status.json](docs/phase-2b-evidence/ci-status.json)保存。
+- 排队job：[Ubuntu Chromium 118161397623](https://github.com/meredithfyc1001/riverlab-crypto-lab/actions/runs/39283091782/job/118161397623)、[Windows Edge 118161397975](https://github.com/meredithfyc1001/riverlab-crypto-lab/actions/runs/39283091782/job/118161397975)、[Windows Chrome 118161398163](https://github.com/meredithfyc1001/riverlab-crypto-lab/actions/runs/39283091782/job/118161398163)。没有重跑/取消队列、改runner矩阵或放宽测试。收尾仅文档归档提交，最新状态见[PR Checks](https://github.com/meredithfyc1001/riverlab-crypto-lab/pull/5/checks)；后续须等runner实际执行后读取日志归档，不能用本机或2A旧CI替代。
 - 最终设计/边界与剩余风险见[2B设计](docs/phase-2b-design.md)及[实现后自查](docs/phase-2b-review.md)；用户[Windows清单](docs/phase-2b-acceptance.md)全部保持未签署。RSI仍为IEEE754指标，接近阈值有舍入边界；资金无Number累加。无限流动性/原Number精度/同步内核限制保留，不宣称整个M2完成。
 - 本地文档相对链接51条核对无损坏；原规划SHA256仍为0a3081d44d3557e6d0f1b1eda3378c2e83282b3c6677dcd45b88a3190b86f84b。生产UI构建仍70 modules、JS453.56kB/gzip148.08kB、Worker11.77kB、CSS16.26kB；内核没有UI入口，不把旧UI E2E当成策略面板验收。
 

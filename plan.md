@@ -2,7 +2,7 @@
 
 基线：[原始规划 v0.1](docs/product-plan-v0.1.md) 完整保留。2026-10-19 用户确认 Phase 0 验收和 Windows Edge/Chrome 本地测试通过，PR #1 已合并为 6ffe6a3186699ae85a26331efa932c3bcec500a2（北京时间 17:57:48）。M0 通过；具体浏览器版本和逐项结果未提供，不补写。
 
-当前授权 **Phase 2B**。已 fetch origin/main，核实 PR #4 merged=true，实际合并 a7b57cbecf7b25cd50da6647426e99ca6738dfa5（UTC 2026-10-19 15:49:17）。分支 feat/phase-2b-strategies-risk，目标独立待审 PR #5；不修改 main、不合并、发布或部署。
+当前授权 **Phase 2B**。已 fetch origin/main，核实 PR #4 merged=true，实际合并 a7b57cbecf7b25cd50da6647426e99ca6738dfa5（UTC 2026-10-19 15:49:17）。分支 feat/phase-2b-strategies-risk，[PR #5](https://github.com/meredithfyc1001/riverlab-crypto-lab/pull/5)已创建并保持Draft待审；不修改 main、不合并、发布或部署。
 
 ## Phase 2 拆分与当前行动
 
@@ -72,3 +72,5 @@ check 包含格式、lint、单元/页面集成测试、严格类型、构建和
 Phase 1B 接口和限制详见 [设计与契约](docs/phase-1b-design.md)，用户验收见 [Windows 清单](docs/phase-1b-acceptance.md)。PR #3 已合并，云端技术复核通过，Windows 用户实机未测试；2A 授权不代表补签此验收。
 
 Phase 2A 已合并，最终CI及本机失败事实见 progress。当前实施2B，2C与完整M2后续独立授权；用户Windows未测试的阶段不以CI补签。
+
+2B内核和本机验证已交付：256项Vitest及17项E2E完整通过。三平台CI已触发，当前runner队列未启动，不能记为通过；真实状态和失败原证据见progress。下一行动是核对PR #5实际CI日志及执行Windows用户清单，不自动推进2C。
