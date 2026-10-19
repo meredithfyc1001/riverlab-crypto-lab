@@ -1,5 +1,14 @@
 # RiverLab Crypto Lab 进度
 
+## 当前恢复入口：Phase 1B（2026-10-19）
+
+- GitHub PR #2 merged=true，实际合并 c17c0a4ba4084bad06e572da48d3da1fb5cf4720，UTC 10:44:13。已 fetch origin/main 并从该提交创建 feat/phase-1b-charts-storage；初始工作区干净，不直接修改 main。
+- 用户明确确认 Phase 1A Windows 验收通过。仅记录总体通过，不补写未提供的逐项结果/版本。下方旧记录是各时间点历史，不代表最新状态。
+- 已阅读 AGENTS、plan、本文件、原规划和 1A 数据接口。先更新授权/计划，随后实施 1B，目标 PR #3 待审；无 Phase 2、交易、Release 或部署。
+- 验收待实施：固定参考指标；图表交互；IndexedDB 成功/失败/重开/删除/恢复；50,000 行性能；关闭重开；外网阻断、本机 HTTP 保留；npm ci / check 和 Ubuntu Chromium、Windows Chrome/Edge CI。当前不得标为通过。
+
+## Phase 1A 与 Phase 0 历史归档（以下保留当时事实）
+
 ## 当前恢复入口（2026-10-19，Asia/Shanghai）
 
 - 已同步并核对 main：6ffe6a3186699ae85a26331efa932c3bcec500a2，即 PR #1 实际合并提交。GitHub 显示 merged=true，合并时间北京时间 2026-10-19 17:57:48。
