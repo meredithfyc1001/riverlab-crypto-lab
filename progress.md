@@ -1,6 +1,15 @@
 # RiverLab Crypto Lab 进度
 
-## 恢复入口
+## 当前恢复入口（2026-10-19，Asia/Shanghai）
+
+- 已同步并核对 main：6ffe6a3186699ae85a26331efa932c3bcec500a2，即 PR #1 实际合并提交。GitHub 显示 merged=true，合并时间北京时间 2026-10-19 17:57:48。
+- 用户本轮明确确认 Phase 0 已验收、Windows Edge/Chrome 本地测试均通过，M0 通过。版本/逐项结果未提供，清单只更新总体状态。
+- 当前授权 Phase 1，仅实施 **1A：CSV 导入/映射、UTC 毫秒、数据质量与来源样本**。从 main 建立 feat/phase-1a-csv-import，目标独立 PR #2，未修改 main。
+- 已完整重读 AGENTS、plan、本文件和产品规划。先更新文档，下一行动是实现纯 TS CSV 数据契约与解析测试，再接 UI/Worker 和报告。
+- 图表、技术指标、回测、真实账户/API Key/资金/交易、实时抓取不在本轮范围。
+- 本轮 npm ci、npm run check、Windows CI/用户测试：均待执行，后续据实更新。
+
+## Phase 0 历史归档（保留当时事实，已由上述最新状态覆盖）
 
 - 日期：2026-10-18（Asia/Shanghai），Phase 0 工程已实现，本机及三组 CI 全通过；等待用户 Windows 手工验收，M0 尚未最终验收。
 - 独立仓库 meredithfyc1001/riverlab-crypto-lab；main 基线 3867029fe4bc23290b4a616c1bed6ae6b700d4a0；分支 feat/phase-0-foundation。
