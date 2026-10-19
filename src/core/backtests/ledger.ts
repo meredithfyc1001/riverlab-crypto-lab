@@ -65,33 +65,91 @@ export function ledgerAuditor(
   };
   let previousIndex = -1;
   let previousTime = -1;
+  let previousWasOpenSignal = false;
+  let previousSide: string | undefined;
   let sequence = 0;
   return (f) => {
     sequence++;
+    const trigger = f.trigger;
+    const intrabar = trigger?.phase === 'intrabar';
     if (
       !Number.isSafeInteger(f.candleIndex) ||
       f.candleIndex < 1 ||
-      !Number.isSafeInteger(f.timestampUtcMs) ||
-      f.timestampUtcMs < 0 ||
-      typeof f.orderId !== 'string' ||
-      f.orderId !== `order-${f.signalCandleIndex}` ||
       f.sequence !== sequence ||
       seen.has(f.orderId) ||
-      f.candleIndex <= previousIndex ||
-      f.timestampUtcMs <= previousTime ||
-      f.signalCandleIndex !== f.candleIndex - 1 ||
+      f.candleIndex < previousIndex ||
+      (f.candleIndex === previousIndex &&
+        !(
+          trigger &&
+          previousWasOpenSignal &&
+          (intrabar || previousSide === 'buy')
+        )) ||
       !['buy', 'sell'].includes(f.side)
     )
       throw new Error('Ledger event order failed.');
+    if (trigger) {
+      if (
+        f.orderId !== `risk-${f.candleIndex}` ||
+        f.signalCandleIndex !== null ||
+        f.side !== 'sell' ||
+        !['open', 'intrabar'].includes(trigger.phase) ||
+        !['stop-loss', 'take-profit'].includes(trigger.kind) ||
+        f.reason !== trigger.kind ||
+        trigger.referencePrice !== f.referencePrice ||
+        !Number.isSafeInteger(trigger.barOpenUtcMs) ||
+        !Number.isSafeInteger(trigger.barCloseUtcMs) ||
+        trigger.barOpenUtcMs < 0 ||
+        trigger.barCloseUtcMs <= trigger.barOpenUtcMs ||
+        (intrabar
+          ? f.timestampUtcMs !== null ||
+            !['threshold-touch-order-unknown', 'ambiguous-stop-first'].includes(
+              trigger.assumption,
+            )
+          : f.timestampUtcMs !== trigger.barOpenUtcMs ||
+            trigger.assumption !== 'observed-open') ||
+        (trigger.assumption === 'ambiguous-stop-first' &&
+          trigger.kind !== 'stop-loss')
+      )
+        throw new Error('Ledger risk event failed.');
+      const entry = readUnits(trigger.entryPrice);
+      const stop =
+        trigger.stopPrice === null ? null : readUnits(trigger.stopPrice);
+      const take =
+        trigger.takePrice === null ? null : readUnits(trigger.takePrice);
+      const ref = readUnits(trigger.referencePrice);
+      if (
+        entry === 0n ||
+        (stop !== null && (stop === 0n || stop >= entry)) ||
+        (take !== null && take <= entry) ||
+        (trigger.kind === 'stop-loss'
+          ? stop === null || (intrabar ? ref !== stop : ref > stop)
+          : take === null || ref !== take)
+      )
+        throw new Error('Ledger protection price failed.');
+    } else if (
+      f.orderId !== `order-${f.signalCandleIndex}` ||
+      f.signalCandleIndex !== f.candleIndex - 1 ||
+      !Number.isSafeInteger(f.timestampUtcMs) ||
+      f.timestampUtcMs === null ||
+      f.timestampUtcMs < 0
+    )
+      throw new Error('Ledger signal event failed.');
+    const eventStart = trigger ? trigger.barOpenUtcMs : f.timestampUtcMs!;
+    if (f.candleIndex > previousIndex && eventStart <= previousTime)
+      throw new Error('Ledger event time failed.');
     seen.add(f.orderId);
+    previousWasOpenSignal = !trigger;
+    previousSide = f.side;
     previousIndex = f.candleIndex;
-    previousTime = f.timestampUtcMs;
+    // Intrabar time is unknown; its lower bound must still follow prior bars.
+    previousTime = eventStart;
     const open = readUnits(f.referencePrice),
       price = readUnits(f.price),
       qty = readUnits(f.quantity);
     if (
       open === 0n ||
       qty === 0n ||
+      (trigger && qty !== quantity) ||
       qty % 10n ** BigInt(18 - config.quantityDecimals) !== 0n
     )
       throw new Error('Ledger price/quantity failed.');

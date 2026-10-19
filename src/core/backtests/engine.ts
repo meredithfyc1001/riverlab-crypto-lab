@@ -1,7 +1,15 @@
 import { assertDataset } from '../data/dataset';
 import { normalizeConfig } from './config';
-import { decimal, parseDecimal, SCALE } from './decimal';
-import { executeAtOpen } from './execution';
+import { decimal, parseDecimal, readUnits, SCALE } from './decimal';
+import { executeAtReference } from './execution';
+import { createStrategy } from '../strategies';
+import {
+  normalizeRisk,
+  protectionFor,
+  triggerAtOpen,
+  triggerIntrabar,
+} from '../risk';
+import type { Protection, RiskTrigger } from '../risk';
 import { contentHash } from './identity';
 import { ledgerAuditor, snapshot } from './ledger';
 import type {
@@ -12,12 +20,18 @@ import type {
   RunManifest,
 } from './types';
 
-export const ALGORITHM_VERSION = 'spot-long-next-open-v1';
+export const ALGORITHM_VERSION = 'spot-long-protected-next-open-v2';
 export const CONVERSION_VERSION = 'number-shortest-decimal-fixed18-v1';
 export const RUN_ASSUMPTIONS = Object.freeze([
   'virtual-USDT-single-symbol-spot-long-only-no-leverage',
   'caller-declares-all-candles-completed',
-  'scripted-signals-only-not-causal-strategy-certification',
+  'strategy-stream-completed-candle-only-or-unverified-scripted-signals',
+  'existing-risk-open-before-signal-intrabar-after-open-orders',
+  'new-protection-marketable-at-open-exits-at-open',
+  'ambiguous-intrabar-stop-first-time-unknown',
+  'gap-stop-at-open-gap-take-at-threshold-no-improvement',
+  'protective-trigger-market-sell-with-adverse-slippage',
+  'protection-from-actual-entry-price-no-fee-basis-no-pyramiding',
   'completed-close-signal-next-open-fill',
   'strict-no-gaps-no-sorting-no-repair',
   'unlimited-liquidity-no-order-book-volume-ignored',
@@ -106,7 +120,17 @@ export function runBacktest(input: BacktestInput): BacktestResult {
     };
   });
   const config = normalizeConfig(input.config);
-  const signals = normalizeSignals(input.signals, tape.length);
+  if (input.strategy !== undefined && input.signals !== undefined)
+    throw new Error('Choose strategy or fixed signals, never both.');
+  const strategy =
+    input.strategy === undefined
+      ? undefined
+      : createStrategy(input.strategy, intervalMs);
+  const risk = normalizeRisk(input.risk);
+  const protectedRun = Object.keys(risk).length > 0;
+  const signals: Signal[] = strategy
+    ? []
+    : normalizeSignals(input.signals!, tape.length);
   const dataHash = contentHash({ symbol: d.symbol, intervalMs, candles: tape });
   const signalHash = contentHash(signals);
   const manifest: RunManifest = {
@@ -121,6 +145,10 @@ export function runBacktest(input: BacktestInput): BacktestResult {
       signalHash,
       config,
       completedThroughUtcMs,
+      strategy: strategy
+        ? { config: strategy.config, version: strategy.version }
+        : null,
+      risk,
     }),
     sourceFileSha256: d.file.sha256,
     source: JSON.parse(JSON.stringify(d.source)) as RunManifest['source'],
@@ -130,6 +158,10 @@ export function runBacktest(input: BacktestInput): BacktestResult {
     completedThroughUtcMs,
     config,
     signals,
+    strategy: strategy
+      ? { config: strategy.config, version: strategy.version }
+      : null,
+    risk,
     assumptions: RUN_ASSUMPTIONS,
   };
   const result: BacktestResult = {
@@ -153,75 +185,142 @@ export function runBacktest(input: BacktestInput): BacktestResult {
   let pending: OrderIntent | undefined;
   let nextSignal = 0;
   const audit = ledgerAuditor(config.initialCash, config);
+  let protection: Protection | undefined;
+  const execute = (
+    intent: OrderIntent,
+    i: number,
+    reference: string,
+    time: number | null,
+  ) => {
+    const mark = readUnits(reference);
+    const blocked =
+      !intent.trigger &&
+      (strategy || protectedRun) &&
+      intent.side === 'buy' &&
+      quantity > 0n
+        ? ('position-already-open' as const)
+        : !intent.trigger &&
+            strategy &&
+            intent.side === 'sell' &&
+            quantity === 0n
+          ? ('position-already-flat' as const)
+          : undefined;
+    const execution = blocked
+      ? { rejected: blocked }
+      : executeAtReference({ cash, quantity }, mark, intent, config);
+    if ('rejected' in execution) {
+      result.orders.push({
+        intent,
+        status: 'rejected',
+        reason: execution.rejected,
+        resolvedUtcMs: time,
+      });
+      return;
+    }
+    const { price, quantity: qty, notional, fee } = execution;
+    const before = snapshot({ cash, quantity }, mark);
+    const beforeEquity = cash + (quantity * mark) / SCALE;
+    const sign = intent.side === 'buy' ? 1n : -1n;
+    cash -= sign * notional + fee;
+    quantity += sign * qty;
+    fees += fee;
+    if (intent.side === 'buy') {
+      buyNotional += notional;
+      buyQuantity += qty;
+    } else {
+      sellNotional += notional;
+      sellQuantity += qty;
+    }
+    const fill = {
+      sequence: result.fills.length + 1,
+      orderId: intent.id,
+      side: intent.side,
+      reason: intent.reason,
+      signalCandleIndex: intent.signalCandleIndex,
+      candleIndex: i,
+      timestampUtcMs: time,
+      ...(intent.trigger ? { trigger: intent.trigger } : {}),
+      referencePrice: reference,
+      price: decimal(price),
+      quantity: decimal(qty),
+      notional: decimal(notional),
+      fee: decimal(fee),
+      before,
+      after: snapshot({ cash, quantity }, mark),
+      delta: {
+        cash: decimal(-sign * notional - fee),
+        quantity: decimal(sign * qty),
+        equity: decimal(cash + (quantity * mark) / SCALE - beforeEquity),
+      },
+      totals: {
+        buyNotional: decimal(buyNotional),
+        sellNotional: decimal(sellNotional),
+        fees: decimal(fees),
+        buyQuantity: decimal(buyQuantity),
+        sellQuantity: decimal(sellQuantity),
+      },
+    };
+    audit(fill);
+    result.fills.push(fill);
+    result.orders.push({ intent, status: 'filled', resolvedUtcMs: time });
+    if (quantity === 0n) protection = undefined;
+    else if (intent.side === 'buy' && protectedRun)
+      protection = protectionFor(price, risk);
+  };
+  const executeRisk = (trigger: RiskTrigger, i: number) => {
+    const time = trigger.phase === 'open' ? trigger.barOpenUtcMs : null;
+    execute(
+      {
+        id: `risk-${i}`,
+        side: 'sell',
+        quantity: 'all',
+        reason: trigger.kind,
+        signalCandleIndex: null,
+        generatedUtcMs: time,
+        targetCandleIndex: i,
+        trigger,
+      },
+      i,
+      trigger.referencePrice,
+      time,
+    );
+  };
   for (let i = 0; i < tape.length; i++) {
     const c = tape[i],
       open = parseDecimal(c.open);
-    if (pending) {
-      const execution = executeAtOpen(
-        { cash, quantity },
-        open,
-        pending,
-        config,
-      );
-      if ('rejected' in execution)
+    const end = c.timestampUtcMs + intervalMs;
+    const gap =
+      protection && triggerAtOpen(protection, open, c.timestampUtcMs, end);
+    if (gap) {
+      executeRisk(gap, i);
+      if (pending)
         result.orders.push({
           intent: pending,
-          status: 'rejected',
-          reason: execution.rejected,
+          status: 'cancelled',
+          reason: 'risk-priority',
           resolvedUtcMs: c.timestampUtcMs,
         });
-      else {
-        const { price, quantity: qty, notional, fee } = execution;
-        const before = snapshot({ cash, quantity }, open);
-        const beforeEquity = cash + (quantity * open) / SCALE;
-        const sign = pending.side === 'buy' ? 1n : -1n;
-        cash -= sign * notional + fee;
-        quantity += sign * qty;
-        fees += fee;
-        if (pending.side === 'buy') {
-          buyNotional += notional;
-          buyQuantity += qty;
-        } else {
-          sellNotional += notional;
-          sellQuantity += qty;
-        }
-        const fill = {
-          sequence: result.fills.length + 1,
-          orderId: pending.id,
-          side: pending.side,
-          reason: pending.reason,
-          signalCandleIndex: pending.signalCandleIndex,
-          candleIndex: i,
-          timestampUtcMs: c.timestampUtcMs,
-          referencePrice: c.open,
-          price: decimal(price),
-          quantity: decimal(qty),
-          notional: decimal(notional),
-          fee: decimal(fee),
-          before,
-          after: snapshot({ cash, quantity }, open),
-          delta: {
-            cash: decimal(-sign * notional - fee),
-            quantity: decimal(sign * qty),
-            equity: decimal(cash + (quantity * open) / SCALE - beforeEquity),
-          },
-          totals: {
-            buyNotional: decimal(buyNotional),
-            sellNotional: decimal(sellNotional),
-            fees: decimal(fees),
-            buyQuantity: decimal(buyQuantity),
-            sellQuantity: decimal(sellQuantity),
-          },
-        };
-        audit(fill); // Conservation/reconciliation is mandatory after every simulated fill.
-        result.fills.push(fill);
-        result.orders.push({
-          intent: pending,
-          status: 'filled',
-          resolvedUtcMs: c.timestampUtcMs,
-        });
-      }
       pending = undefined;
+    } else {
+      if (pending) execute(pending, i, c.open, c.timestampUtcMs);
+      pending = undefined;
+      // A new entry's adverse slippage can put its stop above the known open.
+      // Such protection is immediately marketable, so never award the better stop.
+      const activated =
+        protection && triggerAtOpen(protection, open, c.timestampUtcMs, end);
+      if (activated) executeRisk(activated, i);
+      else {
+        const touch =
+          protection &&
+          triggerIntrabar(
+            protection,
+            parseDecimal(c.high),
+            parseDecimal(c.low),
+            c.timestampUtcMs,
+            end,
+          );
+        if (touch) executeRisk(touch, i);
+      }
     }
     const closeTime = c.timestampUtcMs + intervalMs;
     result.closes.push({
@@ -229,6 +328,19 @@ export function runBacktest(input: BacktestInput): BacktestResult {
       timestampUtcMs: closeTime,
       account: snapshot({ cash, quantity }, parseDecimal(c.close)),
     });
+    if (strategy) {
+      const decision = strategy.onClose(Object.freeze({ ...d.candles[i] }));
+      signals.push(
+        decision.action === 'hold'
+          ? { candleIndex: i, ...decision, action: 'hold' }
+          : {
+              candleIndex: i,
+              ...decision,
+              action: decision.action,
+              quantity: 'all',
+            },
+      );
+    }
     const s = signals[nextSignal];
     if (s?.candleIndex === i) {
       nextSignal++;
@@ -252,6 +364,18 @@ export function runBacktest(input: BacktestInput): BacktestResult {
       reason: 'no-next-candle',
       resolvedUtcMs: pending.generatedUtcMs,
     });
+  // Streamed signals are complete only after all close events have been evaluated.
+  manifest.signalHash = contentHash(signals);
+  manifest.runHash = contentHash({
+    algorithmVersion: ALGORITHM_VERSION,
+    conversionVersion: CONVERSION_VERSION,
+    dataHash,
+    signalHash: manifest.signalHash,
+    config,
+    completedThroughUtcMs,
+    strategy: manifest.strategy,
+    risk,
+  });
   result.final = result.closes.at(-1)!.account;
   return result;
 }

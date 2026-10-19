@@ -1,0 +1,25 @@
+
+ RUN  v4.1.12 /workspace/riverlab-crypto-lab
+
+ ❯ tests/unit/strategies.test.ts (0 test)
+
+⎯⎯⎯⎯⎯⎯ Failed Suites 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/unit/strategies.test.ts [ tests/unit/strategies.test.ts ]
+Error: Cannot find module '../fixtures/phase2b-reference.json' imported from /workspace/riverlab-crypto-lab/tests/unit/strategies.test.ts
+ ❯ tests/unit/strategies.test.ts:8:1
+      6| import { runBacktest } from '../../src/core/backtests';
+      7| import { INTERVAL, START, input, market } from '../fixtures/backtest';
+      8| import reference from '../fixtures/phase2b-reference.json';
+       | ^
+      9|
+     10| function candles(bars: readonly string[][]): Candle[] {
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  no tests
+   Start at  16:01:41
+   Duration  471ms (transform 195ms, setup 128ms, import 0ms, tests 0ms, environment 0ms)
+

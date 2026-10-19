@@ -1,6 +1,6 @@
 # RiverLab Crypto Lab 工作指令
 
-作用于整个独立仓库。用户于 2026-10-19 正式授权 **Phase 2A：确定性回测内核与虚拟资金账本**。先读 [progress.md](progress.md)、[plan.md](plan.md) 和相关专题。附件全文保存在 [原始规划 v0.1](docs/product-plan-v0.1.md)。用户当前明确指令优先。
+作用于整个独立仓库。用户于 2026-10-19 正式授权 **Phase 2B：策略引擎与止盈止损模拟**。先读 [progress.md](progress.md)、[plan.md](plan.md) 和相关专题。附件全文保存在 [原始规划 v0.1](docs/product-plan-v0.1.md)。用户当前明确指令优先。
 
 ## 范围与研发节奏
 
@@ -11,9 +11,10 @@
 - Phase 1A 用户 Windows 验收通过（用户明确反馈，未提供逐项/版本）；PR #2 已合并，实际提交 c17c0a4ba4084bad06e572da48d3da1fb5cf4720。保留全部导入和质量约定及 10 MiB / 50,000 行上限。
 - Phase 1B：本地打包图表、纯 TS 无未来数据指标、IndexedDB 明确保存/重开/删除、带来源和质量信息的备份恢复、数据流程与性能验证。
 - Phase 1B 云端技术复核通过，PR #3 已合并为 3282475ecea8f0c42332eab8515e90b74cef6bde；用户 Windows 实机尚未执行，不得以 CI 或云端复核替代。保留 0/1A/1B 全部功能和回归。
-- Phase 2A 只实现纯 TS 单币种现货多头无杠杆事件/成交/定点账本，用固定测试信号验算。不开发正式三策略、止盈止损、收益面板、实时抓取、ZIP、回放。
+- PR #4 已合并为 a7b57cbecf7b25cd50da6647426e99ca6738dfa5，最终三平台 CI 159/17 通过；Codex 本机完整 check 因超时未通过，用户 Windows 1B/2A 未测试，保留原始记录。
+- Phase 2B 实现统一只接收已完成单根 K 线的策略接口、MA/RSI/突破及参数验证、止盈止损跳空/双触发保守执行；保留 2A 全部账本约定。只交付纯 TS 内核，不开发收益面板、参数优化、AI 自动交易或实盘交易。
 - 禁止真实账户、API Key、私钥、助记词、充值提现、真实订单或资金处理。未来网络数据能力必须独立评估和授权。
-- 从已同步 main 建立 feat/phase-2a-deterministic-backtest，提交独立待审 PR #4。本轮已授权提交、推送和建 PR；不直接修改 main，不自动合并、创建 tag、Release 或部署，等待用户审查。
+- 从已同步 main 建立 feat/phase-2b-strategies-risk，提交独立待审 PR #5。本轮已授权提交、推送和建 PR；不直接修改 main，不自动合并、创建 tag、Release 或部署，等待用户审查。
 - 不擅自改变路线、删减需求或将建议写为已确认。正常范围内实现与修复无需反复确认。
 
 ## 工程约束
@@ -35,6 +36,6 @@
 2. 缺浏览器时按 README 安装或显式选择系统 Chromium；Windows 优先测试 chrome 和 msedge。
 3. 更新 progress.md：命令、实际平台、成功/失败/未测、环境限制、停点和下一行动。修复后保留失败事实，不伪造证据。
 4. Linux Chromium、Windows CI 和用户 Windows 实机结果分开记录。仅本机资源的 HTTP 测试不等于 file://、单文件或完整离线发行验收。
-5. M0 与 Phase 1A 用户总体验收通过，未提供的逐项结果不补写。Phase 1B/2A 的本机、三组 CI、用户 Windows 手工结果分别记录；不得用 CI 代替用户验收。
+5. M0 与 Phase 1A 用户总体验收通过，未提供的逐项结果不补写。Phase 1B/2A/2B 的本机、三组 CI、用户 Windows 手工结果分别记录；不得用 CI 代替用户验收。
 
 plan 保存约定，progress 保存事实，docs 保存专题。新会话从工程文件恢复，不依赖聊天摘要。

@@ -1,0 +1,20 @@
+
+> riverlab-crypto-lab@0.1.0 typecheck
+> tsc -b
+
+src/core/strategies/engine.ts(30,18): error TS2783: 'kind' is specified more than once, so this usage will be overwritten.
+src/core/strategies/engine.ts(39,18): error TS2783: 'kind' is specified more than once, so this usage will be overwritten.
+src/core/strategies/engine.ts(53,18): error TS2783: 'kind' is specified more than once, so this usage will be overwritten.
+src/core/strategies/engine.ts(30,18): error TS2783: 'kind' is specified more than once, so this usage will be overwritten.
+src/core/strategies/engine.ts(39,18): error TS2783: 'kind' is specified more than once, so this usage will be overwritten.
+src/core/strategies/engine.ts(53,18): error TS2783: 'kind' is specified more than once, so this usage will be overwritten.
+src/core/strategies/engine.ts(30,18): error TS2783: 'kind' is specified more than once, so this usage will be overwritten.
+src/core/strategies/engine.ts(39,18): error TS2783: 'kind' is specified more than once, so this usage will be overwritten.
+src/core/strategies/engine.ts(53,18): error TS2783: 'kind' is specified more than once, so this usage will be overwritten.
+tests/unit/backtest.test.ts(402,19): error TS2345: Argument of type '{ signals: Signal[]; dataset: Dataset; completedThroughUtcMs: number; config?: Partial<BacktestConfig> | undefined; risk?: RiskConfig | undefined; strategy?: undefined; } | { ...; }' is not assignable to parameter of type 'BacktestInput'.
+  Type '{ signals: Signal[]; dataset: Dataset; completedThroughUtcMs: number; config?: Partial<BacktestConfig>; risk?: RiskConfig; strategy: StrategyInput; }' is not assignable to type 'BacktestInput'.
+    Type '{ signals: Signal[]; dataset: Dataset; completedThroughUtcMs: number; config?: Partial<BacktestConfig>; risk?: RiskConfig; strategy: StrategyInput; }' is not assignable to type '{ dataset: Dataset; completedThroughUtcMs: number; config?: Partial<BacktestConfig> | undefined; risk?: RiskConfig | undefined; } & { ...; }'.
+      Type '{ signals: Signal[]; dataset: Dataset; completedThroughUtcMs: number; config?: Partial<BacktestConfig>; risk?: RiskConfig; strategy: StrategyInput; }' is not assignable to type '{ signals: readonly Signal[]; strategy?: undefined; }'.
+        Types of property 'strategy' are incompatible.
+          Type 'StrategyInput' is not assignable to type 'undefined'.
+            Type '{ kind: "ma"; fastPeriod?: number | undefined; slowPeriod?: number | undefined; }' is not assignable to type 'undefined'.

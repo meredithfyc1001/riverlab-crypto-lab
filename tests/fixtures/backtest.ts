@@ -46,7 +46,7 @@ export function input(
   opens: readonly number[],
   signals: readonly Signal[] = [],
   closes?: readonly number[],
-): BacktestInput {
+): Extract<BacktestInput, { signals: readonly Signal[] }> {
   return {
     dataset: market(opens, closes),
     completedThroughUtcMs: START + opens.length * INTERVAL,

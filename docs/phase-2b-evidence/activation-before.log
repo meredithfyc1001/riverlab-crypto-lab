@@ -1,0 +1,44 @@
+
+ RUN  v4.1.12 /workspace/riverlab-crypto-lab
+
+ ❯ tests/unit/protection.test.ts (45 tests | 1 failed) 68ms
+     × new protection already marketable after adverse entry slippage exits at the observed open, never a better stop quote 8ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/unit/protection.test.ts > protective market execution / independent Decimal reference > new protection already marketable after adverse entry slippage exits at the observed open, never a better stop quote
+AssertionError: expected { sequence: 2, …(16) } to match object { referencePrice: '100', …(2) }
+(38 matching properties omitted from actual)
+
+- Expected
++ Received
+
+  {
+-   "referencePrice": "100",
+-   "timestampUtcMs": 1735689660000,
++   "referencePrice": "179.991",
++   "timestampUtcMs": null,
+    "trigger": {
+      "entryPrice": "199.99",
+-     "phase": "open",
++     "phase": "intrabar",
+      "stopPrice": "179.991",
+    },
+  }
+
+ ❯ tests/unit/protection.test.ts:150:24
+    148|     const r=runBacktest(x);
+    149|     expect(r.fills).toHaveLength(2);
+    150|     expect(r.fills[1]).toMatchObject({referencePrice:'100',timestampUt…
+       |                        ^
+    151|     expect(r.final.cash).toBe('800.02');
+    152|     assertLedger('1000',r.fills,r.manifest.config);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 44 passed (45)
+   Start at  16:04:15
+   Duration  808ms (transform 341ms, setup 178ms, import 368ms, tests 68ms, environment 0ms)
+
