@@ -5,9 +5,9 @@
 - 已同步并核对 main：6ffe6a3186699ae85a26331efa932c3bcec500a2，即 PR #1 实际合并提交。GitHub 显示 merged=true，合并时间北京时间 2026-10-19 17:57:48。
 - 用户本轮明确确认 Phase 0 已验收、Windows Edge/Chrome 本地测试均通过，M0 通过。版本/逐项结果未提供，清单只更新总体状态。
 - 当前授权 Phase 1，仅实施 **1A：CSV 导入/映射、UTC 毫秒、数据质量与来源样本**。从 main 建立 feat/phase-1a-csv-import，目标独立 PR #2，未修改 main。
-- 已完整重读 AGENTS、plan、本文件和产品规划；先更新文档，再完成 1A 解析、UI/Worker、样本与报告。下一行动是推送分支、创建 PR #2 并核对 CI，随后等待用户审查。
+- 已完整重读 AGENTS、plan、本文件和产品规划；先更新文档，再完成 1A 解析、UI/Worker、样本与报告。[PR #2](https://github.com/meredithfyc1001/riverlab-crypto-lab/pull/2) 已创建，open/draft，等待用户审查和 Phase 1A Windows 手工验收；不自动合并或推进 1B。
 - 图表、技术指标、回测、真实账户/API Key/资金/交易、实时抓取不在本轮范围。
-- 本轮 npm ci 与完整 npm run check 已通过；Windows CI 待 PR 创建后运行，Phase 1A 用户 Windows 未测试。
+- 本轮 npm ci 与完整 npm run check 已通过；Ubuntu Chromium、Windows Chrome/Edge 三组 CI 已通过，Phase 1A 用户 Windows 手工仍未测试。
 
 ## Phase 1A 实施与验证
 
@@ -21,15 +21,24 @@
 - 平台：Linux、Node.js 24.19.0、Chromium 154.0.8037.57。E2E 包含真实 Worker/哈希、历史 24 行/UTC、微秒和歧义确认、手动映射/ISO 偏移、错误/重复/缺口、UTF-8/空/超限、旧结果失效、离线本机资源、390px。React 人工复核：无条件 Hook、事件内异步任务、旧任务 generation 失效、卸载终止、分页和有上限渲染、可访问 label/role。
 - 构建：56 modules；Worker 11.54 kB，应用 JS 253.54 kB（gzip 80.83 kB），CSS 14.06 kB。原始规划 SHA256 仍为 0a3081d44d3557e6d0f1b1eda3378c2e83282b3c6677dcd45b88a3190b86f84b。22 条本地文档链接检查通过。
 
-| 验收项目                              | 当前结果                                            |
-| ------------------------------------- | --------------------------------------------------- |
-| Phase 0 用户 Windows Edge/Chrome 总体 | 通过（用户 2026-10-19 明确反馈）                    |
-| Phase 0 逐项未提供证据                | 不补写，保留原清单记录                              |
-| Phase 1A 本机自动检查                 | 通过：75 项 Vitest + 7 项 E2E + 类型/lint/格式/构建 |
-| Phase 1A Windows CI                   | 待 PR 后执行                                        |
-| Phase 1A 用户 Windows 手工            | 未测试，不继承 Phase 0 成绩                         |
+| 验收项目                              | 当前结果                                                                  |
+| ------------------------------------- | ------------------------------------------------------------------------- |
+| Phase 0 用户 Windows Edge/Chrome 总体 | 通过（用户 2026-10-19 明确反馈）                                          |
+| Phase 0 逐项未提供证据                | 不补写，保留原清单记录                                                    |
+| Phase 1A 本机自动检查                 | 通过：75 项 Vitest + 7 项 E2E + 类型/lint/格式/构建                       |
+| Phase 1A CI                           | Ubuntu Chromium、Windows Chrome/Edge 三组通过，各 75 项 Vitest + 7 项 E2E |
+| Phase 1A 用户 Windows 手工            | 未测试，不继承 Phase 0 成绩                                               |
 
 遗留：仅当前页面内存报告、固定周期、有明确文件/明细上限；首尾完整与来源真实性不能自动证明；原生 2025 微秒/更多币种归档待后续真实样本补充。无 ZIP 导入、持久化、图表、指标、回测和交易能力。
+
+## Phase 1A CI 与提交归档
+
+- 实现提交：9c19b17f392f5256c18fc59ec3d700ff9dd51287；文档先行提交 0cf370f。基线 main 仍为 6ffe6a3，已核对远端，未直接修改 main。
+- [PR #2](https://github.com/meredithfyc1001/riverlab-crypto-lab/pull/2) open/draft，未合并、未发布；随后仅归档本文档，最新 Checks 以 PR 为准。
+- [工程提交 CI](https://github.com/meredithfyc1001/riverlab-crypto-lab/actions/runs/39237660637) 三组 completed/success，已读实际日志，各 6 文件/75 项 Vitest、7 项 E2E，无失败/跳过；格式/lint/类型/构建亦通过。
+- [Windows Edge](https://github.com/meredithfyc1001/riverlab-crypto-lab/actions/runs/39237660637/job/118010565150)、[Windows Chrome](https://github.com/meredithfyc1001/riverlab-crypto-lab/actions/runs/39237660637/job/118010565358)、[Ubuntu Chromium](https://github.com/meredithfyc1001/riverlab-crypto-lab/actions/runs/39237660637/job/118010565360)。具体 Windows/浏览器版本未采集，不补写。
+- 额外用 Python 标准 zipfile 解压保留的来源 ZIP，逐字节比较应用 CSV：完全相同，共 24 行，SHA256 与 provenance 一致。该一次性核验不引入 Python 运行/测试依赖。
+- 后续：用户按 docs/phase-1a-acceptance.md 验收并审查 PR #2，下一轮再安排 1B。Phase 0 用户通过不等于 Phase 1A 用户通过；原生 2025 微秒样本、持久化与完整 Phase 1 能力尚未验收。
 
 当前验收状态：Phase 0 用户 Edge/Chrome 总体通过；Phase 1A 用户 Windows 未测试，逐项清单见 [Phase 1A 验收](docs/phase-1a-acceptance.md)。后续计划为 1A 审查/验收后再安排 1B 图表/基础指标/存储，不在本轮开发。
 
