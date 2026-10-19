@@ -4,6 +4,8 @@ import { afterEach } from 'vitest';
 
 afterEach(() => {
   cleanup();
-  window.history.replaceState(null, '', '/');
-  document.documentElement.dataset.theme = 'dark';
+  if (typeof window !== 'undefined') {
+    window.history.replaceState(null, '', '/');
+    document.documentElement.dataset.theme = 'dark';
+  }
 });

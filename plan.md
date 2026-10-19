@@ -2,25 +2,27 @@
 
 基线：[原始规划 v0.1](docs/product-plan-v0.1.md) 完整保留。2026-10-19 用户确认 Phase 0 验收和 Windows Edge/Chrome 本地测试通过，PR #1 已合并为 6ffe6a3186699ae85a26331efa932c3bcec500a2（北京时间 17:57:48）。M0 通过；具体浏览器版本和逐项结果未提供，不补写。
 
-当前授权 **Phase 1B**。Phase 1A 用户 Windows 验收通过，PR #2 已由 GitHub 核实合并为 c17c0a4ba4084bad06e572da48d3da1fb5cf4720（UTC 2026-10-19 10:44:13）。从同步的 origin/main 建立 feat/phase-1b-charts-storage，目标独立待审 PR #3，不直接修改 main。
+当前授权 **Phase 2A**。已同步 origin/main，核实 PR #3 merged=true，合并提交 3282475ecea8f0c42332eab8515e90b74cef6bde（UTC 2026-10-19 14:37:28）。Phase 1B 云端技术复核通过，用户 Windows 实机未执行。分支 feat/phase-2a-deterministic-backtest，目标独立待审 PR #4，不直接修改 main、不合并或发布。
 
-## Phase 1 拆分与当前行动
+## Phase 2 拆分与当前行动
 
-- **1A（已合并、用户总体验收通过）**：CSV、映射、UTC、质量报告、来源样本。逐项 Windows 版本/证据未提供，不推断。
-- **1B（本轮）**：K 线/成交量/缩放/平移/十字准星、MA/EMA/RSI、IndexedDB 保存/重开/删除、JSON 备份恢复、数据流程、性能/离线和跨平台验证。
-- 实施顺序：同步核实合并并更新文档 → 纯 TS 指标/数据契约 → 图表/数据交接 → 本地存储/恢复 → 固定参考、浏览器/性能/断网/重开验证 → npm ci / check / 三组 CI → PR #3 待审。
-- 保留 1A 单位/周期确认及完整性未知提示；不得排序、去重、补价或忽略错误。阻断错误的数据不用于图表或保存；警告须显式确认，完整保留数据范围与限制。
-- CSV 上限保持 10 MiB / 50,000 行 / 64 列。解析继续 Worker；图表和指标 O(n)，只保留当前数据集，列表不读取全部 K 线。
-- EMA 首个 N 个收盘价 SMA 初始化，alpha=2/(N+1)；RSI 以 N 个差值平均涨跌初始化，再用 Wilder 平滑。缺口重置指标，样本不足 NA；常量 RSI=50，单向上涨/下跌为100/0。
-- 不开发策略信号、回测、账户、API Key、资金、交易、实时抓取或 Phase 2，不发布或部署。
+- **2A（本轮）**：纯 TS 确定性事件/下一根开盘成交/BigInt 账本、固定信号与独立参考、可复现身份、质量阻断、全部回归和三平台 CI。
+- **2B（建议，未授权实施）**：三正式策略、因果信号接口/参数验证、止盈止损及同根双触发/跳空规格与测试。
+- **2C（建议，未授权实施）**：回测界面、收益/回撤/公平基准、NA 口径、实验保存/导出及用户全流程验收。
+- 先设计审查→接口/精度/成交实现→独立固定参考和前缀因果性→独立自查→npm ci/check及CI→PR #4 待审。不把完成 2A 记为整个 M2 达标。
+- 现货、单币种、仅多头、无杠杆，默认 1000 虚拟 USDT。输入须确认全部 K 线已完成，信号在收盘事件产生，仅下一根开盘成交；末根意图到期，无自动平仓。
+- BigInt 18位定点；报价/手续费/数量精度、双边滑点、最小金额、全仓预算和拒单原因均可追溯。资金不足/持仓不足拒单，逐笔检查现金/持仓守恒。
+- 数据必须通过 dataset-v1 重新校验；缺口一律阻断；成交忽略整根成交量（开盘时尚未知），明确无限流动性假设。保留来源、警告和完整性未知，不补价、不重排。
+- Phase 0/1A/1B 导入、图表、指标、IndexedDB和备份恢复以及所有回归继续保留。没有真实账户/API Key/钱包/真实资金/实盘订单。
+- 设计与精度细节见 [Phase 2A 设计](docs/phase-2a-design.md)，固定案例见 [验收清单](docs/phase-2a-acceptance.md)。
 
 ## 技术决策
 
-中文、Windows Edge/Chrome 优先、浏览器可用、离线优先的历史数据研究工具，仅研究与模拟。未来模拟默认 1000 虚拟 USDT；本阶段没有虚拟账户或资金逻辑。
+中文、Windows Edge/Chrome 优先、浏览器可用、离线优先的历史数据研究工具，仅研究与模拟。模拟默认 1000 虚拟 USDT；2A 仅提供计算内核，不增加交易连接。
 
 - React + TypeScript strict + Vite，Node.js 24 LTS，固定依赖与锁文件。
 - 默认深色、可切浅色；八页面 hash 导航，无需服务器路径回退。刷新后主题回到深色，当前无偏好持久化。
-- 核心为纯 TypeScript，UI 与计算分离。Phase 1A 在 core/data 实现解析与质量检查，新增 core/indicators 计算与 dataset-v1 契约，策略/回测/风险边界保持。
+- 核心为纯 TypeScript，UI 与计算分离。Phase 1A 在 core/data 实现解析与质量检查，新增 core/indicators 计算与 dataset-v1 契约，2A 在 core/backtests 分离事件、执行、账本与身份；正式策略/风险统计延后。
 - Vitest + Testing Library 验证数据约束和页面集成；Playwright 验证生产包；CI 覆盖 Linux Chromium、Windows Chrome/Edge。
 - 静态包无外部运行资源，经本机 HTTP 提供。单 HTML、PWA、桌面封装、安装包另设验收。
 - 浏览器 Worker 解析；Lightweight Charts 5.2.1（本地固定版本、Canvas、内建交互、多面板，保留许可标识）；IndexedDB 原生事务适配器（成功只在 complete 后返回），不使用 localStorage 保存行情。JSON 备份不是持久存储保证。具体版本、许可与限制记录专题。
@@ -46,7 +48,7 @@ check 包含格式、lint、单元/页面集成测试、严格类型、构建和
 
 **M0 = CI 绿灯 + 文档存在 + Windows 运行通过。** Linux 自测不替代 Windows 用户实测。即使 M0 达标，Phase 1 也需用户明确启动。
 
-## 总路线（当前 Phase 1B）
+## 总路线（当前 Phase 2A）
 
 | 阶段    | 范围                                                            | 推进前提          |
 | ------- | --------------------------------------------------------------- | ----------------- |
@@ -69,4 +71,6 @@ check 包含格式、lint、单元/页面集成测试、严格类型、构建和
 
 - 2026-10-19：用户确认 1A Windows 验收、PR #2 合并并正式授权 1B；分支实施、PR #3 待审。
 
-Phase 1B 已实现接口和限制详见 [设计与契约](docs/phase-1b-design.md)，用户验收见 [Windows 清单](docs/phase-1b-acceptance.md)。本机完整检查及工程提交三组 CI 已通过（证据见 progress）。[PR #3](https://github.com/meredithfyc1001/riverlab-crypto-lab/pull/3) 保持 Draft，下一行动为用户 Windows 清单验收和审查；后续文档提交的最新检查见 PR Checks。Phase 2 仍需用户后续明确授权。
+Phase 1B 接口和限制详见 [设计与契约](docs/phase-1b-design.md)，用户验收见 [Windows 清单](docs/phase-1b-acceptance.md)。PR #3 已合并，云端技术复核通过，Windows 用户实机未测试；2A 授权不代表补签此验收。
+
+Phase 2A 内核已完成，[PR #4](https://github.com/meredithfyc1001/riverlab-crypto-lab/pull/4) 保持Draft待审。工程提交三平台CI均159/17通过；本机超时与复验按progress如实记录。Phase2B建议先建立仅历史前缀的策略接口与参数校验，再实施三策略及止盈止损的跳空/同根双触发保守规则；Phase2C补公平基准/统计NA、回测界面和实验档案。用户1B Windows实机仍待执行，不以2A技术证据补签。
