@@ -23,10 +23,20 @@ self.onmessage = async (event: MessageEvent<CsvJob>) => {
     };
     let result: CsvResult;
     if (options) {
-      const { candles, ...report } = analyzeCsv(text, options);
+      const fullReport = analyzeCsv(text, options);
+      const { candles, ...report } = fullReport;
       if (candles.length !== report.validRows)
         throw new Error('有效候选行统计不一致，停止显示结果。');
-      result = { kind: 'report', identity, report };
+      if (event.data.includeCandles) {
+        if (
+          report.status !== 'reviewed' ||
+          report.errorCount ||
+          report.needsConfirmation.length ||
+          !candles.length
+        )
+          throw new Error('数据存在阻断问题，不能用于图表或保存。');
+        result = { kind: 'ready', identity, report: fullReport };
+      } else result = { kind: 'report', identity, report };
     } else
       result = {
         kind: 'inspection',

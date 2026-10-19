@@ -1,4 +1,4 @@
-# 架构与可行性（Phase 1A）
+# 架构与可行性（Phase 1B）
 
 已完整阅读原始规划 v0.1，参考 meredithfyc1001/riverlab-gto 的 AGENTS.md、package.json。迁移文档恢复、PR、验证如实记录和 Windows 优先验收流程，不复制扑克逻辑、数据或单 HTML 源码结构。新项目有独立 Git 历史。
 
@@ -8,10 +8,10 @@ React 19、TypeScript 5.9 strict、Vite 7 可满足浏览器本地研究工具�
 
 | 目录                     | 职责                     | 当前交付                                         |
 | ------------------------ | ------------------------ | ------------------------------------------------ |
-| src/app                  | 路由、主题、装配         | 可运行界面，无业务计算                           |
+| src/app                  | 路由、主题、装配         | 可运行界面，装配数据中心、行情中心及本地存储     |
 | src/components           | 共用展示                 | 风险提示、只读示例表                             |
-| src/features/datasets    | 数据中心与浏览器适配     | CSV 文件选择/映射/确认、Worker、报告、来源身份   |
-| src/features/charts      | 行情中心                 | 页面元信息，图表待实现                           |
+| src/features/datasets    | 数据中心与浏览器适配     | CSV/Worker/报告/来源、本地库操作界面             |
+| src/features/charts      | 行情中心                 | OHLC/量、缩放/平移/十字准星、指标面板            |
 | src/features/strategies  | 策略中心                 | 页面元信息                                       |
 | src/features/backtests   | 回测中心                 | 页面元信息                                       |
 | src/features/risk        | 风险中心                 | 页面元信息                                       |
@@ -23,19 +23,19 @@ React 19、TypeScript 5.9 strict、Vite 7 可满足浏览器本地研究工具�
 | src/core/risk            | 未来风险指标与口径       | 职责声明，无计算                                 |
 | src/shared               | 不依赖上层的共用契约     | 模块边界类型                                     |
 
-依赖方向：app → features/components/core/shared；features → components/core/shared；components → core/shared；core → core/shared；shared 不依赖上层。兄弟功能模块不互相导入，由 app 装配，功能模块经 index.ts 暴露入口。核心跨域依赖须单向、通过公开契约；未来策略信号与执行分离，风险只读结果。
+依赖方向：app → features/components/core/shared/infrastructure；infrastructure → core 与浏览器适配 API（禁止被 core/shared 导入）；features → components/core/shared；components → core/shared；core → core/shared；shared 不依赖上层。兄弟功能模块不互相导入，由 app 装配，功能模块经 index.ts 暴露入口。核心跨域依赖须单向、通过公开契约；未来策略信号与执行分离，风险只读结果。
 
 core 独立 TypeScript 配置不含 DOM，ESLint 禁止 React/UI 与浏览器全局。Phase 1A 新增解析和质量检查，未引入大型账本/事件接口；后续可按原规划细分指标、执行、组合与统计。测试独立 tsconfig.test.json 引用 Node 测试类型，不把它们引入 app/core 的全局类型环境。
 
 ## 运行与数据
 
-八个 hash 入口无需服务器路径重写，刷新/前进/后退可用。默认深色，可切浅色；主题不持久化，不读写存储。未知 hash 回到工作台。无账户、密钥、网络行情或订单。
+八个 hash 入口无需服务器路径重写，刷新/前进/后退可用。默认深色，可切浅色；主题不持久化；数据集仅经明确操作读写 IndexedDB。未知 hash 回到工作台。无账户、密钥、网络行情或订单。
 
 工作台保留 4 条固定合成示例；数据中心提供 CSV 导入与质量报告。时间规范化为 UTC 整毫秒，无法判断的单位/周期要求确认。历史存档、人工合成、错误测试与用户未核实来源分别标记，不把样本当作研究结果。无 CDN、远程字体、遥测、服务端或交易 SDK。
 
-文件解码、SHA256、解析与检查在独立 Worker 中运行。core 是纯同步 TS，Worker 只是浏览器适配器；结果只发送报告与有上限预览，完整候选数组不发送 UI。换文件、取消和卸载终止 Worker，generation 标识拒绝迟到结果；任何配置改变使旧报告失效。支持 10 MiB / 50,000 行，45 秒超时；无 Worker 不退回主线程重计算，给出明确失败提示。
+文件解码、SHA256、解析与检查在独立 Worker 中运行。core 是纯同步 TS，Worker 只是浏览器适配器；默认只发送报告与有上限预览；用户明确使用或保存后重新检查同哈希输入，才将完整已检查数组交给 app。换文件、取消和卸载终止 Worker，generation 标识拒绝迟到结果；任何配置改变使旧报告失效。支持 10 MiB / 50,000 行，45 秒超时；无 Worker 不退回主线程重计算，给出明确失败提示。
 
-后续考虑 IndexedDB 配合文件导出，检测拒写、配额和隐私模式，失败不能显示成功。当前报告只保留在数据中心页面会话，未持久化；流式存储、decimal/整数账本、无限文件均未实现。
+Phase 1B 增加纯 core/indicators（MA/EMA/Wilder RSI）和 core/data/dataset 契约；app 调用 infrastructure/dataset-store 原生 IndexedDB 与 JSON 备份，事务完成才成功。行情中心由 app 传入当前数据；列表仅加载摘要。原报告仍为会话内存，但可明确保存完整通过检查的数据集。浏览器存储不永久可靠，流式存储、decimal/整数账本、无限文件未实现。详见 [设计与契约](phase-1b-design.md)。
 
 ## 可行性限制
 

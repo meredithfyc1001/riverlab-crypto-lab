@@ -20,6 +20,9 @@ import type {
 } from './worker-types';
 import { QualityReport } from './QualityReport';
 import './datasets.css';
+import { makeDataset } from '../../core/data/dataset';
+import type { Dataset } from '../../core/data/dataset';
+import { ImportActions } from './ImportActions';
 
 const initialSettings: CsvSettings = { delimiter: ',', hasHeader: true };
 const emptyMapping: ColumnMapping = {
@@ -45,7 +48,9 @@ function intervalFromSeconds(value: string): number | null {
   return Number(seconds) * 1000 + Number(fraction.padEnd(3, '0'));
 }
 
-export function DatasetCenter() {
+export function DatasetCenter({
+  onPrepared,
+}: { onPrepared?: (dataset: Dataset, save: boolean) => Promise<void> } = {}) {
   const [file, setFile] = useState<File | null>(null);
   const [source, setSource] = useState<DataSource>(userSource);
   const [sourceNote, setSourceNote] = useState('');
@@ -70,7 +75,7 @@ export function DatasetCenter() {
 
   async function execute(
     request: CsvJob,
-    consume: (result: CsvResult) => void,
+    consume: (result: CsvResult) => void | Promise<void>,
   ) {
     const id = ++generation.current;
     activeJob.current?.cancel();
@@ -82,7 +87,7 @@ export function DatasetCenter() {
       const result = await job.promise;
       if (id === generation.current) {
         setIdentity(result.identity);
-        consume(result);
+        await consume(result);
       }
     } catch (failure) {
       if (id === generation.current)
@@ -160,6 +165,47 @@ export function DatasetCenter() {
       { file, settings, options, expectedSha256: source.expectedSha256 },
       (result) => {
         if (result.kind === 'report') setReport(result.report);
+      },
+    );
+  }
+
+  function prepare(symbol: string, save: boolean) {
+    if (!file || !identity || !report || !onPrepared) return;
+    const options: ImportOptions = {
+      ...settings,
+      mapping,
+      timeUnit,
+      intervalMs: intervalFromSeconds(seconds),
+    };
+    void execute(
+      {
+        file,
+        settings,
+        options,
+        expectedSha256: identity.sha256,
+        includeCandles: true,
+      },
+      async (result) => {
+        if (result.kind !== 'ready') throw new Error('未收到完整已检查数据。');
+        const dataset = makeDataset(
+          {
+            id: crypto.randomUUID(),
+            name: file.name,
+            symbol,
+            createdUtcMs: Date.now(),
+            source: {
+              ...source,
+              note: sourceNote
+                ? `${source.note} 用户自述：${sourceNote}`
+                : source.note,
+            },
+            file: result.identity,
+            parsing: options,
+            warningsAcknowledged: true,
+          },
+          result.report,
+        );
+        await onPrepared(dataset, save);
       },
     );
   }
@@ -478,6 +524,14 @@ export function DatasetCenter() {
             key={`${identity?.sha256}-${timeUnit}-${seconds}`}
             report={report}
           />
+          {onPrepared && (
+            <ImportActions
+              key={`${identity?.sha256}-${timeUnit}-${seconds}-${report.warningCount}`}
+              report={report}
+              disabled={busy}
+              onPrepare={prepare}
+            />
+          )}
         </>
       )}
     </div>

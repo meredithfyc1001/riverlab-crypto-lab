@@ -20,10 +20,10 @@
 
 - React + TypeScript strict + Vite，Node.js 24 LTS，固定依赖与锁文件。
 - 默认深色、可切浅色；八页面 hash 导航，无需服务器路径回退。刷新后主题回到深色，当前无偏好持久化。
-- 核心为纯 TypeScript，UI 与计算分离。Phase 1A 在 core/data 实现解析与质量检查，其余核心边界保持。
+- 核心为纯 TypeScript，UI 与计算分离。Phase 1A 在 core/data 实现解析与质量检查，新增 core/indicators 计算与 dataset-v1 契约，策略/回测/风险边界保持。
 - Vitest + Testing Library 验证数据约束和页面集成；Playwright 验证生产包；CI 覆盖 Linux Chromium、Windows Chrome/Edge。
 - 静态包无外部运行资源，经本机 HTTP 提供。单 HTML、PWA、桌面封装、安装包另设验收。
-- 浏览器 Worker 解析；图表优先 Lightweight Charts（本地固定版本、Canvas、内建交互、多面板）；IndexedDB 原生事务适配器（成功只在 complete 后返回），不使用 localStorage 保存行情。JSON 备份不是持久存储保证。具体版本、许可与限制记录专题。
+- 浏览器 Worker 解析；Lightweight Charts 5.2.1（本地固定版本、Canvas、内建交互、多面板，保留许可标识）；IndexedDB 原生事务适配器（成功只在 complete 后返回），不使用 localStorage 保存行情。JSON 备份不是持久存储保证。具体版本、许可与限制记录专题。
 
 可行性与限制见 [architecture.md](docs/architecture.md)、[offline-release.md](docs/offline-release.md)。
 
@@ -68,3 +68,5 @@ check 包含格式、lint、单元/页面集成测试、严格类型、构建和
 - 2026-10-19：用户确认 Phase 0 已验收合并，授权 Phase 1，仅本轮 1A；按上节拆分实施，不提前开发 1B。
 
 - 2026-10-19：用户确认 1A Windows 验收、PR #2 合并并正式授权 1B；分支实施、PR #3 待审。
+
+Phase 1B 已实现接口和限制详见 [设计与契约](docs/phase-1b-design.md)，用户验收见 [Windows 清单](docs/phase-1b-acceptance.md)。下一行动为本机完整检查、三组 CI 和 PR #3 审查；Phase 2 仍需用户后续明确授权。

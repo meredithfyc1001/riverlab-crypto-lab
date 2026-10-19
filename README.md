@@ -1,6 +1,6 @@
 # RiverLab Crypto Lab
 
-中文、Windows 优先、离线优先的历史数据研究工具。Phase 0 已验收并合并；当前为 **Phase 1A 数据导入**：CSV 字段映射、毫秒/微秒与 UTC 规范化、错误/重复/缺口报告、来源明确的历史/合成/错误样本。图表、指标、回测和回放尚未开发。
+中文、Windows 优先、离线优先的历史数据研究工具。Phase 0 已验收并合并；Phase 1A 已合并并由用户验收；当前为 **Phase 1B 图表与本地存储**：保留 CSV 映射/UTC/质量检查，新增 OHLC/成交量、MA/EMA/RSI、IndexedDB 数据集与 JSON 备份恢复。回测和回放尚未开发。
 
 **仅供学习研究 · 不提供投资建议 · 历史表现不代表未来表现。** 不连接真实账户、不接收密钥、不处理真实资金。
 
@@ -11,7 +11,7 @@
 ```powershell
 git clone https://github.com/meredithfyc1001/riverlab-crypto-lab.git
 cd riverlab-crypto-lab
-git switch feat/phase-1a-csv-import
+git switch feat/phase-1b-charts-storage
 npm ci
 npm run dev
 ```
@@ -22,9 +22,15 @@ Edge/Chrome 打开终端提示的本机地址，默认 http://127.0.0.1:5173。�
 
 打开“数据中心”，选择本地 CSV 或来源明确的内置样本，检查表头/分隔符和六项字段映射，选择时间单位并确认固定周期，再生成报告。无法可靠确定单位时必须选择，周期留空时不计算零缺失结论。
 
-文件仅在浏览器内通过 Worker 解码/解析/校验，不上传，支持 UTF-8 CSV（含 BOM），最多 10 MiB / 50,000 行。报告只在当前数据中心页面会话保留，离开页面或刷新后需重新导入；尚未提供数据持久化。详见 [导入格式与质量口径](docs/data-import-format.md)。
+文件仅在浏览器内通过 Worker 解码/解析/校验，不上传，支持 UTF-8 CSV（含 BOM），最多 10 MiB / 50,000 行。报告只在当前数据中心页面会话保留；通过检查后，填写币种并确认警告，可选择“用于行情中心”或“保存已检查数据集”。有错误或待确认的数据不能截取好行用于研究。详见 [导入格式与质量口径](docs/data-import-format.md)。
 
 历史样本为固定来源存档的 BTCUSDT 2024-10-28 小时线；毫秒/微秒合成样本与错误样本均明确标记。历史追溯范围、哈希及取样方式见 [样本说明](src/features/datasets/samples/README.md)。
+
+## 图表、保存与备份
+
+行情中心支持 K 线/成交量、滚轮缩放、拖动/按钮平移、UTC 十字准星读数。MA/EMA 叠加，RSI 独立区域；周期可调整。EMA 用首周期 SMA 初始化，RSI 用 Wilder 平滑；不足显示 NA，缺口后重新预热。数值口径与选型见 [Phase 1B 设计](docs/phase-1b-design.md)。
+
+本地数据集可明确保存、选择打开和确认删除。IndexedDB 限于相同浏览器/用户配置/HTTP 来源，**不是永久可靠存储**；隐私模式、配额或清理可使其丢失。请用“导出当前数据 JSON”下载备份，恢复时导入 JSON、核对来源/范围/警告并确认恢复为新副本。备份上限20 MiB/50,000根（JSON 有额外元信息），CSV 上限不变；不含原 CSV，另行保留原文件。存储失败时内存数据仍可导出。
 
 ## 检查与构建
 
@@ -71,6 +77,7 @@ Edge/Chrome 打开 http://127.0.0.1:4173。可断开外部网络后刷新和操�
 - [plan.md](plan.md)：范围、路线与验收；[原始规划](docs/product-plan-v0.1.md) 保留附件全文。
 - [progress.md](progress.md)：停点、实际验证和遗留问题。
 - [architecture.md](docs/architecture.md)：可行性与边界；[testing-checklist.md](docs/testing-checklist.md)：Windows 实测清单。
+- [Phase 1B Windows 验收](docs/phase-1b-acceptance.md)：本轮用户手工清单，尚待执行。
 - [data-import-format.md](docs/data-import-format.md)：本轮已实现的 CSV 支持范围与不确定性；[backtest-assumptions.md](docs/backtest-assumptions.md)：尚未实现的回测约束。
 
 独立分支、待审 PR，用户 Windows 验收后再评审合并。
