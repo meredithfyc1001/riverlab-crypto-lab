@@ -3,6 +3,7 @@ import { pages, pageFromHash } from './navigation';
 import { syntheticExample } from './synthetic-example';
 import { SyntheticPreview } from '../components/SyntheticPreview';
 import { RiskNotice } from '../components/RiskNotice';
+import { DatasetCenter } from '../features/datasets';
 
 export function App() {
   const [activeId, setActiveId] = useState(() =>
@@ -68,7 +69,7 @@ export function App() {
         </nav>
         <div className="sidebar-bottom">
           <span className="status-dot" /> 离线优先 · 本地研究
-          <small>v0.1.0 / Phase 0 基础框架</small>
+          <small>v0.1.0 / Phase 1A 数据导入</small>
         </div>
       </aside>
 
@@ -100,7 +101,7 @@ export function App() {
               <h1>{activePage.label}</h1>
               <p className="page-description">{activePage.description}</p>
             </div>
-            <span className="badge">Phase 0 · 基础框架</span>
+            <span className="badge">Phase 1A · 数据导入</span>
           </div>
 
           {activeId === 'overview' ? (
@@ -132,16 +133,16 @@ export function App() {
                 <section className="stat-card">
                   <span>项目阶段</span>
                   <strong>
-                    基础工程 <small>Phase 0</small>
+                    数据导入 <small>Phase 1A</small>
                   </strong>
-                  <p>界面框架、模块边界与自动检查</p>
+                  <p>CSV 映射、UTC 规范化与数据质量报告</p>
                 </section>
                 <section className="stat-card">
                   <span>研究数据</span>
                   <strong>
                     人工合成 <small>只读示例</small>
                   </strong>
-                  <p>真实历史行情导入将在后续阶段提供</p>
+                  <p>前往数据中心导入历史 CSV 并核对来源</p>
                 </section>
                 <section className="stat-card">
                   <span>实验记录</span>
@@ -175,13 +176,18 @@ export function App() {
                           <span aria-hidden="true">↗</span>
                         </strong>
                         <p>{page.description}</p>
-                        <small>{page.phase} · 待开发</small>
+                        <small>
+                          {page.phase} ·{' '}
+                          {page.id === 'datasets' ? 'CSV 导入可用' : '待开发'}
+                        </small>
                       </a>
                     ))}
                 </div>
               </section>
               <SyntheticPreview dataset={syntheticExample} />
             </>
+          ) : activeId === 'datasets' ? (
+            <DatasetCenter />
           ) : (
             <>
               <section
@@ -203,9 +209,6 @@ export function App() {
                   返回工作台 <span aria-hidden="true">→</span>
                 </a>
               </section>
-              {activeId === 'datasets' && (
-                <SyntheticPreview dataset={syntheticExample} />
-              )}
             </>
           )}
           <RiskNotice />

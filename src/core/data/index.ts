@@ -3,10 +3,11 @@ import type { ModuleBoundary } from '../../shared/module';
 export const dataBoundary: ModuleBoundary = {
   id: 'data',
   label: '数据',
-  responsibility: '行情模型、来源与质量信息；导入解析在 Phase 1 实现。',
+  responsibility:
+    '纯 TypeScript CSV 解析、字段映射、UTC 毫秒规范化及行情质量报告。',
 };
 
-/** 内部时间统一为 UTC 毫秒；Phase 0 无外部数据解析。 */
+/** 内部时间统一为 UTC 毫秒，金额账本不使用此展示价格类型计算。 */
 export interface Candle {
   readonly timestampUtcMs: number;
   readonly open: number;
@@ -23,3 +24,18 @@ export interface SyntheticDataset {
   readonly disclaimer: string;
   readonly candles: readonly Candle[];
 }
+
+export { inspectCsv, parseCsv, suggestMapping } from './csv';
+export { analyzeCsv } from './analyze';
+export { inferTimeUnit, normalizeTimestamp } from './timestamps';
+export { fields, MAX_DATA_ROWS, MAX_CSV_CHARS, MAX_ISSUES } from './csv-types';
+export type {
+  CandleField,
+  ColumnMapping,
+  CsvInspection,
+  CsvSettings,
+  DataIssue,
+  ImportOptions,
+  ImportReport,
+  TimeUnit,
+} from './csv-types';

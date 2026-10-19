@@ -1,0 +1,19 @@
+{
+  "kind": "historical",
+  "label": "真实历史样本 · BTCUSDT · 1 小时",
+  "market": "Binance Spot BTCUSDT",
+  "date": "2024-10-28",
+  "upstreamRepository": "https://github.com/freqtrade/freqtrade",
+  "upstreamCommit": "3ce38b587d6c7a1ea479fb3e59d724dee5195561",
+  "upstreamPath": "tests/testdata/binance/binance_public_data/spot-klines-BTCUSDT-1h-2024-10-28.zip",
+  "upstreamUrl": "https://github.com/freqtrade/freqtrade/blob/3ce38b587d6c7a1ea479fb3e59d724dee5195561/tests/testdata/binance/binance_public_data/spot-klines-BTCUSDT-1h-2024-10-28.zip",
+  "originalArchiveUrl": "https://data.binance.vision/data/spot/daily/klines/BTCUSDT/1h/BTCUSDT-1h-2024-10-28.zip",
+  "archiveSha256": "744d4a991858208ead11e682457c452cd56067d113888d7323ba849ce221bc09",
+  "archiveMember": "BTCUSDT-1h-2024-10-28.csv",
+  "originalCsvSha256": "0cf21b6f475479a8b8918ed983e924cfce2057dde6ccd864aaa0d97fd14f9727",
+  "csvSha256": "0cf21b6f475479a8b8918ed983e924cfce2057dde6ccd864aaa0d97fd14f9727",
+  "retrievedOn": "2026-10-19",
+  "transformation": "解压上游保存的 Binance 公共历史现货归档；保留全部 24 行和 12 列，去 BOM 并统一 LF 结尾，不修改任何行情数值。",
+  "verificationBoundary": "追溯至固定 Git 提交中的历史存档；未另行访问 Binance 域名或独立认证数据真实性/官方校验文件。不是实时行情，不是交易建议。",
+  "licenseNote": "上游仓库代码为 GPL-3.0；市场数据的权利与来源条款需分别核查，本样本不据此宣称交易所数据获得 GPL 或无限制分发授权。"
+}

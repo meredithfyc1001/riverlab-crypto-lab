@@ -23,11 +23,11 @@
 - 核心为纯 TypeScript，UI 与计算分离。Phase 1A 在 core/data 实现解析与质量检查，其余核心边界保持。
 - Vitest + Testing Library 验证数据约束和页面集成；Playwright 验证生产包；CI 覆盖 Linux Chromium、Windows Chrome/Edge。
 - 静态包无外部运行资源，经本机 HTTP 提供。单 HTML、PWA、桌面封装、安装包另设验收。
-- 图表库、IndexedDB/文件回退、Worker/流式导入与账本精度在相应阶段选型，本阶段不引入。
+- 本轮使用浏览器 Worker 适配纯 TS 解析；图表库、IndexedDB/文件回退、流式存储与账本精度在后续相应阶段选型，本轮不引入。
 
 可行性与限制见 [architecture.md](docs/architecture.md)、[offline-release.md](docs/offline-release.md)。
 
-## Phase 0 拆解与验收命令
+## Phase 0 已完成拆解（历史）与通用验收命令
 
 1. 核对独立仓库，完整阅读原计划，参考旧 GTO 的 AGENTS 和开发脚本；不复用业务源码。
 2. 建立工程、中文深浅主题、工作台和七个占位页。

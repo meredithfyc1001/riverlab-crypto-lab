@@ -5,9 +5,33 @@
 - 已同步并核对 main：6ffe6a3186699ae85a26331efa932c3bcec500a2，即 PR #1 实际合并提交。GitHub 显示 merged=true，合并时间北京时间 2026-10-19 17:57:48。
 - 用户本轮明确确认 Phase 0 已验收、Windows Edge/Chrome 本地测试均通过，M0 通过。版本/逐项结果未提供，清单只更新总体状态。
 - 当前授权 Phase 1，仅实施 **1A：CSV 导入/映射、UTC 毫秒、数据质量与来源样本**。从 main 建立 feat/phase-1a-csv-import，目标独立 PR #2，未修改 main。
-- 已完整重读 AGENTS、plan、本文件和产品规划。先更新文档，下一行动是实现纯 TS CSV 数据契约与解析测试，再接 UI/Worker 和报告。
+- 已完整重读 AGENTS、plan、本文件和产品规划；先更新文档，再完成 1A 解析、UI/Worker、样本与报告。下一行动是推送分支、创建 PR #2 并核对 CI，随后等待用户审查。
 - 图表、技术指标、回测、真实账户/API Key/资金/交易、实时抓取不在本轮范围。
-- 本轮 npm ci、npm run check、Windows CI/用户测试：均待执行，后续据实更新。
+- 本轮 npm ci 与完整 npm run check 已通过；Windows CI 待 PR 创建后运行，Phase 1A 用户 Windows 未测试。
+
+## Phase 1A 实施与验证
+
+- 文档先行提交 0cf370f：核实 PR #1 合并与用户总体验收，授权 1A，原规划全文不修改。
+- core/data：严格 CSV、唯一字段映射、ms/us/带时区 ISO、UTC 整毫秒、重复/降序/缺口/数值/OHLC/格式检查、错误总数与有限明细、资源上限。不猜测周期/单位，不补价、不排序或去重原数据。
+- 数据中心：实际 Worker 读取/哈希/校验，映射和确认界面、导入摘要/错误行/警告/缺口、来源身份、取消/旧结果失效；仅当前页面内存报告。
+- 样本：固定上游提交的 BTCUSDT 2024-10-28 24 条历史记录（原 ZIP、CSV、哈希/变换/核验边界），合成 ms/us、人工错误样本分别标记。未获取原生 2025 微秒归档，不把合成测试当作真实微秒样本。
+- npm ci 已执行通过（依赖和锁文件未修改）。首轮 74 项 Vitest 通过；扩展 ZIP 证据测试时发现 Node 测试类型缺失和 Vite 对静态 ZIP URL 的转换，已用独立 tsconfig.test 与 Node 路径读取修正，75 项完整复验通过。
+- 第一轮生产包浏览器 5 通过/2 失败：均为时间单位精确 label 定位超时；改为同名 combobox 角色后，针对两项复验 2/2 通过，最终完整 E2E 7/7 通过，断言未删减。首轮证据暂存 work/phase-1a-initial-e2e-failure，失败事实在此归档。
+- 完整命令 PLAYWRIGHT_CHROMIUM_EXECUTABLE=/usr/bin/chromium npm run check 已实际执行通过：格式、lint、6 文件/75 项 Vitest、独立核心/应用/测试类型检查、生产构建、7 项 E2E，0 失败/跳过。日志 work/phase-1a-final-check.log 为本机临时证据，CI 将独立保留报告。
+- 平台：Linux、Node.js 24.19.0、Chromium 154.0.8037.57。E2E 包含真实 Worker/哈希、历史 24 行/UTC、微秒和歧义确认、手动映射/ISO 偏移、错误/重复/缺口、UTF-8/空/超限、旧结果失效、离线本机资源、390px。React 人工复核：无条件 Hook、事件内异步任务、旧任务 generation 失效、卸载终止、分页和有上限渲染、可访问 label/role。
+- 构建：56 modules；Worker 11.54 kB，应用 JS 253.54 kB（gzip 80.83 kB），CSS 14.06 kB。原始规划 SHA256 仍为 0a3081d44d3557e6d0f1b1eda3378c2e83282b3c6677dcd45b88a3190b86f84b。22 条本地文档链接检查通过。
+
+| 验收项目                              | 当前结果                                            |
+| ------------------------------------- | --------------------------------------------------- |
+| Phase 0 用户 Windows Edge/Chrome 总体 | 通过（用户 2026-10-19 明确反馈）                    |
+| Phase 0 逐项未提供证据                | 不补写，保留原清单记录                              |
+| Phase 1A 本机自动检查                 | 通过：75 项 Vitest + 7 项 E2E + 类型/lint/格式/构建 |
+| Phase 1A Windows CI                   | 待 PR 后执行                                        |
+| Phase 1A 用户 Windows 手工            | 未测试，不继承 Phase 0 成绩                         |
+
+遗留：仅当前页面内存报告、固定周期、有明确文件/明细上限；首尾完整与来源真实性不能自动证明；原生 2025 微秒/更多币种归档待后续真实样本补充。无 ZIP 导入、持久化、图表、指标、回测和交易能力。
+
+当前验收状态：Phase 0 用户 Edge/Chrome 总体通过；Phase 1A 用户 Windows 未测试，逐项清单见 [Phase 1A 验收](docs/phase-1a-acceptance.md)。后续计划为 1A 审查/验收后再安排 1B 图表/基础指标/存储，不在本轮开发。
 
 ## Phase 0 历史归档（保留当时事实，已由上述最新状态覆盖）
 

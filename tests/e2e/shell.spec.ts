@@ -43,7 +43,11 @@ test('生产包仅使用本机资源，可导航、刷新、后退并切换主�
     await expect(
       page.getByRole('heading', { level: 1, name: label }),
     ).toBeVisible();
-    await expect(page.getByText(`${label}框架已就绪`)).toBeVisible();
+    if (label === '数据中心')
+      await expect(
+        page.getByRole('heading', { name: '导入历史 K 线 CSV' }),
+      ).toBeVisible();
+    else await expect(page.getByText(`${label}框架已就绪`)).toBeVisible();
     await expect(page.getByLabel('研究风险提示')).toContainText(
       '不提供投资建议',
     );

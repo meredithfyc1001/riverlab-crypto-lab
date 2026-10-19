@@ -38,3 +38,5 @@ PR #1 合并提交：6ffe6a3186699ae85a26331efa932c3bcec500a2。下表是逐项�
 - CI：Ubuntu Chromium、Windows Chrome/Edge 执行 npm run check，保留浏览器报告。
 
 M0 已通过；Phase 1 已由用户明确授权。本轮只实施 1A，新的 Windows 手工结果仍待用户报告，不从 Phase 0 自动继承。
+
+Phase 1A 的新手工验收使用 [独立清单](phase-1a-acceptance.md)。
