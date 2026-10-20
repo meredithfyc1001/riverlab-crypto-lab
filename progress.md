@@ -29,6 +29,15 @@
 - 历次失败和性能剖析原日志在[证据目录](docs/phase-2c-evidence)，不把中止/0项/失败记为通过。设计边界与复核见[实现复核](docs/phase-2c-review.md)。
 - 工程将提交独立Draft PR #6，三平台与Windows ZIP CI尚待这个实际提交运行，未提前声明通过；最终下载artifact须与PR实际head SHA一致。用户Windows实机未验收，待本人按清单下载执行，不自动合并。
 
+## Phase 2C 首次跨平台CI与性能修正
+
+- [PR #6](https://github.com/meredithfyc1001/riverlab-crypto-lab/pull/6)已创建，open/draft；工程提交10ae07aeaa9a7938fe7931e281c3f1e1d68542e9，main仍为0ee6d8483bd6a5226a6d01a1d21b990b134bab46，未合并/发布/部署。该提交clean本机ZIP已验证SHA身份、dirty=false并通过Linux烟测。
+- 首轮[CI run39371336286](https://github.com/meredithfyc1001/riverlab-crypto-lab/actions/runs/39371336286)：已读取三组实际日志。Ubuntu Chromium job118459651304成功，288/24通过，50,000根4207ms/最大间隔330ms；Windows Chrome118459651465、Edge118459651046均288项Vitest通过、23项E2E通过/1项失败，唯一失败均为50,000根回测的默认5000ms结果等待。不是排队或用户验收成功。ZIP后置job118460470469按规则skipped，未上传ZIP。Windows两组[原始失败日志](docs/phase-2c-evidence)保留。
+- 继续优化而不放宽任何等待/性能阈值：SHA对相同规范JSON分块计算，加入Unicode/64KiB边界/非JSON输入的Node SHA等价测试；报告只规范化必要元信息并复制行情，避免对整份账本重复stringify/parse，保留完整结果和运行输入快照。新增输入快照隔离回归，307项Vitest和24项E2E在本机完整通过；50,000根3348ms/最大间隔196.6ms。继续将基准每根市值直接按既定18位floor规则计算，保留派生权益上限，避免五个不用的快照字符串格式化后再解析。
+- 上述优化不删测试、不截断/降采样、不放宽阈值，不改成交/保护规则或hash定义。将对实际新提交重新运行三平台并验证Windows ZIP，尚未预记为通过。
+
+性能修正后最终本机完整check退出0：15文件/307项Vitest、24项E2E全部通过，无失败/跳过；50,000根3430ms/最大主线程间隔251.3ms，[原日志](docs/phase-2c-evidence/local-performance-fixed-check.log)。Windows需实际新CI确认，尚未宣称通过。
+
 ## Phase 2B 历史恢复入口：Phase 2B（2026-10-19）
 
 - 初始 work 分支干净；已 fetch origin/main，核实 PR #4 merged=true，实际合并 a7b57cbecf7b25cd50da6647426e99ca6738dfa5，UTC 15:49:17。从该提交建立 feat/phase-2b-strategies-risk；[PR #5](https://github.com/meredithfyc1001/riverlab-crypto-lab/pull/5)已创建，open/draft，工程提交509164f5c2aa27ec4083a45696a27ff5ad8b8f3f；不修改main、不合并/发布/部署。

@@ -47,6 +47,18 @@ describe('experiment identity and storage boundaries', () => {
       );
     },
   );
+  it('report input snapshot is independent without serializing the full result ledger', () => {
+    const dataset = market([10, 9, 8, 12, 15]);
+    const report = runExperiment({
+      dataset,
+      strategy: { kind: 'ma', fastPeriod: 2, slowPeriod: 4 },
+      completedThroughUtcMs: START + 5 * INTERVAL,
+    });
+    const before = JSON.stringify(report);
+    dataset.candles[0] = { ...dataset.candles[0], close: 999 };
+    dataset.source.note = 'changed';
+    expect(JSON.stringify(report)).toBe(before);
+  });
   it('save, new adapter instance, load, verified recomputation, delete; never overwrites the original dataset', async () => {
     const factory = new IDBFactory(),
       store = new ExperimentStore(() => factory),

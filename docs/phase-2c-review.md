@@ -1,12 +1,12 @@
 # Phase 2C 实现复核
 
-本轮保留2A/2B数据契约、策略版本、下一根开盘成交、保护跳空/双触发stop-first、根内时间未知、费用/数量/18位BigInt账本。只有原identity的ASCII字节转换做等价性能优化；38,603,435字节人工报告优化前后hash同为414b0787438b8b827f1e8d9a732f76c2f13885930dbe7fce011328b6da6044bc，规范JSON、字节和SHA定义未改。
+本轮保留2A/2B数据契约、策略版本、下一根开盘成交、保护跳空/双触发stop-first、根内时间未知、费用/数量/18位BigInt账本。原identity的ASCII字节转换与分块SHA做等价性能优化；38,603,435字节人工报告优化前后hash同为414b0787438b8b827f1e8d9a732f76c2f13885930dbe7fce011328b6da6044bc，规范JSON、字节和SHA定义未改。
 
 ## 模块及正确性复核
 
 - UI只调用公开normalizeConfig/normalizeStrategy/normalizeRisk，app经Worker调用原runBacktest；没有React交易计算。core/statistics以原名义额/费用/收盘账本计算成本与指标，不重新模拟正式策略。
 - 独立Python Decimal90参考含两次完整平仓和一笔未平仓、100bps双边费及滑点：净盈亏15.592、已实现7.602、浮动7.99、费用7.208、末权益1015.592；同本金/区间基准末权益1078.3256543151。参考不调用TS。回撤另以手工权益序列和参考峰值核验；成本部分退出与最后1e-18余数覆盖。
-- 报告保存完整dataset快照、manifest、全部实际信号/成交/收盘账本、统计及版本/定义。Optional undefined字段在JSON边界明确省略；重开校验payload hash并从快照重算比对，版本不支持/损坏报错。
+- 报告保存完整dataset快照、manifest、全部实际信号/成交/收盘账本、统计及版本/定义。Optional undefined元信息在JSON边界明确省略；行情复制为独立快照，账本不重复JSON克隆；重开校验payload hash并从快照重算比对，版本不支持/损坏报错。
 - IndexedDB事务适配器从原数据存储抽出；原数据库名称/版本/两个store不变。实验用独立数据库、add创建新记录，禁止覆盖；complete才成功，abort/同步抛错均拒绝。配额/策略为异常注入，未声称物理磁盘耗尽实测。
 - React检查应用[react-best-practices技能](https://github.com/vercel-labs/agent-skills/tree/main/skills/react-best-practices)：无条件Hooks、异步generation隔离、卸载/取消终止Worker且reject promise，图表卸载remove，结果大表每页50笔，全点图表序列间让出。只对Worker显示取消，DB提交期间不误报取消。labels/状态/错误与有名账本表；组件不反向依赖兄弟feature。
 - 结果图表仅绘制边界转Number，精确金额和比例仍在表格/JSON。主题与窄屏结果状态均验证；不以隐藏全页面溢出代替容器修复。

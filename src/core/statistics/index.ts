@@ -1,7 +1,12 @@
 import type { BacktestResult } from '../backtests';
 import { executeAtReference } from '../backtests/execution';
-import { snapshot } from '../backtests/ledger';
-import { decimal, parseDecimal, readUnits } from '../math';
+import {
+  decimal,
+  parseDecimal,
+  readUnits,
+  SCALE,
+  ACCOUNTING_LIMIT,
+} from '../math';
 
 export const STATISTICS_VERSION = 'statistics-v1';
 export const YEAR_MS = 365 * 24 * 60 * 60 * 1000;
@@ -199,12 +204,12 @@ export function calculateStatistics(
       fs
     )
       exposedMs += m.intervalMs;
-    benchmarkFinal = readUnits(
-      snapshot(
-        { cash: passiveCash, quantity: passiveQty },
-        readUnits(c.account.markPrice),
-      ).equity,
-    );
+    // Same fixed18 close mark as the ledger; avoid formatting five unused
+    // snapshot fields and reparsing equity for every passive benchmark point.
+    benchmarkFinal =
+      passiveCash + (passiveQty * readUnits(c.account.markPrice)) / SCALE;
+    if (benchmarkFinal >= ACCOUNTING_LIMIT)
+      throw new Error('Benchmark derived accounting value exceeds limit.');
     curve.push({
       timestampUtcMs: c.timestampUtcMs,
       equity: c.account.equity,

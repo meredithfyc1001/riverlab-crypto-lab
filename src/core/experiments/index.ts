@@ -33,19 +33,20 @@ export type ExperimentSummary = Pick<
 > & { symbol: string; runHash: string; strategy: string };
 export function runExperiment(input: WorkbenchInput): ExperimentPayload {
   const result = runBacktest(input);
-  // Optional undefined issue fields are omitted at the JSON report boundary.
-  return JSON.parse(
-    JSON.stringify({
-      dataset: input.dataset,
-      result,
-      statistics: calculateStatistics(
-        result,
-        String(input.dataset.candles[0].open),
-      ),
-      definitions: METRIC_DEFINITIONS,
-      disclaimer: DISCLAIMER,
-    }),
-  ) as ExperimentPayload;
+  // The input is already an isolated Worker snapshot. Only optional metadata
+  // needs JSON normalization; do not stringify/parse the entire 38MB ledger.
+  const { candles, ...metadata } = input.dataset;
+  const dataset = {
+    ...JSON.parse(JSON.stringify(metadata)),
+    candles: candles.map((c) => ({ ...c })),
+  } as Dataset;
+  return {
+    dataset,
+    result,
+    statistics: calculateStatistics(result, String(candles[0].open)),
+    definitions: METRIC_DEFINITIONS,
+    disclaimer: DISCLAIMER,
+  };
 }
 export function sealExperiment(
   payload: ExperimentPayload,
