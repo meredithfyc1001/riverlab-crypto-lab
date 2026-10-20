@@ -2,7 +2,7 @@
 
 基线：[原始规划 v0.1](docs/product-plan-v0.1.md)全文保留，用户当前明确指令优先。当前授权 **Phase 2C：回测工作台、统计、实验保存/导出与 Windows 本地测试包**（2026-10-20）。
 
-PR #5 merged=true，main实际合并提交 `0ee6d8483bd6a5226a6d01a1d21b990b134bab46`。已从同步origin/main建立 `feat/phase-2c-backtest-workbench`，目标独立Draft PR #6；允许提交/推送/建PR及CI artifact，不直接修改main，不自动合并、tag、正式Release或部署。用户下载测试后决定合并。
+PR #5 merged=true，main实际合并提交 `0ee6d8483bd6a5226a6d01a1d21b990b134bab46`。已从同步origin/main建立 `feat/phase-2c-backtest-workbench`，已创建独立Draft PR #6；允许提交/推送/建PR及CI artifact，不直接修改main，不自动合并、tag、正式Release或部署。用户下载测试后决定合并。
 
 ## 已交付基线与验收边界
 
@@ -47,3 +47,7 @@ check包含格式、lint、Vitest、独立core/app/test严格类型、生产构�
 Phase2C待审及Windows用户验收后评估M2。下一阶段建议仍先审查可靠性和用户问题，再独立授权Phase3策略比较/样本外研究。当前不开发参数优化、滚动测试、AI、实时行情、真实账户/APIKey/钱包/实盘、杠杆/保证金/强平、正式Release或公开部署。
 
 M0/M1/M2/M3/M4/M5门槛继续以原规划为准；用户授权当前阶段不补签先前未测试项目。原规划SHA256应保持0a3081d44d3557e6d0f1b1eda3378c2e83282b3c6677dcd45b88a3190b86f84b。
+
+## 当前技术交付状态
+
+Phase2C工程a4198f2的三平台307/24质量与Windows ZIP Chrome/Edge实际验证已全部通过（run39372868072），原失败与修正完整保留于progress。PR #6继续Draft待审，Windows用户清单仍未执行。收尾文档/入口标签提交的实际head CI与14天artifact以PR交付说明为准，必须核对完整SHA，不自动合并。

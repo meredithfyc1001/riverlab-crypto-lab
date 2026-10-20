@@ -2,9 +2,9 @@ export const experimentsPage = {
   id: 'experiments',
   label: '实验中心',
   code: '06',
-  phase: 'Phase 2–3',
+  phase: 'Phase 2C',
   description: '保留过程，才能复现结论。',
-  scope: '未来保存数据标识、算法版本、参数和成本假设，并比较、导出实验。',
+  scope: '保存完整实验，校验重开与复现，导出JSON报告和逐笔CSV。',
 } as const;
 
 export { ExperimentCenter } from './ExperimentCenter';

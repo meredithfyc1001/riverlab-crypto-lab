@@ -2,7 +2,7 @@
 
 ## 当前恢复入口：Phase 2C（2026-10-20）
 
-- 初始工作区干净。已 fetch main，GitHub确认PR #5 merged=true，实际合并SHA为0ee6d8483bd6a5226a6d01a1d21b990b134bab46；从该提交建立feat/phase-2c-backtest-workbench。目标Draft PR #6，不修改main或自动合并。
+- 初始工作区干净。已 fetch main，GitHub确认PR #5 merged=true，实际合并SHA为0ee6d8483bd6a5226a6d01a1d21b990b134bab46；从该提交建立feat/phase-2c-backtest-workbench。已创建Draft PR #6，不修改main或自动合并。
 - 完整阅读AGENTS、plan、progress、README、原始规划、2A/2B设计和现有数据/策略/成交/账本/存储接口。已向用户汇报实施计划、选型、风险及验收标准。
 - 2B最终CI run39284322892：已实际读取Ubuntu Chromium118165850327、Windows Chrome118165850402、Windows Edge118165850114日志，各256项Vitest/17项E2E通过，npm ci/check成功。这补充旧排队记录；不替代用户1B/2A/2B Windows未测事实。
 - 初次git fetch因沙箱无法连proxy失败，受支持network权限后成功；未修改代理。2C测试尚在实施，不预记通过。
@@ -52,6 +52,14 @@
 
 - 后置Windows ZIP job118463697212实际build/打包成功、dirty=false且SHA为3106d0e；真实Expand-Archive之后，Chrome测试在10秒启动READY等待处失败，未上传artifact。完整[失败日志](docs/phase-2c-evidence/ci-windows-package-initial-failure.log)保存。该失败不能记为Windows包启动成功。
 - 复核CI通过cmd调用BAT时，增加windowsVerbatimArguments以保留既定外层/路径引号，避免Node对含中文空格的cmd命令再次转义；并转发子进程启动日志以保留失败原因。不修改用户BAT、原服务、等待阈值或断言。此修改提交后，全部质量与Windows ZIP仍需实际新CI核验；当前最终状态及下载以[PR #6 Checks](https://github.com/meredithfyc1001/riverlab-crypto-lab/pull/6/checks)及PR交付说明为准，不提前记成功。用户Windows实机仍未测试。
+
+## Phase 2C 交付技术验证通过（Windows用户未验收）
+
+- 提交a4198f2e6c7c3c265fa1abf8c6e612f476561fcf的[CI run39372868072](https://github.com/meredithfyc1001/riverlab-crypto-lab/actions/runs/39372868072)四个job全部success。已读取三个质量job原始日志：Ubuntu118464406857、Windows Chrome118464406686、Windows Edge118464406775，各307项Vitest/24项E2E及npm ci/check/独立参考全部通过。50,000根到全点曲线就绪分别4675/4796/2896ms，主线程最大间隔355.6/385.9/256.8ms，原阈值保留。
+- 已读取Windows ZIP job118465250033完整日志：[原日志](docs/phase-2c-evidence/ci-windows-package-success.log)。Node24.21.0、Chrome155.0.8059.40/Edge154.0.4258.62，实际Expand-Archive到含中文空格路径，经BAT前台启动127.0.0.1，检查实际监听地址、HTTP/核心资源/Worker回测/曲线、保存刷新重开/JSON/CSV、0外部请求/0页面错误、端口占用/缺dist失败、Enter退出和端口重绑均成功。cmd引用修正已由此实际Windows日志确认。
+- 该验证包[artifact12242343011](https://github.com/meredithfyc1001/riverlab-crypto-lab/actions/runs/39372868072/artifacts/12242343011)绑定完整a4198f2 SHA，expired=false；有效期14天，至北京时间2026-11-03 13:08:10。内层ZIP SHA256为ab3919216e7d388b3e04030e29ea39bfa746f2374a6606f9f596578a0683a1f6，569357 bytes。原始校验清单及双浏览器证据在artifact内。此记录对应这个实际提交，不冒充后续head。
+- 收尾仅归档上述事实、明确报告/恢复边界并修正首页回测入口残留“待开发”标签；不改策略/成交/统计计算。收尾提交仍执行相同完整CI和Windows ZIP；最新head的下载链接/有效期与实际检查结果统一在[PR #6交付说明](https://github.com/meredithfyc1001/riverlab-crypto-lab/pull/6)维护，避免将旧SHA的包当成最终产物。
+- 工作区独立分支、main保持0ee6d8483bd6a5226a6d01a1d21b990b134bab46；无合并/tag/Release/公开部署。用户Windows实机、物理断网、真实配额耗尽/断电/全部受管环境尚未验收。当前建议先下载按清单实测，再决定是否合并；Phase3仍需另行授权。
 
 ## Phase 2B 历史恢复入口：Phase 2B（2026-10-19）
 

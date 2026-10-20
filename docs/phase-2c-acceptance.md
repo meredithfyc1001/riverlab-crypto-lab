@@ -2,6 +2,8 @@
 
 **用户实机尚未测试。** 本机Linux、Ubuntu CI、Windows CI Chrome/Edge、用户Windows各自记录。CI成功不代表本表签署。PR保持Draft待审，不自动合并、Release或部署。
 
+自动技术证据：工程a4198f2的[run39372868072](https://github.com/meredithfyc1001/riverlab-crypto-lab/actions/runs/39372868072)三组307/24及Windows ZIP的Chrome/Edge均实际成功；此项不填写下方用户状态。最新head与下载见PR #6交付说明。
+
 请反馈：Windows版本、Node24版本、浏览器Chrome/Edge版本、ZIP build-info完整SHA、下载时间、解压路径、以下每项通过/失败/未执行与错误信息。无需提供任何真实账户、密钥或资金信息。
 
 | 项目                                                         | 用户状态 |

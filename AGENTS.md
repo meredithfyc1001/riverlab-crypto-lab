@@ -15,7 +15,7 @@
 - Phase 2B 实现统一只接收已完成单根 K 线的策略接口、MA/RSI/突破及参数验证、止盈止损跳空/双触发保守执行；保留 2A 全部账本约定。只交付纯 TS 内核，不开发收益面板、参数优化、AI 自动交易或实盘交易。
 - Phase 2C 已获授权：调用原内核的 Worker 工作台、纯 TS 统计、实验保存/导出、Node24 仅回环静态服务 ZIP；保留旧成交规则。三平台检查成功后上传绑定 head SHA 的 artifact，14天有效；不分发 Node、不创建 Release、不部署。Windows CI 与用户实机验收分开。
 - 禁止真实账户、API Key、私钥、助记词、充值提现、真实订单或资金处理。未来网络数据能力必须独立评估和授权。
-- PR #5 已合并，实际提交 0ee6d8483bd6a5226a6d01a1d21b990b134bab46。从已同步 main 建立 feat/phase-2c-backtest-workbench，提交独立待审 PR #6。本轮已授权提交、推送和建 PR；不直接修改 main，不自动合并、创建 tag、Release 或部署，等待用户审查。
+- PR #5 已合并，实际提交 0ee6d8483bd6a5226a6d01a1d21b990b134bab46。从已同步 main 建立 feat/phase-2c-backtest-workbench，已创建独立 Draft PR #6，保持待审。本轮已授权提交、推送和建 PR；不直接修改 main，不自动合并、创建 tag、Release 或部署，等待用户审查。
 - 不擅自改变路线、删减需求或将建议写为已确认。正常范围内实现与修复无需反复确认。
 
 ## 工程约束

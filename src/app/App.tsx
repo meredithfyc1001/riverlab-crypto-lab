@@ -186,7 +186,11 @@ export function App() {
                         <p>{page.description}</p>
                         <small>
                           {page.phase} ·{' '}
-                          {page.id === 'datasets' ? 'CSV 导入可用' : '待开发'}
+                          {page.id === 'datasets'
+                            ? 'CSV 导入可用'
+                            : page.id === 'backtests'
+                              ? '回测工作台可用'
+                              : '待开发'}
                         </small>
                       </a>
                     ))}
