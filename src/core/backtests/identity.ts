@@ -28,8 +28,11 @@ export function canonicalJson(value: unknown): string {
 }
 export function contentHash(value: unknown): string {
   const ascii = canonicalJson(value);
-  return Array.from(
-    sha256(Uint8Array.from(ascii, (c) => c.charCodeAt(0))),
-    (b) => b.toString(16).padStart(2, '0'),
-  ).join('');
+  // canonicalJson is ASCII. Indexing avoids the string iterator's temporary
+  // character array for large experiment reports; bytes/hash stay identical.
+  const bytes = new Uint8Array(ascii.length);
+  for (let i = 0; i < ascii.length; i++) bytes[i] = ascii.charCodeAt(i);
+  return Array.from(sha256(bytes), (b) => b.toString(16).padStart(2, '0')).join(
+    '',
+  );
 }

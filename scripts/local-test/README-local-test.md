@@ -1,0 +1,37 @@
+# RiverLab Crypto Lab — Windows 本地测试
+
+仅供学习研究，历史表现不代表未来表现。不提供投资建议。
+
+这是 Phase 2C 待审测试包，不是正式 Release，也不代表 Windows 用户验收通过。
+
+1. 从 PR #6 关联 Actions 的成功运行下载 ZIP artifact（需登录有仓库访问权的 GitHub 账号）。Artifact 保留14天，具体到期时间见下载页。下载 Actions 外层 ZIP 后，先取出其中 `RiverLab-Crypto-Lab-Local-Test.zip`，再“全部解压”到本地目录，可包含中文和空格。
+2. 首次下载测试包与安装 Node 需要联网。系统预先安装 Node.js **24 LTS**，本包不包含或分发运行时。启动与核心功能不依赖外网，不需要 npm ci、node_modules 或开发服务器。
+3. 双击 `start-local.bat`，保持窗口打开。自动打开 Chrome/Edge 默认浏览器，或复制窗口中的 `http://127.0.0.1:4173`。只能从 HTTP 使用，不能双击 HTML/file://。如 Windows 对下载脚本提示拦截，请先核对来源与校验和，再按本机策略操作。
+4. “数据中心”选择内置真实历史/人工合成样本或本地 CSV，确认周期、检查报告、币种和警告，点击“保存已检查数据集”。“回测中心”选择保存的数据、策略与参数（24根历史样本的 MA 默认30根不足，可选快2慢4），配置虚拟本金（默认1000）、双边费/滑点和可选保护，确认全部K线已收盘并运行。
+5. 检查权益/基准/回撤、已实现与浮动、成交账本、拒单和到期原因；保存实验，导出 JSON/CSV，在实验中心重开并复现。刷新后未保存结果/配置丢失，已保存列表保留但不会自动打开。数据集与实验不会上传；JSON报告包含你选择的数据快照，需自行保管。
+6. 断开外部网络，保持本机HTTP服务运行，再刷新并执行数据加载、回测、图表、保存与导出。此项需要你实际测试并反馈；CI证据不等同于你的机器验收。
+7. 停止：在服务窗口按 **Enter**，或 q 再 Enter，或 Ctrl+C。看到 `STOPPED` 后窗口退出，无后台服务；直接关闭窗口也会结束前台进程。可重新启动使用相同地址和存储。
+
+## 失败处理
+
+- 未找到Node/版本错误：安装系统Node24 LTS，重开窗口后再试。
+- 端口被占：启动会清楚报错并退出，不连接未知服务、不杀别的进程、不自动换端口。关闭上一个RiverLab窗口；也可在解压目录终端运行 `node server.mjs --port=4174`。**不同端口的浏览器存储隔离**，回到4173查看原记录。
+- 缺文件/路径错误：从完整ZIP重新解压，不在压缩文件预览中双击BAT；保留 dist、server.mjs、BAT 在原相对位置。
+- 浏览器未自动打开：手动复制窗口的本机URL。启动失败窗口保留错误，按键后退出。
+- 配额/策略/隐私模式拒绝：不会报告假成功，内存结果仍可导出；清理空间或改用常规浏览器配置再试。IndexedDB不是永久备份，同一浏览器/配置/来源才可访问。
+
+## 身份和 SHA-256
+
+`build-info.json` 记录版本、完整构建提交SHA、构建时间、dirty状态和Node版本。CI只上传clean提交产物。`SHA256SUMS.txt` 校验包内所有其他文件（校验文件不自校验）；ZIP旁的 `.sha256` 校验内层ZIP。PowerShell：
+
+```powershell
+Get-FileHash .\RiverLab-Crypto-Lab-Local-Test.zip -Algorithm SHA256
+$failed = @()
+Get-Content .\SHA256SUMS.txt | ForEach-Object {
+  $expected, $file = $_ -split '  ', 2
+  if ((Get-FileHash -LiteralPath $file -Algorithm SHA256).Hash.ToLowerInvariant() -ne $expected) { $failed += $file }
+}
+if ($failed.Count) { throw "校验失败: $failed" } else { '全部文件校验通过' }
+```
+
+HTTP服务仅允许GET/HEAD、仅分发dist静态文件、只绑定127.0.0.1，无上传接口、遥测、CDN、字体、行情或交易API；无真实资金或账户功能。滑点/流动性/根内路径为简化假设；Number来源精度不可恢复；年化和无交易指标可能NA。测试清单及实际CI记录见PR说明。

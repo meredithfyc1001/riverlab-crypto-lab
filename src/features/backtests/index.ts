@@ -6,3 +6,6 @@ export const backtestsPage = {
   description: '用可复现的实验检验想法。',
   scope: '未来提供现货、多头、单币种、无杠杆的模拟回测与可对账账本。',
 } as const;
+
+export { BacktestCenter } from './BacktestCenter';
+export { BacktestResults } from './BacktestResults';

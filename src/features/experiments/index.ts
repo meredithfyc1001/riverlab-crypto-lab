@@ -6,3 +6,5 @@ export const experimentsPage = {
   description: '保留过程，才能复现结论。',
   scope: '未来保存数据标识、算法版本、参数和成本假设，并比较、导出实验。',
 } as const;
+
+export { ExperimentCenter } from './ExperimentCenter';

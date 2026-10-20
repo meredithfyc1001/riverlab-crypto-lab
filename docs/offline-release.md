@@ -17,3 +17,7 @@ Node.js 24 且依赖已安装的本机运行 npm run build 和 npm run preview -
 3. PWA/桌面封装：有明确需求后选型，不使核心离线功能依赖联网。
 
 正式发布前核对：Windows 两浏览器及版本、离线刷新、路径/权限、数据备份恢复、哈希清单、许可、使用/风险说明与回退。联网/服务范围变化前按原计划另行核查地区法规和平台条款；构建成功不等于获批发布。
+
+## Phase 2C 本地测试 ZIP 增量
+
+本轮授权并实现Node24（系统预装）前台静态服务与BAT生产测试包，仍不是file://、单HTML、嵌入运行时安装器、PWA、正式Release或公开部署。只监听127.0.0.1，原静态资源本地打包，无上传/遥测/远程行情。三平台质量及Windows ZIP验证全部成功后上传head SHA绑定artifact，14天有效。包内清单/停止/路径/失败说明见[README-local-test](../scripts/local-test/README-local-test.md)，用户验收尚待执行。本文上方方案描述为历史规划，不代表缺少本轮ZIP交付。

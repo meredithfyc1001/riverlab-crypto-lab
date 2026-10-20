@@ -1,6 +1,6 @@
 # RiverLab Crypto Lab 工作指令
 
-作用于整个独立仓库。用户于 2026-10-19 正式授权 **Phase 2B：策略引擎与止盈止损模拟**。先读 [progress.md](progress.md)、[plan.md](plan.md) 和相关专题。附件全文保存在 [原始规划 v0.1](docs/product-plan-v0.1.md)。用户当前明确指令优先。
+作用于整个独立仓库。用户于 2026-10-20 正式授权 **Phase 2C：回测工作台、统计、实验与 Windows 本地测试包**。先读 [progress.md](progress.md)、[plan.md](plan.md) 和相关专题。附件全文保存在 [原始规划 v0.1](docs/product-plan-v0.1.md)。用户当前明确指令优先。
 
 ## 范围与研发节奏
 
@@ -13,8 +13,9 @@
 - Phase 1B 云端技术复核通过，PR #3 已合并为 3282475ecea8f0c42332eab8515e90b74cef6bde；用户 Windows 实机尚未执行，不得以 CI 或云端复核替代。保留 0/1A/1B 全部功能和回归。
 - PR #4 已合并为 a7b57cbecf7b25cd50da6647426e99ca6738dfa5，最终三平台 CI 159/17 通过；Codex 本机完整 check 因超时未通过，用户 Windows 1B/2A 未测试，保留原始记录。
 - Phase 2B 实现统一只接收已完成单根 K 线的策略接口、MA/RSI/突破及参数验证、止盈止损跳空/双触发保守执行；保留 2A 全部账本约定。只交付纯 TS 内核，不开发收益面板、参数优化、AI 自动交易或实盘交易。
+- Phase 2C 已获授权：调用原内核的 Worker 工作台、纯 TS 统计、实验保存/导出、Node24 仅回环静态服务 ZIP；保留旧成交规则。三平台检查成功后上传绑定 head SHA 的 artifact，14天有效；不分发 Node、不创建 Release、不部署。Windows CI 与用户实机验收分开。
 - 禁止真实账户、API Key、私钥、助记词、充值提现、真实订单或资金处理。未来网络数据能力必须独立评估和授权。
-- 从已同步 main 建立 feat/phase-2b-strategies-risk，提交独立待审 PR #5。本轮已授权提交、推送和建 PR；不直接修改 main，不自动合并、创建 tag、Release 或部署，等待用户审查。
+- PR #5 已合并，实际提交 0ee6d8483bd6a5226a6d01a1d21b990b134bab46。从已同步 main 建立 feat/phase-2c-backtest-workbench，提交独立待审 PR #6。本轮已授权提交、推送和建 PR；不直接修改 main，不自动合并、创建 tag、Release 或部署，等待用户审查。
 - 不擅自改变路线、删减需求或将建议写为已确认。正常范围内实现与修复无需反复确认。
 
 ## 工程约束

@@ -1,0 +1,50 @@
+
+ RUN  v4.1.12 /workspace/riverlab-crypto-lab
+
+ ❯ tests/unit/experiments.test.ts (13 tests | 10 failed) 42ms
+     × save, new adapter instance, load, verified recomputation, delete; never overwrites the original dataset 4ms
+     × rejects corrupt hash even if attacker rehashes payload 2ms
+     × rejects corrupt result even if attacker rehashes payload 2ms
+     × rejects corrupt stats even if attacker rehashes payload 2ms
+     × rejects corrupt data even if attacker rehashes payload 2ms
+     × rejects corrupt version even if attacker rehashes payload 2ms
+     × JSON includes dataset snapshot, full manifest, assumptions, definitions and disclaimer; CSV matches exact fees and unknown intervals 2ms
+     × CSV escapes quotes/newlines and neutralizes formula text 1ms
+     × quota or abort rejects without a phantom summary 5ms
+     × storage access rejected, no fake save 1ms
+
+⎯⎯⎯⎯⎯⎯ Failed Tests 10 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/unit/experiments.test.ts > experiment identity and storage boundaries > save, new adapter instance, load, verified recomputation, delete; never overwrites the original dataset
+ FAIL  tests/unit/experiments.test.ts > experiment identity and storage boundaries > rejects corrupt hash even if attacker rehashes payload
+ FAIL  tests/unit/experiments.test.ts > experiment identity and storage boundaries > rejects corrupt result even if attacker rehashes payload
+ FAIL  tests/unit/experiments.test.ts > experiment identity and storage boundaries > rejects corrupt stats even if attacker rehashes payload
+ FAIL  tests/unit/experiments.test.ts > experiment identity and storage boundaries > rejects corrupt data even if attacker rehashes payload
+ FAIL  tests/unit/experiments.test.ts > experiment identity and storage boundaries > rejects corrupt version even if attacker rehashes payload
+ FAIL  tests/unit/experiments.test.ts > experiment identity and storage boundaries > JSON includes dataset snapshot, full manifest, assumptions, definitions and disclaimer; CSV matches exact fees and unknown intervals
+ FAIL  tests/unit/experiments.test.ts > experiment identity and storage boundaries > CSV escapes quotes/newlines and neutralizes formula text
+ FAIL  tests/unit/experiments.test.ts > experiment identity and storage boundaries > quota or abort rejects without a phantom summary
+ FAIL  tests/unit/experiments.test.ts > experiment identity and storage boundaries > storage access rejected, no fake save
+Error: Identity requires finite, plain JSON values.
+ ❯ encode src/core/backtests/identity.ts:22:11
+     20|         )
+     21|         .join(',')}}`;
+     22|     throw new Error('Identity requires finite, plain JSON values.');
+       |           ^
+     23|   };
+     24|   return encode(value).replace(
+ ❯ src/core/backtests/identity.ts:19:37
+ ❯ encode src/core/backtests/identity.ts:17:10
+ ❯ encode src/core/backtests/identity.ts:9:40
+ ❯ src/core/backtests/identity.ts:19:37
+ ❯ encode src/core/backtests/identity.ts:17:10
+ ❯ src/core/backtests/identity.ts:19:37
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/10]⎯
+
+
+ Test Files  1 failed | 1 passed (2)
+      Tests  10 failed | 21 passed (31)
+   Start at  04:30:15
+   Duration  790ms (transform 199ms, setup 195ms, import 260ms, tests 128ms, environment 0ms)
+
