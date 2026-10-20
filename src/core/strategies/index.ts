@@ -5,3 +5,11 @@ export const strategiesBoundary: ModuleBoundary = {
   label: '策略',
   responsibility: '策略版本、参数与信号生成；不负责模拟成交或 UI。',
 };
+
+export { createStrategy, normalizeStrategy, STRATEGY_VERSION } from './engine';
+export type {
+  Strategy,
+  StrategyInput,
+  StrategyConfig,
+  StrategyDecision,
+} from './engine';

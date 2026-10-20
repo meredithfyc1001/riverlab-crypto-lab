@@ -6,8 +6,8 @@ export type Execution =
   | { rejected: RejectionReason }
   | { price: bigint; quantity: bigint; notional: bigint; fee: bigint };
 
-/** Only the current open enters execution; completed-bar volume/HLC are unknown. */
-export function executeAtOpen(
+/** Only the chosen reference quote enters execution, never HLC/volume. */
+export function executeAtReference(
   balance: Balance,
   open: bigint,
   intent: OrderIntent,

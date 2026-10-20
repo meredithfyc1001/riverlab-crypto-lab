@@ -1,6 +1,6 @@
 # RiverLab Crypto Lab
 
-中文、Windows 优先、离线优先的历史数据研究工具。Phase 0/1A 已合并并由用户总体验收；Phase 1B 已合并、云端技术复核通过，用户 Windows 实机未执行。当前 **Phase 2A** 增加纯 TypeScript 确定性成交内核和虚拟账本，固定信号用于测试，尚无回测 UI 或正式策略。保留 CSV/UTC/质量、OHLC/成交量、MA/EMA/RSI、IndexedDB 与 JSON 备份恢复。
+中文、Windows 优先、离线优先的历史数据研究工具。Phase 0/1A 已合并并由用户总体验收；Phase 1B 已合并、云端技术复核通过，用户 Windows 实机未执行。Phase 2A 已合并，三平台CI通过，Codex本机超时和Windows用户未测试记录保留。当前 **Phase 2B** 增加因果MA/RSI/突破策略、参数校验与保守止盈止损模拟；沿用18位定点账本，尚无回测UI。保留 CSV/UTC/质量、OHLC/成交量、MA/EMA/RSI、IndexedDB 与 JSON 备份恢复。
 
 **仅供学习研究 · 不提供投资建议 · 历史表现不代表未来表现。** 不连接真实账户、不接收密钥、不处理真实资金。
 
@@ -11,7 +11,7 @@
 ```powershell
 git clone https://github.com/meredithfyc1001/riverlab-crypto-lab.git
 cd riverlab-crypto-lab
-git switch feat/phase-1b-charts-storage
+git switch feat/phase-2b-strategies-risk
 npm ci
 npm run dev
 ```
@@ -80,5 +80,7 @@ Edge/Chrome 打开 http://127.0.0.1:4173。可断开外部网络后刷新和操�
 - [Phase 1B Windows 验收](docs/phase-1b-acceptance.md)：用户手工清单，尚待执行。
 - [data-import-format.md](docs/data-import-format.md)：CSV 支持范围与不确定性；[backtest-assumptions.md](docs/backtest-assumptions.md)：模拟约束与未实现项。
 - [Phase 2A 设计](docs/phase-2a-design.md)和[固定案例验收](docs/phase-2a-acceptance.md)：成交模型、18位定点精度、可复现身份与测试命令。
+
+- [Phase 2B 设计](docs/phase-2b-design.md)、[代码自查](docs/phase-2b-review.md)与[Windows清单](docs/phase-2b-acceptance.md)：三策略、保护单、跳空/双触发优先级和真实测试边界。
 
 独立分支、待审 PR，用户 Windows 验收后再评审合并。

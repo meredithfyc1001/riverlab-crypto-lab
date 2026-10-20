@@ -1,3 +1,5 @@
+import type { StrategyInput, StrategyConfig } from '../strategies';
+import type { RiskConfig, RiskTrigger } from '../risk';
 import type { DataSource, QualitySnapshot, Dataset } from '../data/dataset';
 
 export interface BacktestConfig {
@@ -8,7 +10,7 @@ export interface BacktestConfig {
   quantityDecimals: number;
   minNotional: string;
 }
-/** Scripted test signals only; no strategy or future-data callback. */
+/** Close signal; scripted test inputs remain separate from causal strategies. */
 export type Signal = {
   readonly candleIndex: number;
   readonly reason: string;
@@ -25,8 +27,9 @@ export interface OrderIntent {
   side: 'buy' | 'sell';
   quantity: string | 'all';
   reason: string;
-  signalCandleIndex: number;
-  generatedUtcMs: number;
+  signalCandleIndex: number | null;
+  generatedUtcMs: number | null;
+  trigger?: RiskTrigger;
   targetCandleIndex: number;
 }
 export type RejectionReason =
@@ -35,12 +38,14 @@ export type RejectionReason =
   | 'zero-notional'
   | 'below-min-notional'
   | 'insufficient-cash'
-  | 'insufficient-position';
+  | 'insufficient-position'
+  | 'position-already-open'
+  | 'position-already-flat';
 export interface OrderOutcome {
   intent: OrderIntent;
-  status: 'filled' | 'rejected' | 'expired';
-  reason?: RejectionReason | 'no-next-candle';
-  resolvedUtcMs: number;
+  status: 'filled' | 'rejected' | 'expired' | 'cancelled';
+  reason?: RejectionReason | 'no-next-candle' | 'risk-priority';
+  resolvedUtcMs: number | null;
 }
 export interface Position {
   quantity: string;
@@ -64,9 +69,10 @@ export interface SimulatedFill {
   orderId: string;
   side: 'buy' | 'sell';
   reason: string;
-  signalCandleIndex: number;
+  signalCandleIndex: number | null;
   candleIndex: number;
-  timestampUtcMs: number;
+  timestampUtcMs: number | null;
+  trigger?: RiskTrigger;
   referencePrice: string;
   price: string;
   quantity: string;
@@ -82,13 +88,16 @@ export interface CloseSnapshot {
   timestampUtcMs: number;
   account: AccountSnapshot;
 }
-export interface BacktestInput {
+export type BacktestInput = {
   dataset: Dataset;
   /** Explicit caller declaration: every supplied candle must be completed. */
   completedThroughUtcMs: number;
-  signals: readonly Signal[];
   config?: Partial<BacktestConfig>;
-}
+  risk?: RiskConfig;
+} & (
+  | { signals: readonly Signal[]; strategy?: never }
+  | { strategy: StrategyInput; signals?: never }
+);
 export interface RunManifest {
   algorithmVersion: string;
   conversionVersion: string;
@@ -103,6 +112,8 @@ export interface RunManifest {
   completedThroughUtcMs: number;
   config: BacktestConfig;
   signals: Signal[];
+  strategy: { config: StrategyConfig; version: string } | null;
+  risk: RiskConfig;
   assumptions: readonly string[];
 }
 export interface BacktestResult {
