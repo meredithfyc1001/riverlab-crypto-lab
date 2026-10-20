@@ -1,0 +1,217 @@
+﻿2026-10-20T05:01:18.7147386Z Current runner version: '2.337.0'
+2026-10-20T05:01:18.7185525Z ##[group]Runner Image Provisioner
+2026-10-20T05:01:18.7187012Z Hosted Compute Agent
+2026-10-20T05:01:18.7187997Z Version: 20261002.596
+2026-10-20T05:01:18.7189034Z Commit: c3d12f3313a95f25162a1503be624f3b0617f8c0
+2026-10-20T05:01:18.7190370Z Build Date: 2026-10-02T22:28:27Z
+2026-10-20T05:01:18.7191512Z Worker ID: {ed9bcda9-29c9-4e63-abb3-db1a0b91e5ba}
+2026-10-20T05:01:18.7192693Z Region: westus3
+2026-10-20T05:01:18.7193612Z Cloud: Azure
+2026-10-20T05:01:18.7194451Z ##[endgroup]
+2026-10-20T05:01:18.7196752Z ##[group]Operating System
+2026-10-20T05:01:18.7197886Z Microsoft Windows Server 2025
+2026-10-20T05:01:18.7199258Z 10.0.26100
+2026-10-20T05:01:18.7200100Z Datacenter
+2026-10-20T05:01:18.7200948Z ##[endgroup]
+2026-10-20T05:01:18.7201840Z ##[group]Runner Image
+2026-10-20T05:01:18.7202829Z Image: windows-2025-vs2026
+2026-10-20T05:01:18.7203772Z Version: 20261007.264.1
+2026-10-20T05:01:18.7206356Z Included Software: https://github.com/actions/runner-images/blob/win25-vs2026/20261007.264/images/windows/Windows2025-VS2026-Readme.md
+2026-10-20T05:01:18.7209415Z Image Release: https://github.com/actions/runner-images/releases/tag/win25-vs2026%2F20261007.264
+2026-10-20T05:01:18.7211245Z ##[endgroup]
+2026-10-20T05:01:18.7213099Z ##[group]GITHUB_TOKEN Permissions
+2026-10-20T05:01:18.7215917Z Contents: read
+2026-10-20T05:01:18.7216820Z Metadata: read
+2026-10-20T05:01:18.7217772Z ##[endgroup]
+2026-10-20T05:01:18.7221190Z Secret source: Actions
+2026-10-20T05:01:18.7222689Z Cache mode: write
+2026-10-20T05:01:18.7224058Z Prepare workflow directory
+2026-10-20T05:01:18.7741987Z Prepare all required actions
+2026-10-20T05:01:18.7819108Z Getting action download info
+2026-10-20T05:01:19.1216633Z Download action repository 'actions/checkout@v4' (SHA:11d5960a326750d5838078e36cf38b85af677262)
+2026-10-20T05:01:19.2720906Z Download action repository 'actions/setup-node@v4' (SHA:49933ea5288caeca8642d1e84afbd3f7d6820020)
+2026-10-20T05:01:19.4694127Z Download action repository 'actions/upload-artifact@v4' (SHA:ea165f8d65b6e75b540449e92b4886f43607fa02)
+2026-10-20T05:01:19.8547782Z Complete job name: Windows local test ZIP / Chrome + Edge
+2026-10-20T05:01:20.0179129Z ##[group]Run actions/checkout@v4
+2026-10-20T05:01:20.0181403Z with:
+2026-10-20T05:01:20.0182668Z   ref: 3106d0e796c8116af5762e3a9e41ecd81d26d2df
+2026-10-20T05:01:20.0184660Z   repository: meredithfyc1001/riverlab-crypto-lab
+2026-10-20T05:01:20.0194233Z   token: ***
+2026-10-20T05:01:20.0195021Z   ssh-strict: true
+2026-10-20T05:01:20.0195770Z   ssh-user: git
+2026-10-20T05:01:20.0196534Z   persist-credentials: true
+2026-10-20T05:01:20.0197381Z   clean: true
+2026-10-20T05:01:20.0198156Z   sparse-checkout-cone-mode: true
+2026-10-20T05:01:20.0199068Z   fetch-depth: 1
+2026-10-20T05:01:20.0199820Z   fetch-tags: false
+2026-10-20T05:01:20.0200602Z   show-progress: true
+2026-10-20T05:01:20.0201617Z   lfs: false
+2026-10-20T05:01:20.0202336Z   submodules: false
+2026-10-20T05:01:20.0203145Z   set-safe-directory: true
+2026-10-20T05:01:20.0204037Z   allow-unsafe-pr-checkout: false
+2026-10-20T05:01:20.0205305Z ##[endgroup]
+2026-10-20T05:01:21.9359750Z Syncing repository: meredithfyc1001/riverlab-crypto-lab
+2026-10-20T05:01:21.9388326Z ##[group]Getting Git version info
+2026-10-20T05:01:21.9392066Z Working directory is 'D:\a\riverlab-crypto-lab\riverlab-crypto-lab'
+2026-10-20T05:01:21.9393954Z [command]"C:\Program Files\Git\bin\git.exe" version
+2026-10-20T05:01:21.9394749Z git version 2.56.0.windows.2
+2026-10-20T05:01:21.9397238Z ##[endgroup]
+2026-10-20T05:01:21.9402584Z Temporarily overriding HOME='D:\a\_temp\a5262d18-6cd8-4220-b1a8-0e93efc4755e' before making global git config changes
+2026-10-20T05:01:21.9403776Z Adding repository directory to the temporary git global config as a safe directory
+2026-10-20T05:01:21.9404986Z [command]"C:\Program Files\Git\bin\git.exe" config --global --add safe.directory D:\a\riverlab-crypto-lab\riverlab-crypto-lab
+2026-10-20T05:01:21.9407364Z Deleting the contents of 'D:\a\riverlab-crypto-lab\riverlab-crypto-lab'
+2026-10-20T05:01:21.9411238Z ##[group]Initializing the repository
+2026-10-20T05:01:21.9412272Z [command]"C:\Program Files\Git\bin\git.exe" init D:\a\riverlab-crypto-lab\riverlab-crypto-lab
+2026-10-20T05:01:21.9413429Z Initialized empty Git repository in D:/a/riverlab-crypto-lab/riverlab-crypto-lab/.git/
+2026-10-20T05:01:21.9415798Z [command]"C:\Program Files\Git\bin\git.exe" remote add origin https://github.com/meredithfyc1001/riverlab-crypto-lab
+2026-10-20T05:01:21.9418053Z ##[endgroup]
+2026-10-20T05:01:21.9418963Z ##[group]Disabling automatic garbage collection
+2026-10-20T05:01:21.9419820Z [command]"C:\Program Files\Git\bin\git.exe" config --local gc.auto 0
+2026-10-20T05:01:21.9422114Z ##[endgroup]
+2026-10-20T05:01:21.9422958Z ##[group]Setting up auth
+2026-10-20T05:01:21.9423822Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp core\.sshCommand
+2026-10-20T05:01:21.9426286Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "sh -c \"git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :\""
+2026-10-20T05:01:22.7622289Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-10-20T05:01:22.8068325Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "sh -c \"git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :\""
+2026-10-20T05:01:23.4692465Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-10-20T05:01:23.5107345Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "git config --local --show-origin --name-only --get-regexp remote.origin.url"
+2026-10-20T05:01:24.1323305Z [command]"C:\Program Files\Git\bin\git.exe" config --local http.https://github.com/.extraheader "AUTHORIZATION: basic ***"
+2026-10-20T05:01:24.1762580Z ##[endgroup]
+2026-10-20T05:01:24.1763809Z ##[group]Fetching the repository
+2026-10-20T05:01:24.1783620Z [command]"C:\Program Files\Git\bin\git.exe" -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin 3106d0e796c8116af5762e3a9e41ecd81d26d2df
+2026-10-20T05:01:25.5533342Z From https://github.com/meredithfyc1001/riverlab-crypto-lab
+2026-10-20T05:01:25.5534467Z  * branch            3106d0e796c8116af5762e3a9e41ecd81d26d2df -> FETCH_HEAD
+2026-10-20T05:01:25.5600910Z ##[endgroup]
+2026-10-20T05:01:25.5612201Z ##[group]Determining the checkout info
+2026-10-20T05:01:25.5613577Z ##[endgroup]
+2026-10-20T05:01:25.5614341Z [command]"C:\Program Files\Git\bin\git.exe" sparse-checkout disable
+2026-10-20T05:01:25.6387513Z [command]"C:\Program Files\Git\bin\git.exe" config --local --unset-all extensions.worktreeConfig
+2026-10-20T05:01:25.6973667Z ##[group]Checking out the ref
+2026-10-20T05:01:25.6980807Z [command]"C:\Program Files\Git\bin\git.exe" checkout --progress --force 3106d0e796c8116af5762e3a9e41ecd81d26d2df
+2026-10-20T05:01:25.8035877Z Note: switching to '3106d0e796c8116af5762e3a9e41ecd81d26d2df'.
+2026-10-20T05:01:25.8037038Z 
+2026-10-20T05:01:25.8037390Z You are in 'detached HEAD' state. You can look around, make experimental
+2026-10-20T05:01:25.8038020Z changes and commit them, and you can discard any commits you make in this
+2026-10-20T05:01:25.8038489Z state without impacting any branches by switching back to a branch.
+2026-10-20T05:01:25.8039232Z 
+2026-10-20T05:01:25.8039591Z If you want to create a new branch to retain commits you create, you may
+2026-10-20T05:01:25.8040100Z do so (now or later) by using -c with the switch command. Example:
+2026-10-20T05:01:25.8040345Z 
+2026-10-20T05:01:25.8040476Z   git switch -c <new-branch-name>
+2026-10-20T05:01:25.8040645Z 
+2026-10-20T05:01:25.8040742Z Or undo this operation with:
+2026-10-20T05:01:25.8040912Z 
+2026-10-20T05:01:25.8041872Z   git switch -
+2026-10-20T05:01:25.8041995Z 
+2026-10-20T05:01:25.8042195Z Turn off this advice by setting config variable advice.detachedHead to false
+2026-10-20T05:01:25.8042509Z 
+2026-10-20T05:01:25.8042743Z HEAD is now at 3106d0e perf: stream report hashing and avoid repeated ledger serialization
+2026-10-20T05:01:25.8145186Z ##[endgroup]
+2026-10-20T05:01:25.8690524Z [command]"C:\Program Files\Git\bin\git.exe" log -1 --format=%H
+2026-10-20T05:01:25.9068213Z 3106d0e796c8116af5762e3a9e41ecd81d26d2df
+2026-10-20T05:01:25.9555978Z ##[group]Run actions/setup-node@v4
+2026-10-20T05:01:25.9556326Z with:
+2026-10-20T05:01:25.9556508Z   node-version: 24
+2026-10-20T05:01:25.9556689Z   cache: npm
+2026-10-20T05:01:25.9556861Z   always-auth: false
+2026-10-20T05:01:25.9557052Z   check-latest: false
+2026-10-20T05:01:25.9559868Z   token: ***
+2026-10-20T05:01:25.9560051Z ##[endgroup]
+2026-10-20T05:01:26.1715636Z (node:8440) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-10-20T05:01:26.1741987Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-10-20T05:01:26.1845608Z Found in cache @ C:\hostedtoolcache\windows\node\24.21.0\x64
+2026-10-20T05:01:26.1846548Z ##[group]Environment details
+2026-10-20T05:01:31.7116362Z node: v24.21.0
+2026-10-20T05:01:31.7117166Z npm: 11.19.0
+2026-10-20T05:01:31.7117694Z yarn: 1.22.22
+2026-10-20T05:01:31.7120654Z ##[endgroup]
+2026-10-20T05:01:31.8407486Z [command]C:\Windows\system32\cmd.exe /D /S /C "C:\hostedtoolcache\windows\node\24.21.0\x64\npm.cmd config get cache"
+2026-10-20T05:01:32.3782718Z D:\a\riverlab-crypto-lab\riverlab-crypto-lab\work\npm-cache
+2026-10-20T05:01:32.8097683Z Cache hit for: node-cache-Windows-x64-npm-8fd072fafa6abea7328d335bbedb55415b6ddb12d5dc8cc82507d66864cc23d9
+2026-10-20T05:01:32.8231125Z (node:8440) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+2026-10-20T05:01:33.9912044Z Received 36217182 of 36217182 (100.0%), 36.4 MBs/sec
+2026-10-20T05:01:33.9915728Z Cache Size: ~35 MB (36217182 B)
+2026-10-20T05:01:33.9991887Z [command]"C:\Program Files\Git\usr\bin\tar.exe" -xf D:/a/_temp/6073eb40-785a-453c-9813-8aa1c2e15438/cache.tzst -P -C D:/a/riverlab-crypto-lab/riverlab-crypto-lab --force-local --use-compress-program "zstd -d"
+2026-10-20T05:01:34.5387064Z Cache restored successfully
+2026-10-20T05:01:34.5537262Z Cache restored from key: node-cache-Windows-x64-npm-8fd072fafa6abea7328d335bbedb55415b6ddb12d5dc8cc82507d66864cc23d9
+2026-10-20T05:01:34.5788749Z ##[group]Run npm ci
+2026-10-20T05:01:34.5789056Z npm ci
+2026-10-20T05:01:34.6625191Z shell: C:\Program Files\PowerShell\7\pwsh.EXE -command ". '{0}'"
+2026-10-20T05:01:34.6625650Z ##[endgroup]
+2026-10-20T05:01:48.4441078Z npm warn install-scripts 1 package has install scripts not yet covered by allowScripts:
+2026-10-20T05:01:48.4441797Z 
+2026-10-20T05:01:48.4442685Z npm warn install-scripts   esbuild@0.28.2 (postinstall: node install.js)
+2026-10-20T05:01:48.4443498Z added 258 packages, and audited 259 packages in 13s
+2026-10-20T05:01:48.4444736Z npm warn install-scripts
+2026-10-20T05:01:48.4445003Z 
+2026-10-20T05:01:48.4446244Z npm warn install-scripts Run `npm install-scripts ls` to review, or `npm install-scripts approve <pkg>` to allow.
+2026-10-20T05:01:48.4447512Z found 0 vulnerabilities
+2026-10-20T05:01:49.8881886Z ##[group]Run npm run build
+2026-10-20T05:01:49.8882367Z npm run build
+2026-10-20T05:01:49.8980530Z shell: C:\Program Files\PowerShell\7\pwsh.EXE -command ". '{0}'"
+2026-10-20T05:01:49.8981085Z ##[endgroup]
+2026-10-20T05:01:51.9219067Z 
+2026-10-20T05:01:51.9219565Z > riverlab-crypto-lab@0.2.0-test build
+2026-10-20T05:01:51.9220150Z > npm run typecheck && vite build
+2026-10-20T05:01:51.9220441Z 
+2026-10-20T05:01:51.9220454Z 
+2026-10-20T05:01:51.9220732Z > riverlab-crypto-lab@0.2.0-test typecheck
+2026-10-20T05:01:51.9221621Z > tsc -b
+2026-10-20T05:01:51.9221815Z 
+2026-10-20T05:02:00.1961763Z vite v7.3.7 building client environment for production...
+2026-10-20T05:02:00.3033566Z transforming...
+2026-10-20T05:02:02.6977703Z ✓ 98 modules transformed.
+2026-10-20T05:02:02.9579722Z rendering chunks...
+2026-10-20T05:02:03.1385842Z computing gzip size...
+2026-10-20T05:02:03.1387968Z dist/index.html                            0.72 kB │ gzip:   0.48 kB
+2026-10-20T05:02:03.1405584Z dist/assets/csv.worker-C14LIkSc.js        11.77 kB
+2026-10-20T05:02:03.1407961Z dist/assets/backtest.worker-DjdmA7zJ.js   33.46 kB
+2026-10-20T05:02:03.1409400Z dist/assets/index-Br0Tv75b.css            18.43 kB │ gzip:   4.18 kB
+2026-10-20T05:02:03.1410759Z dist/assets/index-D3W12Xv5.js            478.69 kB │ gzip: 156.96 kB
+2026-10-20T05:02:03.1411773Z ✓ built in 2.75s
+2026-10-20T05:02:03.1942497Z ##[group]Run npm run package:local
+2026-10-20T05:02:03.1943314Z npm run package:local
+2026-10-20T05:02:03.2044366Z shell: C:\Program Files\PowerShell\7\pwsh.EXE -command ". '{0}'"
+2026-10-20T05:02:03.2044953Z ##[endgroup]
+2026-10-20T05:02:04.0177882Z 
+2026-10-20T05:02:04.0178336Z > riverlab-crypto-lab@0.2.0-test package:local
+2026-10-20T05:02:04.0178957Z > node scripts/package-local.mjs
+2026-10-20T05:02:04.0179240Z 
+2026-10-20T05:02:04.2679415Z {"path":"D:\\a\\riverlab-crypto-lab\\riverlab-crypto-lab\\work\\local-package\\RiverLab-Crypto-Lab-Local-Test.zip","bytes":569357,"sha256":"77c22b3a671491bcb7bca568eee087185d1c361e9714f8ce5fe4c3d040292b6a","commitSha":"3106d0e796c8116af5762e3a9e41ecd81d26d2df","dirty":false}
+2026-10-20T05:02:04.4110119Z ##[group]Run npm run test:package
+2026-10-20T05:02:04.4110479Z npm run test:package
+2026-10-20T05:02:04.4186050Z shell: C:\Program Files\PowerShell\7\pwsh.EXE -command ". '{0}'"
+2026-10-20T05:02:04.4186399Z env:
+2026-10-20T05:02:04.4186572Z   E2E_BROWSER: chrome
+2026-10-20T05:02:04.4186770Z ##[endgroup]
+2026-10-20T05:02:06.1640018Z 
+2026-10-20T05:02:06.1640650Z > riverlab-crypto-lab@0.2.0-test test:package
+2026-10-20T05:02:06.1641439Z > node scripts/test-local-package.mjs
+2026-10-20T05:02:06.1641830Z 
+2026-10-20T05:02:19.8621283Z file:///D:/a/riverlab-crypto-lab/riverlab-crypto-lab/scripts/test-local-package.mjs:102
+2026-10-20T05:02:19.8622383Z     if (Date.now() > deadline) throw new Error(`Timeout ${description}`);
+2026-10-20T05:02:19.8623303Z                                      ^
+2026-10-20T05:02:19.8624968Z 
+2026-10-20T05:02:19.8641092Z Error: Timeout server readiness
+2026-10-20T05:02:19.8653103Z     at waitFor (file:///D:/a/riverlab-crypto-lab/riverlab-crypto-lab/scripts/test-local-package.mjs:102:38)
+2026-10-20T05:02:19.8661251Z     at async file:///D:/a/riverlab-crypto-lab/riverlab-crypto-lab/scripts/test-local-package.mjs:125:3
+2026-10-20T05:02:19.8662157Z 
+2026-10-20T05:02:19.8662717Z Node.js v24.21.0
+2026-10-20T05:02:19.9134140Z ##[error]Process completed with exit code 1.
+2026-10-20T05:02:19.9429045Z Post job cleanup.
+2026-10-20T05:02:20.1957699Z [command]"C:\Program Files\Git\bin\git.exe" version
+2026-10-20T05:02:20.2667355Z git version 2.56.0.windows.2
+2026-10-20T05:02:20.2866064Z Temporarily overriding HOME='D:\a\_temp\6f2e7915-0a58-4f63-ae03-1d02039a8389' before making global git config changes
+2026-10-20T05:02:20.2867548Z Adding repository directory to the temporary git global config as a safe directory
+2026-10-20T05:02:20.2869146Z [command]"C:\Program Files\Git\bin\git.exe" config --global --add safe.directory D:\a\riverlab-crypto-lab\riverlab-crypto-lab
+2026-10-20T05:02:20.3288856Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp core\.sshCommand
+2026-10-20T05:02:20.3726946Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "sh -c \"git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :\""
+2026-10-20T05:02:21.2781125Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-10-20T05:02:21.3412754Z http.https://github.com/.extraheader
+2026-10-20T05:02:21.3535622Z [command]"C:\Program Files\Git\bin\git.exe" config --local --unset-all http.https://github.com/.extraheader
+2026-10-20T05:02:21.4125469Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "sh -c \"git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :\""
+2026-10-20T05:02:22.2334775Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-10-20T05:02:22.2903236Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "git config --local --show-origin --name-only --get-regexp remote.origin.url"
+2026-10-20T05:02:23.1712580Z Cleaning up orphan processes
+2026-10-20T05:02:23.1758149Z ##[warning]Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4, actions/setup-node@v4. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+

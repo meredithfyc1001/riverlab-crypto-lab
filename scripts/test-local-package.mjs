@@ -76,7 +76,11 @@ function launch(extra = []) {
             '/c',
             `""${join(folder, 'start-local.bat')}" --no-open ${extra.join(' ')}"`,
           ],
-          { stdio: ['pipe', 'pipe', 'pipe'], windowsHide: true },
+          {
+            stdio: ['pipe', 'pipe', 'pipe'],
+            windowsHide: true,
+            windowsVerbatimArguments: true,
+          },
         )
       : spawn(
           process.execPath,
@@ -86,9 +90,11 @@ function launch(extra = []) {
   let logs = '';
   child.stdout.on('data', (b) => {
     logs += b;
+    process.stdout.write(b);
   });
   child.stderr.on('data', (b) => {
     logs += b;
+    process.stdout.write(b);
   });
   const exit = new Promise((resolve) => {
     child.once('exit', (code) => resolve(code));

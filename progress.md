@@ -38,6 +38,21 @@
 
 性能修正后最终本机完整check退出0：15文件/307项Vitest、24项E2E全部通过，无失败/跳过；50,000根3430ms/最大主线程间隔251.3ms，[原日志](docs/phase-2c-evidence/local-performance-fixed-check.log)。Windows需实际新CI确认，尚未宣称通过。
 
+## Phase 2C 三平台307/24通过与Windows ZIP启动修正
+
+- 性能修正提交3106d0e796c8116af5762e3a9e41ecd81d26d2df的[run39372297528](https://github.com/meredithfyc1001/riverlab-crypto-lab/actions/runs/39372297528)三平台质量job全部success。已逐一读取[Ubuntu118462640422](https://github.com/meredithfyc1001/riverlab-crypto-lab/actions/runs/39372297528/job/118462640422)、[Chrome118462640513](https://github.com/meredithfyc1001/riverlab-crypto-lab/actions/runs/39372297528/job/118462640513)、[Edge118462640624](https://github.com/meredithfyc1001/riverlab-crypto-lab/actions/runs/39372297528/job/118462640624)完整日志，各307项Vitest、24项E2E，npm ci/check与独立参考全部通过，无测试失败/跳过。文本日志保存在docs/phase-2c-evidence/ci-*-quality.log。
+
+| 实际平台          | 浏览器实际版本       | CPU                | 50,000根结果+图表就绪ms | 最大主线程间隔ms |
+| ----------------- | -------------------- | ------------------ | ----------------------: | ---------------: |
+| Ubuntu Linux6.17  | Chromium156.0.8078.4 | EPYC7763 / 2逻辑核 |                    5103 |            418.1 |
+| Windows10.0.26100 | Chrome155.0.8059.40  | EPYC7763 / 2逻辑核 |                    5233 |            462.7 |
+| Windows10.0.26100 | Edge154.0.4258.62    | EPYC9V74 / 2逻辑核 |                    3654 |            292.9 |
+
+总耗时包含控件设置/Worker传输/全点绘图，结果消息的原5秒等待和总20秒预算、主线程1秒阈值均通过，未改测试阈值。仅人工合成样本，不是用户机器保证。
+
+- 后置Windows ZIP job118463697212实际build/打包成功、dirty=false且SHA为3106d0e；真实Expand-Archive之后，Chrome测试在10秒启动READY等待处失败，未上传artifact。完整[失败日志](docs/phase-2c-evidence/ci-windows-package-initial-failure.log)保存。该失败不能记为Windows包启动成功。
+- 复核CI通过cmd调用BAT时，增加windowsVerbatimArguments以保留既定外层/路径引号，避免Node对含中文空格的cmd命令再次转义；并转发子进程启动日志以保留失败原因。不修改用户BAT、原服务、等待阈值或断言。此修改提交后，全部质量与Windows ZIP仍需实际新CI核验；当前最终状态及下载以[PR #6 Checks](https://github.com/meredithfyc1001/riverlab-crypto-lab/pull/6/checks)及PR交付说明为准，不提前记成功。用户Windows实机仍未测试。
+
 ## Phase 2B 历史恢复入口：Phase 2B（2026-10-19）
 
 - 初始 work 分支干净；已 fetch origin/main，核实 PR #4 merged=true，实际合并 a7b57cbecf7b25cd50da6647426e99ca6738dfa5，UTC 15:49:17。从该提交建立 feat/phase-2b-strategies-risk；[PR #5](https://github.com/meredithfyc1001/riverlab-crypto-lab/pull/5)已创建，open/draft，工程提交509164f5c2aa27ec4083a45696a27ff5ad8b8f3f；不修改main、不合并/发布/部署。

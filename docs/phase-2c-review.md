@@ -13,7 +13,7 @@
 
 ## 测试包复核
 
-ZIP仅复制Vite dist与必要server/BAT/说明/身份/校验文件，无node_modules、开发缓存、.env、用户数据或非必要源码。ZIP使用内置模块生成，Windows用系统Expand-Archive独立解压，逐文件SHA256验证。build-info保存完整git HEAD和dirty标记，CI拒绝dirty。质量三组全部成功后才启动Windows打包job；Chrome及Edge从含中文空格路径运行解压产物，通过后才上传14天artifact。
+ZIP仅复制Vite dist与必要server/BAT/说明/身份/校验文件，无node_modules、开发缓存、.env、用户数据或非必要源码。ZIP使用内置模块生成，Windows用系统Expand-Archive独立解压，逐文件SHA256验证。CI经cmd启动BAT时显式windowsVerbatimArguments，避免对既定中文空格路径引号二次转义；子进程日志转发到CI便于核对实际失败。build-info保存完整git HEAD和dirty标记，CI拒绝dirty。质量三组全部成功后才启动Windows打包job；Chrome及Edge从含中文空格路径运行解压产物，通过后才上传14天artifact。
 
 server仅listen127.0.0.1、Host限定127.0.0.1:端口、GET/HEAD、dist内已枚举文件/扩展白名单、decode后路径段与realpath根内检查；无上传/代理/数据API。CSP限本机，禁止外部脚本/网络/字体。Enter关闭所有连接并退出，端口可重新绑定；占用/缺dist明确失败，BAT保留错误窗口。WindowsCI额外读取实际监听地址，核对仅127.0.0.1。自动浏览器打开失败可复制URL；自动打开本身不等同用户双击验收。
 
