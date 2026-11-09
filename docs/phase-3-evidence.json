@@ -61,10 +61,7 @@
     "expiresUtc": "2026-11-23T12:17:07Z",
     "innerZipBytes": 630576,
     "innerZipSha256": "0871376b7e3c7e2222b876aa5cd2ed5e008b1a51b2edcbf85014acef1e9187c2",
-    "windowsBrowsers": [
-      "156.0.8078.80",
-      "156.0.4314.58"
-    ],
+    "windowsBrowsers": ["156.0.8078.80", "156.0.4314.58"],
     "node": "v24.22.2",
     "externalRequests": [],
     "pageErrors": []

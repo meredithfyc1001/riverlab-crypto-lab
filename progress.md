@@ -6,22 +6,21 @@
 
 已验证实现快照85e933affc06c906fb8b0de402c4d63ddad8aa25：[run42614794507](https://github.com/meredithfyc1001/riverlab-crypto-lab/actions/runs/42614794507)四作业completed/success，已实际读取三组质量及WindowsZIP完整日志。每平台npm ci、format/lint、316项Vitest、严格core/app/test类型、生产构建、30项E2E全部通过，原307/24回归保留。三个独立Python参考也通过。
 
-| 平台 | 浏览器 | CPU / 逻辑核 | 50k三策略墙钟ms | 主线程最大观察间隔ms |
-| --- | --- | --- | --- | --- |
-| Ubuntu Chromium | 156.0.8078.4 | AMD EPYC 7763 64-Core Processor / 2 | 7214 | 134.8 |
-| Windows Chrome | 156.0.8078.80 | AMD EPYC 7763 64-Core Processor / 2 | 4752 | 171.4 |
-| Windows Edge | 156.0.4314.58 | AMD EPYC 9V74 80-Core Processor / 2 | 4121 | 141.3 |
+| 平台            | 浏览器        | CPU / 逻辑核                        | 50k三策略墙钟ms | 主线程最大观察间隔ms |
+| --------------- | ------------- | ----------------------------------- | --------------- | -------------------- |
+| Ubuntu Chromium | 156.0.8078.4  | AMD EPYC 7763 64-Core Processor / 2 | 7214            | 134.8                |
+| Windows Chrome  | 156.0.8078.80 | AMD EPYC 7763 64-Core Processor / 2 | 4752            | 171.4                |
+| Windows Edge    | 156.0.4314.58 | AMD EPYC 9V74 80-Core Processor / 2 | 4121            | 141.3                |
 
 Node24.22.2；Ubuntu内核7.0.0-1019-azure，Windows10.0.26100。阈值20秒/1000ms均通过；只代表这些CI机器及50k人工合成样本，不承诺所有资源预算组合耗时。完整机器/版本/限制见[证据JSON](docs/phase-3-evidence.json)。生产主JS约501kB（gzip164kB）有Vite默认体积提示，未提高告警阈值；现有性能门槛全部通过。
 
 WindowsZIP job129153773186：Chrome156.0.8078.80、Edge156.0.4314.58，真实中文空格路径解压、BAT前台127.0.0.1启动、HTTP/Worker/图表、旧回测保存重开/导出、新研究批次和JSON/CSV、无外部origin请求/无页面错误、路径穿越/Host/POST拒绝、端口冲突与缺dist失败、Enter停止释放端口均通过。归档包artifact13672092574属于85e933a，内层630576bytes，SHA256为0871376b7e3c7e2222b876aa5cd2ed5e008b1a51b2edcbf85014acef1e9187c2，至北京时间2026-11-23 20:17:07。它是已验证快照；之后补上JSON导入“完成时间不能晚于当前时间”的入口校验及测试，并归档记录，最新PR提交必须重新完整CI。**下载以PR#7说明绑定当前完整headSHA的最新成功artifact为准，不把此归档包当最新。**
 
-失败保留：run42614089752（8321a96）14个新增文件格式失败，独立Decimal通过；按只读诊断提交Prettier结果。run42614354882（8a83342）三组316项测试通过，严格类型因报告literal拓宽及测试直接修改readonly Candle失败；改为类型化报告payload与替换完整Candle对象，原断言未删除/跳过，未放宽阈值。run42614794507修正后完整成功。最后导入时间校验增加1项核心测试，预期317项，以后续实际CI为准。
+失败保留：run42614089752（8321a96）14个新增文件格式失败，独立Decimal通过；按只读诊断提交Prettier结果。run42614354882（8a83342）三组316项测试通过，严格类型因报告literal拓宽及测试直接修改readonly Candle失败；改为类型化报告payload与替换完整Candle对象，原断言未删除/跳过，未放宽阈值。run42614794507修正后完整成功。最后归档run42616047702（6dae708）仅新证据JSON短数组和进度表格格式失败，按同一只读诊断格式化后重新提交，未更改检查门槛。最后导入时间校验增加1项核心测试，预期317项，以后续实际CI为准。
 
 当前云执行环境配置失败，exec_command实际不可用；本机npm ci/check未执行，不把GitHubCI写成本机执行。通过GitHub树/提交API仅写独立分支，读取真实CI日志；内容只读的格式诊断不修改checkout或绕过check。Windows用户实机/物理断网待反馈，合并和CI都不补签此前验收。
 
 后续先由用户下载最终当前head包、按清单在Windows常规浏览器验证和反馈，再决定合并。按原规划下一阶段为Phase4历史回放，范围须单独确认。
-
 
 ## Phase 2C 合并后交接记录（2026-11-09，随后用户已授权Phase3）
 
