@@ -93,11 +93,15 @@ describe('Phase 3 deterministic independent windows', () => {
       evaluation: { kind: 'split' as const, trainBars: 4 },
     };
     const before = runResearch(input);
-    input.dataset.candles.slice(4).forEach((c) => {
-      c.open *= 2;
-      c.high *= 2;
-      c.low *= 2;
-      c.close *= 2;
+    input.dataset.candles = input.dataset.candles.map((c, i) => {
+      if (i < 4) return c;
+      return {
+        ...c,
+        open: c.open * 2,
+        high: c.high * 2,
+        low: c.low * 2,
+        close: c.close * 2,
+      };
     });
     const after = runResearch(input);
     expect(after.rows[0]).toEqual(before.rows[0]);
@@ -148,18 +152,21 @@ describe('Phase 3 deterministic independent windows', () => {
     void payloadHash;
     tampered.payloadHash = contentHash(payload);
     expect(() => verifyResearch(tampered)).toThrow('复现');
-    input.dataset.candles[0].close = 105;
+    const original = input.dataset.candles[0];
+    input.dataset.candles[0] = { ...original, close: 105 };
     expect(first.input.dataset.candles[0].close).toBe(100);
   });
   it('validates the full original dataset, including unused tail, before any subrun', () => {
     const input = example();
     input.evaluation = { kind: 'rolling', trainBars: 3, testBars: 2 };
-    input.dataset.candles[7].open = NaN;
+    const last = input.dataset.candles[7];
+    input.dataset.candles[7] = { ...last, open: NaN };
     const progress: number[] = [];
     expect(() => runResearch(input, (n) => progress.push(n))).toThrow();
     expect(progress).toEqual([]);
     const precision = example();
-    precision.dataset.candles.at(-1)!.low = 1e-19;
+    const invalid = precision.dataset.candles[7];
+    precision.dataset.candles[7] = { ...invalid, low: 1e-19 };
     expect(() => runResearch(precision)).toThrow('18');
     const unconfirmed = example();
     unconfirmed.dataset.warningsAcknowledged = false as unknown as true;
@@ -194,7 +201,10 @@ describe('Phase 3 deterministic independent windows', () => {
     );
     expect(() => validateResearch(large)).toThrow('预算');
     const gap = example();
-    gap.dataset.candles.slice(4).forEach((c) => (c.timestampUtcMs += INTERVAL));
+    gap.dataset.candles = gap.dataset.candles.map((c, i) => ({
+      ...c,
+      timestampUtcMs: c.timestampUtcMs + (i < 4 ? 0 : INTERVAL),
+    }));
     gap.dataset.quality.range!.endUtcMs += INTERVAL;
     gap.dataset.quality.gapCount = 1;
     gap.dataset.quality.missingCandles = 1;

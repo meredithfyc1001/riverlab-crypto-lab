@@ -280,7 +280,7 @@ export function runResearch(
       progress?.(rows.length, checked.runs);
     }
   }
-  const payload = {
+  const payload: Omit<ResearchReport, 'payloadHash'> = {
     format: 'riverlab-research' as const,
     version: RESEARCH_VERSION,
     input: locked,
