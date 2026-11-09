@@ -50,9 +50,14 @@ async function prepare(page: Page, rows = 8, gap = false) {
     .getByRole('navigation')
     .getByRole('link', { name: '历史回放' })
     .click();
-  await page.getByLabel('回放数据集').selectOption({
-    index: (await page.getByLabel('回放数据集').locator('option').count()) - 1,
-  });
+  const select = page.getByLabel('回放数据集');
+  await expect(select).toBeVisible();
+  const option = select
+    .locator('option')
+    .filter({ hasText: 'SYNTHETIC/USDT' })
+    .last();
+  await expect(option).toBeAttached();
+  await select.selectOption((await option.getAttribute('value'))!);
 }
 async function start(page: Page) {
   await page
