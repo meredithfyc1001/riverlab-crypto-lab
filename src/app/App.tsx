@@ -1,3 +1,5 @@
+import { useReplayWorkbench } from './useReplayWorkbench';
+import { ReplayCenter } from '../features/replay';
 import { useResearchWorkbench } from './useResearchWorkbench';
 import { ResearchCenter, ResearchResults } from '../features/strategies';
 import { useBacktestWorkbench } from './useBacktestWorkbench';
@@ -17,6 +19,8 @@ export function App() {
   const library = useDatasetLibrary();
   const backtest = useBacktestWorkbench();
   const research = useResearchWorkbench();
+  const replay = useReplayWorkbench();
+  const pauseReplay = replay.pause;
   const [activeId, setActiveId] = useState(() =>
     pageFromHash(window.location.hash),
   );
@@ -24,10 +28,13 @@ export function App() {
   const activePage = pages.find((page) => page.id === activeId) ?? pages[0];
 
   useEffect(() => {
-    const onHashChange = () => setActiveId(pageFromHash(window.location.hash));
+    const onHashChange = () => {
+      setActiveId(pageFromHash(window.location.hash));
+      pauseReplay();
+    };
     window.addEventListener('hashchange', onHashChange);
     return () => window.removeEventListener('hashchange', onHashChange);
-  }, []);
+  }, [pauseReplay]);
 
   useEffect(() => {
     document.documentElement.dataset.theme = theme;
@@ -80,7 +87,7 @@ export function App() {
         </nav>
         <div className="sidebar-bottom">
           <span className="status-dot" /> 离线优先 · 本地研究
-          <small>v0.3.0-test / Phase 3 策略研究</small>
+          <small>v0.4.0-test / Phase 4 历史回放</small>
         </div>
       </aside>
 
@@ -112,7 +119,7 @@ export function App() {
               <h1>{activePage.label}</h1>
               <p className="page-description">{activePage.description}</p>
             </div>
-            <span className="badge">Phase 3 · 策略研究</span>
+            <span className="badge">Phase 4 · 历史回放</span>
           </div>
 
           {activeId === 'overview' ? (
@@ -144,9 +151,9 @@ export function App() {
                 <section className="stat-card">
                   <span>项目阶段</span>
                   <strong>
-                    策略研究 <small>Phase 3</small>
+                    历史回放 <small>Phase 4</small>
                   </strong>
-                  <p>批次比较、敏感度与时间隔离验证</p>
+                  <p>逐根决策、虚拟买卖与日记恢复</p>
                 </section>
                 <section className="stat-card">
                   <span>研究数据</span>
@@ -216,6 +223,34 @@ export function App() {
                 dataset={library.dataset}
                 theme={theme}
               />
+            </>
+          ) : activeId === 'replay' ? (
+            <>
+              <ReplayCenter
+                datasets={library.datasets}
+                model={replay.model}
+                records={replay.records}
+                busy={replay.busy}
+                playing={replay.playing}
+                speed={replay.speed}
+                saved={replay.saved}
+                theme={theme}
+                onSpeed={replay.setSpeed}
+                onStart={replay.start}
+                onAdvance={replay.advance}
+                onToggle={replay.toggle}
+                onPause={replay.pause}
+                onTrade={replay.trade}
+                onNote={replay.note}
+                onCheckpoint={replay.checkpoint}
+                onCsv={replay.csv}
+                onOpen={replay.openSaved}
+                onRestore={replay.restore}
+                onDelete={replay.remove}
+                onEnd={replay.end}
+              />
+              {replay.message && <p role="status">{replay.message}</p>}
+              {replay.error && <p role="alert">{replay.error}</p>}
             </>
           ) : activeId === 'strategies' ? (
             <>

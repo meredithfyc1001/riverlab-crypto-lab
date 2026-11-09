@@ -1,6 +1,46 @@
 # RiverLab Crypto Lab 进度
 
-## 当前恢复入口：Phase 3 待审（2026-11-09）
+## 当前恢复入口：Phase 4 实施中（2026-11-09）
+
+已通过GitHub确认PR#7于北京时间20:29:18合并为d60ef1c3491492247a4a1cb5a67c05cb58e33703，main一致。用户要求继续下一步，本轮启动原规划Phase4历史回放，独立feat/phase-4-historical-replay、目标Draft PR#8，不改main或自动合并。Phase3最终CI run42616308619三组317项Vitest/30项E2E与WindowsZIP全部实际通过，已在PR#7归档，旧316快照保留历史；用户Windows验收仍待反馈。
+
+本机环境已恢复，初始work分支干净；首次沙箱git fetch代理不可连，受支持网络权限重试成功并基于origin/main建立开发分支。npm ci沙箱EPERM代理连接失败，受支持权限重试259包成功，Node24.19.0/Linux；缓存位于work/npm-cache，无凭据输出或代理修改。已阅读最新文档/原规划与接口，已汇报设计、风险和验收；共享会话/回放/保存恢复已完成并经本机338/35验证；PR#8已创建，三平台实际结果在下方分列。
+
+## Phase 4 工程三平台与WindowsZIP验证通过（用户未验收）
+
+已验证功能提交1edb8f167cb012e223d9841e5f6b7e02571ae259：[run42623772196](https://github.com/meredithfyc1001/riverlab-crypto-lab/actions/runs/42623772196)四作业completed/success，已实际读取三组质量及Windows包完整日志。Ubuntu129182210379、Windows Chrome129182210211、Edge129182210357各npm ci/check、338项Vitest/35项E2E全部通过，格式/lint/core-app-test严格类型/生产构建及4个Python参考均通过，原317/30全部保留。JSON导入内存待保存、IndexedDB重开已保存的新增断言也通过。没有删除业务断言/跳过测试/放宽阈值。
+
+| 平台            | 实际浏览器    | 50k推进 ms | 恢复 ms | 最大主线程间隔 ms |
+| --------------- | ------------- | ---------- | ------- | ----------------- |
+| Ubuntu Chromium | 156.0.8078.4  | 860        | 1409    | 239.4             |
+| Windows Chrome  | 156.0.8078.80 | 1062       | 1573    | 273.6             |
+| Windows Edge    | 156.0.4314.58 | 1095       | 1789    | 272.4             |
+
+三组Node24.22.2/2逻辑核；Ubuntu7.0.0-1016-aws/Xeon6975P-C，Windows10.0.26100/EPYC9V74。样本为人工合成、一次手工买入，回放与恢复均实际执行50k；只代表这些机器和此样本。完整结构化数据见[CI证据](docs/phase-4-ci-evidence.json)，本机旧/新全部性能事实保留，不选择性删去较慢值。
+
+WindowsZIP job129183964790实际执行BAT前台启动、中文空格路径解压、127.0.0.1监听/HTTP/核心资源、旧回测与研究、新逐根回放/下一开盘虚拟成交/日记/保存刷新重开/JSON和CSV、路径穿越/Host/POST拒绝、端口占用与缺dist预期失败、Enter停止并释放端口；Chrome156.0.8078.80和Edge156.0.4314.58均0外部请求/0页面错误，全部通过。已验证[功能快照ZIP artifact13677432481](https://github.com/meredithfyc1001/riverlab-crypto-lab/actions/runs/42623772196/artifacts/13677432481)属于完整1edb8f1提交、dirty=false，内层710252bytes，SHA256为921ce5c36728fa50f3f88a9d14eaebc1015849297a45b89b9e25209c8ac6b581，14天至北京时间2026-11-23 21:19:42。
+
+随后仅归档本节/验收/证据文档，最终提交仍须自动执行相同完整CI与WindowsZIP。**最新实际head、当前下载链接及有效期以PR#8交付说明为准；上面的归档包不冒充后续head。** PR#8继续open/draft，main仍d60ef1c，无自动合并/tag/Release/公开部署。用户Windows/物理断网/真实磁盘耗尽/断电/全部受管策略仍未验收，清单不补签。建议先下载最终head包实际测试并反馈，再决定合并；Phase5候选需另行确定优先级。
+
+## Phase 4 本机工程验证
+
+- npm ci经受支持权限成功259包，依赖/完整性未改变，根项目版本0.4.0-test；初始沙箱EPERM连接代理失败事实保留。Git fetch沙箱代理失败后受支持权限成功，main未直接改写。
+- 共享执行会话保留原交易循环；137项旧内核/策略/保护专项通过。四组冻结的合并前引擎完整输出hash完全相同；独立Python Decimal手工订单参考逐根验证费用、余额、权益、已实现/浮动。初期typecheck发现未使用import、lint发现hash监听依赖，已修正，未改变门槛。
+- 新回放核心15项、存储6项均通过。首次4项真实浏览器专项通过，50k推进996ms/恢复1634ms/最大主线程325.7ms；后续补充配额与原数据删除后恢复测试。
+- 首次完整check中338项Vitest/格式/lint/strict类型/生产构建通过，但未指定系统Chromium路径，35个浏览器用例均在browserType.launch前因默认浏览器不存在失败，没有业务断言通过；不是用户Windows或浏览器流程成功。后按README显式PLAYWRIGHT_CHROMIUM_EXECUTABLE=/usr/bin/chromium重跑完整npm run check，退出0：18文件/338项Vitest、35项E2E全部通过，原317/30保留，无失败/跳过。
+- 本机Linux6.18.57、Node24.19.0、Chromium154.0.8037.57、AMD EPYC9V74，系统暴露3逻辑核、cgroup配额2CPU。最新50k实际顺序回放推进975ms、恢复1592ms、主线程最大220.3ms，沿用20秒/1000ms门槛；原2C、3性能也通过。完整原日志位于work/phase-4-local-check-fixed.log，结构化证据见docs/phase-4-local-evidence.json，不冒充跨平台证据。
+- 四个独立Python参考--check实际通过；原规划SHA256保持0a3081d44d3557e6d0f1b1eda3378c2e83282b3c6677dcd45b88a3190b86f84b。git diff --check与全仓Prettier通过。
+- 本地dirty开发ZIP通过中文空格路径实际Node前台HTTP/资源/旧回测+研究+新回放、虚拟下一开盘成交、日记、保存刷新重开、JSON/CSV、0外部请求/0页面错误、穿越/Host/POST拒绝、端口冲突/缺dist预期失败、Enter停止并释放端口。首次默认沙箱打包git子进程EPERM，受支持权限重试成功；没有修改打包脚本门槛。Linux未执行BAT，dirty=true且源SHA是基线，不能当作当前PR下载包；WindowsCI仍须真实执行。已查看package-chromium.png确认布局和已播放两根图表；390px及主题断言通过。
+- React Best Practices复核：稳定hash监听/暂停回调、Worker生命周期和generation、单个在途请求、无条件Hooks、只向feature传已知前缀、增量合并、无行情变化复用数组、图表清理/分序列让出浏览器、订单表最近100/日记分页、原生label/表格名。域计算均在core，兄弟feature未互相导入；未引入新依赖。主JS约532kB/gzip174kB有原默认Vite体积提示，未调高阈值。
+- 当前将提交独立Draft PR#8；三平台CI/WindowsZIP/绑定head下载尚待这个实际提交执行，不预记通过。所有Windows用户实机/物理断网清单待本人反馈。状态JSON恢复依赖原保存数据集，已在UI/README/设计明确；不声称独立行情备份或防作弊系统。
+
+## Phase 4 首轮跨平台CI与测试就绪修正
+
+PR#8已创建open/draft，工程提交92e9dd148cf1d26e899e212c18092edcc326585a；main保持d60ef1c，不合并/发布。[run42622323705](https://github.com/meredithfyc1001/riverlab-crypto-lab/actions/runs/42622323705)已读取三组完整实际日志：Windows Chrome129177342866、Edge129177342925均338项Vitest/35项E2E通过；Ubuntu129177343222为338项Vitest通过、33项E2E通过/2项失败，均在回放测试helper的selectOption超时。helper在hash页面渲染前读取option数量可得到0并传入index=-1，随后选项出现仍等待这个无效索引；修正为先等待下拉框可见和SYNTHETIC选项就绪，再按明确value选择，不改业务断言、超时、阈值或生产逻辑。WindowsZIP后置作业129179611220按规则skipped，未上传测试ZIP，不能记Windows包通过。
+
+本轮首CI50k回放实测：Ubuntu推进965ms/恢复1449ms/最大主线程228.9ms；Windows Chrome1296/1912/334.4ms；Edge955/1455/216.4ms。三组性能门槛均通过；浏览器/硬件完整数据在Actions实际日志和artifact。就绪修正后本机5项回放E2E再次全部通过，50k推进950ms/恢复1581ms/最大主线程204.3ms；typecheck/lint也通过。修正后的完整CI必须对新head重新运行，最终下载和有效期统一在PR#8交付说明维护。最后复核区分JSON文件恢复与IndexedDB重开：只有后者或明确保存才标浏览器已保存，JSON恢复仍为内存待保存；新增实际浏览器状态断言，避免刷新约定误导；修正后build/typecheck/lint和5项实际回放E2E全部通过，50k推进1059ms/恢复1606ms/最大主线程257.1ms。用户Windows清单仍待本人反馈。
+
+## Phase 3 待审时历史记录（2026-11-09，现已合并）
 
 用户明确授权“启动 Phase 3 设计与开发”。main仍为PR#6合并33b1d669；PR#7独立分支交付，不自动合并、Release或部署。原规划/成交/策略/风险/统计/18位账本均未修改。新增core/research、专用Worker、策略中心比较/网格/split/rolling、JSON校验重算与CSV摘要；窗口独立重置，不自动选优、不拼接收益。见[设计](docs/phase-3-design.md)和[验收清单](docs/phase-3-acceptance.md)。
 

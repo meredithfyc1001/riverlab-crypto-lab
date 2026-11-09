@@ -59,6 +59,10 @@ test('生产包仅使用本机资源，可导航、刷新、后退并切换主�
       await expect(
         page.getByRole('heading', { name: '回测配置' }),
       ).toBeVisible();
+    else if (label === '历史回放')
+      await expect(
+        page.getByRole('heading', { name: '历史逐根回放与模拟账户' }),
+      ).toBeVisible();
     else if (label === '实验中心')
       await expect(
         page.getByRole('heading', { name: '已保存回测实验' }),

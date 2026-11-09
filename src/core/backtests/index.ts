@@ -8,6 +8,7 @@ export const backtestsBoundary: ModuleBoundary = {
 
 export {
   runBacktest,
+  createBacktestSession,
   ALGORITHM_VERSION,
   CONVERSION_VERSION,
   RUN_ASSUMPTIONS,
