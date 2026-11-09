@@ -1,6 +1,7 @@
 import type { ResearchInput, ResearchReport } from '../core/research';
 export type ResearchRequest =
-  { kind: 'run'; input: ResearchInput } | { kind: 'verify'; report: unknown };
+  | { kind: 'run'; input: ResearchInput }
+  | { kind: 'verify'; report: unknown; observedUtcMs: number };
 export type ResearchResponse =
   | { kind: 'progress'; completed: number; total: number }
   | { kind: 'success'; report: ResearchReport; elapsedMs: number }

@@ -156,6 +156,14 @@ describe('Phase 3 deterministic independent windows', () => {
     input.dataset.candles[0] = { ...original, close: 105 };
     expect(first.input.dataset.candles[0].close).toBe(100);
   });
+  it('blocks future completion declarations at the report import clock boundary', () => {
+    const input = example();
+    const now = input.completedThroughUtcMs;
+    input.completedThroughUtcMs += INTERVAL;
+    const report = runResearch(input);
+    expect(() => verifyResearch(report, now)).toThrow('晚于当前时间');
+    expect(verifyResearch(report, now + INTERVAL)).toEqual(report);
+  });
   it('validates the full original dataset, including unused tail, before any subrun', () => {
     const input = example();
     input.evaluation = { kind: 'rolling', trainBars: 3, testBars: 2 };

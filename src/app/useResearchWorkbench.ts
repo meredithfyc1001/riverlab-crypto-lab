@@ -48,7 +48,11 @@ export function useResearchWorkbench() {
       if (file.size > 25 * 1024 * 1024)
         throw new Error('研究JSON超过25MiB，阻止读取。');
       const value: unknown = JSON.parse(await file.text());
-      await execute({ kind: 'verify', report: value });
+      await execute({
+        kind: 'verify',
+        report: value,
+        observedUtcMs: Date.now(),
+      });
     } catch (failure) {
       setError(failure instanceof Error ? failure.message : '报告读取失败。');
     }

@@ -298,7 +298,10 @@ export function runResearch(
   };
   return { ...payload, payloadHash: contentHash(payload) };
 }
-export function verifyResearch(value: unknown): ResearchReport {
+export function verifyResearch(
+  value: unknown,
+  observedUtcMs?: number,
+): ResearchReport {
   if (!value || typeof value !== 'object') throw new Error('研究报告损坏。');
   const report = value as ResearchReport;
   if (
@@ -309,6 +312,11 @@ export function verifyResearch(value: unknown): ResearchReport {
   const { payloadHash, ...payload } = report;
   if (contentHash(payload) !== payloadHash)
     throw new Error('研究报告校验失败。');
+  if (observedUtcMs !== undefined) {
+    integer(observedUtcMs, 0, 4_102_444_800_000);
+    if (!report.input || report.input.completedThroughUtcMs > observedUtcMs)
+      throw new Error('报告声明的完成时间晚于当前时间，阻止运行。');
+  }
   const actual = runResearch(report.input);
   if (canonicalJson(actual) !== canonicalJson(report))
     throw new Error('研究报告不能按记录复现，未修复。');

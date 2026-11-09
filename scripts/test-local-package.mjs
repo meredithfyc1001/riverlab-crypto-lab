@@ -296,6 +296,7 @@ try {
       'real Worker backtest and charts',
       'save reload reopen',
       'JSON CSV download',
+      'strategy research batch and JSON CSV download',
       'Enter exits and frees port',
       'missing dist fails',
     ],

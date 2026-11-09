@@ -9,7 +9,7 @@ scope.onmessage = ({ data }) => {
   try {
     const report =
       data.kind === 'verify'
-        ? verifyResearch(data.report)
+        ? verifyResearch(data.report, data.observedUtcMs)
         : runResearch(data.input, (completed, total) =>
             scope.postMessage({ kind: 'progress', completed, total }),
           );
