@@ -1,0 +1,55 @@
+{
+  "baselineMerge": "7644abf2323dd461240e4e5f430dc406851c3746",
+  "localChecks": {
+    "npmCi": "passed; 259 pinned packages; offline cache; Node24.19.0",
+    "check": "passed with explicit /usr/bin/chromium",
+    "vitest": 354,
+    "e2e": 40,
+    "oldTestsRetained": {
+      "vitest": 338,
+      "e2e": 35
+    },
+    "independentPythonReferences": 5
+  },
+  "performance": {
+    "sourceBars": 50000,
+    "evaluations": 2000000,
+    "elapsedMs": 6125,
+    "maximum": 66.59999999962747,
+    "samples": 304,
+    "cpu": "AMD EPYC 9V74 80-Core Processor",
+    "cores": 3,
+    "os": "linux 6.18.57",
+    "browser": "154.0.8037.57",
+    "node": "v24.19.0",
+    "limitations": "synthetic MA source; verify source then IID equity-ratio resampling; 101 display points, all steps in risk statistics"
+  },
+  "priorMeasurements": [
+    {
+      "kind": "first risk-only E2E",
+      "elapsedMs": 6111,
+      "maximumMs": 65.9
+    },
+    {
+      "kind": "first full check",
+      "elapsedMs": 6070,
+      "maximumMs": 75.8
+    }
+  ],
+  "cpuQuota": "200000/100000 (2 CPU); OS exposes 3 logical CPUs",
+  "packageSmoke": {
+    "platform": "Linux",
+    "sourceDirty": true,
+    "batExecuted": false,
+    "loopbackOnly": true,
+    "externalRequests": [],
+    "pageErrors": [],
+    "sourceInspectionSimulationPlotsSaveReloadExports": true,
+    "stopAndRebind": true,
+    "portConflictAndMissingDistExpectedFailures": true,
+    "notDeliverablePrArtifact": true
+  },
+  "windowsCI": "actual PR head status and package links maintained in PR #9",
+  "manualWindowsAcceptance": "pending user feedback",
+  "limits": "20..2000 paths, 1..50000 steps, <=2000000 evaluations, 101 display positions, all steps used for statistics; conditional historical net-equity resampling, not execution or future probability"
+}

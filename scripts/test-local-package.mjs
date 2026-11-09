@@ -263,6 +263,47 @@ try {
   }
   await page
     .getByRole('navigation')
+    .getByRole('link', { name: '风险中心' })
+    .click();
+  await page.getByLabel('源回测实验').selectOption({ index: 1 });
+  await page
+    .getByText('源实验校验与重算一致；请确认成本和重采样假设。')
+    .waitFor();
+  await page
+    .getByRole('checkbox', {
+      name: '我确认源成本、浮动盈亏、抽样假设和分位并非未来保证',
+    })
+    .check();
+  await page.getByRole('button', { name: '运行风险分析', exact: true }).click();
+  await page.getByTestId('risk-results').waitFor();
+  await page.getByTestId('risk-plots').waitFor();
+  await page.getByRole('button', { name: '保存风险报告', exact: true }).click();
+  await page
+    .getByText('风险报告已保存（事务已完成）。请导出JSON备份。')
+    .waitFor();
+  for (const format of ['JSON', 'CSV']) {
+    const download = page.waitForEvent('download');
+    await page
+      .getByRole('button', {
+        name: format === 'JSON' ? '导出风险 JSON' : '导出风险 CSV',
+        exact: true,
+      })
+      .click();
+    assert((await stat(await (await download).path())).size > 0);
+  }
+  await page.reload();
+  await page.getByRole('button', { name: /打开风险报告/ }).click();
+  await page
+    .getByText('风险报告校验与源重算/重采样一致；已重新打开。')
+    .waitFor();
+  await page.screenshot({
+    path: resolve(
+      `work/local-package/package-${process.env.E2E_BROWSER ?? 'chromium'}-risk.png`,
+    ),
+    fullPage: true,
+  });
+  await page
+    .getByRole('navigation')
     .getByRole('link', { name: '历史回放' })
     .click();
   await page.getByLabel('回放数据集').selectOption({ index: 1 });
@@ -350,6 +391,7 @@ try {
       'save reload reopen',
       'JSON CSV download',
       'strategy research batch and JSON CSV download',
+      'seeded risk analysis, fan plot, snapshot reload and JSON CSV',
       'prefix replay, virtual next-open trade, journal, checkpoint reload and JSON CSV',
       'Enter exits and frees port',
       'missing dist fails',

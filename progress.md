@@ -1,6 +1,24 @@
 # RiverLab Crypto Lab 进度
 
-## 当前恢复入口：Phase 4 实施中（2026-11-09）
+## 当前恢复入口：Phase 5A实施（2026-11-09）
+
+PR#8已于北京时间22:17:32合并，实际main为7644abf2323dd461240e4e5f430dc406851c3746。用户“好了，下一步”同意推进，未提供Windows逐项或版本，不补签。Phase5原为候选集合，已异步征询优先级，暂按推荐默认风险Monte Carlo重采样，不写成用户明确逐项选择。已核对原规划与源实验/统计契约，建立干净独立feat/phase-5a-research-tools，目标Draft PR#9。
+
+初次sandbox git fetch代理失败，受支持权限重试同步main成功。当前主干push CI run42633245806四作业均success；已读取三组实际质量日志129214642323/129214642611/129214642618，均338项单元/35项E2E通过，不把它当新阶段通过。已汇报设计、方法/成本/分位限制、Worker和验收标准，不修改旧交易真值或主干，不自动合并/发布/部署。
+
+## Phase 5A 本机工程验证
+
+- 实现纯core/risk-analysis（PCG32官方stream54、IID/连续区块、18位BigInt逐步floor、分位/频率/回撤/直方图）、专用Worker、风险页面、独立IndexedDB报告保存/重开/删除、完整JSON和全路径CSV；JSON内嵌源复现输入，源实验和原数据删除后仍能重算。原成交/保护/策略/统计/版本未修改，不重复扣费，不把浮动算完成交易胜负或把重采样当可成交回测。
+- npm ci --offline --cache work/npm-cache受支持权限成功259包，固定依赖未改；版本0.5.0-test。初始沙箱网络git fetch失败，受支持权限同步成功，main保持7644abf。
+- 首轮新增核心测试10通过/1失败，舍入归零测试原样本同时产生巨大上涨因子而正确触发整批金额越界；改成单调极小权益参考避免混测，另保留独立溢出断言，未放宽资金上限。初期typecheck发现测试数组字面量推断及Promise类型引用，改正类型；未删除断言/跳过测试。后续源输入快照明确深复制，避免外部引用改变报告。
+- 最终完整npm run check退出0：20文件/354项Vitest、40项生产包E2E全部通过，338/35原回归保留；格式/lint/strict core/app/test类型/生产构建均通过。独立Python统计/2B/研究/回放/风险五个--check全部通过，PCG官方向量、Decimal100/Fraction固定参考准确。日志work/phase-5a-local-check-final.log；复核损坏摘要日期上界、防止任务中切换源，取消按钮只用于Worker任务，检查后重跑同一完整命令。
+- Linux6.18.57/Node24.19.0/Chromium154.0.8037.57/AMD EPYC9V74，3可见逻辑核、cgroup2CPU。50k实际MA源+200万IID步最终6125ms，最大主线程观察间隔66.6ms，20秒/1000ms原门槛保留；首次专项6111/65.9ms、首次完整6070/75.8ms均记录。全部步骤参与统计，至多101显示位置；不是任意机器/行情规模保证。结构化[本机证据](docs/phase-5a-local-evidence.json)。
+- 两种方法UI、源校验/成本/浮动/hash、分位/频率/图形、390px/浅色、保存刷新重开/JSON导入内存未保存/删除、JSON/CSV、原实验与数据清除后独立恢复、常量/坏报告/预算与取消均实际通过。外网origin拦截且0意外请求；不冒充物理断网。配额/abort/损坏双store事务由fake-indexeddb单元测试验证，真实磁盘耗尽未测。
+- 最终本机ZIP smoke退出0：实际解压中文空格路径，仅Node前台127.0.0.1HTTP启动；原回测/研究/回放和新增风险源检查/分位图/保存刷新重开/JSON/CSV下载均通过，0外部请求/0页面错误，路径穿越/Host/POST拒绝、端口占用和缺dist预期失败、Enter停止释放端口。已查看package-chromium-risk.png确认结果与图形，证据work/phase-5a-local-package-final.log。Linux没有执行BAT；开发包dirty=true、SHA是基线，不能当PR下载包或Windows通过。
+- React Best Practices复核：无条件Hooks、generation拒绝迟到结果、Worker完成/取消清理，原生label/fieldset/表格，结果分页20、图形坐标与金额计算分离，feature公开入口/兄弟模块不互相导入，未增加依赖。主JS约553kB/gzip181kB有默认Vite体积提示，未调高阈值；当前性能通过。
+- 原规划SHA256仍0a3081d44d3557e6d0f1b1eda3378c2e83282b3c6677dcd45b88a3190b86f84b，git diff --check通过。独立分支后续创建Draft PR#9并读取三平台实际CI与WindowsZIP；绑定最新head的下载/过期时间由PR#9说明维护，排队不记通过。用户Windows/物理断网/真实磁盘与受管策略仍待本人反馈，不补签历史未测。
+
+## Phase 4 实施时记录（2026-11-09，现已合并）
 
 已通过GitHub确认PR#7于北京时间20:29:18合并为d60ef1c3491492247a4a1cb5a67c05cb58e33703，main一致。用户要求继续下一步，本轮启动原规划Phase4历史回放，独立feat/phase-4-historical-replay、目标Draft PR#8，不改main或自动合并。Phase3最终CI run42616308619三组317项Vitest/30项E2E与WindowsZIP全部实际通过，已在PR#7归档，旧316快照保留历史；用户Windows验收仍待反馈。
 
