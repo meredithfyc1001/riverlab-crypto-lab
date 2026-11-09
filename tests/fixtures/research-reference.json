@@ -1,0 +1,25 @@
+{
+  "prices": [
+    100,
+    110,
+    100,
+    120,
+    110,
+    130,
+    140,
+    120
+  ],
+  "finalCash": "0",
+  "finalQuantity": "10",
+  "finalEquity": "1200",
+  "netPnl": "200",
+  "realizedPnl": "400",
+  "unrealizedPnl": "-200",
+  "totalReturn": "0.2",
+  "maxDrawdown": "0.142857142857",
+  "completedTradeCount": 2,
+  "winRate": "1",
+  "benchmarkReturn": "0.2",
+  "trainEquity": "1200",
+  "testEquity": "860"
+}

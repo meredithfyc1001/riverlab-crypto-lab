@@ -51,6 +51,8 @@ test('生产包仅使用本机资源，可导航、刷新、后退并切换主�
       await expect(
         page.getByRole('heading', { name: '尚无可显示的数据' }),
       ).toBeVisible();
+    else if (label === '策略中心')
+      await expect(page.getByRole('heading', { name: '策略研究配置' })).toBeVisible();
     else if (label === '回测中心')
       await expect(
         page.getByRole('heading', { name: '回测配置' }),

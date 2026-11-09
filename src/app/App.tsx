@@ -1,3 +1,5 @@
+import { useResearchWorkbench } from './useResearchWorkbench';
+import { ResearchCenter, ResearchResults } from '../features/strategies';
 import { useBacktestWorkbench } from './useBacktestWorkbench';
 import { BacktestCenter, BacktestResults } from '../features/backtests';
 import { ExperimentCenter } from '../features/experiments';
@@ -14,6 +16,7 @@ import { DatasetCenter } from '../features/datasets';
 export function App() {
   const library = useDatasetLibrary();
   const backtest = useBacktestWorkbench();
+  const research = useResearchWorkbench();
   const [activeId, setActiveId] = useState(() =>
     pageFromHash(window.location.hash),
   );
@@ -77,7 +80,7 @@ export function App() {
         </nav>
         <div className="sidebar-bottom">
           <span className="status-dot" /> 离线优先 · 本地研究
-          <small>v0.2.0-test / Phase 2C 回测工作台</small>
+          <small>v0.3.0-test / Phase 3 策略研究</small>
         </div>
       </aside>
 
@@ -109,7 +112,7 @@ export function App() {
               <h1>{activePage.label}</h1>
               <p className="page-description">{activePage.description}</p>
             </div>
-            <span className="badge">Phase 2C · 回测工作台</span>
+            <span className="badge">Phase 3 · 策略研究</span>
           </div>
 
           {activeId === 'overview' ? (
@@ -141,9 +144,9 @@ export function App() {
                 <section className="stat-card">
                   <span>项目阶段</span>
                   <strong>
-                    回测工作台 <small>Phase 2C</small>
+                    策略研究 <small>Phase 3</small>
                   </strong>
-                  <p>三策略、虚拟账本、统计与本地实验</p>
+                  <p>批次比较、敏感度与时间隔离验证</p>
                 </section>
                 <section className="stat-card">
                   <span>研究数据</span>
@@ -190,7 +193,7 @@ export function App() {
                             ? 'CSV 导入可用'
                             : page.id === 'backtests'
                               ? '回测工作台可用'
-                              : '待开发'}
+                              : page.id === 'strategies' ? '策略研究可用' : '待开发'}
                         </small>
                       </a>
                     ))}
@@ -211,6 +214,22 @@ export function App() {
                 dataset={library.dataset}
                 theme={theme}
               />
+            </>
+          ) : activeId === 'strategies' ? (
+            <>
+              <ResearchCenter
+                datasets={library.datasets}
+                dataset={backtest.dataset}
+                busy={research.busy || backtest.busy}
+                onSelect={backtest.selectDataset}
+                onRun={research.run}
+                onRestore={research.restore}
+              />
+              {backtest.error && <p role="alert">{backtest.error}</p>}
+              {research.message && <p role="status">{research.message}</p>}
+              {research.error && <p role="alert">{research.error}</p>}
+              {research.busy && <button onClick={research.cancel}>取消策略研究</button>}
+              {research.report && <ResearchResults key={research.report.payloadHash} report={research.report} onExport={research.exportReport} />}
             </>
           ) : activeId === 'backtests' || activeId === 'experiments' ? (
             <>
