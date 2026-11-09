@@ -157,6 +157,9 @@ test('无未来消息/图表/DOM/状态导出；下一开盘成交、日记、�
     page.getByText('回放状态校验与重算一致；保持暂停，下一步从原游标继续。'),
   ).toBeVisible();
   await expect(page.getByTestId('replay-pending')).toBeVisible();
+  await expect(page.getByTestId('replay-cursor')).toContainText(
+    '当前状态已保存',
+  );
   const restored = await downloadJson(page);
   expect(restored.report.payload).toEqual(saved.report.payload);
   await step(page, 2);
@@ -173,6 +176,9 @@ test('无未来消息/图表/DOM/状态导出；下一开盘成交、日记、�
   await page.getByLabel('恢复回放 JSON（10MiB以内）').setInputFiles(saved.path);
   await expect(page.getByTestId('replay-cursor')).toContainText('已播放 1 /');
   await expect(metric(page, '现金 USDT')).toHaveText('1000');
+  await expect(page.getByTestId('replay-cursor')).toContainText(
+    '当前状态尚未保存',
+  );
   await step(page, 2);
   await expect(
     page.getByRole('table', { name: '回放逐笔成交' }).locator('tbody tr'),

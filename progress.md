@@ -22,7 +22,7 @@
 
 PR#8已创建open/draft，工程提交92e9dd148cf1d26e899e212c18092edcc326585a；main保持d60ef1c，不合并/发布。[run42622323705](https://github.com/meredithfyc1001/riverlab-crypto-lab/actions/runs/42622323705)已读取三组完整实际日志：Windows Chrome129177342866、Edge129177342925均338项Vitest/35项E2E通过；Ubuntu129177343222为338项Vitest通过、33项E2E通过/2项失败，均在回放测试helper的selectOption超时。helper在hash页面渲染前读取option数量可得到0并传入index=-1，随后选项出现仍等待这个无效索引；修正为先等待下拉框可见和SYNTHETIC选项就绪，再按明确value选择，不改业务断言、超时、阈值或生产逻辑。WindowsZIP后置作业129179611220按规则skipped，未上传测试ZIP，不能记Windows包通过。
 
-本轮首CI50k回放实测：Ubuntu推进965ms/恢复1449ms/最大主线程228.9ms；Windows Chrome1296/1912/334.4ms；Edge955/1455/216.4ms。三组性能门槛均通过；浏览器/硬件完整数据在Actions实际日志和artifact。就绪修正后本机5项回放E2E再次全部通过，50k推进950ms/恢复1581ms/最大主线程204.3ms；typecheck/lint也通过。修正后的完整CI必须对新head重新运行，最终下载和有效期统一在PR#8交付说明维护。用户Windows清单仍待本人反馈。
+本轮首CI50k回放实测：Ubuntu推进965ms/恢复1449ms/最大主线程228.9ms；Windows Chrome1296/1912/334.4ms；Edge955/1455/216.4ms。三组性能门槛均通过；浏览器/硬件完整数据在Actions实际日志和artifact。就绪修正后本机5项回放E2E再次全部通过，50k推进950ms/恢复1581ms/最大主线程204.3ms；typecheck/lint也通过。修正后的完整CI必须对新head重新运行，最终下载和有效期统一在PR#8交付说明维护。最后复核区分JSON文件恢复与IndexedDB重开：只有后者或明确保存才标浏览器已保存，JSON恢复仍为内存待保存；新增实际浏览器状态断言，避免刷新约定误导；修正后build/typecheck/lint和5项实际回放E2E全部通过，50k推进1059ms/恢复1606ms/最大主线程257.1ms。用户Windows清单仍待本人反馈。
 
 ## Phase 3 待审时历史记录（2026-11-09，现已合并）
 

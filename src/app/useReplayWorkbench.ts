@@ -198,7 +198,7 @@ export function useReplayWorkbench() {
       }
     });
   }
-  async function open(record: unknown) {
+  async function open(record: unknown, persisted = false) {
     pause();
     await perform(async (request) => {
       const result = await request({
@@ -206,7 +206,7 @@ export function useReplayWorkbench() {
         record,
         observedUtcMs: Date.now(),
       });
-      setSavedHash(result.record!.payload.stateHash);
+      setSavedHash(persisted ? result.record!.payload.stateHash : '');
       setMessage('回放状态校验与重算一致；保持暂停，下一步从原游标继续。');
     }, true);
   }
@@ -215,7 +215,7 @@ export function useReplayWorkbench() {
     pause();
     setError('');
     try {
-      await open(await store.current.load(id));
+      await open(await store.current.load(id), true);
     } catch (e) {
       setError(storageMessage(e));
     }
