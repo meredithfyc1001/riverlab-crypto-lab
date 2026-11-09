@@ -58,6 +58,11 @@ for (const row of manifest.trim().split('\n')) {
 const build = JSON.parse(
   await readFile(join(folder, 'build-info.json'), 'utf8'),
 );
+assert.equal(build.phase, '5A');
+assert.equal(
+  build.version,
+  JSON.parse(await readFile('package.json', 'utf8')).version,
+);
 assert.equal(
   build.commitSha,
   execFileSync('git', ['rev-parse', 'HEAD'], { encoding: 'utf8' }).trim(),
@@ -374,6 +379,9 @@ try {
     node: process.version,
     browser: browser.version(),
     commitSha: build.commitSha,
+    phase: build.phase,
+    version: build.version,
+    dirty: build.dirty,
     extractionPath: folder,
     externalRequests: external,
     errors,

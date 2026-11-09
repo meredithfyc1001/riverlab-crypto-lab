@@ -1,10 +1,26 @@
 # RiverLab Crypto Lab 进度
 
-## 当前恢复入口：Phase 5A实施（2026-11-09）
+## 当前恢复入口：Phase 5A待审交付（2026-11-09）
 
 PR#8已于北京时间22:17:32合并，实际main为7644abf2323dd461240e4e5f430dc406851c3746。用户“好了，下一步”同意推进，未提供Windows逐项或版本，不补签。Phase5原为候选集合，已异步征询优先级，暂按推荐默认风险Monte Carlo重采样，不写成用户明确逐项选择。已核对原规划与源实验/统计契约，建立干净独立feat/phase-5a-research-tools，目标Draft PR#9。
 
 初次sandbox git fetch代理失败，受支持权限重试同步main成功。当前主干push CI run42633245806四作业均success；已读取三组实际质量日志129214642323/129214642611/129214642618，均338项单元/35项E2E通过，不把它当新阶段通过。已汇报设计、方法/成本/分位限制、Worker和验收标准，不修改旧交易真值或主干，不自动合并/发布/部署。
+
+## Phase 5A 工程三平台日志复核（功能快照）
+
+功能提交7595580147ae88dbfe71320b2075b9dc1f86af33的[run42639724622](https://github.com/meredithfyc1001/riverlab-crypto-lab/actions/runs/42639724622)三组质量作业已全部success，已逐一读取实际完整日志：Ubuntu129237277267、Windows Chrome129237277692、Windows Edge129237278233各npm ci/check、354项Vitest/40项E2E、5个独立参考全部通过，原338/35保留，无失败/跳过/阈值放宽。
+
+| 平台            | 实际浏览器    | 50k源+200万步 ms | 主线程最大间隔 ms |
+| --------------- | ------------- | ---------------- | ----------------- |
+| Ubuntu Chromium | 156.0.8078.4  | 6585             | 46.7              |
+| Windows Chrome  | 156.0.8078.80 | 6961             | 75.2              |
+| Windows Edge    | 156.0.4314.58 | 4188             | 49.4              |
+
+三组Node24.22.2/2逻辑核；Ubuntu Linux7.0.0-1019-azure/EPYC7763，Windows10.0.26100，Chrome EPYC7763、Edge EPYC9V45。方法为人工合成MA源校验后IID净权益比例重采样，不是无限规模或未来表现保证；详细字段见[CI证据](docs/phase-5a-ci-evidence.json)。
+
+WindowsZIP作业129240266846已success并读取完整日志，Chrome156.0.8078.80与Edge156.0.4314.58实际中文空格路径解压/BAT前台127.0.0.1启动、资源/旧回测/研究/逐根回放、新风险模拟/分位图/保存刷新重开/JSON/CSV、穿越/Host/POST拒绝、端口冲突/缺dist预期失败、Enter停止与端口释放全部通过，双浏览器0外部请求/0页面错误。功能快照artifact13685855616绑定7595580、dirty=false，内层778500bytes/SHA256 0db328ca2b32984dc49ac33a37dad791c1973d2b594b15933d64673632dbf1e6；此快照仍含修正前2C阶段标签，留作历史证据，不作为最终推荐下载。
+
+打包复核发现旧脚本build-info阶段仍写2C，已修正为5A并新增阶段/版本与根package一致的断言，日志/证据同时输出phase/version/dirty。修正后本机lint及完整ZIP smoke再通过，源SHA7595580、dirty=true，仅开发包；最终下载必须是修正后最新head三组检查与WindowsZIP实际成功的包。绑定当前完整SHA的链接/校验/14天到期时间由PR#9说明维护，不用功能快照冒充后续head。用户Windows实机/物理断网/真实磁盘耗尽仍待反馈，不补签。
 
 ## Phase 5A 本机工程验证
 
@@ -16,7 +32,7 @@ PR#8已于北京时间22:17:32合并，实际main为7644abf2323dd461240e4e5f430d
 - 两种方法UI、源校验/成本/浮动/hash、分位/频率/图形、390px/浅色、保存刷新重开/JSON导入内存未保存/删除、JSON/CSV、原实验与数据清除后独立恢复、常量/坏报告/预算与取消均实际通过。外网origin拦截且0意外请求；不冒充物理断网。配额/abort/损坏双store事务由fake-indexeddb单元测试验证，真实磁盘耗尽未测。
 - 最终本机ZIP smoke退出0：实际解压中文空格路径，仅Node前台127.0.0.1HTTP启动；原回测/研究/回放和新增风险源检查/分位图/保存刷新重开/JSON/CSV下载均通过，0外部请求/0页面错误，路径穿越/Host/POST拒绝、端口占用和缺dist预期失败、Enter停止释放端口。已查看package-chromium-risk.png确认结果与图形，证据work/phase-5a-local-package-final.log。Linux没有执行BAT；开发包dirty=true、SHA是基线，不能当PR下载包或Windows通过。
 - React Best Practices复核：无条件Hooks、generation拒绝迟到结果、Worker完成/取消清理，原生label/fieldset/表格，结果分页20、图形坐标与金额计算分离，feature公开入口/兄弟模块不互相导入，未增加依赖。主JS约553kB/gzip181kB有默认Vite体积提示，未调高阈值；当前性能通过。
-- 原规划SHA256仍0a3081d44d3557e6d0f1b1eda3378c2e83282b3c6677dcd45b88a3190b86f84b，git diff --check通过。独立分支后续创建Draft PR#9并读取三平台实际CI与WindowsZIP；绑定最新head的下载/过期时间由PR#9说明维护，排队不记通过。用户Windows/物理断网/真实磁盘与受管策略仍待本人反馈，不补签历史未测。
+- 原规划SHA256仍0a3081d44d3557e6d0f1b1eda3378c2e83282b3c6677dcd45b88a3190b86f84b，git diff --check通过。已创建独立Draft PR#9并读取功能快照三平台CI与WindowsZIP；绑定最新head的下载/过期时间由PR#9说明维护，排队不记通过。用户Windows/物理断网/真实磁盘与受管策略仍待本人反馈，不补签历史未测。
 
 ## Phase 4 实施时记录（2026-11-09，现已合并）
 

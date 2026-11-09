@@ -1,0 +1,153 @@
+{
+  "runId": 42639724622,
+  "sourceSha": "7595580147ae88dbfe71320b2075b9dc1f86af33",
+  "quality": [
+    {
+      "id": 129237277267,
+      "name": "Check / ubuntu-latest / chromium",
+      "conclusion": "success",
+      "vitest": 354,
+      "e2e": 40,
+      "independentPythonReferences": 5,
+      "performance": {
+        "sourceBars": 50000,
+        "evaluations": 2000000,
+        "elapsedMs": 6585,
+        "maximum": 46.69999999998254,
+        "samples": 328,
+        "cpu": "AMD EPYC 7763 64-Core Processor",
+        "cores": 2,
+        "os": "linux 7.0.0-1019-azure",
+        "browser": "156.0.8078.4",
+        "node": "v24.22.2",
+        "limitations": "synthetic MA source; verify source then IID equity-ratio resampling; 101 display points, all steps in risk statistics"
+      }
+    },
+    {
+      "id": 129237277692,
+      "name": "Check / windows-latest / chrome",
+      "conclusion": "success",
+      "vitest": 354,
+      "e2e": 40,
+      "independentPythonReferences": 5,
+      "performance": {
+        "sourceBars": 50000,
+        "evaluations": 2000000,
+        "elapsedMs": 6961,
+        "maximum": 75.19999999995343,
+        "samples": 345,
+        "cpu": "AMD EPYC 7763 64-Core Processor                ",
+        "cores": 2,
+        "os": "win32 10.0.26100",
+        "browser": "156.0.8078.80",
+        "node": "v24.22.2",
+        "limitations": "synthetic MA source; verify source then IID equity-ratio resampling; 101 display points, all steps in risk statistics"
+      }
+    },
+    {
+      "id": 129237278233,
+      "name": "Check / windows-latest / msedge",
+      "conclusion": "success",
+      "vitest": 354,
+      "e2e": 40,
+      "independentPythonReferences": 5,
+      "performance": {
+        "sourceBars": 50000,
+        "evaluations": 2000000,
+        "elapsedMs": 4188,
+        "maximum": 49.40000000002328,
+        "samples": 206,
+        "cpu": "AMD EPYC 9V45 96-Core Processor                ",
+        "cores": 2,
+        "os": "win32 10.0.26100",
+        "browser": "156.0.4314.58",
+        "node": "v24.22.2",
+        "limitations": "synthetic MA source; verify source then IID equity-ratio resampling; 101 display points, all steps in risk statistics"
+      }
+    }
+  ],
+  "manualWindowsAcceptance": "pending user feedback",
+  "package": {
+    "jobId": 129240266846,
+    "conclusion": "success",
+    "build": {
+      "path": "D:\\a\\riverlab-crypto-lab\\riverlab-crypto-lab\\work\\local-package\\RiverLab-Crypto-Lab-Local-Test.zip",
+      "bytes": 778500,
+      "sha256": "0db328ca2b32984dc49ac33a37dad791c1973d2b594b15933d64673632dbf1e6",
+      "commitSha": "7595580147ae88dbfe71320b2075b9dc1f86af33",
+      "dirty": false
+    },
+    "buildStageLabelBeforeFix": "2C (fixed to 5A in subsequent commit; final download must use current PR head)",
+    "browsers": [
+      {
+        "platform": "win32",
+        "node": "v24.22.2",
+        "browser": "156.0.8078.80",
+        "commitSha": "7595580147ae88dbfe71320b2075b9dc1f86af33",
+        "extractionPath": "D:\\a\\riverlab-crypto-lab\\riverlab-crypto-lab\\work\\Windows 中文 空格测试 chrome\\RiverLab-Crypto-Lab-Local-Test",
+        "externalRequests": [],
+        "pageErrors": [],
+        "checks": [
+          "ZIP hashes",
+          "BAT foreground launch",
+          "Chinese and space path",
+          "read-only and traversal protection",
+          "port conflict fails",
+          "no external origins",
+          "real Worker backtest and charts",
+          "save reload reopen",
+          "JSON CSV download",
+          "strategy research batch and JSON CSV download",
+          "seeded risk analysis, fan plot, snapshot reload and JSON CSV",
+          "prefix replay, virtual next-open trade, journal, checkpoint reload and JSON CSV",
+          "Enter exits and frees port",
+          "missing dist fails"
+        ]
+      },
+      {
+        "platform": "win32",
+        "node": "v24.22.2",
+        "browser": "156.0.4314.58",
+        "commitSha": "7595580147ae88dbfe71320b2075b9dc1f86af33",
+        "extractionPath": "D:\\a\\riverlab-crypto-lab\\riverlab-crypto-lab\\work\\Windows 中文 空格测试 msedge\\RiverLab-Crypto-Lab-Local-Test",
+        "externalRequests": [],
+        "pageErrors": [],
+        "checks": [
+          "ZIP hashes",
+          "BAT foreground launch",
+          "Chinese and space path",
+          "read-only and traversal protection",
+          "port conflict fails",
+          "no external origins",
+          "real Worker backtest and charts",
+          "save reload reopen",
+          "JSON CSV download",
+          "strategy research batch and JSON CSV download",
+          "seeded risk analysis, fan plot, snapshot reload and JSON CSV",
+          "prefix replay, virtual next-open trade, journal, checkpoint reload and JSON CSV",
+          "Enter exits and frees port",
+          "missing dist fails"
+        ]
+      }
+    ],
+    "artifact": {
+      "id": 13685855616,
+      "name": "RiverLab-Crypto-Lab-Local-Test-7595580147ae88dbfe71320b2075b9dc1f86af33",
+      "size_in_bytes": 1670140,
+      "url": "https://api.github.com/repos/meredithfyc1001/riverlab-crypto-lab/actions/artifacts/13685855616",
+      "archive_download_url": "https://api.github.com/repos/meredithfyc1001/riverlab-crypto-lab/actions/artifacts/13685855616/zip",
+      "expired": false,
+      "created_at": "2026-11-09T15:03:51Z",
+      "expires_at": "2026-11-23T15:03:50Z",
+      "updated_at": "2026-11-09T15:03:51Z",
+      "digest": "sha256:59e028f7ae92b7daae4c42bab7a9dbab4c3de72aab55a1aee9a7d39ec3fa0951",
+      "workflow_run": {
+        "id": 42639724622,
+        "repository_id": 1423571537,
+        "head_repository_id": 1423571537,
+        "head_branch": "feat/phase-5a-research-tools",
+        "head_sha": "7595580147ae88dbfe71320b2075b9dc1f86af33"
+      }
+    }
+  }
+}

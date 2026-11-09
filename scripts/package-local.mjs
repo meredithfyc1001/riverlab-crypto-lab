@@ -23,12 +23,13 @@ const dirty = Boolean(
 if (process.env.CI && dirty)
   throw new Error('CI package must be built from a clean commit.');
 const pkg = JSON.parse(await readFile('package.json', 'utf8'));
+const phase = '5A';
 await writeFile(
   join(folder, 'build-info.json'),
   JSON.stringify(
     {
       product: 'RiverLab Crypto Lab',
-      phase: '2C',
+      phase,
       version: pkg.version,
       commitSha: sha,
       dirty,
@@ -117,6 +118,8 @@ console.log(
     bytes: zip.length,
     sha256: hash(zip),
     commitSha: sha,
+    phase,
+    version: pkg.version,
     dirty,
   }),
 );

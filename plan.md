@@ -71,3 +71,5 @@ Phase4本机完整check已通过338项Vitest/35项E2E，原317/30全部保留；
 ## Phase 5A 当前行动
 
 用户“好了，下一步”同意推进；原Phase5多候选，已征询偏好，默认推荐先实施[可复现Monte Carlo风险分析](docs/phase-5a-design.md)。独立分支feat/phase-5a-research-tools、Draft PR#9。先固定数学/随机/舍入口径与独立Python参考，再core/Worker/UI/独立库报告，保留338/35全部旧回归，执行本机和三平台CI、WindowsZIP，不自动合并或宣称M5正式发布通过。
+
+本机354项单元/40项浏览器、5个数值参考和Linux开发ZIP已完成；功能快照7595580三平台实际日志亦354/40全部成功，详细见progress。功能快照WindowsZIP也实际通过；打包phase标签修正后最新head必须重新完整CI/WindowsZIP，交付状态与当前SHA下载以Draft PR#9说明为准。用户Windows实机仍待本人反馈。
