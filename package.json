@@ -1,6 +1,6 @@
 {
   "name": "riverlab-crypto-lab",
-  "version": "0.2.0-test",
+  "version": "0.3.0-test",
   "private": true,
   "type": "module",
   "engines": {

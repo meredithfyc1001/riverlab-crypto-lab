@@ -1,0 +1,87 @@
+.research-controls,
+.research-results {
+  margin-block: 1rem;
+  padding: 1.25rem;
+  min-width: 0;
+}
+.research-controls fieldset {
+  min-width: 0;
+  margin-block: 1rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 1rem;
+}
+.research-controls label,
+.research-results > label {
+  display: grid;
+  gap: 0.4rem;
+  margin-block: 0.7rem;
+}
+.research-controls input:not([type='checkbox']),
+.research-controls select,
+.research-results select {
+  width: 100%;
+  min-width: 0;
+  padding: 0.6rem;
+  font: inherit;
+  color: inherit;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+}
+.research-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
+  gap: 0.8rem;
+}
+.research-controls .checkbox-label {
+  display: flex;
+  align-items: flex-start;
+}
+.research-controls button,
+.research-results > button {
+  padding: 0.65rem 1rem;
+}
+.research-controls p,
+.research-results p,
+.research-results code {
+  overflow-wrap: anywhere;
+}
+.research-scroll {
+  max-width: 100%;
+  overflow-x: auto;
+  margin-block: 1rem;
+}
+.research-scroll table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+}
+.research-scroll caption {
+  text-align: left;
+  padding-block: 0.7rem;
+}
+.research-scroll th,
+.research-scroll td {
+  padding: 0.65rem;
+  border: 1px solid var(--border);
+  vertical-align: top;
+  min-width: 110px;
+}
+.research-scroll th:first-child {
+  min-width: 180px;
+}
+.research-scroll button {
+  color: inherit;
+  background: transparent;
+  text-align: left;
+  border: 1px solid currentColor;
+  border-radius: 4px;
+  padding: 0.3rem;
+  cursor: pointer;
+  overflow-wrap: anywhere;
+  max-width: 240px;
+}
+.research-results details {
+  margin-block: 1rem;
+}

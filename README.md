@@ -1,6 +1,8 @@
 # RiverLab Crypto Lab
 
-中文、Windows 优先、离线优先的历史数据研究工具。Phase 0/1A 已合并且用户总体验收通过；1B/2A/2B 已合并，但用户 Windows 实机尚未验收。PR #5 实际合并 SHA：`0ee6d8483bd6a5226a6d01a1d21b990b134bab46`。本轮 **Phase 2C** 将原三策略、保守风控与18位BigInt账本接入Worker回测工作台，增加纯TS统计、实验保存/重开、JSON/CSV与Windows本地测试ZIP。CI和用户实机状态分列于progress，不自动合并。
+中文、Windows 优先、离线优先的历史数据研究工具。Phase 0/1A 已合并且用户总体验收通过；1B/2A/2B 已合并，但用户 Windows 实机尚未验收。**Phase 2C 已合并**（PR #6，实际提交 `33b1d6695ca1115efefce59132d96f8534c43e72`），已将三策略、保守风控与18位BigInt账本接入Worker回测工作台，包含纯TS统计、实验保存/重开、JSON/CSV与Windows本地测试ZIP。合并不代替用户Windows验收；本轮未收到新的实机反馈。CI和用户实机状态分列于progress，不自动合并。
+
+**Phase 3 当前待审（PR #7）**：策略批次比较、参数敏感度、按时间拆分和滚动研究，见文末操作说明与设计。main仍为上述Phase2C提交，未自动合并。
 
 **仅供学习研究 · 不提供投资建议 · 历史表现不代表未来表现。** 不连接真实账户、不接收密钥、不处理真实资金。
 
@@ -11,7 +13,7 @@
 ```powershell
 git clone https://github.com/meredithfyc1001/riverlab-crypto-lab.git
 cd riverlab-crypto-lab
-git switch feat/phase-2c-backtest-workbench
+git switch main
 npm ci
 npm run dev
 ```
@@ -83,7 +85,9 @@ Edge/Chrome 打开 http://127.0.0.1:4173。可断开外部网络后刷新和操�
 
 ## 下载 Windows 本地测试包
 
-在 PR #6 Checks 找到成功的“Project quality”运行，底部Artifacts下载 `RiverLab-Crypto-Lab-Local-Test-<完整head SHA>`（登录有仓库访问权的GitHub账号）。保留14天，具体有效期见运行artifact元信息；排队/失败不产生可用测试ZIP。外层artifact含内层 `RiverLab-Crypto-Lab-Local-Test.zip`、ZIP校验和及Windows验证证据。不要把旧提交artifact当最新PR产物，核对build-info的SHA。
+Phase 3 请从 [PR #7](https://github.com/meredithfyc1001/riverlab-crypto-lab/pull/7) 说明中的当前head测试包链接下载；先核对完整提交SHA。三平台检查与WindowsZIP验证全部成功后才上传 `RiverLab-Crypto-Lab-Local-Test-<完整head SHA>`，需登录有仓库访问权的GitHub账号，保留14天，具体到期时间见该artifact。外层artifact含内层 `RiverLab-Crypto-Lab-Local-Test.zip`、校验和与Windows证据；核对包内build-info的版本/完整SHA和SHA256SUMS。排队或失败不等于可用包。
+
+main仍为Phase2C合并33b1d669；[旧main包](https://github.com/meredithfyc1001/riverlab-crypto-lab/actions/runs/42610440364/artifacts/13670985121)保留至北京时间2026-11-23 19:41:32，**不含Phase3**。不要把历史包当作PR当前head。
 
 取出内层ZIP并全部解压到含中文/空格路径，系统先装Node.js24 LTS，双击 `start-local.bat`。无需npm ci/开发服务器，浏览器打开 `http://127.0.0.1:4173`，默认只监听回环。保持前台窗口，Enter、q再Enter或Ctrl+C停止，不留后台服务。端口占用明确退出，不自动切换存储来源；如手动使用其他端口，浏览器数据隔离。首次下载及安装Node需联网，包启动与核心功能无需外网。详见[包内说明](scripts/local-test/README-local-test.md)和[用户验收清单](docs/phase-2c-acceptance.md)。
 
@@ -103,4 +107,12 @@ Edge/Chrome 打开 http://127.0.0.1:4173。可断开外部网络后刷新和操�
 
 - [Phase 2B 设计](docs/phase-2b-design.md)、[代码自查](docs/phase-2b-review.md)与[Windows清单](docs/phase-2b-acceptance.md)：三策略、保护单、跳空/双触发优先级和真实测试边界。
 
-独立分支、待审 PR，用户 Windows 验收后再评审合并。
+Phase 2C 已合并。后续改动继续使用独立分支和待审 PR；用户 Windows 结果、CI 与云端验证分别记录。
+
+## Phase 3 策略研究（待审）
+
+策略中心提供三策略固定参数比较及MA/RSI/突破敏感度网格；每格同时显示收益/回撤，不自动选优。可选择全区间、按时间样本内外拆分、滚动训练/测试。全部窗口独立本金、空仓、指标冷启动，测试严格晚于训练，不跨边界传递信号，不拼接独立收益。重复查看测试结果后调参会污染样本外证据。
+
+先在数据中心保存已检查数据，再到策略中心选择，确认收盘和质量警告。配置统一本金/手续费/买卖滑点/保护，网格英文逗号列表；无效或重复单元阻止整批。每轴/组合最多25候选，最多20折/100次子运行/100万根求值。报告只在内存，刷新清除；JSON含原数据快照、参数、版本、口径、hash与统计，可重新导入校验重算（25MiB上限）；CSV为全部窗口比较摘要。原数据集/回测实验的IndexedDB保存约定不变。
+
+见[设计](docs/phase-3-design.md)、[验收](docs/phase-3-acceptance.md)、[实际CI与下载状态](progress.md)。PR#7保持Draft，CI与Windows用户实机分别记录。此环境本机npm ci/check未执行；三平台CI结果须以实际日志为准。仅供学习研究，历史表现不代表未来表现。

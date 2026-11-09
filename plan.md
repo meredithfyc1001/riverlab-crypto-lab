@@ -1,8 +1,8 @@
 # RiverLab Crypto Lab 执行计划
 
-基线：[原始规划 v0.1](docs/product-plan-v0.1.md)全文保留，用户当前明确指令优先。当前授权 **Phase 2C：回测工作台、统计、实验保存/导出与 Windows 本地测试包**（2026-10-20）。
+基线：[原始规划 v0.1](docs/product-plan-v0.1.md)全文保留，用户当前明确指令优先。Phase 2C 工程已于 2026-11-09 合并。用户于2026-11-09授权启动Phase3设计与开发；范围与口径见[Phase3设计](docs/phase-3-design.md)，[验收清单](docs/phase-3-acceptance.md)。
 
-PR #5 merged=true，main实际合并提交 `0ee6d8483bd6a5226a6d01a1d21b990b134bab46`。已从同步origin/main建立 `feat/phase-2c-backtest-workbench`，已创建独立Draft PR #6；允许提交/推送/建PR及CI artifact，不直接修改main，不自动合并、tag、正式Release或部署。用户下载测试后决定合并。
+当前 main 已核实为 `33b1d6695ca1115efefce59132d96f8534c43e72`，即 PR #6 实际合并提交。PR #6 不再待审；本轮通过独立分支/Draft PR#7交付Phase3研究工作台及交接记录，不直接修改 main，不自动合并、tag、正式 Release 或部署。合并不补签用户 Windows 验收。
 
 ## 已交付基线与验收边界
 
@@ -12,7 +12,7 @@ PR #5 merged=true，main实际合并提交 `0ee6d8483bd6a5226a6d01a1d21b990b134b
 - Phase2B PR#5已合并，MA/RSI/突破、保守止盈止损及版本契约保留。最新run39284322892三组实际日志各256项Vitest/17项E2E通过，补充原排队事实；本机最终256/17通过。用户Windows未执行。
 - 原失败、当时状态和合并SHA在[progress](progress.md)完整保留；已执行、未执行、未通过分开，CI不替代Windows用户实机签署。
 
-## 本轮实施顺序与技术决策
+## Phase 2C 工程方案与验收约定（保留）
 
 1. 核对合并、完整文档/契约阅读、汇报方案、更新授权及[2C设计](docs/phase-2c-design.md)。
 2. core/statistics只读原成交/收盘账本：收益、收盘回撤/持续、完整平仓周期胜率/利润因子、已实现/浮动对账、暴露区间上界、同成本买入持有、严格CAGR NA条件。独立固定参考核验，禁止Number金额累加。
@@ -44,10 +44,20 @@ check包含格式、lint、Vitest、独立core/app/test严格类型、生产构�
 
 ## 后续路线与范围
 
-Phase2C待审及Windows用户验收后评估M2。下一阶段建议仍先审查可靠性和用户问题，再独立授权Phase3策略比较/样本外研究。当前不开发参数优化、滚动测试、AI、实时行情、真实账户/APIKey/钱包/实盘、杠杆/保证金/强平、正式Release或公开部署。
+Phase2C已合并；用户Windows实机结果尚未反馈，M2用户验收不因合并自动签署。Phase3现已授权，实施批次比较、有限敏感度网格、时间拆分和滚动验证；不开发自动优化器、AI、实时行情、真实账户/APIKey/钱包/实盘、杠杆/保证金/强平、正式Release或公开部署。
 
 M0/M1/M2/M3/M4/M5门槛继续以原规划为准；用户授权当前阶段不补签先前未测试项目。原规划SHA256应保持0a3081d44d3557e6d0f1b1eda3378c2e83282b3c6677dcd45b88a3190b86f84b。
 
 ## 当前技术交付状态
 
-Phase2C工程a4198f2的三平台307/24质量与Windows ZIP Chrome/Edge实际验证已全部通过（run39372868072），原失败与修正完整保留于progress。PR #6继续Draft待审，Windows用户清单仍未执行。收尾文档/入口标签提交的实际head CI与14天artifact以PR交付说明为准，必须核对完整SHA，不自动合并。
+Phase 2C 最终工程 f4101bc 已随 PR #6 合并为 33b1d6695ca1115efefce59132d96f8534c43e72。旧 artifact 的 14 天保留期已结束。当前合并提交的 [main CI](https://github.com/meredithfyc1001/riverlab-crypto-lab/actions/runs/42610440364) 三平台各 307 项 Vitest、24 项 E2E 已实际读取日志确认通过；Windows ZIP 的 Chrome/Edge 实际验证也已通过，新包对应完整 main 合并 SHA，保留至北京时间2026-11-23 19:41:32；下载与校验见 progress.md。用户清单待反馈，不把合并或 CI 成功等同于实机验收。
+
+## Phase 3 实施顺序
+
+1. 确认用户授权与已合并main，完整设计时间隔离/成本/样本/预算/复现契约。
+2. 纯TS研究编排、独立Decimal固定参考及时间隔离测试。
+3. 专用Worker、三策略与参数网格UI、窗口收益/回撤比较、完整JSON重算与CSV。
+4. 全部旧回归加新离线/性能流程；Windows ZIP补测研究。npm ci/check由三平台真实CI执行，本机环境失败记未执行。
+5. 读取全部实际CI日志与headSHA ZIP、记录有效期，PR#7保持Draft等待用户Windows反馈。
+
+Phase3已验证实现85e933a三平台各316/30与WindowsZIP双浏览器全部通过；最后JSON导入当前时间门槛增加1项测试后需重新完整CI，最新结果/绑定head下载在PR#7说明。失败事实、机器/耗时与环境未执行边界在progress归档。

@@ -1,6 +1,42 @@
 # RiverLab Crypto Lab 进度
 
-## 当前恢复入口：Phase 2C（2026-10-20）
+## 当前恢复入口：Phase 3 待审（2026-11-09）
+
+用户明确授权“启动 Phase 3 设计与开发”。main仍为PR#6合并33b1d669；PR#7独立分支交付，不自动合并、Release或部署。原规划/成交/策略/风险/统计/18位账本均未修改。新增core/research、专用Worker、策略中心比较/网格/split/rolling、JSON校验重算与CSV摘要；窗口独立重置，不自动选优、不拼接收益。见[设计](docs/phase-3-design.md)和[验收清单](docs/phase-3-acceptance.md)。
+
+已验证实现快照85e933affc06c906fb8b0de402c4d63ddad8aa25：[run42614794507](https://github.com/meredithfyc1001/riverlab-crypto-lab/actions/runs/42614794507)四作业completed/success，已实际读取三组质量及WindowsZIP完整日志。每平台npm ci、format/lint、316项Vitest、严格core/app/test类型、生产构建、30项E2E全部通过，原307/24回归保留。三个独立Python参考也通过。
+
+| 平台            | 浏览器        | CPU / 逻辑核                        | 50k三策略墙钟ms | 主线程最大观察间隔ms |
+| --------------- | ------------- | ----------------------------------- | --------------- | -------------------- |
+| Ubuntu Chromium | 156.0.8078.4  | AMD EPYC 7763 64-Core Processor / 2 | 7214            | 134.8                |
+| Windows Chrome  | 156.0.8078.80 | AMD EPYC 7763 64-Core Processor / 2 | 4752            | 171.4                |
+| Windows Edge    | 156.0.4314.58 | AMD EPYC 9V74 80-Core Processor / 2 | 4121            | 141.3                |
+
+Node24.22.2；Ubuntu内核7.0.0-1019-azure，Windows10.0.26100。阈值20秒/1000ms均通过；只代表这些CI机器及50k人工合成样本，不承诺所有资源预算组合耗时。完整机器/版本/限制见[证据JSON](docs/phase-3-evidence.json)。生产主JS约501kB（gzip164kB）有Vite默认体积提示，未提高告警阈值；现有性能门槛全部通过。
+
+WindowsZIP job129153773186：Chrome156.0.8078.80、Edge156.0.4314.58，真实中文空格路径解压、BAT前台127.0.0.1启动、HTTP/Worker/图表、旧回测保存重开/导出、新研究批次和JSON/CSV、无外部origin请求/无页面错误、路径穿越/Host/POST拒绝、端口冲突与缺dist失败、Enter停止释放端口均通过。归档包artifact13672092574属于85e933a，内层630576bytes，SHA256为0871376b7e3c7e2222b876aa5cd2ed5e008b1a51b2edcbf85014acef1e9187c2，至北京时间2026-11-23 20:17:07。它是已验证快照；之后补上JSON导入“完成时间不能晚于当前时间”的入口校验及测试，并归档记录，最新PR提交必须重新完整CI。**下载以PR#7说明绑定当前完整headSHA的最新成功artifact为准，不把此归档包当最新。**
+
+失败保留：run42614089752（8321a96）14个新增文件格式失败，独立Decimal通过；按只读诊断提交Prettier结果。run42614354882（8a83342）三组316项测试通过，严格类型因报告literal拓宽及测试直接修改readonly Candle失败；改为类型化报告payload与替换完整Candle对象，原断言未删除/跳过，未放宽阈值。run42614794507修正后完整成功。最后归档run42616047702（6dae708）仅新证据JSON短数组和进度表格格式失败，按同一只读诊断格式化后重新提交，未更改检查门槛。最后导入时间校验增加1项核心测试，预期317项，以后续实际CI为准。
+
+当前云执行环境配置失败，exec_command实际不可用；本机npm ci/check未执行，不把GitHubCI写成本机执行。通过GitHub树/提交API仅写独立分支，读取真实CI日志；内容只读的格式诊断不修改checkout或绕过check。Windows用户实机/物理断网待反馈，合并和CI都不补签此前验收。
+
+后续先由用户下载最终当前head包、按清单在Windows常规浏览器验证和反馈，再决定合并。按原规划下一阶段为Phase4历史回放，范围须单独确认。
+
+## Phase 2C 合并后交接记录（2026-11-09，随后用户已授权Phase3）
+
+- 已通过 GitHub 核实 PR #6 merged=true，合并提交为 `33b1d6695ca1115efefce59132d96f8534c43e72`，合并时间北京时间 2026-11-09 19:36:50；main 当前正是此提交。下方“Draft 待审”等文字属于当时的历史记录。
+- 本轮用户要求继续；先完成合并状态、下载包与 Windows 验收交接。当时向用户询问Phase3范围；用户随后明确授权“启动 Phase 3 设计与开发”，见当前Phase3记录。
+- 2026-10-20 的 artifact 已于 2026-11-03 到期，旧运行 artifact 列表现为空。合并已自动触发 [main CI run 42610440364](https://github.com/meredithfyc1001/riverlab-crypto-lab/actions/runs/42610440364)，无需重复触发或修改代码以重建旧包。
+- Ubuntu Chromium：job 129137160598，已读日志确认 307 项 Vitest、24 项 E2E 全部通过；50,000 根 2764ms，最大主线程间隔 219.2ms；Intel(R) Xeon(R) 6975P-C / 2 逻辑核，浏览器 156.0.8078.4。
+- Windows Chrome：job 129137160463，已读日志确认 307 项 Vitest、24 项 E2E 全部通过；50,000 根 2677ms，最大主线程间隔 231.3ms；AMD EPYC 9V45 96-Core Processor / 2 逻辑核，浏览器 156.0.8078.80。
+- Windows Edge：job 129137160153，已读日志确认 307 项 Vitest、24 项 E2E 全部通过；50,000 根 3574ms，最大主线程间隔 317.9ms；INTEL(R) XEON(R) PLATINUM 8573C / 2 逻辑核，浏览器 156.0.4314.58。
+- Windows ZIP job 129138532233 已 completed/success，已读完整日志：Node v24.22.2，Windows Chrome 156.0.8078.80 / Edge 156.0.4314.58，真实解压到中文空格路径、BAT前台启动、HTTP资源/回测/保存重开/JSON与CSV、0外部请求/0页面错误、路径/方法/Host拒绝、端口占用/缺dist失败和Enter退出均成功。
+- [新的 main ZIP artifact](https://github.com/meredithfyc1001/riverlab-crypto-lab/actions/runs/42610440364/artifacts/13670985121) 已生成，完整SHA为 `33b1d6695ca1115efefce59132d96f8534c43e72`，expired=false，保留14天，至北京时间2026-11-23 19:41:32。内层ZIP 569520 bytes，SHA-256：`5c223439630cf093899c545f76f4a36beda393a3e001f5bd8748a11e211c9b99`。外层含内层ZIP、校验清单及双浏览器证据；不创建正式Release。
+- 当前执行环境显示启动失败；shell 实际返回“No usable execution environment”，因此本轮本机 npm ci/check 未执行，也未读取或改写用户本地工作区。通过 GitHub 连接以已确认 main 的不可变内容创建独立文档分支，初始交接提交范围仅Markdown，随后明确授权Phase3功能开发；CI与此前本机结果分列。
+- PR #6 的合并不证明用户 Windows 验收通过。本轮未收到逐项结果或版本，清单标为待反馈；历史“未测试/未执行”保留当时事实，不补签。
+- 本轮不直接修改 main，不自动合并文档 PR，不创建正式 Release 或公开部署；18 位账本、成交时序、策略/统计版本和所有回归保持原样。
+
+## Phase 2C 历史恢复入口（2026-10-20）
 
 - 初始工作区干净。已 fetch main，GitHub确认PR #5 merged=true，实际合并SHA为0ee6d8483bd6a5226a6d01a1d21b990b134bab46；从该提交建立feat/phase-2c-backtest-workbench。已创建Draft PR #6，不修改main或自动合并。
 - 完整阅读AGENTS、plan、progress、README、原始规划、2A/2B设计和现有数据/策略/成交/账本/存储接口。已向用户汇报实施计划、选型、风险及验收标准。
@@ -271,3 +307,9 @@ React/TypeScript/Vite、中文八入口、深浅主题、4 条明确标识的合
 没有真实数据导入、图表、业务计算或存储，没有账户/资金连接。静态包经本机 HTTP；单 HTML、file:// 和离线安装器未实施。Windows 用户验收待完成，M0 尚未通过。
 
 建议先完成 Windows 两浏览器手工验收和 PR 评审，再由用户启动 Phase 1，优先真实 CSV 样本、毫秒/微秒识别、无效行和缺口报告。
+
+## 2026-11-09 Phase 3 启动时记录
+
+用户明确回复“启动 Phase 3 设计与开发”，替代此前范围待定状态。基线main33b1d669不变，继续独立分支PR#7并按最终实现重写描述；禁止自动合并。设计/授权/验收清单已更新，新增纯TS研究、Worker、策略UI和确定复现报告、独立Decimal参考及时间隔离/离线/性能测试。原307/24回归保留。
+
+本轮云执行环境配置失败，exec_command不可用，本机npm ci/check未执行。使用GitHub树/提交API仅写独立分支并由CI实际执行；启动时新CI尚待结果；后续实际结果已归档于当前恢复入口。格式失败后只读Prettier诊断不修改checkout，修正必须提交后重新完整检查。

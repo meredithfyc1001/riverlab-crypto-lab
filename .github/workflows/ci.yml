@@ -43,7 +43,11 @@ jobs:
         run: |
           python tests/reference/statistics_reference.py --check
           python tests/reference/phase2b_reference.py --check
+          python tests/reference/research_reference.py --check
       - run: npm run check
+      - name: Read-only formatting diagnostics
+        if: failure()
+        run: node scripts/format-diagnostics.mjs
       - name: Save browser evidence
         if: always()
         uses: actions/upload-artifact@v4
