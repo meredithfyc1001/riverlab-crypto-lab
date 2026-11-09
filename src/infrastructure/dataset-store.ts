@@ -1,7 +1,7 @@
+import { LocalDatabase } from './local-database';
 import { assertDataset, summarizeDataset } from '../core/data/dataset';
 import type { Dataset, DatasetSummary } from '../core/data/dataset';
 
-const DB_NAME = 'riverlab-crypto-lab';
 const STORE = 'datasets';
 export const MAX_BACKUP_BYTES = 20 * 1024 * 1024;
 export function storageMessage(error: unknown): string {
@@ -17,83 +17,7 @@ export function storageMessage(error: unknown): string {
           : '未知存储错误';
   return `本地存储操作失败：${reason}。未确认成功；可导出备份并检查浏览器权限/空间。`;
 }
-export class DatasetStore {
-  constructor(
-    private readonly factory: () => IDBFactory = () => indexedDB,
-    private readonly name = DB_NAME,
-  ) {}
-  private open(): Promise<IDBDatabase> {
-    return new Promise((resolve, reject) => {
-      const request = this.factory().open(this.name, 1);
-      let finished = false;
-      const timer = setTimeout(() => {
-        finished = true;
-        reject(new Error('打开存储超时，请关闭其他标签页后重试'));
-      }, 5000);
-      request.onupgradeneeded = () => {
-        if (finished) {
-          request.transaction?.abort();
-          return;
-        }
-        const db = request.result;
-        db.createObjectStore(STORE, { keyPath: 'id' });
-        db.createObjectStore('summaries', { keyPath: 'id' });
-      };
-      request.onblocked = () => {
-        finished = true;
-        clearTimeout(timer);
-        reject(new Error('存储升级被其他标签页阻塞'));
-      };
-      request.onerror = () => {
-        clearTimeout(timer);
-        reject(request.error);
-      };
-      request.onsuccess = () => {
-        clearTimeout(timer);
-        if (finished) {
-          request.result.close();
-          return;
-        }
-        request.result.onversionchange = () => request.result.close();
-        resolve(request.result);
-      };
-    });
-  }
-  private async transaction<T>(
-    mode: IDBTransactionMode,
-    run: (tx: IDBTransaction, result: (v: T) => void) => void,
-  ): Promise<T> {
-    const db = await this.open();
-    return new Promise<T>((resolve, reject) => {
-      let value: T;
-      let tx: IDBTransaction | undefined;
-      try {
-        tx = db.transaction([STORE, 'summaries'], mode);
-        tx.oncomplete = () => {
-          db.close();
-          resolve(value);
-        };
-        tx.onabort = () => {
-          db.close();
-          reject(tx!.error ?? new Error('事务被中止'));
-        };
-        tx.onerror = () => {
-          /* abort settles the promise; never report request success as commit */
-        };
-        run(tx, (next) => {
-          value = next;
-        });
-      } catch (error) {
-        try {
-          tx?.abort();
-        } catch {
-          /* transaction may already have aborted */
-        }
-        db.close();
-        reject(error);
-      }
-    });
-  }
+export class DatasetStore extends LocalDatabase {
   async save(dataset: Dataset): Promise<void> {
     assertDataset(dataset);
     await this.transaction<void>('readwrite', (tx, done) => {

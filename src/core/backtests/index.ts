@@ -12,7 +12,7 @@ export {
   CONVERSION_VERSION,
   RUN_ASSUMPTIONS,
 } from './engine';
-export { DEFAULT_CONFIG } from './config';
+export { DEFAULT_CONFIG, normalizeConfig } from './config';
 export { assertLedger } from './ledger';
 export type {
   BacktestConfig,

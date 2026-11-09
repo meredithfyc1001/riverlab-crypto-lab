@@ -1,0 +1,129 @@
+.backtest-controls form {
+  display: grid;
+  gap: 18px;
+}
+.backtest-controls label {
+  display: grid;
+  gap: 8px;
+  min-width: 0;
+}
+.backtest-controls .checkbox-label {
+  display: flex;
+  align-items: flex-start;
+}
+.backtest-controls select,
+.backtest-controls input:not([type='checkbox']) {
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  padding: 10px;
+  color: var(--text);
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+}
+.backtest-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 210px), 1fr));
+  gap: 16px;
+}
+.backtest-facts {
+  border-left: 3px solid #28ad85;
+  padding-left: 18px;
+  overflow-wrap: anywhere;
+}
+.backtest-results {
+  display: grid;
+  gap: 20px;
+  margin-top: 20px;
+}
+.result-metrics {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
+  gap: 12px;
+}
+.result-metrics div {
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow-wrap: anywhere;
+}
+.result-metrics dt {
+  color: var(--muted);
+  font-size: 13px;
+}
+.result-metrics dd {
+  margin: 10px 0 0;
+  font-variant-numeric: tabular-nums;
+}
+.backtest-results pre {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  max-height: 500px;
+  overflow: auto;
+}
+.backtest-results td small {
+  display: block;
+}
+.experiment-item {
+  padding: 12px 0;
+  border-bottom: 1px solid var(--border);
+  overflow-wrap: anywhere;
+}
+
+.backtest-controls,
+.experiment-center,
+.backtest-results > .panel {
+  padding: 24px;
+  min-width: 0;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+}
+.backtest-results {
+  min-width: 0;
+  max-width: 100%;
+}
+.backtest-results .table-scroll {
+  min-width: 0;
+  max-width: 100%;
+}
+.backtest-controls h2,
+.experiment-center h2,
+.backtest-results h2 {
+  margin-bottom: 12px;
+}
+.backtest-controls p,
+.experiment-center p,
+.backtest-results p {
+  line-height: 1.7;
+  margin: 10px 0;
+}
+.backtest-controls button,
+.backtest-results button,
+.experiment-center button {
+  background: var(--panel-hover);
+  border: 1px solid var(--border);
+  color: var(--text);
+  border-radius: 5px;
+  padding: 9px 12px;
+  font-size: 12px;
+  line-height: 1.5;
+}
+.backtest-controls button:hover:enabled,
+.backtest-results button:hover:enabled,
+.experiment-center button:hover:enabled {
+  border-color: var(--accent);
+}
+.backtest-controls button:disabled,
+.backtest-results button:disabled,
+.experiment-center button:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+@media (max-width: 600px) {
+  .backtest-controls,
+  .experiment-center,
+  .backtest-results > .panel {
+    padding: 16px;
+  }
+}

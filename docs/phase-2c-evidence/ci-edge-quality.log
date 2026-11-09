@@ -1,0 +1,314 @@
+﻿2026-10-20T04:57:29.5019750Z Current runner version: '2.337.0'
+2026-10-20T04:57:29.5053190Z ##[group]Runner Image Provisioner
+2026-10-20T04:57:29.5054134Z Hosted Compute Agent
+2026-10-20T04:57:29.5054981Z Version: 20261002.596
+2026-10-20T04:57:29.5055739Z Commit: c3d12f3313a95f25162a1503be624f3b0617f8c0
+2026-10-20T04:57:29.5056586Z Build Date: 2026-10-02T22:28:27Z
+2026-10-20T04:57:29.5057337Z Worker ID: {1ef9ae57-8ac4-405e-990b-bbc81db8c06c}
+2026-10-20T04:57:29.5058417Z Region: westus3
+2026-10-20T04:57:29.5058971Z Cloud: Azure
+2026-10-20T04:57:29.5059554Z ##[endgroup]
+2026-10-20T04:57:29.5061211Z ##[group]Operating System
+2026-10-20T04:57:29.5061940Z Microsoft Windows Server 2025
+2026-10-20T04:57:29.5062707Z 10.0.26100
+2026-10-20T04:57:29.5063239Z Datacenter
+2026-10-20T04:57:29.5063830Z ##[endgroup]
+2026-10-20T04:57:29.5064406Z ##[group]Runner Image
+2026-10-20T04:57:29.5065051Z Image: windows-2025-vs2026
+2026-10-20T04:57:29.5065685Z Version: 20261007.264.1
+2026-10-20T04:57:29.5067522Z Included Software: https://github.com/actions/runner-images/blob/win25-vs2026/20261007.264/images/windows/Windows2025-VS2026-Readme.md
+2026-10-20T04:57:29.5069505Z Image Release: https://github.com/actions/runner-images/releases/tag/win25-vs2026%2F20261007.264
+2026-10-20T04:57:29.5070671Z ##[endgroup]
+2026-10-20T04:57:29.5071955Z ##[group]GITHUB_TOKEN Permissions
+2026-10-20T04:57:29.5073981Z Contents: read
+2026-10-20T04:57:29.5074596Z Metadata: read
+2026-10-20T04:57:29.5075178Z ##[endgroup]
+2026-10-20T04:57:29.5077650Z Secret source: Actions
+2026-10-20T04:57:29.5078912Z Cache mode: write
+2026-10-20T04:57:29.5079743Z Prepare workflow directory
+2026-10-20T04:57:29.5681772Z Prepare all required actions
+2026-10-20T04:57:29.5749264Z Getting action download info
+2026-10-20T04:57:29.8902721Z Download action repository 'actions/checkout@v4' (SHA:11d5960a326750d5838078e36cf38b85af677262)
+2026-10-20T04:57:30.2042624Z Download action repository 'actions/setup-node@v4' (SHA:49933ea5288caeca8642d1e84afbd3f7d6820020)
+2026-10-20T04:57:30.4150470Z Download action repository 'actions/upload-artifact@v4' (SHA:ea165f8d65b6e75b540449e92b4886f43607fa02)
+2026-10-20T04:57:30.8152350Z Complete job name: Check / windows-latest / msedge
+2026-10-20T04:57:31.0431809Z ##[group]Run actions/checkout@v4
+2026-10-20T04:57:31.0433512Z with:
+2026-10-20T04:57:31.0434219Z   ref: 3106d0e796c8116af5762e3a9e41ecd81d26d2df
+2026-10-20T04:57:31.0435183Z   repository: meredithfyc1001/riverlab-crypto-lab
+2026-10-20T04:57:31.0441400Z   token: ***
+2026-10-20T04:57:31.0442053Z   ssh-strict: true
+2026-10-20T04:57:31.0442695Z   ssh-user: git
+2026-10-20T04:57:31.0443347Z   persist-credentials: true
+2026-10-20T04:57:31.0444068Z   clean: true
+2026-10-20T04:57:31.0444715Z   sparse-checkout-cone-mode: true
+2026-10-20T04:57:31.0445481Z   fetch-depth: 1
+2026-10-20T04:57:31.0446136Z   fetch-tags: false
+2026-10-20T04:57:31.0446928Z   show-progress: true
+2026-10-20T04:57:31.0447703Z   lfs: false
+2026-10-20T04:57:31.0448415Z   submodules: false
+2026-10-20T04:57:31.0449187Z   set-safe-directory: true
+2026-10-20T04:57:31.0450130Z   allow-unsafe-pr-checkout: false
+2026-10-20T04:57:31.0451536Z env:
+2026-10-20T04:57:31.0452268Z   E2E_BROWSER: msedge
+2026-10-20T04:57:31.0453176Z ##[endgroup]
+2026-10-20T04:57:32.7841463Z Syncing repository: meredithfyc1001/riverlab-crypto-lab
+2026-10-20T04:57:32.7843111Z ##[group]Getting Git version info
+2026-10-20T04:57:32.7868436Z Working directory is 'D:\a\riverlab-crypto-lab\riverlab-crypto-lab'
+2026-10-20T04:57:32.7869569Z [command]"C:\Program Files\Git\bin\git.exe" version
+2026-10-20T04:57:32.7870188Z git version 2.56.0.windows.2
+2026-10-20T04:57:32.7872281Z ##[endgroup]
+2026-10-20T04:57:32.7877748Z Temporarily overriding HOME='D:\a\_temp\da855601-b1bb-4b5a-8779-f8fde5384e91' before making global git config changes
+2026-10-20T04:57:32.7878650Z Adding repository directory to the temporary git global config as a safe directory
+2026-10-20T04:57:32.7879547Z [command]"C:\Program Files\Git\bin\git.exe" config --global --add safe.directory D:\a\riverlab-crypto-lab\riverlab-crypto-lab
+2026-10-20T04:57:33.0445936Z Deleting the contents of 'D:\a\riverlab-crypto-lab\riverlab-crypto-lab'
+2026-10-20T04:57:33.0451700Z ##[group]Initializing the repository
+2026-10-20T04:57:33.0461004Z [command]"C:\Program Files\Git\bin\git.exe" init D:\a\riverlab-crypto-lab\riverlab-crypto-lab
+2026-10-20T04:57:33.3601808Z Initialized empty Git repository in D:/a/riverlab-crypto-lab/riverlab-crypto-lab/.git/
+2026-10-20T04:57:33.3691250Z [command]"C:\Program Files\Git\bin\git.exe" remote add origin https://github.com/meredithfyc1001/riverlab-crypto-lab
+2026-10-20T04:57:33.7584390Z ##[endgroup]
+2026-10-20T04:57:33.7620094Z ##[group]Disabling automatic garbage collection
+2026-10-20T04:57:33.7621169Z [command]"C:\Program Files\Git\bin\git.exe" config --local gc.auto 0
+2026-10-20T04:57:33.8001761Z ##[endgroup]
+2026-10-20T04:57:33.8011566Z ##[group]Setting up auth
+2026-10-20T04:57:33.8016073Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp core\.sshCommand
+2026-10-20T04:57:33.8377945Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "sh -c \"git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :\""
+2026-10-20T04:57:39.5410987Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-10-20T04:57:39.5759544Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "sh -c \"git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :\""
+2026-10-20T04:57:40.1713629Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-10-20T04:57:40.2220693Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "git config --local --show-origin --name-only --get-regexp remote.origin.url"
+2026-10-20T04:57:40.7952897Z [command]"C:\Program Files\Git\bin\git.exe" config --local http.https://github.com/.extraheader "AUTHORIZATION: basic ***"
+2026-10-20T04:57:40.8319316Z ##[endgroup]
+2026-10-20T04:57:40.8342159Z ##[group]Fetching the repository
+2026-10-20T04:57:40.8359263Z [command]"C:\Program Files\Git\bin\git.exe" -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin 3106d0e796c8116af5762e3a9e41ecd81d26d2df
+2026-10-20T04:57:44.1728878Z From https://github.com/meredithfyc1001/riverlab-crypto-lab
+2026-10-20T04:57:44.1738748Z  * branch            3106d0e796c8116af5762e3a9e41ecd81d26d2df -> FETCH_HEAD
+2026-10-20T04:57:44.1777640Z ##[endgroup]
+2026-10-20T04:57:44.1819784Z ##[group]Determining the checkout info
+2026-10-20T04:57:44.1821394Z ##[endgroup]
+2026-10-20T04:57:44.1822048Z [command]"C:\Program Files\Git\bin\git.exe" sparse-checkout disable
+2026-10-20T04:57:44.4537144Z [command]"C:\Program Files\Git\bin\git.exe" config --local --unset-all extensions.worktreeConfig
+2026-10-20T04:57:44.4863422Z ##[group]Checking out the ref
+2026-10-20T04:57:44.4877353Z [command]"C:\Program Files\Git\bin\git.exe" checkout --progress --force 3106d0e796c8116af5762e3a9e41ecd81d26d2df
+2026-10-20T04:57:44.7764123Z Note: switching to '3106d0e796c8116af5762e3a9e41ecd81d26d2df'.
+2026-10-20T04:57:44.7764673Z 
+2026-10-20T04:57:44.7764946Z You are in 'detached HEAD' state. You can look around, make experimental
+2026-10-20T04:57:44.7765514Z changes and commit them, and you can discard any commits you make in this
+2026-10-20T04:57:44.7766089Z state without impacting any branches by switching back to a branch.
+2026-10-20T04:57:44.7766397Z 
+2026-10-20T04:57:44.7766604Z If you want to create a new branch to retain commits you create, you may
+2026-10-20T04:57:44.7767279Z do so (now or later) by using -c with the switch command. Example:
+2026-10-20T04:57:44.7767583Z 
+2026-10-20T04:57:44.7767707Z   git switch -c <new-branch-name>
+2026-10-20T04:57:44.7768065Z 
+2026-10-20T04:57:44.7769258Z Or undo this operation with:
+2026-10-20T04:57:44.7769483Z 
+2026-10-20T04:57:44.7769630Z   git switch -
+2026-10-20T04:57:44.7769777Z 
+2026-10-20T04:57:44.7841654Z Turn off this advice by setting config variable advice.detachedHead to false
+2026-10-20T04:57:44.7842414Z 
+2026-10-20T04:57:44.7843093Z HEAD is now at 3106d0e perf: stream report hashing and avoid repeated ledger serialization
+2026-10-20T04:57:44.8363321Z ##[endgroup]
+2026-10-20T04:57:44.9181027Z [command]"C:\Program Files\Git\bin\git.exe" log -1 --format=%H
+2026-10-20T04:57:44.9591448Z 3106d0e796c8116af5762e3a9e41ecd81d26d2df
+2026-10-20T04:57:45.0006370Z ##[group]Run actions/setup-node@v4
+2026-10-20T04:57:45.0006653Z with:
+2026-10-20T04:57:45.0006818Z   node-version: 24
+2026-10-20T04:57:45.0006979Z   cache: npm
+2026-10-20T04:57:45.0007168Z   cache-dependency-path: package-lock.json
+2026-10-20T04:57:45.0007394Z   always-auth: false
+2026-10-20T04:57:45.0007563Z   check-latest: false
+2026-10-20T04:57:45.0009478Z   token: ***
+2026-10-20T04:57:45.0009660Z env:
+2026-10-20T04:57:45.0009806Z   E2E_BROWSER: msedge
+2026-10-20T04:57:45.0009970Z ##[endgroup]
+2026-10-20T04:57:45.1557310Z (node:8412) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-10-20T04:57:45.1561436Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-10-20T04:57:45.1589693Z Found in cache @ C:\hostedtoolcache\windows\node\24.21.0\x64
+2026-10-20T04:57:45.1590475Z ##[group]Environment details
+2026-10-20T04:58:08.7947326Z node: v24.21.0
+2026-10-20T04:58:08.7948180Z npm: 11.19.0
+2026-10-20T04:58:08.7960955Z yarn: 1.22.22
+2026-10-20T04:58:08.7962113Z ##[endgroup]
+2026-10-20T04:58:08.8652644Z [command]C:\Windows\system32\cmd.exe /D /S /C "C:\hostedtoolcache\windows\node\24.21.0\x64\npm.cmd config get cache"
+2026-10-20T04:58:10.0443918Z D:\a\riverlab-crypto-lab\riverlab-crypto-lab\work\npm-cache
+2026-10-20T04:58:10.6426853Z npm cache is not found
+2026-10-20T04:58:10.6710226Z ##[group]Run npm ci
+2026-10-20T04:58:10.6711840Z npm ci
+2026-10-20T04:58:10.9116061Z shell: C:\Program Files\PowerShell\7\pwsh.EXE -command ". '{0}'"
+2026-10-20T04:58:10.9116368Z env:
+2026-10-20T04:58:10.9116534Z   E2E_BROWSER: msedge
+2026-10-20T04:58:10.9116719Z ##[endgroup]
+2026-10-20T04:58:30.3583713Z 
+2026-10-20T04:58:30.3594477Z added 258 packages, and audited 259 packages in 18s
+2026-10-20T04:58:30.3596397Z 
+2026-10-20T04:58:30.3597047Z found 0 vulnerabilities
+2026-10-20T04:58:30.3612005Z npm warn install-scripts 1 package has install scripts not yet covered by allowScripts:
+2026-10-20T04:58:30.3613048Z npm warn install-scripts   esbuild@0.28.2 (postinstall: node install.js)
+2026-10-20T04:58:30.3613733Z npm warn install-scripts
+2026-10-20T04:58:30.3614691Z npm warn install-scripts Run `npm install-scripts ls` to review, or `npm install-scripts approve <pkg>` to allow.
+2026-10-20T04:58:39.6944204Z ##[group]Run python tests/reference/statistics_reference.py --check
+2026-10-20T04:58:39.6944679Z python tests/reference/statistics_reference.py --check
+2026-10-20T04:58:39.6945027Z python tests/reference/phase2b_reference.py --check
+2026-10-20T04:58:39.7001652Z shell: C:\Program Files\PowerShell\7\pwsh.EXE -command ". '{0}'"
+2026-10-20T04:58:39.7001931Z env:
+2026-10-20T04:58:39.7002093Z   E2E_BROWSER: msedge
+2026-10-20T04:58:39.7002262Z ##[endgroup]
+2026-10-20T04:58:43.2355519Z Independent Decimal90 statistics reference matched
+2026-10-20T04:58:43.3623694Z Independent Decimal reference matches: 18 strategy cases, 5 risk cases
+2026-10-20T04:58:43.4750940Z ##[group]Run npm run check
+2026-10-20T04:58:43.4751336Z npm run check
+2026-10-20T04:58:43.4831174Z shell: C:\Program Files\PowerShell\7\pwsh.EXE -command ". '{0}'"
+2026-10-20T04:58:43.4831470Z env:
+2026-10-20T04:58:43.4831639Z   E2E_BROWSER: msedge
+2026-10-20T04:58:43.4831826Z ##[endgroup]
+2026-10-20T04:58:44.3661481Z 
+2026-10-20T04:58:44.3662763Z > riverlab-crypto-lab@0.2.0-test check
+2026-10-20T04:58:44.3667287Z > npm run format:check && npm run lint && npm test && npm run build && npm run test:e2e
+2026-10-20T04:58:44.3668558Z 
+2026-10-20T04:58:44.6606038Z 
+2026-10-20T04:58:44.6607191Z > riverlab-crypto-lab@0.2.0-test format:check
+2026-10-20T04:58:44.6607892Z > prettier --check .
+2026-10-20T04:58:44.6608219Z 
+2026-10-20T04:58:44.9622696Z Checking formatting...
+2026-10-20T04:58:48.2749381Z All matched files use Prettier code style!
+2026-10-20T04:58:48.9647722Z 
+2026-10-20T04:58:48.9649377Z > riverlab-crypto-lab@0.2.0-test lint
+2026-10-20T04:58:48.9650526Z > eslint . --max-warnings 0
+2026-10-20T04:58:48.9650853Z 
+2026-10-20T04:59:13.5049722Z 
+2026-10-20T04:59:13.5050882Z > riverlab-crypto-lab@0.2.0-test test
+2026-10-20T04:59:13.5051585Z > vitest run
+2026-10-20T04:59:13.5058156Z 
+2026-10-20T04:59:14.2340704Z 
+2026-10-20T04:59:14.2342627Z  RUN  v4.1.12 D:/a/riverlab-crypto-lab/riverlab-crypto-lab
+2026-10-20T04:59:14.2343414Z 
+2026-10-20T04:59:15.2337627Z  ✓ tests/unit/backtest.test.ts (40 tests) 284ms
+2026-10-20T04:59:16.5638948Z  ✓ tests/unit/csv-import.test.ts (59 tests) 165ms
+2026-10-20T04:59:16.9696782Z  ✓ tests/unit/protection.test.ts (45 tests) 57ms
+2026-10-20T04:59:17.4222736Z  ✓ tests/unit/strategies.test.ts (52 tests) 107ms
+2026-10-20T04:59:17.8768223Z  ✓ tests/unit/statistics.test.ts (19 tests) 99ms
+2026-10-20T04:59:19.1166014Z  ✓ tests/unit/dataset-store.test.ts (20 tests) 80ms
+2026-10-20T04:59:22.0634462Z  ✓ tests/integration/dataset-center.test.tsx (4 tests) 1625ms
+2026-10-20T04:59:22.0654002Z      ✓ 合成微秒样本先确认周期，再生成报告；修改约定使旧报告失效  562ms
+2026-10-20T04:59:22.0684280Z      ✓ 用户文件支持手动映射和显式时间单位，不把自述来源认证为真实  721ms
+2026-10-20T04:59:22.5678890Z  ✓ tests/unit/experiments.test.ts (14 tests) 86ms
+2026-10-20T04:59:23.6743248Z  ✓ tests/unit/indicators.test.ts (20 tests) 61ms
+2026-10-20T04:59:26.1558975Z  ✓ tests/integration/app.test.tsx (4 tests) 470ms
+2026-10-20T04:59:27.2258783Z  ✓ tests/unit/historical-sample.test.ts (2 tests) 18ms
+2026-10-20T04:59:28.4946082Z  ✓ tests/integration/chart-center.test.tsx (3 tests) 232ms
+2026-10-20T04:59:28.8659161Z  ✓ tests/unit/identity-stream.test.ts (18 tests) 52ms
+2026-10-20T04:59:29.9211628Z  ✓ tests/unit/synthetic-example.test.ts (2 tests) 15ms
+2026-10-20T04:59:31.1046840Z  ✓ tests/unit/navigation.test.ts (5 tests) 16ms
+2026-10-20T04:59:31.1145031Z 
+2026-10-20T04:59:31.1325532Z  Test Files  15 passed (15)
+2026-10-20T04:59:31.1326507Z       Tests  307 passed (307)
+2026-10-20T04:59:31.1327158Z    Start at  04:59:14
+2026-10-20T04:59:31.1352902Z    Duration  16.87s (transform 1.75s, setup 2.02s, import 2.46s, tests 3.37s, environment 6.51s)
+2026-10-20T04:59:31.1353859Z 
+2026-10-20T04:59:31.4878504Z 
+2026-10-20T04:59:31.4879442Z > riverlab-crypto-lab@0.2.0-test build
+2026-10-20T04:59:31.4880231Z > npm run typecheck && vite build
+2026-10-20T04:59:31.4880614Z 
+2026-10-20T04:59:31.7535806Z 
+2026-10-20T04:59:31.7536992Z > riverlab-crypto-lab@0.2.0-test typecheck
+2026-10-20T04:59:31.7538328Z > tsc -b
+2026-10-20T04:59:31.7538617Z 
+2026-10-20T04:59:39.3233774Z vite v7.3.7 building client environment for production...
+2026-10-20T04:59:39.4081374Z transforming...
+2026-10-20T04:59:41.3313311Z ✓ 98 modules transformed.
+2026-10-20T04:59:41.6677114Z rendering chunks...
+2026-10-20T04:59:41.6753724Z computing gzip size...
+2026-10-20T04:59:41.6907350Z dist/index.html                            0.72 kB │ gzip:   0.48 kB
+2026-10-20T04:59:41.6908523Z dist/assets/csv.worker-C14LIkSc.js        11.77 kB
+2026-10-20T04:59:41.6911172Z dist/assets/backtest.worker-DjdmA7zJ.js   33.46 kB
+2026-10-20T04:59:41.6912447Z dist/assets/index-Br0Tv75b.css            18.43 kB │ gzip:   4.18 kB
+2026-10-20T04:59:41.6917452Z dist/assets/index-D3W12Xv5.js            478.69 kB │ gzip: 156.96 kB
+2026-10-20T04:59:41.6919748Z ✓ built in 2.34s
+2026-10-20T04:59:42.2240876Z 
+2026-10-20T04:59:42.2241795Z > riverlab-crypto-lab@0.2.0-test test:e2e
+2026-10-20T04:59:42.2242619Z > playwright test
+2026-10-20T04:59:42.2263121Z 
+2026-10-20T04:59:45.1551821Z 
+2026-10-20T04:59:45.1553111Z Running 24 tests using 1 worker
+2026-10-20T04:59:45.1553486Z 
+2026-10-20T05:00:03.2722372Z   ok  1 [msedge-win32] › tests\e2e\csv-import.spec.ts:14:1 › 真实历史样本通过实际 Worker 解析并核对文件身份，断外部资源仍可运行 (15.9s)
+2026-10-20T05:00:06.9215625Z   ok  2 [msedge-win32] › tests\e2e\csv-import.spec.ts:68:1 › 本地微秒 CSV 需要周期确认，歧义时间单位不能猜测 (3.6s)
+2026-10-20T05:00:08.7470538Z   ok  3 [msedge-win32] › tests\e2e\csv-import.spec.ts:108:1 › 自定义字段顺序和带时区日期正确规范化到 UTC (1.8s)
+2026-10-20T05:00:10.2767259Z   ok  4 [msedge-win32] › tests\e2e\csv-import.spec.ts:148:1 › 错误样本保留错误行、重复和缺口，390px 报告无页面溢出 (1.5s)
+2026-10-20T05:00:12.4406202Z   ok  5 [msedge-win32] › tests\e2e\csv-import.spec.ts:201:1 › 空文件、非法 UTF-8 与超限文件清楚阻断并清除旧结果 (2.1s)
+2026-10-20T05:00:16.4920793Z   ok  6 [msedge-win32] › tests\e2e\phase-1b.spec.ts:38:1 › 行情中心真实图表：缩放、平移、十字准星、指标周期/开关、主题与窄屏 (4.0s)
+2026-10-20T05:00:19.8339562Z   ok  7 [msedge-win32] › tests\e2e\phase-1b.spec.ts:105:1 › IndexedDB 保存、选择重开、JSON 导出/删除/显式恢复，断外网保持本机 HTTP (3.3s)
+2026-10-20T05:00:23.8791514Z   ok  8 [msedge-win32] › tests\e2e\phase-1b.spec.ts:171:1 › 持久浏览器配置：关闭浏览器进程、重新启动后可恢复数据 (4.1s)
+2026-10-20T05:00:25.1713593Z   ok  9 [msedge-win32] › tests\e2e\phase-1b.spec.ts:217:1 › 存储拒绝与空间不足不显示成功；仍可导出内存数据备份 (1.3s)
+2026-10-20T05:00:26.1774017Z   ok 10 [msedge-win32] › tests\e2e\phase-1b.spec.ts:241:1 › 无法访问 IndexedDB、损坏备份和有错误的 CSV 明确阻断 (1.0s)
+2026-10-20T05:00:27.5864663Z   ok 11 [msedge-win32] › tests\e2e\phase-1b.spec.ts:278:1 › 微秒/UTC 亚秒、缺口传递到图表，指标重新预热 (1.4s)
+2026-10-20T05:00:32.5738682Z PHASE1B_PERFORMANCE {"rows":50000,"csvBytes":1600036,"inspectionMs":396,"reportMs":380,"prepareAndSaveMs":515,"reopenAndChartMs":796,"zoomMs":130,"backupMs":439,"backupBytes":4401567,"backupInspectMs":271,"backupRestoreMs":629,"maxObservedJsHeapBytes":273126596,"maxEventLoopDelayMs":252.5}
+2026-10-20T05:00:32.6994591Z   ok 12 [msedge-win32] › tests\e2e\phase-1b.spec.ts:319:1 › 50,000 根合成数据：实际 Worker、保存/重开、图表响应及备份 (5.1s)
+2026-10-20T05:00:34.3922463Z   ok 13 [msedge-win32] › tests\e2e\phase-1b.spec.ts:455:1 › 删除事务失败保留数据；重新打开时拒绝已损坏的存储记录 (1.7s)
+2026-10-20T05:00:36.2598306Z   ok 14 [msedge-win32] › tests\e2e\phase-1b.spec.ts:507:1 › 两个已保存数据集间明确选择，图表与指标使用对应数据 (1.9s)
+2026-10-20T05:00:37.6512644Z   ok 15 [msedge-win32] › tests\e2e\phase-1b.spec.ts:548:1 › 已保存长名称数据集在390px下不会撑宽数据中心或行情中心 (1.4s)
+2026-10-20T05:00:41.7134964Z   ok 16 [msedge-win32] › tests\e2e\phase-2c.spec.ts:71:3 › ma 完整Worker回测、曲线、账本、JSON/CSV、保存刷新重开与删除，外网阻断 (4.1s)
+2026-10-20T05:00:45.5674390Z   ok 17 [msedge-win32] › tests\e2e\phase-2c.spec.ts:71:3 › rsi 完整Worker回测、曲线、账本、JSON/CSV、保存刷新重开与删除，外网阻断 (3.8s)
+2026-10-20T05:00:49.5108118Z   ok 18 [msedge-win32] › tests\e2e\phase-2c.spec.ts:71:3 › breakout 完整Worker回测、曲线、账本、JSON/CSV、保存刷新重开与删除，外网阻断 (3.9s)
+2026-10-20T05:00:52.5356938Z   ok 19 [msedge-win32] › tests\e2e\phase-2c.spec.ts:178:1 › 严格参数/确认阻断、存储配额失败保留内存导出、损坏记录拒绝重开 (3.0s)
+2026-10-20T05:00:54.6738094Z   ok 20 [msedge-win32] › tests\e2e\phase-2c.spec.ts:246:1 › 保护配置进入manifest，止盈止损事件保留根内未知时间和保守假设 (2.1s)
+2026-10-20T05:00:55.9002466Z   ok 21 [msedge-win32] › tests\e2e\phase-2c.spec.ts:281:1 › 有缺口但已保存的完整数据仍然禁止回测，不截取子集 (1.2s)
+2026-10-20T05:01:01.7240733Z PHASE2C_PERFORMANCE {"rows":50000,"elapsedMs":3654,"maxDelayMs":292.89999999990687,"samples":153,"hardwareConcurrency":2,"userAgent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/156.0.8078.4 Safari/537.36","os":"win32 10.0.26100","cpu":"AMD EPYC 9V74 80-Core Processor                ","browser":"154.0.4258.62","limitations":"人工合成；回测到全点曲线就绪含Worker传输/绘图，不是无限数据保证"}
+2026-10-20T05:01:01.8078584Z   ok 22 [msedge-win32] › tests\e2e\phase-2c.spec.ts:313:1 › 50,000根真实策略成交统计Worker性能与主线程响应 (5.9s)
+2026-10-20T05:01:03.6568218Z   ok 23 [msedge-win32] › tests\e2e\shell.spec.ts:3:1 › 生产包仅使用本机资源，可导航、刷新、后退并切换主题 (1.8s)
+2026-10-20T05:01:04.2696503Z   ok 24 [msedge-win32] › tests\e2e\shell.spec.ts:83:1 › 390px 窄屏可导航且页面没有横向溢出 (599ms)
+2026-10-20T05:01:04.9472953Z 
+2026-10-20T05:01:04.9477929Z   24 passed (1.4m)
+2026-10-20T05:01:05.1252313Z ##[group]Run actions/upload-artifact@v4
+2026-10-20T05:01:05.1252659Z with:
+2026-10-20T05:01:05.1252899Z   name: browser-windows-latest-msedge
+2026-10-20T05:01:05.1253187Z   path: playwright-report/
+test-results/
+
+2026-10-20T05:01:05.1253482Z   retention-days: 14
+2026-10-20T05:01:05.1253707Z   if-no-files-found: warn
+2026-10-20T05:01:05.1253929Z   compression-level: 6
+2026-10-20T05:01:05.1254153Z   overwrite: false
+2026-10-20T05:01:05.1254366Z   include-hidden-files: false
+2026-10-20T05:01:05.1254587Z env:
+2026-10-20T05:01:05.1254775Z   E2E_BROWSER: msedge
+2026-10-20T05:01:05.1254976Z ##[endgroup]
+2026-10-20T05:01:05.3161179Z (node:2948) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-10-20T05:01:05.3162596Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-10-20T05:01:05.3375926Z Multiple search paths detected. Calculating the least common ancestor of all paths
+2026-10-20T05:01:05.3378918Z The least common ancestor is D:\a\riverlab-crypto-lab\riverlab-crypto-lab. This will be the root directory of the artifact
+2026-10-20T05:01:05.3380602Z With the provided path, there will be 8 files uploaded
+2026-10-20T05:01:05.3381360Z Artifact name is valid!
+2026-10-20T05:01:05.3383717Z Root directory input is valid!
+2026-10-20T05:01:05.7559771Z Beginning upload of artifact content to blob storage
+2026-10-20T05:01:06.1238836Z (node:2948) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+2026-10-20T05:01:06.8071482Z Uploaded bytes 1157231
+2026-10-20T05:01:06.8641966Z Finished uploading artifact content to blob storage!
+2026-10-20T05:01:06.8643759Z SHA256 digest of uploaded artifact zip is 0950b79142e5b8d69d3138cd774124c004a5172938c53972d3bcdbf69134098b
+2026-10-20T05:01:06.8646383Z Finalizing artifact upload
+2026-10-20T05:01:07.1602700Z Artifact browser-windows-latest-msedge.zip successfully finalized. Artifact ID 12242147298
+2026-10-20T05:01:07.2013827Z Artifact browser-windows-latest-msedge has been successfully uploaded! Final size is 1157231 bytes. Artifact ID is 12242147298
+2026-10-20T05:01:07.2015462Z Artifact download URL: https://github.com/meredithfyc1001/riverlab-crypto-lab/actions/runs/39372297528/artifacts/12242147298
+2026-10-20T05:01:07.2460598Z Post job cleanup.
+2026-10-20T05:01:07.4211332Z (node:4976) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-10-20T05:01:07.4212630Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-10-20T05:01:07.5376679Z [command]"C:\Program Files\Git\usr\bin\tar.exe" --posix -cf cache.tzst --exclude cache.tzst -P -C D:/a/riverlab-crypto-lab/riverlab-crypto-lab --files-from manifest.txt --force-local --use-compress-program "zstd -T0"
+2026-10-20T05:01:09.0445630Z Failed to save: Unable to reserve cache with key node-cache-Windows-x64-npm-8fd072fafa6abea7328d335bbedb55415b6ddb12d5dc8cc82507d66864cc23d9, another job may be creating this cache.
+2026-10-20T05:01:09.0766743Z Post job cleanup.
+2026-10-20T05:01:09.4643333Z [command]"C:\Program Files\Git\bin\git.exe" version
+2026-10-20T05:01:09.4932192Z git version 2.56.0.windows.2
+2026-10-20T05:01:09.5005265Z Temporarily overriding HOME='D:\a\_temp\9b39a0d5-8197-4478-8d3a-6f7656ea6441' before making global git config changes
+2026-10-20T05:01:09.5006384Z Adding repository directory to the temporary git global config as a safe directory
+2026-10-20T05:01:09.5014853Z [command]"C:\Program Files\Git\bin\git.exe" config --global --add safe.directory D:\a\riverlab-crypto-lab\riverlab-crypto-lab
+2026-10-20T05:01:09.5378549Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp core\.sshCommand
+2026-10-20T05:01:09.5730196Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "sh -c \"git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :\""
+2026-10-20T05:01:10.8238736Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-10-20T05:01:10.9283478Z http.https://github.com/.extraheader
+2026-10-20T05:01:10.9382750Z [command]"C:\Program Files\Git\bin\git.exe" config --local --unset-all http.https://github.com/.extraheader
+2026-10-20T05:01:10.9944585Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "sh -c \"git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :\""
+2026-10-20T05:01:11.5438425Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-10-20T05:01:11.5787676Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "git config --local --show-origin --name-only --get-regexp remote.origin.url"
+2026-10-20T05:01:12.1965175Z Cleaning up orphan processes
+2026-10-20T05:01:12.3152067Z ##[warning]Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4, actions/setup-node@v4, actions/upload-artifact@v4. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+

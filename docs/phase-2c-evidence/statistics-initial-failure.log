@@ -1,0 +1,84 @@
+
+ RUN  v4.1.12 /workspace/riverlab-crypto-lab
+
+ ❯ tests/unit/statistics.test.ts (18 tests | 8 failed) 61ms
+     × 365 days and 252 close samples are both necessary for CAGR 37ms
+     × exposure is zero when flat, open exits exclude their bar, intrabar unknown exit includes full interval 1ms
+     × blocks empty input before stats 1ms
+     × blocks invalid input before stats 0ms
+     × blocks duplicate input before stats 0ms
+     × blocks gap input before stats 1ms
+     × blocks unconfirmed input before stats 0ms
+     × empty snapshots cannot create any misleading statistics 1ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 8 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/unit/statistics.test.ts > pure fixed18 statistics / independent references > 365 days and 252 close samples are both necessary for CAGR
+Error: 存在错误、待确认项或空数据，不能用于图表或保存；不截取有效子集。
+ ❯ makeDataset src/core/data/dataset.ts:65:11
+     63|     !report.candles.length
+     64|   )
+     65|     throw new Error(
+       |           ^
+     66|       '存在错误、待确认项或空数据，不能用于图表或保存；不截取有效子集。',
+     67|     );
+ ❯ market tests/fixtures/backtest.ts:22:10
+ ❯ input tests/fixtures/backtest.ts:51:14
+ ❯ tests/unit/statistics.test.ts:59:19
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/8]⎯
+
+ FAIL  tests/unit/statistics.test.ts > pure fixed18 statistics / independent references > exposure is zero when flat, open exits exclude their bar, intrabar unknown exit includes full interval
+Error: 存在错误、待确认项或空数据，不能用于图表或保存；不截取有效子集。
+ ❯ makeDataset src/core/data/dataset.ts:65:11
+     63|     !report.candles.length
+     64|   )
+     65|     throw new Error(
+       |           ^
+     66|       '存在错误、待确认项或空数据，不能用于图表或保存；不截取有效子集。',
+     67|     );
+ ❯ market tests/fixtures/backtest.ts:22:10
+ ❯ input tests/fixtures/backtest.ts:51:14
+ ❯ tests/unit/statistics.test.ts:62:18
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/8]⎯
+
+ FAIL  tests/unit/statistics.test.ts > pure fixed18 statistics / independent references > blocks empty input before stats
+ FAIL  tests/unit/statistics.test.ts > pure fixed18 statistics / independent references > blocks invalid input before stats
+ FAIL  tests/unit/statistics.test.ts > pure fixed18 statistics / independent references > blocks duplicate input before stats
+ FAIL  tests/unit/statistics.test.ts > pure fixed18 statistics / independent references > blocks gap input before stats
+ FAIL  tests/unit/statistics.test.ts > pure fixed18 statistics / independent references > blocks unconfirmed input before stats
+Error: 存在错误、待确认项或空数据，不能用于图表或保存；不截取有效子集。
+ ❯ makeDataset src/core/data/dataset.ts:65:11
+     63|     !report.candles.length
+     64|   )
+     65|     throw new Error(
+       |           ^
+     66|       '存在错误、待确认项或空数据，不能用于图表或保存；不截取有效子集。',
+     67|     );
+ ❯ market tests/fixtures/backtest.ts:22:10
+ ❯ input tests/fixtures/backtest.ts:51:14
+ ❯ tests/unit/statistics.test.ts:69:13
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/8]⎯
+
+ FAIL  tests/unit/statistics.test.ts > pure fixed18 statistics / independent references > empty snapshots cannot create any misleading statistics
+Error: Uncompleted candle blocks the run.
+ ❯ src/core/backtests/engine.ts:106:13
+    104|   const tape = d.candles.map((c, i) => {
+    105|     if (c.timestampUtcMs + intervalMs > completedThroughUtcMs)
+    106|       throw new Error('Uncompleted candle blocks the run.');
+       |             ^
+    107|     if (i && c.timestampUtcMs - d.candles[i - 1].timestampUtcMs !== in…
+    108|       throw new Error('Data gap blocks the run.');
+ ❯ runBacktest src/core/backtests/engine.ts:104:26
+ ❯ tests/unit/statistics.test.ts:73:77
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/8]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  8 failed | 10 passed (18)
+   Start at  04:27:36
+   Duration  493ms (transform 195ms, setup 117ms, import 199ms, tests 61ms, environment 0ms)
+

@@ -1,0 +1,8 @@
+
+> riverlab-crypto-lab@0.1.0 typecheck
+> tsc -b
+
+src/features/backtests/ResultCurves.tsx(20,42): error TS7006: Parameter 't' implicitly has an 'any' type.
+src/features/backtests/ResultCurves.tsx(31,130): error TS7006: Parameter 'v' implicitly has an 'any' type.
+src/features/backtests/ResultCurves.tsx(20,42): error TS7006: Parameter 't' implicitly has an 'any' type.
+src/features/backtests/ResultCurves.tsx(31,130): error TS7006: Parameter 'v' implicitly has an 'any' type.

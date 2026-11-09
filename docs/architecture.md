@@ -47,3 +47,5 @@ Vite 开发、本机 HTTP 静态构建可行。单 HTML 的内联资源、Worker
 Vitest 验证纯数据约束和 React 页面行为，Playwright 验证生产包；Windows CI、Linux 云端和用户 Windows 实机分别记录。
 
 Phase2B每根执行：已有仓开盘保护优先；否则上一信号开盘执行、检查保护激活，再按保守假设处理根内触发。根内时间未知用null与区间；保护的entry/阈值/触发原因和假设随账本保存。策略只接收已完成单根，输入参数/风险配置、版本与实际信号均绑定运行身份。无UI/收益面板/优化/AI/交易连接。
+
+Phase 2C新增core/statistics（只读账本的BigInt统计）和core/experiments（数据快照/报告/复现校验），infrastructure Worker编排、复用LocalDatabase事务适配器的独立实验库；app装配backtests/experiments功能，兄弟feature无相互导入。所有策略/成交仍来自2B核心。标准静态ZIP经127.0.0.1的Node24前台服务运行，非file://。详见[2C设计](phase-2c-design.md)。

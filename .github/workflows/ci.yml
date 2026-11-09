@@ -28,6 +28,8 @@ jobs:
       E2E_BROWSER: ${{ matrix.browser }}
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
       - uses: actions/setup-node@v4
         with:
           node-version: 24
@@ -37,6 +39,10 @@ jobs:
       - name: Install Chromium on Linux
         if: runner.os == 'Linux'
         run: npx playwright install --with-deps chromium
+      - name: Independent numerical references
+        run: |
+          python tests/reference/statistics_reference.py --check
+          python tests/reference/phase2b_reference.py --check
       - run: npm run check
       - name: Save browser evidence
         if: always()
@@ -46,4 +52,44 @@ jobs:
           path: |
             playwright-report/
             test-results/
+          retention-days: 14
+
+  local-test-package:
+    name: Windows local test ZIP / Chrome + Edge
+    needs: quality
+    runs-on: windows-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - run: npm run package:local
+      - name: Verify extracted ZIP with Windows Chrome
+        run: npm run test:package
+        env:
+          E2E_BROWSER: chrome
+      - name: Verify extracted ZIP with Windows Edge
+        run: npm run test:package
+        env:
+          E2E_BROWSER: msedge
+      - name: Record source SHA
+        id: source
+        shell: bash
+        run: echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+      - name: Upload verified Windows local test package (14 days)
+        uses: actions/upload-artifact@v4
+        with:
+          name: RiverLab-Crypto-Lab-Local-Test-${{ steps.source.outputs.sha }}
+          path: |
+            work/local-package/RiverLab-Crypto-Lab-Local-Test.zip
+            work/local-package/RiverLab-Crypto-Lab-Local-Test.zip.sha256
+            work/local-package/package-*-evidence.json
+            work/local-package/package-*.png
+          if-no-files-found: error
           retention-days: 14

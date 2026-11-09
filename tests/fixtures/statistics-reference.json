@@ -1,0 +1,21 @@
+{
+  "cash": "905.592",
+  "quantity": "1",
+  "equity": "1015.592",
+  "netPnl": "15.592",
+  "realizedPnl": "7.602",
+  "unrealizedPnl": "7.99",
+  "fees": "7.208",
+  "remainingCostBasis": "102.01",
+  "winRate": "0.5",
+  "profitFactor": "1.32209134819",
+  "totalReturn": "0.015592",
+  "benchmark": {
+    "quantity": "9.80296049",
+    "fee": "9.9009900949",
+    "cash": "0.0000004151",
+    "finalEquity": "1078.3256543151",
+    "netPnl": "78.3256543151",
+    "return_": "0.078325654315"
+  }
+}

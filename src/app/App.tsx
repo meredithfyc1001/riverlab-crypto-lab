@@ -1,3 +1,6 @@
+import { useBacktestWorkbench } from './useBacktestWorkbench';
+import { BacktestCenter, BacktestResults } from '../features/backtests';
+import { ExperimentCenter } from '../features/experiments';
 import { useEffect, useState } from 'react';
 import { pages, pageFromHash } from './navigation';
 import { syntheticExample } from './synthetic-example';
@@ -10,6 +13,7 @@ import { DatasetCenter } from '../features/datasets';
 
 export function App() {
   const library = useDatasetLibrary();
+  const backtest = useBacktestWorkbench();
   const [activeId, setActiveId] = useState(() =>
     pageFromHash(window.location.hash),
   );
@@ -73,7 +77,7 @@ export function App() {
         </nav>
         <div className="sidebar-bottom">
           <span className="status-dot" /> 离线优先 · 本地研究
-          <small>v0.1.0 / Phase 1B 数据基础</small>
+          <small>v0.2.0-test / Phase 2C 回测工作台</small>
         </div>
       </aside>
 
@@ -105,7 +109,7 @@ export function App() {
               <h1>{activePage.label}</h1>
               <p className="page-description">{activePage.description}</p>
             </div>
-            <span className="badge">Phase 1B · 图表与存储</span>
+            <span className="badge">Phase 2C · 回测工作台</span>
           </div>
 
           {activeId === 'overview' ? (
@@ -137,9 +141,9 @@ export function App() {
                 <section className="stat-card">
                   <span>项目阶段</span>
                   <strong>
-                    图表与存储 <small>Phase 1B</small>
+                    回测工作台 <small>Phase 2C</small>
                   </strong>
-                  <p>历史图表、基础指标与本地数据集</p>
+                  <p>三策略、虚拟账本、统计与本地实验</p>
                 </section>
                 <section className="stat-card">
                   <span>研究数据</span>
@@ -151,9 +155,9 @@ export function App() {
                 <section className="stat-card">
                   <span>实验记录</span>
                   <strong>
-                    尚未启用 <small>后续阶段</small>
+                    {backtest.experiments.length} 个 <small>本地保存</small>
                   </strong>
-                  <p>当前未运行策略或生成回测结果</p>
+                  <p>前往回测中心运行，实验中心保存与重开</p>
                 </section>
               </div>
               <section className="research-path" aria-labelledby="path-title">
@@ -182,7 +186,11 @@ export function App() {
                         <p>{page.description}</p>
                         <small>
                           {page.phase} ·{' '}
-                          {page.id === 'datasets' ? 'CSV 导入可用' : '待开发'}
+                          {page.id === 'datasets'
+                            ? 'CSV 导入可用'
+                            : page.id === 'backtests'
+                              ? '回测工作台可用'
+                              : '待开发'}
                         </small>
                       </a>
                     ))}
@@ -203,6 +211,47 @@ export function App() {
                 dataset={library.dataset}
                 theme={theme}
               />
+            </>
+          ) : activeId === 'backtests' || activeId === 'experiments' ? (
+            <>
+              {activeId === 'backtests' ? (
+                <BacktestCenter
+                  datasets={library.datasets}
+                  dataset={backtest.dataset}
+                  busy={backtest.busy}
+                  onSelect={backtest.selectDataset}
+                  onRun={backtest.run}
+                />
+              ) : (
+                <ExperimentCenter
+                  experiments={backtest.experiments}
+                  busy={backtest.busy}
+                  onOpen={backtest.open}
+                  onDelete={backtest.remove}
+                />
+              )}
+              {library.error && <p role="alert">{library.error}</p>}
+              {backtest.message && <p role="status">{backtest.message}</p>}
+              {backtest.error && (
+                <p role="alert" className="import-error">
+                  {backtest.error}
+                </p>
+              )}
+              {backtest.canCancel && (
+                <button onClick={backtest.cancel}>取消当前任务</button>
+              )}
+              {backtest.record && (
+                <BacktestResults
+                  key={backtest.record.id}
+                  record={backtest.record}
+                  theme={theme}
+                  busy={backtest.busy}
+                  saved={backtest.saved}
+                  onSave={backtest.save}
+                  onExport={backtest.exportRecord}
+                  onReproduce={backtest.reproduce}
+                />
+              )}
             </>
           ) : (
             <>

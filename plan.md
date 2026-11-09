@@ -1,76 +1,53 @@
 # RiverLab Crypto Lab 执行计划
 
-基线：[原始规划 v0.1](docs/product-plan-v0.1.md) 完整保留。2026-10-19 用户确认 Phase 0 验收和 Windows Edge/Chrome 本地测试通过，PR #1 已合并为 6ffe6a3186699ae85a26331efa932c3bcec500a2（北京时间 17:57:48）。M0 通过；具体浏览器版本和逐项结果未提供，不补写。
+基线：[原始规划 v0.1](docs/product-plan-v0.1.md)全文保留，用户当前明确指令优先。当前授权 **Phase 2C：回测工作台、统计、实验保存/导出与 Windows 本地测试包**（2026-10-20）。
 
-当前授权 **Phase 2B**。已 fetch origin/main，核实 PR #4 merged=true，实际合并 a7b57cbecf7b25cd50da6647426e99ca6738dfa5（UTC 2026-10-19 15:49:17）。分支 feat/phase-2b-strategies-risk，[PR #5](https://github.com/meredithfyc1001/riverlab-crypto-lab/pull/5)已创建并保持Draft待审；不修改 main、不合并、发布或部署。
+PR #5 merged=true，main实际合并提交 `0ee6d8483bd6a5226a6d01a1d21b990b134bab46`。已从同步origin/main建立 `feat/phase-2c-backtest-workbench`，已创建独立Draft PR #6；允许提交/推送/建PR及CI artifact，不直接修改main，不自动合并、tag、正式Release或部署。用户下载测试后决定合并。
 
-## Phase 2 拆分与当前行动
+## 已交付基线与验收边界
 
-- **2A 已合并**：确定性事件/下一根开盘成交/BigInt 账本、固定信号参考、可复现身份和数据质量阻断。最终 CI run 39277844255 三平台 npm ci/check 成功，每组159项Vitest及17项E2E；本机超时记录保留，完整check不记通过。Windows用户1B/2A未测试。
-- **2B（本轮）**：只接收当前已完成单根K线的递进策略接口；MA交叉、RSI阈值、价格突破；严格参数校验；止盈止损、跳空、双触发保守假设、明确优先级；独立参考/前缀/账本/异常数据测试。
-- **2C（未授权实施）**：回测界面、收益/回撤/公平基准、NA口径、实验保存/导出及全流程验收。2B不代表整个M2完成。
-- 先设计→纯TS实现→独立参考与自查→npm ci/check及Ubuntu Chromium、Windows Chrome/Edge CI→PR #5待审。不开发参数优化、AI或实盘交易。
-- 延续现货、单币种、多头、无杠杆、默认1000虚拟USDT、18位定点、手续费/双边滑点/数量舍入/最小名义额/逐笔守恒。信号收盘生成、下一根开盘成交；止盈止损是已持仓的保护订单，触发后允许在根内退出。
-- 缺口、未完成/异常数据一律阻断，不排序、去重、补价。忽略整根量并假定无限流动性；保留来源、警告和Number转换边界。Phase0/1全部功能和测试保留。
-- [2B设计](docs/phase-2b-design.md) 定义策略、价格模型、优先级与时间证据；[2A设计](docs/phase-2a-design.md) 保留原阶段规格。
+- Phase0 PR#1与Phase1A PR#2已合并，用户明确确认Windows总体通过；未提供逐项/浏览器版本不补写。
+- Phase1B PR#3已合并，CSV/UTC、质量检查、图表/指标、IndexedDB、备份恢复保留。用户Windows未执行。
+- Phase2A PR#4已合并，下一根开盘成交、固定信号、18位BigInt、逐笔守恒与身份保留；三平台159/17通过。本机当时超时不改为通过；用户Windows未执行。
+- Phase2B PR#5已合并，MA/RSI/突破、保守止盈止损及版本契约保留。最新run39284322892三组实际日志各256项Vitest/17项E2E通过，补充原排队事实；本机最终256/17通过。用户Windows未执行。
+- 原失败、当时状态和合并SHA在[progress](progress.md)完整保留；已执行、未执行、未通过分开，CI不替代Windows用户实机签署。
 
-## 技术决策
+## 本轮实施顺序与技术决策
 
-中文、Windows Edge/Chrome 优先、浏览器可用、离线优先的历史数据研究工具，仅研究与模拟。模拟默认 1000 虚拟 USDT；2A 仅提供计算内核，不增加交易连接。
+1. 核对合并、完整文档/契约阅读、汇报方案、更新授权及[2C设计](docs/phase-2c-design.md)。
+2. core/statistics只读原成交/收盘账本：收益、收盘回撤/持续、完整平仓周期胜率/利润因子、已实现/浮动对账、暴露区间上界、同成本买入持有、严格CAGR NA条件。独立固定参考核验，禁止Number金额累加。
+3. core/experiments组合原内核/统计/完整数据快照和可复现报告。浏览器Worker运行/验证/导出；React只配置和展示。Lightweight Charts本地包全点曲线、表格分页。
+4. 已保存数据选择与严格参数/质量门槛；原生IndexedDB事务适配器复用，实验独立库，complete才成功。保存/详情/重开/复现/确认删除与JSON/CSV，明确配额/损坏及刷新约定。
+5. Node24内置模块前台静态服务、127.0.0.1-only、安全路径/扩展白名单、端口冲突/失败/中文空格路径/退出；ZIP只含dist与必要启动文件/说明/完整head SHA/版本/SHA256。
+6. npm ci/check及三平台实际日志；Windows从ZIP解压后Chrome/Edge实际启动/运行/保存/导出/停止验证；三组质量及打包验收都成功后上传14天artifact，绑定PR head SHA。用户[验收表](docs/phase-2c-acceptance.md)待本人执行。
 
-- React + TypeScript strict + Vite，Node.js 24 LTS，固定依赖与锁文件。
-- 默认深色、可切浅色；八页面 hash 导航，无需服务器路径回退。刷新后主题回到深色，当前无偏好持久化。
-- 核心为纯 TypeScript，UI 与计算分离。Phase 1A 在 core/data 实现解析与质量检查，新增 core/indicators 计算与 dataset-v1 契约，2A 在 core/backtests 分离事件、执行、账本与身份；正式策略/风险统计延后。
-- Vitest + Testing Library 验证数据约束和页面集成；Playwright 验证生产包；CI 覆盖 Linux Chromium、Windows Chrome/Edge。
-- 静态包无外部运行资源，经本机 HTTP 提供。单 HTML、PWA、桌面封装、安装包另设验收。
-- 浏览器 Worker 解析；Lightweight Charts 5.2.1（本地固定版本、Canvas、内建交互、多面板，保留许可标识）；IndexedDB 原生事务适配器（成功只在 complete 后返回），不使用 localStorage 保存行情。JSON 备份不是持久存储保证。具体版本、许可与限制记录专题。
+保留React+TypeScript strict+Vite、Node24 LTS、固定依赖/锁文件、hash导航、内存主题。核心不依赖React/DOM/存储/网络；app装配兄弟features，feature经index暴露入口。原CSV10MiB/50,000行及dataset-v1契约不变。
 
-可行性与限制见 [architecture.md](docs/architecture.md)、[offline-release.md](docs/offline-release.md)。
+## 核心风险与验收标准
 
-## Phase 0 已完成拆解（历史）与通用验收命令
-
-1. 核对独立仓库，完整阅读原计划，参考旧 GTO 的 AGENTS 和开发脚本；不复用业务源码。
-2. 建立工程、中文深浅主题、工作台和七个占位页。
-3. 用 4 条明确标注的固定合成 OHLCV 展示只读示例；不实现导入、图表或计算。
-4. 建立数据、策略、回测、风险目录、公开入口、依赖约束和文档。
-5. 配置格式、lint、类型、Vitest、生产包 E2E 与 CI 三个系统/浏览器组合。
-6. 验证开发启动、构建运行，记录实际结果与未测项，提交独立 PR。
+- 不改变2A/2B成交时序、费用/舍入、跳空和双触发stop-first；不限流动性等假设原样保留。未知根内时间不伪造，暴露用明确上界。
+- 已实现+浮动严格等于总净盈亏，胜负只用完整平仓周期且含费用/滑点。无交易、分母零、年化不足不能伪造0/100%。每根收盘现金/市值/权益分明，基准同区间/本金/买入成本、不强制末尾平仓。
+- 相同数据hash/算法/配置必须结果一致；保存报告含完整复现输入、参数、成本、风险、版本、实际信号、假设和统计。重开损坏/旧版本拒绝，不修复。
+- 50,000根实际回测测量机器/浏览器/耗时/主线程响应；Worker隔离同步内核，不能删断言或任意放宽阈值。受限资源与全量结果克隆/绘图的限制如实记录。
+- 全部0/1A/1B/2A/2B回归保留；历史占位页断言更新为实际功能，保留导航/风险/无账户/未选择不能运行约束。
+- 阻断非本机origin后的数据加载、回测、图表、保存/重开和下载无外部请求；自动化origin拦截不等同用户物理断网，用户需实际测试。
+- ZIP不含node_modules、缓存、密钥/.env、用户数据或不必要源码；包内build-info与SHA256可核查。WindowsCI启动/HTTP/核心资源/页面/停止均执行，排队不算通过。
 
 ```sh
 npm ci
-npm run dev -- --port 5173 --strictPort
 npm run check
+npm run package:local
+npm run test:package
 ```
 
-check 包含格式、lint、单元/页面集成测试、严格类型、构建和生产包浏览器烟测。Windows PowerShell 与浏览器准备见 [README](README.md)。
+check包含格式、lint、Vitest、独立core/app/test严格类型、生产构建与Playwright。Linux可显式设置PLAYWRIGHT_CHROMIUM_EXECUTABLE=/usr/bin/chromium；Windows用E2E_BROWSER=chrome/msedge。具体成功/失败日志和最终CI见progress，不提前记绿灯。
 
-**M0 = CI 绿灯 + 文档存在 + Windows 运行通过。** Linux 自测不替代 Windows 用户实测。即使 M0 达标，Phase 1 也需用户明确启动。
+## 后续路线与范围
 
-## 总路线（当前 Phase 2B）
+Phase2C待审及Windows用户验收后评估M2。下一阶段建议仍先审查可靠性和用户问题，再独立授权Phase3策略比较/样本外研究。当前不开发参数优化、滚动测试、AI、实时行情、真实账户/APIKey/钱包/实盘、杠杆/保证金/强平、正式Release或公开部署。
 
-| 阶段    | 范围                                                            | 推进前提          |
-| ------- | --------------------------------------------------------------- | ----------------- |
-| Phase 1 | CSV、时间单位、质量报告、K 线、基础指标与数据重开               | M0 达标且用户授权 |
-| Phase 2 | 现货多头单币种无杠杆回测、三策略、虚拟本金、成本/账本/基准/报告 | M1 数据可用       |
-| Phase 3 | 比较、参数敏感度、样本外/滚动测试、过拟合提示                   | M2 可信回测       |
-| Phase 4 | 逐根回放、虚拟买卖、日记、保存/恢复                             | M3 研究工具       |
-| Phase 5 | 独立确认高级研究与单文件等候选                                  | 对应验收通过      |
+M0/M1/M2/M3/M4/M5门槛继续以原规划为准；用户授权当前阶段不补签先前未测试项目。原规划SHA256应保持0a3081d44d3557e6d0f1b1eda3378c2e83282b3c6677dcd45b88a3190b86f84b。
 
-后续遵循原规划的无未来函数、下一根开盘模拟成交、保守双触发假设、逐笔对账、可复现身份与不足样本 NA 口径。完整要求以原计划第 4–6 节为准。
+## 当前技术交付状态
 
-## 风险与决策记录
-
-- Windows 原生行为与受管策略须实际平台证据确认；CI、云端和用户实测分列。
-- 模块静态包通常不能直接 file:// 运行。本机 HTTP 先验收，单文件发布单独实施。
-- Phase 0 不证明任何策略有效，不验证真实数据导入；后续使用真实/错误样本独立验收。
-- 附件法律与平台规则引用不是本轮已核验法律结论；联网或发布/服务范围变化前另行核查。
-- 2026-10-18：历史 Phase 0 决策：独立仓库、新技术栈、GTO 文档/PR 节奏、hash 导航、内存主题、只读示例、本机 HTTP。
-- 2026-10-19：用户确认 Phase 0 已验收合并，授权 Phase 1，仅本轮 1A；按上节拆分实施，不提前开发 1B。
-
-- 2026-10-19：用户确认 1A Windows 验收、PR #2 合并并正式授权 1B；分支实施、PR #3 待审。
-
-Phase 1B 接口和限制详见 [设计与契约](docs/phase-1b-design.md)，用户验收见 [Windows 清单](docs/phase-1b-acceptance.md)。PR #3 已合并，云端技术复核通过，Windows 用户实机未测试；2A 授权不代表补签此验收。
-
-Phase 2A 已合并，最终CI及本机失败事实见 progress。当前实施2B，2C与完整M2后续独立授权；用户Windows未测试的阶段不以CI补签。
-
-2B内核和本机验证已交付：256项Vitest及17项E2E完整通过。三平台CI已触发，当前runner队列未启动，不能记为通过；真实状态和失败原证据见progress。下一行动是核对PR #5实际CI日志及执行Windows用户清单，不自动推进2C。
+Phase2C工程a4198f2的三平台307/24质量与Windows ZIP Chrome/Edge实际验证已全部通过（run39372868072），原失败与修正完整保留于progress。PR #6继续Draft待审，Windows用户清单仍未执行。收尾文档/入口标签提交的实际head CI与14天artifact以PR交付说明为准，必须核对完整SHA，不自动合并。

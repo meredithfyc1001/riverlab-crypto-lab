@@ -1,6 +1,67 @@
 # RiverLab Crypto Lab 进度
 
-## 当前恢复入口：Phase 2B（2026-10-19）
+## 当前恢复入口：Phase 2C（2026-10-20）
+
+- 初始工作区干净。已 fetch main，GitHub确认PR #5 merged=true，实际合并SHA为0ee6d8483bd6a5226a6d01a1d21b990b134bab46；从该提交建立feat/phase-2c-backtest-workbench。已创建Draft PR #6，不修改main或自动合并。
+- 完整阅读AGENTS、plan、progress、README、原始规划、2A/2B设计和现有数据/策略/成交/账本/存储接口。已向用户汇报实施计划、选型、风险及验收标准。
+- 2B最终CI run39284322892：已实际读取Ubuntu Chromium118165850327、Windows Chrome118165850402、Windows Edge118165850114日志，各256项Vitest/17项E2E通过，npm ci/check成功。这补充旧排队记录；不替代用户1B/2A/2B Windows未测事实。
+- 初次git fetch因沙箱无法连proxy失败，受支持network权限后成功；未修改代理。2C测试尚在实施，不预记通过。
+
+## Phase 2C 实施与验证事实
+
+- 已实现core/statistics、core/experiments、Worker运行/校验/导出、React配置/结果/实验、复用IndexedDB事务适配器的独立实验库、Node24回环静态服务/BAT/ZIP与三平台后置打包CI。原成交规则/策略版本未改；identity只有ASCII字节填充的等价性能优化，SHA保持一致。
+- npm ci首次259包通过；新增统计首轮10通过/8失败，因年化测试修改共享fixture解析配置，改为复制后复验18/18通过。实验首轮3通过/10失败：质量issue的optional undefined不是规范JSON；在报告边界明确JSON快照后31/31通过，未删断言。新增精度余数后合计288项（原256+32）。
+- 初期typecheck失败（图表callback隐式any，Testing Library不支持exact选项）、lint失败（导出非组件函数/捕获错误cause/ref清理警告）均按严格规则修正。原日志保留。一次工作流文件名误写quality.yml未找到，已改实际ci.yml；不影响现有workflow。首次打包在沙箱内execFileSync git报EPERM，受支持network执行后通过，未改代理或凭据。
+- 第一次浏览器命令在构建尚未完成时启动，随后中止（退出130，未记通过）。策略选择getByLabel精确定位超时，改为combobox角色，MA专项1/1通过；首次专项grep锚点不匹配为0项执行，不记通过。
+- 三策略/存储异常4项通过时，50,000根默认5秒等待未通过；独立剖析：引擎1585ms、统计271ms、JSON393ms、38,603,435字节报告哈希3647ms。改ASCII字节填充避免字符迭代临时数组后哈希1008ms、原报告SHA完全相同。浏览器原阈值复验通过3851ms/最大定时器间隔321.6ms，没有放宽断言或超时。
+- 初次完整check：288项Vitest通过、23项E2E通过/1项失败，保护事件断言误选图表内部layout table；已给账本与事件表明确可访问名，保留原内容断言。截图复核发现结果容器横向溢出，修正grid min-width/容器宽度/表格滚动，增加已打开结果在390px和浅色主题下的断言；没有隐藏全页面溢出。
+- 布局修正后完整check退出0：14文件/288项Vitest、24项E2E（原17+7）、格式/lint/独立core/app/test严格类型与生产构建全部通过，无失败或跳过。50,000根实际MA策略8331笔成交的全点结果就绪3743ms，最大主线程定时器间隔285.1ms；Linux6.18.55、Node24.19.0、Chromium154.0.8037.57、AMD EPYC9V74，cgroup配额2CPU。测试的Desktop Chrome UA为模拟值，不将Windows UA视为Windows系统证据。
+- 代码复核又纠正根项目版本更新误触的yocto-queue锁文件版本元信息（实际tarball与integrity未改、恢复0.1.0）；所有依赖精确版本不变。极小/极大图表刻度改科学计数避免长数值标签。随后重新执行最终npm ci/check，最终日志/CI状态在后续归档补充。
+- 本机Linux开发dirty ZIP解压到中文空格路径、文件SHA、HTTP资源/实际Worker与图表、保存刷新重开/JSON/CSV、外部origin拦截（0请求）、路径穿越/POST/Host拒绝、端口占用失败、Enter退出释放端口、缺dist失败均通过。该包build-info明确dirty=true、基线SHA，仅开发证据，不冒充最终PR artifact；Linux未执行BAT，Windows实际BAT/Expand-Archive/Chrome/Edge由CI单列。
+- 用户1B/2A/2B/2C Windows实机均未执行；2C新[验收清单](docs/phase-2c-acceptance.md)保持待签。无物理网卡断网、真实磁盘耗尽/断电/全部受管策略验证，origin拦截与异常注入不伪装成此类测试。限50,000根，完整报告可数十MB，Worker不消除全部克隆/绘图内存成本；浏览器存储不可靠，请JSON备份。
+
+## Phase 2C 最终本机工程验证
+
+- 最终 `npm ci --cache work/npm-cache` 和 `PLAYWRIGHT_CHROMIUM_EXECUTABLE=/usr/bin/chromium npm run check` 均退出0；288项Vitest、24项E2E及格式/lint/严格类型/构建全部通过，无失败/跳过。原256项核心/集成与17项浏览器回归保留（占位页断言升级为已实现功能，风险/无账户约束保留）。[最终原日志](docs/phase-2c-evidence/local-final-check.log)、[npm ci](docs/phase-2c-evidence/npm-ci.log)。
+- 最终50,000根实际回测3775ms，主线程定时器最大间隔292.3ms；机器/浏览器同上。原5秒结果等待、20秒就绪预算、1秒主线程间隔阈值全部保留。数据为人工合成，不是行情速度/无限数据保证；未测浏览器总进程内存峰值。
+- 独立Python Decimal90统计与2B Decimal100策略/风控参考均执行--check通过；原规划SHA与全部本地文档链接检查通过。依赖锁仅根项目版本0.2.0-test更新，依赖版本/完整性不改。
+- 最终dirty开发ZIP与Linux smoke退出0，[原日志](docs/phase-2c-evidence/local-package-smoke.log)明确BAT未在Linux执行；1280px截图宽1280，结果页不再撑宽。服务原子退出与端口重绑、穿越/Host/方法拒绝、0外部请求/0页面错误及导出均已实际验证。
+- 历次失败和性能剖析原日志在[证据目录](docs/phase-2c-evidence)，不把中止/0项/失败记为通过。设计边界与复核见[实现复核](docs/phase-2c-review.md)。
+- 工程将提交独立Draft PR #6，三平台与Windows ZIP CI尚待这个实际提交运行，未提前声明通过；最终下载artifact须与PR实际head SHA一致。用户Windows实机未验收，待本人按清单下载执行，不自动合并。
+
+## Phase 2C 首次跨平台CI与性能修正
+
+- [PR #6](https://github.com/meredithfyc1001/riverlab-crypto-lab/pull/6)已创建，open/draft；工程提交10ae07aeaa9a7938fe7931e281c3f1e1d68542e9，main仍为0ee6d8483bd6a5226a6d01a1d21b990b134bab46，未合并/发布/部署。该提交clean本机ZIP已验证SHA身份、dirty=false并通过Linux烟测。
+- 首轮[CI run39371336286](https://github.com/meredithfyc1001/riverlab-crypto-lab/actions/runs/39371336286)：已读取三组实际日志。Ubuntu Chromium job118459651304成功，288/24通过，50,000根4207ms/最大间隔330ms；Windows Chrome118459651465、Edge118459651046均288项Vitest通过、23项E2E通过/1项失败，唯一失败均为50,000根回测的默认5000ms结果等待。不是排队或用户验收成功。ZIP后置job118460470469按规则skipped，未上传ZIP。Windows两组[原始失败日志](docs/phase-2c-evidence)保留。
+- 继续优化而不放宽任何等待/性能阈值：SHA对相同规范JSON分块计算，加入Unicode/64KiB边界/非JSON输入的Node SHA等价测试；报告只规范化必要元信息并复制行情，避免对整份账本重复stringify/parse，保留完整结果和运行输入快照。新增输入快照隔离回归，307项Vitest和24项E2E在本机完整通过；50,000根3348ms/最大间隔196.6ms。继续将基准每根市值直接按既定18位floor规则计算，保留派生权益上限，避免五个不用的快照字符串格式化后再解析。
+- 上述优化不删测试、不截断/降采样、不放宽阈值，不改成交/保护规则或hash定义。将对实际新提交重新运行三平台并验证Windows ZIP，尚未预记为通过。
+
+性能修正后最终本机完整check退出0：15文件/307项Vitest、24项E2E全部通过，无失败/跳过；50,000根3430ms/最大主线程间隔251.3ms，[原日志](docs/phase-2c-evidence/local-performance-fixed-check.log)。Windows需实际新CI确认，尚未宣称通过。
+
+## Phase 2C 三平台307/24通过与Windows ZIP启动修正
+
+- 性能修正提交3106d0e796c8116af5762e3a9e41ecd81d26d2df的[run39372297528](https://github.com/meredithfyc1001/riverlab-crypto-lab/actions/runs/39372297528)三平台质量job全部success。已逐一读取[Ubuntu118462640422](https://github.com/meredithfyc1001/riverlab-crypto-lab/actions/runs/39372297528/job/118462640422)、[Chrome118462640513](https://github.com/meredithfyc1001/riverlab-crypto-lab/actions/runs/39372297528/job/118462640513)、[Edge118462640624](https://github.com/meredithfyc1001/riverlab-crypto-lab/actions/runs/39372297528/job/118462640624)完整日志，各307项Vitest、24项E2E，npm ci/check与独立参考全部通过，无测试失败/跳过。文本日志保存在docs/phase-2c-evidence/ci-*-quality.log。
+
+| 实际平台          | 浏览器实际版本       | CPU                | 50,000根结果+图表就绪ms | 最大主线程间隔ms |
+| ----------------- | -------------------- | ------------------ | ----------------------: | ---------------: |
+| Ubuntu Linux6.17  | Chromium156.0.8078.4 | EPYC7763 / 2逻辑核 |                    5103 |            418.1 |
+| Windows10.0.26100 | Chrome155.0.8059.40  | EPYC7763 / 2逻辑核 |                    5233 |            462.7 |
+| Windows10.0.26100 | Edge154.0.4258.62    | EPYC9V74 / 2逻辑核 |                    3654 |            292.9 |
+
+总耗时包含控件设置/Worker传输/全点绘图，结果消息的原5秒等待和总20秒预算、主线程1秒阈值均通过，未改测试阈值。仅人工合成样本，不是用户机器保证。
+
+- 后置Windows ZIP job118463697212实际build/打包成功、dirty=false且SHA为3106d0e；真实Expand-Archive之后，Chrome测试在10秒启动READY等待处失败，未上传artifact。完整[失败日志](docs/phase-2c-evidence/ci-windows-package-initial-failure.log)保存。该失败不能记为Windows包启动成功。
+- 复核CI通过cmd调用BAT时，增加windowsVerbatimArguments以保留既定外层/路径引号，避免Node对含中文空格的cmd命令再次转义；并转发子进程启动日志以保留失败原因。不修改用户BAT、原服务、等待阈值或断言。此修改提交后，全部质量与Windows ZIP仍需实际新CI核验；当前最终状态及下载以[PR #6 Checks](https://github.com/meredithfyc1001/riverlab-crypto-lab/pull/6/checks)及PR交付说明为准，不提前记成功。用户Windows实机仍未测试。
+
+## Phase 2C 交付技术验证通过（Windows用户未验收）
+
+- 提交a4198f2e6c7c3c265fa1abf8c6e612f476561fcf的[CI run39372868072](https://github.com/meredithfyc1001/riverlab-crypto-lab/actions/runs/39372868072)四个job全部success。已读取三个质量job原始日志：Ubuntu118464406857、Windows Chrome118464406686、Windows Edge118464406775，各307项Vitest/24项E2E及npm ci/check/独立参考全部通过。50,000根到全点曲线就绪分别4675/4796/2896ms，主线程最大间隔355.6/385.9/256.8ms，原阈值保留。
+- 已读取Windows ZIP job118465250033完整日志：[原日志](docs/phase-2c-evidence/ci-windows-package-success.log)。Node24.21.0、Chrome155.0.8059.40/Edge154.0.4258.62，实际Expand-Archive到含中文空格路径，经BAT前台启动127.0.0.1，检查实际监听地址、HTTP/核心资源/Worker回测/曲线、保存刷新重开/JSON/CSV、0外部请求/0页面错误、端口占用/缺dist失败、Enter退出和端口重绑均成功。cmd引用修正已由此实际Windows日志确认。
+- 该验证包[artifact12242343011](https://github.com/meredithfyc1001/riverlab-crypto-lab/actions/runs/39372868072/artifacts/12242343011)绑定完整a4198f2 SHA，expired=false；有效期14天，至北京时间2026-11-03 13:08:10。内层ZIP SHA256为ab3919216e7d388b3e04030e29ea39bfa746f2374a6606f9f596578a0683a1f6，569357 bytes。原始校验清单及双浏览器证据在artifact内。此记录对应这个实际提交，不冒充后续head。
+- 收尾仅归档上述事实、明确报告/恢复边界并修正首页回测入口残留“待开发”标签；不改策略/成交/统计计算。收尾提交仍执行相同完整CI和Windows ZIP；最新head的下载链接/有效期与实际检查结果统一在[PR #6交付说明](https://github.com/meredithfyc1001/riverlab-crypto-lab/pull/6)维护，避免将旧SHA的包当成最终产物。
+- 工作区独立分支、main保持0ee6d8483bd6a5226a6d01a1d21b990b134bab46；无合并/tag/Release/公开部署。用户Windows实机、物理断网、真实配额耗尽/断电/全部受管环境尚未验收。当前建议先下载按清单实测，再决定是否合并；Phase3仍需另行授权。
+
+## Phase 2B 历史恢复入口：Phase 2B（2026-10-19）
 
 - 初始 work 分支干净；已 fetch origin/main，核实 PR #4 merged=true，实际合并 a7b57cbecf7b25cd50da6647426e99ca6738dfa5，UTC 15:49:17。从该提交建立 feat/phase-2b-strategies-risk；[PR #5](https://github.com/meredithfyc1001/riverlab-crypto-lab/pull/5)已创建，open/draft，工程提交509164f5c2aa27ec4083a45696a27ff5ad8b8f3f；不修改main、不合并/发布/部署。
 - 重新读取最终 CI run 39277844255 的三个job：Ubuntu Chromium 118146578981、Windows Chrome 118146578936、Windows Edge 118146578753，均completed/success，npm ci/check步骤成功；随后已重新读取三个job原始日志，逐一确认每组159项Vitest及17项E2E通过，无失败/跳过。

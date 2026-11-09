@@ -30,15 +30,17 @@ describe('Phase 0 应用框架', () => {
     expect(document.documentElement).toHaveAttribute('data-theme', 'dark');
   });
 
-  it('深链接指向回测占位页，不提供实际运行或账户输入', () => {
+  it('深链接指向回测配置，未选保存数据不能运行且无账户输入', () => {
     window.history.replaceState(null, '', '/#/backtests');
     render(<App />);
     expect(
       screen.getByRole('heading', { level: 1, name: '回测中心' }),
     ).toBeVisible();
-    expect(screen.getByText('Phase 2 · 待开发')).toBeVisible();
-    expect(screen.queryByRole('textbox')).not.toBeInTheDocument();
-    expect(screen.getAllByRole('button')).toHaveLength(1);
+    expect(screen.getByRole('heading', { name: '回测配置' })).toBeVisible();
+    expect(
+      screen.queryByLabelText(/API Key|私钥|账户密码/),
+    ).not.toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '运行回测' })).toBeDisabled();
     expect(screen.getByLabelText('研究风险提示')).toBeVisible();
   });
 

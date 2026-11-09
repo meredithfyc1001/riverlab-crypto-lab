@@ -1,6 +1,6 @@
 # RiverLab Crypto Lab
 
-中文、Windows 优先、离线优先的历史数据研究工具。Phase 0/1A 已合并并由用户总体验收；Phase 1B 已合并、云端技术复核通过，用户 Windows 实机未执行。Phase 2A 已合并，三平台CI通过，Codex本机超时和Windows用户未测试记录保留。当前 **Phase 2B** 增加因果MA/RSI/突破策略、参数校验与保守止盈止损模拟；沿用18位定点账本，尚无回测UI。保留 CSV/UTC/质量、OHLC/成交量、MA/EMA/RSI、IndexedDB 与 JSON 备份恢复。
+中文、Windows 优先、离线优先的历史数据研究工具。Phase 0/1A 已合并且用户总体验收通过；1B/2A/2B 已合并，但用户 Windows 实机尚未验收。PR #5 实际合并 SHA：`0ee6d8483bd6a5226a6d01a1d21b990b134bab46`。本轮 **Phase 2C** 将原三策略、保守风控与18位BigInt账本接入Worker回测工作台，增加纯TS统计、实验保存/重开、JSON/CSV与Windows本地测试ZIP。CI和用户实机状态分列于progress，不自动合并。
 
 **仅供学习研究 · 不提供投资建议 · 历史表现不代表未来表现。** 不连接真实账户、不接收密钥、不处理真实资金。
 
@@ -11,7 +11,7 @@
 ```powershell
 git clone https://github.com/meredithfyc1001/riverlab-crypto-lab.git
 cd riverlab-crypto-lab
-git switch feat/phase-2b-strategies-risk
+git switch feat/phase-2c-backtest-workbench
 npm ci
 npm run dev
 ```
@@ -69,9 +69,29 @@ npm run preview -- --port 4173 --strictPort
 
 Edge/Chrome 打开 http://127.0.0.1:4173。可断开外部网络后刷新和操作，本机服务须保持运行。dist 是标准静态包，无远程字体、CDN、遥测或 API。
 
-**不要双击 dist/index.html。** ES module 包经本机 HTTP 运行；未提供单 HTML、PWA、离线安装器或无 Node 发行包。vite preview 仅用于本机验收。后续方案见 [offline-release.md](docs/offline-release.md)。
+**不要双击 dist/index.html。** ES module 包经本机 HTTP 运行；没有单 HTML、PWA或嵌入Node的安装器。本轮ZIP包含生产静态包、Node内置模块HTTP服务与BAT启动器，见下方说明。vite preview仍用于开发验收。
+
+## Phase 2C 回测与实验
+
+在数据中心明确保存通过检查的数据，然后进入回测中心选择。显示来源、币种、周期、UTC范围与质量警告；缺口/损坏/重复/未确认/未收盘数据阻断，不截取有效子集或修复。选择MA交叉、RSI阈值或历史high/low突破，严格校验参数；默认1000虚拟USDT，可配置双边费/滑点、数量精度、最小额及止盈止损。24根真实样本不足默认MA慢30，可用快2慢4做流程测试，不能据此宣称策略有效。
+
+原核心在Worker执行，支持取消；显示全部收盘权益/买入持有与回撤点、分页成交账本、拒单/取消/到期与保护原因。现金/持仓市值/总权益与已实现/浮动盈亏分列。胜率与利润因子只用完整平仓周期，手续费和滑点已扣；未完成仓位不计胜负。CAGR需至少365天/252根且首末权益>0，其余NA与原因；暴露为K线区间上界，不冒充精确根内时长。完整口径见[2C设计](docs/phase-2c-design.md)。
+
+“保存回测实验”明确写入IndexedDB；实验中心可打开、复现、确认删除。保存数据快照、身份/hash、完整配置/实际信号、版本、假设与统计；重开在Worker校验并重算比对，损坏/不支持版本拒绝。删除实验不改原数据；数据集被删后实验内嵌快照仍可重开。JSON含完整复现数据和配置，CSV为逐笔成交；均附研究警告。报告校验和不能认证来源。
+
+当前配置和未保存结果只在网页会话保留，刷新后重置；已保存数据与实验刷新可见，需明确选择打开。IndexedDB隔离于浏览器/配置/HTTP来源和端口，**不保证永久保存**；配额/权限/事务失败明确提示，保留内存结果可导出。跨标签页列表变更需刷新。JSON需自己保管，后续算法版本可能需要保留旧测试包才能重算。实验JSON为完整报告和复现资料，本轮未提供实验JSON文件导入界面；原数据集JSON备份恢复保持可用。
+
+## 下载 Windows 本地测试包
+
+在 PR #6 Checks 找到成功的“Project quality”运行，底部Artifacts下载 `RiverLab-Crypto-Lab-Local-Test-<完整head SHA>`（登录有仓库访问权的GitHub账号）。保留14天，具体有效期见运行artifact元信息；排队/失败不产生可用测试ZIP。外层artifact含内层 `RiverLab-Crypto-Lab-Local-Test.zip`、ZIP校验和及Windows验证证据。不要把旧提交artifact当最新PR产物，核对build-info的SHA。
+
+取出内层ZIP并全部解压到含中文/空格路径，系统先装Node.js24 LTS，双击 `start-local.bat`。无需npm ci/开发服务器，浏览器打开 `http://127.0.0.1:4173`，默认只监听回环。保持前台窗口，Enter、q再Enter或Ctrl+C停止，不留后台服务。端口占用明确退出，不自动切换存储来源；如手动使用其他端口，浏览器数据隔离。首次下载及安装Node需联网，包启动与核心功能无需外网。详见[包内说明](scripts/local-test/README-local-test.md)和[用户验收清单](docs/phase-2c-acceptance.md)。
+
+开发者构建测试包：`npm run build` → `npm run package:local` → `npm run test:package`（本机Chromium可设置PLAYWRIGHT_CHROMIUM_EXECUTABLE）。产物在work/local-package，含dist、服务/BAT/说明、版本/提交SHA/dirty标记、逐文件SHA256，ZIP外另有SHA256。CI只打包clean head提交，三组check成功后Windows实际解压/启动Chrome与Edge验证全部成功才上传；不创建Release、不部署。本机dirty包仅供开发验证，不能冒充最终PR artifact。
 
 ## 文档
+
+- [Phase 2C设计](docs/phase-2c-design.md)、[实现复核](docs/phase-2c-review.md)、[Windows用户验收](docs/phase-2c-acceptance.md)及[原始测试证据](docs/phase-2c-evidence)。
 
 - [AGENTS.md](AGENTS.md)：开发约束与恢复流程。
 - [plan.md](plan.md)：范围、路线与验收；[原始规划](docs/product-plan-v0.1.md) 保留附件全文。
