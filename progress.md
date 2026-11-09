@@ -1,6 +1,20 @@
 # RiverLab Crypto Lab 进度
 
-## 当前恢复入口：Phase 2C（2026-10-20）
+## 当前恢复入口：Phase 2C 合并后交接（2026-11-09）
+
+- 已通过 GitHub 核实 PR #6 merged=true，合并提交为 `33b1d6695ca1115efefce59132d96f8534c43e72`，合并时间北京时间 2026-11-09 19:36:50；main 当前正是此提交。下方“Draft 待审”等文字属于当时的历史记录。
+- 本轮用户要求继续；先完成合并状态、下载包与 Windows 验收交接。Phase 3 范围已向用户询问，尚未开始新阶段功能。
+- 2026-10-20 的 artifact 已于 2026-11-03 到期，旧运行 artifact 列表现为空。合并已自动触发 [main CI run 42610440364](https://github.com/meredithfyc1001/riverlab-crypto-lab/actions/runs/42610440364)，无需重复触发或修改代码以重建旧包。
+- Ubuntu Chromium：job 129137160598，已读日志确认 307 项 Vitest、24 项 E2E 全部通过；50,000 根 2764ms，最大主线程间隔 219.2ms；Intel(R) Xeon(R) 6975P-C / 2 逻辑核，浏览器 156.0.8078.4。
+- Windows Chrome：job 129137160463，已读日志确认 307 项 Vitest、24 项 E2E 全部通过；50,000 根 2677ms，最大主线程间隔 231.3ms；AMD EPYC 9V45 96-Core Processor / 2 逻辑核，浏览器 156.0.8078.80。
+- Windows Edge：job 129137160153，已读日志确认 307 项 Vitest、24 项 E2E 全部通过；50,000 根 3574ms，最大主线程间隔 317.9ms；INTEL(R) XEON(R) PLATINUM 8573C / 2 逻辑核，浏览器 156.0.4314.58。
+- Windows ZIP job 129138532233 已 completed/success，已读完整日志：Node v24.22.2，Windows Chrome 156.0.8078.80 / Edge 156.0.4314.58，真实解压到中文空格路径、BAT前台启动、HTTP资源/回测/保存重开/JSON与CSV、0外部请求/0页面错误、路径/方法/Host拒绝、端口占用/缺dist失败和Enter退出均成功。
+- [新的 main ZIP artifact](https://github.com/meredithfyc1001/riverlab-crypto-lab/actions/runs/42610440364/artifacts/13670985121) 已生成，完整SHA为 `33b1d6695ca1115efefce59132d96f8534c43e72`，expired=false，保留14天，至北京时间2026-11-23 19:41:32。内层ZIP 569520 bytes，SHA-256：`5c223439630cf093899c545f76f4a36beda393a3e001f5bd8748a11e211c9b99`。外层含内层ZIP、校验清单及双浏览器证据；不创建正式Release。
+- 当前执行环境显示启动失败；shell 实际返回“No usable execution environment”，因此本轮本机 npm ci/check 未执行，也未读取或改写用户本地工作区。通过 GitHub 连接以已确认 main 的不可变内容创建独立文档分支，提交范围仅 Markdown；CI 与此前本机结果分列。
+- PR #6 的合并不证明用户 Windows 验收通过。本轮未收到逐项结果或版本，清单标为待反馈；历史“未测试/未执行”保留当时事实，不补签。
+- 本轮不直接修改 main，不自动合并文档 PR，不创建正式 Release 或公开部署；18 位账本、成交时序、策略/统计版本和所有回归保持原样。
+
+## Phase 2C 历史恢复入口（2026-10-20）
 
 - 初始工作区干净。已 fetch main，GitHub确认PR #5 merged=true，实际合并SHA为0ee6d8483bd6a5226a6d01a1d21b990b134bab46；从该提交建立feat/phase-2c-backtest-workbench。已创建Draft PR #6，不修改main或自动合并。
 - 完整阅读AGENTS、plan、progress、README、原始规划、2A/2B设计和现有数据/策略/成交/账本/存储接口。已向用户汇报实施计划、选型、风险及验收标准。
