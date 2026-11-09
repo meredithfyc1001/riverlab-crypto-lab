@@ -1,0 +1,134 @@
+{
+  "validatedImplementationCommit": "1edb8f167cb012e223d9841e5f6b7e02571ae259",
+  "runUrl": "https://github.com/meredithfyc1001/riverlab-crypto-lab/actions/runs/42623772196",
+  "allJobs": "completed/success",
+  "quality": [
+    {
+      "channel": "Ubuntu Chromium",
+      "id": 129182210379,
+      "vitest338": true,
+      "e2e35": true,
+      "performance": {
+        "bars": 50000,
+        "advanceMs": 860,
+        "resumeMs": 1409,
+        "maximum": 239.39999999999418,
+        "samples": 96,
+        "cpu": "Intel(R) Xeon(R) 6975P-C",
+        "cores": 2,
+        "platform": "linux",
+        "release": "7.0.0-1016-aws",
+        "browser": "156.0.8078.4",
+        "node": "v24.22.2",
+        "limitations": "synthetic; Worker persistent execution; one manual pending entry; full known prefix curves; resume by linear replay"
+      },
+      "errors": []
+    },
+    {
+      "channel": "Windows Chrome",
+      "id": 129182210211,
+      "vitest338": true,
+      "e2e35": true,
+      "performance": {
+        "bars": 50000,
+        "advanceMs": 1062,
+        "resumeMs": 1573,
+        "maximum": 273.5999999999767,
+        "samples": 110,
+        "cpu": "AMD EPYC 9V74 80-Core Processor                ",
+        "cores": 2,
+        "platform": "win32",
+        "release": "10.0.26100",
+        "browser": "156.0.8078.80",
+        "node": "v24.22.2",
+        "limitations": "synthetic; Worker persistent execution; one manual pending entry; full known prefix curves; resume by linear replay"
+      },
+      "errors": []
+    },
+    {
+      "channel": "Windows Edge",
+      "id": 129182210357,
+      "vitest338": true,
+      "e2e35": true,
+      "performance": {
+        "bars": 50000,
+        "advanceMs": 1095,
+        "resumeMs": 1789,
+        "maximum": 272.4000000000233,
+        "samples": 124,
+        "cpu": "AMD EPYC 9V74 80-Core Processor                ",
+        "cores": 2,
+        "platform": "win32",
+        "release": "10.0.26100",
+        "browser": "156.0.4314.58",
+        "node": "v24.22.2",
+        "limitations": "synthetic; Worker persistent execution; one manual pending entry; full known prefix curves; resume by linear replay"
+      },
+      "errors": []
+    }
+  ],
+  "windowsPackage": {
+    "jobId": 129183964790,
+    "innerZip": {
+      "path": "D:\\a\\riverlab-crypto-lab\\riverlab-crypto-lab\\work\\local-package\\RiverLab-Crypto-Lab-Local-Test.zip",
+      "bytes": 710252,
+      "sha256": "921ce5c36728fa50f3f88a9d14eaebc1015849297a45b89b9e25209c8ac6b581",
+      "commitSha": "1edb8f167cb012e223d9841e5f6b7e02571ae259",
+      "dirty": false
+    },
+    "artifactId": 13677432481,
+    "expiresUtc": "2026-11-23T13:19:42Z",
+    "checks": [
+      {
+        "platform": "win32",
+        "node": "v24.22.2",
+        "browser": "156.0.8078.80",
+        "commitSha": "1edb8f167cb012e223d9841e5f6b7e02571ae259",
+        "extractionPath": "D:\\a\\riverlab-crypto-lab\\riverlab-crypto-lab\\work\\Windows 中文 空格测试 chrome\\RiverLab-Crypto-Lab-Local-Test",
+        "externalRequests": [],
+        "errors": [],
+        "checks": [
+          "ZIP hashes",
+          "BAT foreground launch",
+          "Chinese and space path",
+          "read-only and traversal protection",
+          "port conflict fails",
+          "no external origins",
+          "real Worker backtest and charts",
+          "save reload reopen",
+          "JSON CSV download",
+          "strategy research batch and JSON CSV download",
+          "prefix replay, virtual next-open trade, journal, checkpoint reload and JSON CSV",
+          "Enter exits and frees port",
+          "missing dist fails"
+        ]
+      },
+      {
+        "platform": "win32",
+        "node": "v24.22.2",
+        "browser": "156.0.4314.58",
+        "commitSha": "1edb8f167cb012e223d9841e5f6b7e02571ae259",
+        "extractionPath": "D:\\a\\riverlab-crypto-lab\\riverlab-crypto-lab\\work\\Windows 中文 空格测试 msedge\\RiverLab-Crypto-Lab-Local-Test",
+        "externalRequests": [],
+        "errors": [],
+        "checks": [
+          "ZIP hashes",
+          "BAT foreground launch",
+          "Chinese and space path",
+          "read-only and traversal protection",
+          "port conflict fails",
+          "no external origins",
+          "real Worker backtest and charts",
+          "save reload reopen",
+          "JSON CSV download",
+          "strategy research batch and JSON CSV download",
+          "prefix replay, virtual next-open trade, journal, checkpoint reload and JSON CSV",
+          "Enter exits and frees port",
+          "missing dist fails"
+        ]
+      }
+    ]
+  },
+  "manualWindowsAcceptance": "Pending user feedback; CI is not manual or physical-network-off acceptance",
+  "note": "Archived verified implementation snapshot. Subsequent changes only archive documentation. Use PR #8 current-head checks and artifact for the final download."
+}

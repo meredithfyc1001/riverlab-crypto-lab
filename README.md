@@ -126,3 +126,5 @@ Phase 2C 已合并。后续改动继续使用独立分支和待审 PR；用户 W
 保存回放状态后刷新需明确打开，恢复保持暂停；未保存状态刷新清除。保存与JSON只含原数据集身份/hash、配置、游标、决策、日记及重算校验，不含行情，**必须保留原保存数据集且身份/hash一致**。原数据删除、ID变化或损坏时明确拒绝，不自动替换；状态JSON不是独立行情备份。当前排队单恢复后只在下一根执行一次。快照采用独立IndexedDB库，不覆盖原数据集/回测实验；浏览器存储不保证永久可靠，请实际下载JSON并保管原CSV/数据集备份。
 
 上限50,000根、1,000次手工决策、1,000条日记、每条2,000字符、JSON10MiB；成交与日记CSV只导出已播放事件。所有模拟成本已扣，浮盈不算完成交易胜负；短样本年化NA。按[设计](docs/phase-4-design.md)及[Windows清单](docs/phase-4-acceptance.md)验收，CI与用户实机分别记录。源码测试可切换feat/phase-4-historical-replay；ZIP无需npm ci，Node24LTS预装。仅供学习研究，历史表现不代表未来表现。
+
+Phase4功能提交1edb8f1已通过三平台各338项Vitest/35项E2E与WindowsZIP双浏览器实测，见[CI证据快照](docs/phase-4-ci-evidence.json)及progress；最终提交下载使用PR#8说明绑定当前head的链接。用户Windows实机/物理断网尚待反馈，不以CI补签。

@@ -6,6 +6,22 @@
 
 本机环境已恢复，初始work分支干净；首次沙箱git fetch代理不可连，受支持网络权限重试成功并基于origin/main建立开发分支。npm ci沙箱EPERM代理连接失败，受支持权限重试259包成功，Node24.19.0/Linux；缓存位于work/npm-cache，无凭据输出或代理修改。已阅读最新文档/原规划与接口，已汇报设计、风险和验收；共享会话/回放/保存恢复已完成并经本机338/35验证；PR#8已创建，三平台实际结果在下方分列。
 
+## Phase 4 工程三平台与WindowsZIP验证通过（用户未验收）
+
+已验证功能提交1edb8f167cb012e223d9841e5f6b7e02571ae259：[run42623772196](https://github.com/meredithfyc1001/riverlab-crypto-lab/actions/runs/42623772196)四作业completed/success，已实际读取三组质量及Windows包完整日志。Ubuntu129182210379、Windows Chrome129182210211、Edge129182210357各npm ci/check、338项Vitest/35项E2E全部通过，格式/lint/core-app-test严格类型/生产构建及4个Python参考均通过，原317/30全部保留。JSON导入内存待保存、IndexedDB重开已保存的新增断言也通过。没有删除业务断言/跳过测试/放宽阈值。
+
+| 平台            | 实际浏览器    | 50k推进 ms | 恢复 ms | 最大主线程间隔 ms |
+| --------------- | ------------- | ---------- | ------- | ----------------- |
+| Ubuntu Chromium | 156.0.8078.4  | 860        | 1409    | 239.4             |
+| Windows Chrome  | 156.0.8078.80 | 1062       | 1573    | 273.6             |
+| Windows Edge    | 156.0.4314.58 | 1095       | 1789    | 272.4             |
+
+三组Node24.22.2/2逻辑核；Ubuntu7.0.0-1016-aws/Xeon6975P-C，Windows10.0.26100/EPYC9V74。样本为人工合成、一次手工买入，回放与恢复均实际执行50k；只代表这些机器和此样本。完整结构化数据见[CI证据](docs/phase-4-ci-evidence.json)，本机旧/新全部性能事实保留，不选择性删去较慢值。
+
+WindowsZIP job129183964790实际执行BAT前台启动、中文空格路径解压、127.0.0.1监听/HTTP/核心资源、旧回测与研究、新逐根回放/下一开盘虚拟成交/日记/保存刷新重开/JSON和CSV、路径穿越/Host/POST拒绝、端口占用与缺dist预期失败、Enter停止并释放端口；Chrome156.0.8078.80和Edge156.0.4314.58均0外部请求/0页面错误，全部通过。已验证[功能快照ZIP artifact13677432481](https://github.com/meredithfyc1001/riverlab-crypto-lab/actions/runs/42623772196/artifacts/13677432481)属于完整1edb8f1提交、dirty=false，内层710252bytes，SHA256为921ce5c36728fa50f3f88a9d14eaebc1015849297a45b89b9e25209c8ac6b581，14天至北京时间2026-11-23 21:19:42。
+
+随后仅归档本节/验收/证据文档，最终提交仍须自动执行相同完整CI与WindowsZIP。**最新实际head、当前下载链接及有效期以PR#8交付说明为准；上面的归档包不冒充后续head。** PR#8继续open/draft，main仍d60ef1c，无自动合并/tag/Release/公开部署。用户Windows/物理断网/真实磁盘耗尽/断电/全部受管策略仍未验收，清单不补签。建议先下载最终head包实际测试并反馈，再决定合并；Phase5候选需另行确定优先级。
+
 ## Phase 4 本机工程验证
 
 - npm ci经受支持权限成功259包，依赖/完整性未改变，根项目版本0.4.0-test；初始沙箱EPERM连接代理失败事实保留。Git fetch沙箱代理失败后受支持权限成功，main未直接改写。

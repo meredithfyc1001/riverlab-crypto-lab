@@ -2,7 +2,7 @@
 
 基线PR#7已合并d60ef1c；Phase4独立Draft PR#8，不自动合并/部署/Release。此清单不是用户Windows验收签署，测试实际事实见progress和PR Checks。
 
-## 自动化要求
+## 自动化要求（功能快照1edb8f1已实测通过；最终head见PR#8 Checks）
 
 - [x] 合并前完整引擎输出/hash固定参考相同，原317项测试和30项E2E保留。
 - [x] 手工收盘排队→下一开盘，资金/持仓不足拒绝，双触发/跳空/保护优先均沿用原模型。
@@ -13,9 +13,9 @@
 - [x] 日记、保存/刷新重开、删除、状态JSON导入与交易CSV，损坏/身份变化/原数据缺失明确拒绝。
 - [x] 配额/abort/策略拒绝不假成功，失败后内存状态可导出，旧数据集和实验不覆盖。
 - [x] 50,000根实际顺序推进和重开性能：20秒/主线程最大1000ms原门槛，记录机器/浏览器/限制。
-- [ ] 本机npm ci/check；Ubuntu Chromium、Windows Chrome、Windows Edge实际成功日志。
-- [ ] Windows ZIP中文空格路径真实启动/回放/成交/日记/保存恢复/导出/退出，无外部请求。
-- [ ] ZIP绑定当前headSHA，14天artifact下载及SHA256可核对。
+- [x] 本机npm ci/check；Ubuntu Chromium、Windows Chrome、Windows Edge实际成功日志。
+- [x] Windows ZIP中文空格路径真实启动/回放/成交/日记/保存恢复/导出/退出，无外部请求。
+- [x] ZIP绑定当前headSHA，14天artifact下载及SHA256可核对。
 
 ## 用户 Windows 实机（待本人反馈）
 

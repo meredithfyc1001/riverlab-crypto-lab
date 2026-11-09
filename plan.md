@@ -66,4 +66,4 @@ Phase3已验证实现85e933a三平台各316/30与WindowsZIP双浏览器全部通
 
 用户在PR#7合并后要求继续下一步，按原规划启动[Phase4设计](docs/phase-4-design.md)：共享逐根成交会话→无未来数据Worker→回放/虚拟买卖/日记/风险UI→独立库保存与动作重算恢复→固定参考及全部旧回归→本机check/三平台CI/WindowsZIP→Draft PR#8待用户反馈。Phase3最终head2db9e5c的run42616308619三平台317/30与WindowsZIP均通过，见PR#7实际日志记录；用户Windows反馈不因合并自动补签。
 
-Phase4本机完整check已通过338项Vitest/35项E2E，原317/30全部保留；独立Decimal与合并前引擎hash参考通过。Linux dirty开发ZIP烟测通过，BAT未在Linux执行。跨平台CI与最终headZIP须读取实际日志后在PR#8交付说明补齐。
+Phase4本机完整check已通过338项Vitest/35项E2E，原317/30全部保留；独立Decimal与合并前引擎hash参考通过。Linux dirty开发ZIP烟测通过，BAT未在Linux执行。功能提交1edb8f1的run42623772196四作业已实际成功，三平台各338/35与WindowsZIP双浏览器均通过；后续仅归档证据文档，最新head检查和下载由PR#8交付说明维护，用户Windows验收仍待本人反馈。
