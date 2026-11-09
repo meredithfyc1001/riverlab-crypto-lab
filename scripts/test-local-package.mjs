@@ -240,14 +240,25 @@ try {
     .click();
   await page.getByRole('button', { name: /打开实验/ }).click();
   await page.getByText('实验校验与重算一致，已重新打开结果。').waitFor();
-  await page.getByRole('navigation').getByRole('link', { name: '策略中心' }).click();
+  await page
+    .getByRole('navigation')
+    .getByRole('link', { name: '策略中心' })
+    .click();
   await page.getByLabel('研究数据集').selectOption({ index: 1 });
-  await page.getByRole('checkbox', { name: '我确认研究数据全部已收盘，已阅读质量、成本与过拟合警告' }).check();
+  await page
+    .getByRole('checkbox', {
+      name: '我确认研究数据全部已收盘，已阅读质量、成本与过拟合警告',
+    })
+    .check();
   await page.getByRole('button', { name: '运行策略研究', exact: true }).click();
   await page.getByTestId('research-results').waitFor();
   for (const format of ['JSON', 'CSV']) {
     const download = page.waitForEvent('download');
-    await page.getByRole('button', { name: format === 'JSON' ? '导出研究 JSON' : '导出比较 CSV' }).click();
+    await page
+      .getByRole('button', {
+        name: format === 'JSON' ? '导出研究 JSON' : '导出比较 CSV',
+      })
+      .click();
     assert((await stat(await (await download).path())).size > 0);
   }
   assert.deepEqual(external, []);

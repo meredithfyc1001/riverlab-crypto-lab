@@ -193,7 +193,9 @@ export function App() {
                             ? 'CSV 导入可用'
                             : page.id === 'backtests'
                               ? '回测工作台可用'
-                              : page.id === 'strategies' ? '策略研究可用' : '待开发'}
+                              : page.id === 'strategies'
+                                ? '策略研究可用'
+                                : '待开发'}
                         </small>
                       </a>
                     ))}
@@ -228,8 +230,16 @@ export function App() {
               {backtest.error && <p role="alert">{backtest.error}</p>}
               {research.message && <p role="status">{research.message}</p>}
               {research.error && <p role="alert">{research.error}</p>}
-              {research.busy && <button onClick={research.cancel}>取消策略研究</button>}
-              {research.report && <ResearchResults key={research.report.payloadHash} report={research.report} onExport={research.exportReport} />}
+              {research.busy && (
+                <button onClick={research.cancel}>取消策略研究</button>
+              )}
+              {research.report && (
+                <ResearchResults
+                  key={research.report.payloadHash}
+                  report={research.report}
+                  onExport={research.exportReport}
+                />
+              )}
             </>
           ) : activeId === 'backtests' || activeId === 'experiments' ? (
             <>
