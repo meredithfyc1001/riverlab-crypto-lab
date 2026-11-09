@@ -1,6 +1,24 @@
 # RiverLab Crypto Lab 进度
 
-## 当前恢复入口：Phase 3 待审（2026-11-09）
+## 当前恢复入口：Phase 4 实施中（2026-11-09）
+
+已通过GitHub确认PR#7于北京时间20:29:18合并为d60ef1c3491492247a4a1cb5a67c05cb58e33703，main一致。用户要求继续下一步，本轮启动原规划Phase4历史回放，独立feat/phase-4-historical-replay、目标Draft PR#8，不改main或自动合并。Phase3最终CI run42616308619三组317项Vitest/30项E2E与WindowsZIP全部实际通过，已在PR#7归档，旧316快照保留历史；用户Windows验收仍待反馈。
+
+本机环境已恢复，初始work分支干净；首次沙箱git fetch代理不可连，受支持网络权限重试成功并基于origin/main建立开发分支。npm ci沙箱EPERM代理连接失败，受支持权限重试259包成功，Node24.19.0/Linux；缓存位于work/npm-cache，无凭据输出或代理修改。已阅读最新文档/原规划与接口，已汇报设计、风险和验收；正在提取共享成交会话，不提前宣称测试通过。
+
+## Phase 4 本机工程验证
+
+- npm ci经受支持权限成功259包，依赖/完整性未改变，根项目版本0.4.0-test；初始沙箱EPERM连接代理失败事实保留。Git fetch沙箱代理失败后受支持权限成功，main未直接改写。
+- 共享执行会话保留原交易循环；137项旧内核/策略/保护专项通过。四组冻结的合并前引擎完整输出hash完全相同；独立Python Decimal手工订单参考逐根验证费用、余额、权益、已实现/浮动。初期typecheck发现未使用import、lint发现hash监听依赖，已修正，未改变门槛。
+- 新回放核心15项、存储6项均通过。首次4项真实浏览器专项通过，50k推进996ms/恢复1634ms/最大主线程325.7ms；后续补充配额与原数据删除后恢复测试。
+- 首次完整check中338项Vitest/格式/lint/strict类型/生产构建通过，但未指定系统Chromium路径，35个浏览器用例均在browserType.launch前因默认浏览器不存在失败，没有业务断言通过；不是用户Windows或浏览器流程成功。后按README显式PLAYWRIGHT_CHROMIUM_EXECUTABLE=/usr/bin/chromium重跑完整npm run check，退出0：18文件/338项Vitest、35项E2E全部通过，原317/30保留，无失败/跳过。
+- 本机Linux6.18.57、Node24.19.0、Chromium154.0.8037.57、AMD EPYC9V74，系统暴露3逻辑核、cgroup配额2CPU。最新50k实际顺序回放推进975ms、恢复1592ms、主线程最大220.3ms，沿用20秒/1000ms门槛；原2C、3性能也通过。完整原日志位于work/phase-4-local-check-fixed.log，结构化证据见docs/phase-4-local-evidence.json，不冒充跨平台证据。
+- 四个独立Python参考--check实际通过；原规划SHA256保持0a3081d44d3557e6d0f1b1eda3378c2e83282b3c6677dcd45b88a3190b86f84b。git diff --check与全仓Prettier通过。
+- 本地dirty开发ZIP通过中文空格路径实际Node前台HTTP/资源/旧回测+研究+新回放、虚拟下一开盘成交、日记、保存刷新重开、JSON/CSV、0外部请求/0页面错误、穿越/Host/POST拒绝、端口冲突/缺dist预期失败、Enter停止并释放端口。首次默认沙箱打包git子进程EPERM，受支持权限重试成功；没有修改打包脚本门槛。Linux未执行BAT，dirty=true且源SHA是基线，不能当作当前PR下载包；WindowsCI仍须真实执行。已查看package-chromium.png确认布局和已播放两根图表；390px及主题断言通过。
+- React Best Practices复核：稳定hash监听/暂停回调、Worker生命周期和generation、单个在途请求、无条件Hooks、只向feature传已知前缀、增量合并、无行情变化复用数组、图表清理/分序列让出浏览器、订单表最近100/日记分页、原生label/表格名。域计算均在core，兄弟feature未互相导入；未引入新依赖。主JS约532kB/gzip174kB有原默认Vite体积提示，未调高阈值。
+- 当前将提交独立Draft PR#8；三平台CI/WindowsZIP/绑定head下载尚待这个实际提交执行，不预记通过。所有Windows用户实机/物理断网清单待本人反馈。状态JSON恢复依赖原保存数据集，已在UI/README/设计明确；不声称独立行情备份或防作弊系统。
+
+## Phase 3 待审时历史记录（2026-11-09，现已合并）
 
 用户明确授权“启动 Phase 3 设计与开发”。main仍为PR#6合并33b1d669；PR#7独立分支交付，不自动合并、Release或部署。原规划/成交/策略/风险/统计/18位账本均未修改。新增core/research、专用Worker、策略中心比较/网格/split/rolling、JSON校验重算与CSV摘要；窗口独立重置，不自动选优、不拼接收益。见[设计](docs/phase-3-design.md)和[验收清单](docs/phase-3-acceptance.md)。
 

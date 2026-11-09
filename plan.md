@@ -2,7 +2,7 @@
 
 基线：[原始规划 v0.1](docs/product-plan-v0.1.md)全文保留，用户当前明确指令优先。Phase 2C 工程已于 2026-11-09 合并。用户于2026-11-09授权启动Phase3设计与开发；范围与口径见[Phase3设计](docs/phase-3-design.md)，[验收清单](docs/phase-3-acceptance.md)。
 
-当前 main 已核实为 `33b1d6695ca1115efefce59132d96f8534c43e72`，即 PR #6 实际合并提交。PR #6 不再待审；本轮通过独立分支/Draft PR#7交付Phase3研究工作台及交接记录，不直接修改 main，不自动合并、tag、正式 Release 或部署。合并不补签用户 Windows 验收。
+当前 main 已核实为 `d60ef1c3491492247a4a1cb5a67c05cb58e33703`，即 PR #7 实际合并提交。PR #6 不再待审；Phase3已合并，本轮通过独立分支/Draft PR#8交付Phase4历史回放，不直接修改 main，不自动合并、tag、正式 Release 或部署。合并不补签用户 Windows 验收。
 
 ## 已交付基线与验收边界
 
@@ -61,3 +61,9 @@ Phase 2C 最终工程 f4101bc 已随 PR #6 合并为 33b1d6695ca1115efefce59132d
 5. 读取全部实际CI日志与headSHA ZIP、记录有效期，PR#7保持Draft等待用户Windows反馈。
 
 Phase3已验证实现85e933a三平台各316/30与WindowsZIP双浏览器全部通过；最后JSON导入当前时间门槛增加1项测试后需重新完整CI，最新结果/绑定head下载在PR#7说明。失败事实、机器/耗时与环境未执行边界在progress归档。
+
+## Phase 4 当前行动
+
+用户在PR#7合并后要求继续下一步，按原规划启动[Phase4设计](docs/phase-4-design.md)：共享逐根成交会话→无未来数据Worker→回放/虚拟买卖/日记/风险UI→独立库保存与动作重算恢复→固定参考及全部旧回归→本机check/三平台CI/WindowsZIP→Draft PR#8待用户反馈。Phase3最终head2db9e5c的run42616308619三平台317/30与WindowsZIP均通过，见PR#7实际日志记录；用户Windows反馈不因合并自动补签。
+
+Phase4本机完整check已通过338项Vitest/35项E2E，原317/30全部保留；独立Decimal与合并前引擎hash参考通过。Linux dirty开发ZIP烟测通过，BAT未在Linux执行。跨平台CI与最终headZIP须读取实际日志后在PR#8交付说明补齐。

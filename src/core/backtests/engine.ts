@@ -91,8 +91,14 @@ function normalizeSignals(
   });
 }
 
-export function runBacktest(input: BacktestInput): BacktestResult {
+/** Shared state: construction validates all input; advance alone executes the next candle. Keep interactive sessions inside a Worker. */
+export function createBacktestSession(
+  input: BacktestInput,
+  interactive = false,
+) {
   const { dataset: d, completedThroughUtcMs } = input;
+  if (interactive && (input.strategy !== undefined || input.signals?.length))
+    throw new Error('Interactive sessions require empty scripted signals.');
   assertDataset(d);
   if (
     !Number.isSafeInteger(completedThroughUtcMs) ||
@@ -285,7 +291,11 @@ export function runBacktest(input: BacktestInput): BacktestResult {
       time,
     );
   };
-  for (let i = 0; i < tape.length; i++) {
+  let cursor = 0;
+  let completed = false;
+  const advance = () => {
+    if (completed || cursor >= tape.length) throw new Error('No next candle.');
+    const i = cursor++;
     const c = tape[i],
       open = parseDecimal(c.open);
     const end = c.timestampUtcMs + intervalMs;
@@ -356,26 +366,82 @@ export function runBacktest(input: BacktestInput): BacktestResult {
           targetCandleIndex: i + 1,
         };
     }
-  }
-  if (pending)
-    result.orders.push({
-      intent: pending,
-      status: 'expired',
-      reason: 'no-next-candle',
-      resolvedUtcMs: pending.generatedUtcMs,
+    result.final = result.closes.at(-1)!.account;
+    return result.closes.at(-1)!;
+  };
+  const finish = () => {
+    if (completed) return result;
+    if (cursor !== tape.length)
+      throw new Error('Cannot finish before the last candle.');
+    completed = true;
+    if (pending)
+      result.orders.push({
+        intent: pending,
+        status: 'expired',
+        reason: 'no-next-candle',
+        resolvedUtcMs: pending.generatedUtcMs,
+      });
+    // Streamed signals are complete only after all close events have been evaluated.
+    manifest.signalHash = contentHash(signals);
+    manifest.runHash = contentHash({
+      algorithmVersion: ALGORITHM_VERSION,
+      conversionVersion: CONVERSION_VERSION,
+      dataHash,
+      signalHash: manifest.signalHash,
+      config,
+      completedThroughUtcMs,
+      strategy: manifest.strategy,
+      risk,
     });
-  // Streamed signals are complete only after all close events have been evaluated.
-  manifest.signalHash = contentHash(signals);
-  manifest.runHash = contentHash({
-    algorithmVersion: ALGORITHM_VERSION,
-    conversionVersion: CONVERSION_VERSION,
-    dataHash,
-    signalHash: manifest.signalHash,
-    config,
-    completedThroughUtcMs,
-    strategy: manifest.strategy,
-    risk,
-  });
-  result.final = result.closes.at(-1)!.account;
-  return result;
+    result.final = result.closes.at(-1)!.account;
+    pending = undefined;
+    return result;
+  };
+  return {
+    advance,
+    finish,
+    submit(signal: Signal) {
+      if (
+        !interactive ||
+        completed ||
+        cursor < 1 ||
+        signal.candleIndex !== cursor - 1 ||
+        signals.at(-1)?.candleIndex === signal.candleIndex
+      )
+        throw new Error(
+          'Only one decision at the current revealed close is allowed.',
+        );
+      const s = normalizeSignals([signal], tape.length)[0];
+      if (s.action === 'hold')
+        throw new Error('Interactive hold requires no order.');
+      signals.push(s);
+      nextSignal++;
+      const closeTime = d.candles[cursor - 1].timestampUtcMs + intervalMs;
+      result.signals.push({ signal: s, generatedUtcMs: closeTime });
+      pending = {
+        id: 'order-' + s.candleIndex,
+        side: s.action,
+        quantity: s.quantity,
+        reason: s.reason,
+        signalCandleIndex: s.candleIndex,
+        generatedUtcMs: closeTime,
+        targetCandleIndex: cursor,
+      };
+    },
+    get cursor() {
+      return cursor;
+    },
+    get pending() {
+      return pending ?? null;
+    },
+    get result() {
+      return result;
+    },
+  };
+}
+
+export function runBacktest(input: BacktestInput): BacktestResult {
+  const session = createBacktestSession(input);
+  while (session.cursor < input.dataset.candles.length) session.advance();
+  return session.finish();
 }

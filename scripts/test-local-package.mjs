@@ -261,6 +261,59 @@ try {
       .click();
     assert((await stat(await (await download).path())).size > 0);
   }
+  await page
+    .getByRole('navigation')
+    .getByRole('link', { name: '历史回放' })
+    .click();
+  await page.getByLabel('回放数据集').selectOption({ index: 1 });
+  await page
+    .getByRole('checkbox', {
+      name: '我确认回放数据全部已收盘，已阅读质量、费用、滑点与保护假设',
+    })
+    .check();
+  await page.getByRole('button', { name: '开始历史回放', exact: true }).click();
+  await page
+    .getByTestId('replay-cursor')
+    .filter({ hasText: '已播放 1 /' })
+    .waitFor();
+  await page.getByLabel('虚拟订单数量（all或币数量）').fill('all');
+  await page.getByRole('button', { name: '排队虚拟买入' }).click();
+  await page.getByTestId('replay-pending').waitFor();
+  await page.getByRole('button', { name: '前进一根', exact: true }).click();
+  await page
+    .getByRole('table', { name: '回放逐笔成交' })
+    .locator('tbody tr')
+    .waitFor();
+  await page
+    .getByLabel('当前收盘交易日记（最多2000字符）')
+    .fill('Windows ZIP回放验证');
+  await page.getByRole('button', { name: '加入当前日记' }).click();
+  await page
+    .getByRole('list', { name: '回放交易日记' })
+    .getByText('Windows ZIP回放验证', { exact: false })
+    .waitFor();
+  await page.getByRole('button', { name: '保存回放状态', exact: true }).click();
+  await page
+    .getByText('回放状态已保存（事务已完成）。请另行导出JSON备份。')
+    .waitFor();
+  for (const format of ['JSON', 'CSV']) {
+    const download = page.waitForEvent('download');
+    await page
+      .getByRole('button', {
+        name: format === 'JSON' ? '导出回放 JSON' : '导出回放交易 CSV',
+        exact: true,
+      })
+      .click();
+    assert((await stat(await (await download).path())).size > 0);
+  }
+  await page.reload();
+  await page.getByRole('button', { name: /打开回放/ }).click();
+  await page
+    .getByText('回放状态校验与重算一致；保持暂停，下一步从原游标继续。')
+    .waitFor();
+  await page
+    .locator('[data-testid="replay-chart"][data-ready="true"]')
+    .waitFor();
   assert.deepEqual(external, []);
   assert.deepEqual(errors, []);
   assert(
@@ -297,6 +350,7 @@ try {
       'save reload reopen',
       'JSON CSV download',
       'strategy research batch and JSON CSV download',
+      'prefix replay, virtual next-open trade, journal, checkpoint reload and JSON CSV',
       'Enter exits and frees port',
       'missing dist fails',
     ],

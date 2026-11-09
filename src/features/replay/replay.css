@@ -1,0 +1,89 @@
+.replay-center {
+  min-width: 0;
+}
+.replay-panel,
+.replay-chart {
+  padding: 1.25rem;
+  margin-block: 1rem;
+  min-width: 0;
+}
+.replay-center p,
+.replay-center code,
+.replay-center li {
+  overflow-wrap: anywhere;
+}
+.replay-center fieldset {
+  min-width: 0;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 1rem;
+}
+.replay-center label {
+  display: grid;
+  gap: 0.4rem;
+  margin-block: 0.7rem;
+  min-width: 0;
+}
+.replay-center input:not([type='checkbox']),
+.replay-center select,
+.replay-center textarea {
+  width: 100%;
+  min-width: 0;
+  padding: 0.6rem;
+  font: inherit;
+  color: var(--text);
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+}
+.replay-center textarea {
+  min-height: 6rem;
+}
+.replay-center .checkbox-label {
+  display: flex;
+  align-items: flex-start;
+}
+.replay-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.7rem;
+}
+.replay-center button {
+  padding: 0.55rem 0.8rem;
+  cursor: pointer;
+}
+.replay-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
+  gap: 0.8rem;
+}
+.replay-grid dd {
+  margin: 0.5rem 0;
+  overflow-wrap: anywhere;
+}
+.replay-grid dt {
+  color: var(--muted);
+}
+.replay-scroll {
+  max-width: 100%;
+  overflow-x: auto;
+  margin-block: 1rem;
+}
+.replay-scroll table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+}
+.replay-scroll th,
+.replay-scroll td {
+  padding: 0.65rem;
+  border: 1px solid var(--border);
+  min-width: 110px;
+  vertical-align: top;
+}
+.replay-snapshot {
+  border-top: 1px solid var(--border);
+  margin-block: 1rem;
+  padding-block: 1rem;
+}

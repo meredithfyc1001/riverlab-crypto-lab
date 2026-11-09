@@ -1,0 +1,42 @@
+{
+  "baselineMerge": "d60ef1c3491492247a4a1cb5a67c05cb58e33703",
+  "localChecks": {
+    "npmCi": "passed, 259 pinned packages",
+    "check": "passed with explicit system Chromium",
+    "vitest": 338,
+    "e2e": 35,
+    "oldTestsRetained": {
+      "vitest": 317,
+      "e2e": 30
+    },
+    "independentPythonReferences": 4
+  },
+  "performance": {
+    "bars": 50000,
+    "advanceMs": 975,
+    "resumeMs": 1592,
+    "maximum": 220.29999999981374,
+    "samples": 104,
+    "cpu": "AMD EPYC 9V74 80-Core Processor",
+    "cores": 3,
+    "platform": "linux",
+    "release": "6.18.57",
+    "browser": "154.0.8037.57",
+    "node": "v24.19.0",
+    "limitations": "synthetic; Worker persistent execution; one manual pending entry; full known prefix curves; resume by linear replay"
+  },
+  "cpuQuota": "200000 / 100000 (2 CPU); OS exposes 3 logical CPUs",
+  "packageSmoke": {
+    "platform": "Linux",
+    "sourceDirty": true,
+    "batExecuted": false,
+    "portLoopbackOnly": true,
+    "externalRequests": [],
+    "pageErrors": [],
+    "replayJournalSaveRestoreAndExports": true,
+    "stopAndRebind": true
+  },
+  "windowsCI": "pending actual PR head; see PR #8 Checks",
+  "manualWindowsAcceptance": "pending user feedback",
+  "limits": "50k candles; 1000 decisions/notes; 2000 chars per note; 10MiB state JSON; original saved dataset required"
+}
