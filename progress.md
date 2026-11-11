@@ -1,6 +1,14 @@
 # RiverLab Crypto Lab 进度
 
-## 当前恢复入口：Phase 5A待审交付（2026-11-09）
+## 当前恢复入口：Phase 5B 开发（2026-11-11）
+
+用户明确授权按Issue#10完整开发。已完整读取任务、AGENTS/plan/progress、原规划及2B/2C/3/4/5A契约。GitHub确认PR#9于UTC11:55:09合并，main=b0c9664fc5c37cf70686ca3735e317ad3c8a0a88；已fetch/pull同步，从干净工作区建立feat/phase-5b-rule-editor。首次沙箱Git代理连接失败，经受支持权限重试成功；GH CLI读取Actions返回Forbidden，改用现有GitHub连接器读取，不修改网络/凭据。
+
+main最新CI run43015906736四作业实际success；已读取Ubuntu130506784972、Edge130506785350、Chrome130506785437完整日志，各354项Vitest/40项E2E、npm ci/check和5个独立参考成功；WindowsZIP130509235260双浏览器中文空格/BAT/旧功能/风险/保存导出/停止成功。这是基线证据，不是5B测试。Issue记录的此前单独Edge性能等待消息超时保留，不以本次main成功抹除，不代填用户Windows实机。
+
+已汇报DSL、预热/冲突/重复、指标精度、旧报告兼容与Windows包风险，先写[设计](docs/phase-5b-design.md)。本轮无真实交易/下单/联网行情。目标Draft PR#10，用户验收前不合并/发布/部署；历史未测事实保持。5B测试尚待实际执行。
+
+## Phase 5A 待审时历史记录（2026-11-09，PR#9现已合并）
 
 PR#8已于北京时间22:17:32合并，实际main为7644abf2323dd461240e4e5f430dc406851c3746。用户“好了，下一步”同意推进，未提供Windows逐项或版本，不补签。Phase5原为候选集合，已异步征询优先级，暂按推荐默认风险Monte Carlo重采样，不写成用户明确逐项选择。已核对原规划与源实验/统计契约，建立干净独立feat/phase-5a-research-tools，目标Draft PR#9。
 
