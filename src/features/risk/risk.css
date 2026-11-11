@@ -1,0 +1,88 @@
+.risk-center {
+  min-width: 0;
+}
+.risk-panel {
+  padding: 1.25rem;
+  margin-block: 1rem;
+  min-width: 0;
+}
+.risk-center p,
+.risk-center code,
+.risk-center dd {
+  overflow-wrap: anywhere;
+}
+.risk-center label {
+  display: grid;
+  gap: 0.4rem;
+  margin-block: 0.8rem;
+  min-width: 0;
+}
+.risk-center fieldset {
+  min-width: 0;
+  padding: 1rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+.risk-center input:not([type='checkbox']),
+.risk-center select {
+  width: 100%;
+  min-width: 0;
+  padding: 0.6rem;
+  font: inherit;
+  color: var(--text);
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+}
+.risk-center .checkbox-label {
+  display: flex;
+  align-items: flex-start;
+}
+.risk-center button {
+  padding: 0.55rem 0.8rem;
+}
+.risk-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
+  gap: 0.8rem;
+}
+.risk-grid dd {
+  margin: 0.5rem 0;
+}
+.risk-grid dt {
+  color: var(--muted);
+}
+.risk-scroll {
+  max-width: 100%;
+  overflow-x: auto;
+  margin-block: 1rem;
+}
+.risk-scroll table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+}
+.risk-scroll th,
+.risk-scroll td {
+  padding: 0.6rem;
+  border: 1px solid var(--border);
+  min-width: 100px;
+}
+.risk-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.8rem;
+}
+.risk-center svg {
+  width: 100%;
+  height: auto;
+  color: var(--text);
+}
+.risk-center svg text {
+  fill: currentColor;
+  font-size: 12px;
+}
+.risk-snapshot {
+  border-top: 1px solid var(--border);
+  padding-block: 1rem;
+}

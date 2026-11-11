@@ -2,7 +2,7 @@
 
 中文、Windows 优先、离线优先的历史数据研究工具。Phase 0/1A 已合并且用户总体验收通过；1B/2A/2B 已合并，但用户 Windows 实机尚未验收。**Phase 2C 已合并**（PR #6，实际提交 `33b1d6695ca1115efefce59132d96f8534c43e72`），已将三策略、保守风控与18位BigInt账本接入Worker回测工作台，包含纯TS统计、实验保存/重开、JSON/CSV与Windows本地测试ZIP。合并不代替用户Windows验收；本轮未收到新的实机反馈。CI和用户实机状态分列于progress，不自动合并。
 
-**Phase 3 已合并（PR #7，d60ef1c）**：策略批次比较、参数敏感度、按时间拆分和滚动研究，见文末操作说明与设计。main已包含Phase3；本轮独立PR#8开发Phase4历史回放，不自动合并。
+**Phase 4 已合并（PR #8，7644abf）**；Phase5A在独立PR#9开发。Phase 3（PR #7，d60ef1c）：策略批次比较、参数敏感度、按时间拆分和滚动研究，见文末操作说明与设计。main已包含Phase3；本轮独立PR#9开发Phase5A风险重采样，不自动合并。
 
 **仅供学习研究 · 不提供投资建议 · 历史表现不代表未来表现。** 不连接真实账户、不接收密钥、不处理真实资金。
 
@@ -85,7 +85,7 @@ Edge/Chrome 打开 http://127.0.0.1:4173。可断开外部网络后刷新和操�
 
 ## 下载 Windows 本地测试包
 
-Phase 4 请从 [PR #8](https://github.com/meredithfyc1001/riverlab-crypto-lab/pull/8) 说明中的当前head测试包链接下载；先核对完整提交SHA。三平台检查与WindowsZIP验证全部成功后才上传 `RiverLab-Crypto-Lab-Local-Test-<完整head SHA>`，需登录有仓库访问权的GitHub账号，保留14天，具体到期时间见该artifact。外层artifact含内层 `RiverLab-Crypto-Lab-Local-Test.zip`、校验和与Windows证据；核对包内build-info的版本/完整SHA和SHA256SUMS。排队或失败不等于可用包。
+Phase 5A 请从 [PR #9](https://github.com/meredithfyc1001/riverlab-crypto-lab/pull/9) 说明中的当前head测试包链接下载；先核对完整提交SHA。三平台检查与WindowsZIP验证全部成功后才上传 `RiverLab-Crypto-Lab-Local-Test-<完整head SHA>`，需登录有仓库访问权的GitHub账号，保留14天，具体到期时间见该artifact。外层artifact含内层 `RiverLab-Crypto-Lab-Local-Test.zip`、校验和与Windows证据；核对包内build-info的版本/完整SHA和SHA256SUMS。排队或失败不等于可用包。
 
 main已为Phase3合并d60ef1c；[旧main包](https://github.com/meredithfyc1001/riverlab-crypto-lab/actions/runs/42610440364/artifacts/13670985121)保留至北京时间2026-11-23 19:41:32，**不含Phase3**。不要把历史包当作PR当前head。
 
@@ -117,7 +117,7 @@ Phase 2C 已合并。后续改动继续使用独立分支和待审 PR；用户 W
 
 见[设计](docs/phase-3-design.md)、[验收](docs/phase-3-acceptance.md)、[实际CI与下载状态](progress.md)。PR#7最终三平台317项Vitest/30项E2E及WindowsZIP通过并已合并；当时云环境不可用，本机未执行，不能等同用户Windows实机验收。本轮环境已恢复，Phase4本机与CI记录分列。仅供学习研究，历史表现不代表未来表现。
 
-## Phase 4 历史回放（独立待审）
+## Phase 4 历史回放（已合并）
 
 先在数据中心保存无缺口且已确认的数据；到“历史回放”选择数据、虚拟本金（默认1000）、手续费/买卖滑点与可选止盈止损并确认收盘。开始只揭示首根收盘；“排队虚拟买入/卖出”不会立即改变余额，下一次推进才在下根开盘执行。每根最多一笔，数量支持all或固定币数量，不透支；保护规则沿用原回测，根内双触发止损优先，末尾不强平。
 
@@ -128,3 +128,13 @@ Phase 2C 已合并。后续改动继续使用独立分支和待审 PR；用户 W
 上限50,000根、1,000次手工决策、1,000条日记、每条2,000字符、JSON10MiB；成交与日记CSV只导出已播放事件。所有模拟成本已扣，浮盈不算完成交易胜负；短样本年化NA。按[设计](docs/phase-4-design.md)及[Windows清单](docs/phase-4-acceptance.md)验收，CI与用户实机分别记录。源码测试可切换feat/phase-4-historical-replay；ZIP无需npm ci，Node24LTS预装。仅供学习研究，历史表现不代表未来表现。
 
 Phase4功能提交1edb8f1已通过三平台各338项Vitest/35项E2E与WindowsZIP双浏览器实测，见[CI证据快照](docs/phase-4-ci-evidence.json)及progress；最终提交下载使用PR#8说明绑定当前head的链接。用户Windows实机/物理断网尚待反馈，不以CI补签。
+
+## Phase 5A Monte Carlo 风险分析（独立待审）
+
+在回测中心保存正式MA/RSI/突破实验，风险中心选择源实验，Worker先校验并重算。检查原策略/本金/费/滑点/保护、已实现/浮动和数据hash，再选择IID或连续区块、固定uint32种子、路径数/步数及初始本金比例阈值。源至少20根，权益严格为正且有变化；不足、坏源、含0或常量权益不生成假0%风险。
+
+模型对已扣历史成本的逐根净权益比例重采样，资金每步18位BigInt向下舍入。分位带、终值/回撤、亏损/阈值次数和频率是模型内情景，不是未来置信区间、真实亏损概率、盈利承诺或自动最佳策略。原浮动盈亏明确包含；不重新撮合、不重算费用/保护或真实资金约束。0/路径数只是本次未观察到，增加路径不能消除样本与参数选择偏差。
+
+支持保存/重开/删除、全部路径摘要CSV和完整JSON，导入后重建源实验并重采样逐项比对。源复现输入已内嵌，原数据或实验删除后仍可恢复；原记录不覆盖。JSON导入仅在内存、仍需明确保存；刷新未保存结果清除，保存列表需主动打开。浏览器存储不是永久备份，JSON25MiB上限，含数据快照需自行保管。
+
+路径20–2000、步数1–50,000、总路径×步数最多200万，区块最长min(源长度,1000)，seed0–4294967295，阈值1–99%。默认500路径/100步/seed42/50%阈值。图中最多101个位置和首5条示例路径仅作展示，全部步骤参与统计；不生成未来UTC或年化。见[方法与边界](docs/phase-5a-design.md)、[验收清单](docs/phase-5a-acceptance.md)。源码测试分支feat/phase-5a-research-tools；下载使用PR#9实际head包，不创建Release或公开部署。仅供学习研究，历史表现不代表未来表现。

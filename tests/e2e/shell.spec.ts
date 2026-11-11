@@ -59,6 +59,10 @@ test('生产包仅使用本机资源，可导航、刷新、后退并切换主�
       await expect(
         page.getByRole('heading', { name: '回测配置' }),
       ).toBeVisible();
+    else if (label === '风险中心')
+      await expect(
+        page.getByRole('heading', { name: 'Monte Carlo 风险分析' }),
+      ).toBeVisible();
     else if (label === '历史回放')
       await expect(
         page.getByRole('heading', { name: '历史逐根回放与模拟账户' }),

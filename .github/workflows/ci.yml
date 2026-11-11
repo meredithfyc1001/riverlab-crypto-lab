@@ -45,6 +45,7 @@ jobs:
           python tests/reference/phase2b_reference.py --check
           python tests/reference/research_reference.py --check
           python tests/reference/replay_reference.py --check
+          python tests/reference/risk_reference.py --check
       - run: npm run check
       - name: Read-only formatting diagnostics
         if: failure()

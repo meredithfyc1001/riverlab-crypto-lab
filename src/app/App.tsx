@@ -1,3 +1,5 @@
+import { useRiskWorkbench } from './useRiskWorkbench';
+import { RiskCenter } from '../features/risk';
 import { useReplayWorkbench } from './useReplayWorkbench';
 import { ReplayCenter } from '../features/replay';
 import { useResearchWorkbench } from './useResearchWorkbench';
@@ -20,6 +22,7 @@ export function App() {
   const backtest = useBacktestWorkbench();
   const research = useResearchWorkbench();
   const replay = useReplayWorkbench();
+  const riskStudy = useRiskWorkbench();
   const pauseReplay = replay.pause;
   const [activeId, setActiveId] = useState(() =>
     pageFromHash(window.location.hash),
@@ -87,7 +90,7 @@ export function App() {
         </nav>
         <div className="sidebar-bottom">
           <span className="status-dot" /> 离线优先 · 本地研究
-          <small>v0.4.0-test / Phase 4 历史回放</small>
+          <small>v0.5.0-test / Phase 5A 风险分析</small>
         </div>
       </aside>
 
@@ -119,7 +122,7 @@ export function App() {
               <h1>{activePage.label}</h1>
               <p className="page-description">{activePage.description}</p>
             </div>
-            <span className="badge">Phase 4 · 历史回放</span>
+            <span className="badge">Phase 5A · 风险分析</span>
           </div>
 
           {activeId === 'overview' ? (
@@ -151,9 +154,9 @@ export function App() {
                 <section className="stat-card">
                   <span>项目阶段</span>
                   <strong>
-                    历史回放 <small>Phase 4</small>
+                    风险分析 <small>Phase 5A</small>
                   </strong>
-                  <p>逐根决策、虚拟买卖与日记恢复</p>
+                  <p>固定种子重采样、风险分位与独立报告</p>
                 </section>
                 <section className="stat-card">
                   <span>研究数据</span>
@@ -223,6 +226,29 @@ export function App() {
                 dataset={library.dataset}
                 theme={theme}
               />
+            </>
+          ) : activeId === 'risk' ? (
+            <>
+              <RiskCenter
+                experiments={backtest.experiments}
+                preview={riskStudy.preview}
+                record={riskStudy.record}
+                records={riskStudy.records}
+                busy={riskStudy.busy}
+                saved={riskStudy.saved}
+                onSelect={riskStudy.select}
+                onRun={riskStudy.run}
+                onSave={riskStudy.save}
+                onOpen={riskStudy.open}
+                onDelete={riskStudy.remove}
+                onRestore={riskStudy.restore}
+                onExport={riskStudy.exportRecord}
+              />
+              {riskStudy.message && <p role="status">{riskStudy.message}</p>}
+              {riskStudy.error && <p role="alert">{riskStudy.error}</p>}
+              {riskStudy.canCancel && (
+                <button onClick={riskStudy.cancel}>取消风险任务</button>
+              )}
             </>
           ) : activeId === 'replay' ? (
             <>
