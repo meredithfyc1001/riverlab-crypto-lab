@@ -188,7 +188,15 @@ function average(kind: 'MA' | 'EMA', n: number) {
     mean = 0;
   let sum = 0n;
   const ring: bigint[] = [];
-  return (close: number, units: bigint): bigint | number | null => {
+  let lastTime: number | undefined;
+  let value: bigint | number | null = null;
+  return (
+    close: number,
+    units: bigint,
+    time: number,
+  ): bigint | number | null => {
+    if (lastTime === time) return value;
+    lastTime = time;
     if (kind === 'MA') {
       const slot = count % n;
       sum += units - (ring[slot] ?? 0n);
@@ -199,7 +207,8 @@ function average(kind: 'MA' | 'EMA', n: number) {
           ? blend(mean, close, 1 / (count + 1))
           : blend(mean, close, 2 / (n + 1));
     count++;
-    return count < n ? null : kind === 'MA' ? sum : mean;
+    value = count < n ? null : kind === 'MA' ? sum : mean;
+    return value;
   };
 }
 function compare(a: number | bigint, b: number | bigint, op: Comparison) {
@@ -213,24 +222,28 @@ function compare(a: number | bigint, b: number | bigint, op: Comparison) {
 }
 function condition(
   c: RuleCondition,
+  getAverage: typeof average,
 ): (bar: Readonly<Candle>, units: bigint) => boolean | null {
   if (c.kind === 'cross' || c.kind === 'price-ma') {
     const slowPeriod = c.kind === 'cross' ? c.slowPeriod : c.period;
-    const slow = average(c.average, slowPeriod);
-    const fast = c.kind === 'cross' ? average(c.average, c.fastPeriod) : null;
+    const slow = getAverage(c.average, slowPeriod);
+    const fast =
+      c.kind === 'cross' ? getAverage(c.average, c.fastPeriod) : null;
+    const slowWeight = BigInt(slowPeriod);
+    const fastWeight = c.kind === 'cross' ? BigInt(c.fastPeriod) : 1n;
     let previous: -1 | 0 | 1 | undefined;
     return (bar, units) => {
-      const s = slow(bar.close, units),
-        f = fast?.(bar.close, units);
+      const s = slow(bar.close, units, bar.timestampUtcMs),
+        f = fast?.(bar.close, units, bar.timestampUtcMs);
       if (s === null || (fast && f == null)) return null;
       if (c.kind === 'price-ma')
         return compare(
-          c.average === 'MA' ? units * BigInt(c.period) : bar.close,
+          c.average === 'MA' ? units * slowWeight : bar.close,
           s,
           c.operator,
         );
-      const a = c.average === 'MA' ? (f as bigint) * BigInt(c.slowPeriod) : f!;
-      const b = c.average === 'MA' ? (s as bigint) * BigInt(c.fastPeriod) : s;
+      const a = c.average === 'MA' ? (f as bigint) * slowWeight : f!;
+      const b = c.average === 'MA' ? (s as bigint) * fastWeight : s;
       const next = a < b ? -1 : a > b ? 1 : 0;
       const result =
         previous === undefined
@@ -322,8 +335,22 @@ export function createRuleStrategy(
     Object.freeze(g);
   }
   Object.freeze(rule);
+  // Every shared average advances once per completed timestamp. Conditions
+  // retain their independent cross history; only identical indicator values share work.
+  const averages = new Map<string, ReturnType<typeof average>>();
+  const getAverage: typeof average = (kind, period) => {
+    const key = kind + ':' + period;
+    let next = averages.get(key);
+    if (!next) {
+      next = average(kind, period);
+      averages.set(key, next);
+    }
+    return next;
+  };
   function group(g: RuleGroup) {
-    const evaluators = g.conditions.filter((c) => c.enabled).map(condition);
+    const evaluators = g.conditions
+      .filter((c) => c.enabled)
+      .map((c) => condition(c, getAverage));
     return (bar: Readonly<Candle>, units: bigint) => {
       if (!g.enabled) return false;
       const values = evaluators.map((evaluate) => evaluate(bar, units));

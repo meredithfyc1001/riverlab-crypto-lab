@@ -1,0 +1,118 @@
+
+> riverlab-crypto-lab@0.5.1-test check
+> npm run format:check && npm run lint && npm test && npm run build && npm run test:e2e
+
+
+> riverlab-crypto-lab@0.5.1-test format:check
+> prettier --check .
+
+Checking formatting...
+All matched files use Prettier code style!
+
+> riverlab-crypto-lab@0.5.1-test lint
+> eslint . --max-warnings 0
+
+
+> riverlab-crypto-lab@0.5.1-test test
+> vitest run
+
+
+ RUN  v4.1.12 /workspace/riverlab-crypto-lab
+
+
+ Test Files  25 passed (25)
+      Tests  457 passed (457)
+   Start at  12:49:59
+   Duration  68.25s (transform 10.21s, setup 14.39s, import 12.03s, tests 11.65s, environment 21.69s)
+
+
+> riverlab-crypto-lab@0.5.1-test build
+> npm run typecheck && vite build
+
+
+> riverlab-crypto-lab@0.5.1-test typecheck
+> tsc -b
+
+vite v7.3.7 building client environment for production...
+transforming...
+✓ 127 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                            0.72 kB │ gzip:   0.48 kB
+dist/assets/csv.worker-C14LIkSc.js        11.77 kB
+dist/assets/backtest.worker-CL-Qnmxu.js   40.57 kB
+dist/assets/research.worker-DnbfjTj4.js   43.28 kB
+dist/assets/replay.worker-C0T8hT7T.js     48.86 kB
+dist/assets/risk.worker-CyegKk76.js       51.26 kB
+dist/assets/index-DMpdv16p.css            24.10 kB │ gzip:   4.97 kB
+dist/assets/index-BjrkxprZ.js            570.71 kB │ gzip: 186.63 kB
+
+(!) Some chunks are larger than 500 kB after minification. Consider:
+- Using dynamic import() to code-split the application
+- Use build.rollupOptions.output.manualChunks to improve chunking: https://rollupjs.org/configuration-options/#output-manualchunks
+- Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+✓ built in 6.38s
+
+> riverlab-crypto-lab@0.5.1-test test:e2e
+> playwright test
+
+[WebServer] (node:8529) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 45 tests using 1 worker
+
+(node:8547) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   1 [chromium-linux] › tests/e2e/csv-import.spec.ts:14:1 › 真实历史样本通过实际 Worker 解析并核对文件身份，断外部资源仍可运行 (3.5s)
+  ✓   2 [chromium-linux] › tests/e2e/csv-import.spec.ts:68:1 › 本地微秒 CSV 需要周期确认，歧义时间单位不能猜测 (8.3s)
+  ✓   3 [chromium-linux] › tests/e2e/csv-import.spec.ts:108:1 › 自定义字段顺序和带时区日期正确规范化到 UTC (10.9s)
+  ✓   4 [chromium-linux] › tests/e2e/csv-import.spec.ts:148:1 › 错误样本保留错误行、重复和缺口，390px 报告无页面溢出 (2.2s)
+  ✓   5 [chromium-linux] › tests/e2e/csv-import.spec.ts:201:1 › 空文件、非法 UTF-8 与超限文件清楚阻断并清除旧结果 (8.0s)
+  ✓   6 [chromium-linux] › tests/e2e/phase-1b.spec.ts:38:1 › 行情中心真实图表：缩放、平移、十字准星、指标周期/开关、主题与窄屏 (6.6s)
+  ✓   7 [chromium-linux] › tests/e2e/phase-1b.spec.ts:105:1 › IndexedDB 保存、选择重开、JSON 导出/删除/显式恢复，断外网保持本机 HTTP (9.0s)
+  ✓   8 [chromium-linux] › tests/e2e/phase-1b.spec.ts:171:1 › 持久浏览器配置：关闭浏览器进程、重新启动后可恢复数据 (8.3s)
+  ✓   9 [chromium-linux] › tests/e2e/phase-1b.spec.ts:217:1 › 存储拒绝与空间不足不显示成功；仍可导出内存数据备份 (2.6s)
+  ✓  10 [chromium-linux] › tests/e2e/phase-1b.spec.ts:241:1 › 无法访问 IndexedDB、损坏备份和有错误的 CSV 明确阻断 (1.7s)
+  ✓  11 [chromium-linux] › tests/e2e/phase-1b.spec.ts:278:1 › 微秒/UTC 亚秒、缺口传递到图表，指标重新预热 (2.2s)
+PHASE1B_PERFORMANCE {"rows":50000,"csvBytes":1600036,"inspectionMs":627,"reportMs":533,"prepareAndSaveMs":1183,"reopenAndChartMs":2304,"zoomMs":276,"backupMs":896,"backupBytes":4401567,"backupInspectMs":364,"backupRestoreMs":581,"maxObservedJsHeapBytes":254405428,"maxEventLoopDelayMs":597.1000000000931}
+  ✓  12 [chromium-linux] › tests/e2e/phase-1b.spec.ts:319:1 › 50,000 根合成数据：实际 Worker、保存/重开、图表响应及备份 (9.3s)
+  ✓  13 [chromium-linux] › tests/e2e/phase-1b.spec.ts:455:1 › 删除事务失败保留数据；重新打开时拒绝已损坏的存储记录 (2.5s)
+  ✓  14 [chromium-linux] › tests/e2e/phase-1b.spec.ts:507:1 › 两个已保存数据集间明确选择，图表与指标使用对应数据 (2.9s)
+  ✓  15 [chromium-linux] › tests/e2e/phase-1b.spec.ts:548:1 › 已保存长名称数据集在390px下不会撑宽数据中心或行情中心 (2.3s)
+  ✓  16 [chromium-linux] › tests/e2e/phase-2c.spec.ts:71:3 › ma 完整Worker回测、曲线、账本、JSON/CSV、保存刷新重开与删除，外网阻断 (5.3s)
+  ✓  17 [chromium-linux] › tests/e2e/phase-2c.spec.ts:71:3 › rsi 完整Worker回测、曲线、账本、JSON/CSV、保存刷新重开与删除，外网阻断 (4.8s)
+  ✓  18 [chromium-linux] › tests/e2e/phase-2c.spec.ts:71:3 › breakout 完整Worker回测、曲线、账本、JSON/CSV、保存刷新重开与删除，外网阻断 (5.1s)
+  ✓  19 [chromium-linux] › tests/e2e/phase-2c.spec.ts:178:1 › 严格参数/确认阻断、存储配额失败保留内存导出、损坏记录拒绝重开 (4.2s)
+  ✓  20 [chromium-linux] › tests/e2e/phase-2c.spec.ts:246:1 › 保护配置进入manifest，止盈止损事件保留根内未知时间和保守假设 (2.7s)
+  ✓  21 [chromium-linux] › tests/e2e/phase-2c.spec.ts:281:1 › 有缺口但已保存的完整数据仍然禁止回测，不截取子集 (2.0s)
+PHASE2C_PERFORMANCE {"rows":50000,"elapsedMs":5000,"maxDelayMs":449.8000000002794,"samples":200,"hardwareConcurrency":3,"userAgent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/156.0.8078.4 Safari/537.36","os":"linux 6.18.57","cpu":"INTEL(R) XEON(R) PLATINUM 8573C","browser":"154.0.8037.57","limitations":"人工合成；回测到全点曲线就绪含Worker传输/绘图，不是无限数据保证"}
+  ✓  22 [chromium-linux] › tests/e2e/phase-2c.spec.ts:313:1 › 50,000根真实策略成交统计Worker性能与主线程响应 (8.6s)
+  ✓  23 [chromium-linux] › tests/e2e/phase-3.spec.ts:79:3 › 参数网格 ma：离线Worker、热力图、账本、JSON重算与CSV (3.7s)
+  ✓  24 [chromium-linux] › tests/e2e/phase-3.spec.ts:79:3 › 参数网格 rsi：离线Worker、热力图、账本、JSON重算与CSV (3.4s)
+  ✓  25 [chromium-linux] › tests/e2e/phase-3.spec.ts:79:3 › 参数网格 breakout：离线Worker、热力图、账本、JSON重算与CSV (3.2s)
+  ✓  26 [chromium-linux] › tests/e2e/phase-3.spec.ts:139:1 › 三策略在严格先后拆分及滚动窗口比较，参数始终锁定且测试不重叠 (2.8s)
+  ✓  27 [chromium-linux] › tests/e2e/phase-3.spec.ts:181:1 › 非法网格整批阻断、损坏报告拒绝，取消不保留部分结果 (2.5s)
+PHASE3_PERFORMANCE {"phase":"3","bars":50000,"candidates":3,"elapsedMs":5254,"maximum":100.8000000002794,"samples":257,"cpu":"INTEL(R) XEON(R) PLATINUM 8573C","cores":3,"platform":"linux","release":"6.18.57","browser":"154.0.8037.57","node":"v24.19.0","limits":"sequential Worker; independent full windows; 1,000,000 evaluation budget"}
+  ✓  28 [chromium-linux] › tests/e2e/phase-3.spec.ts:207:1 › 50,000根三策略批量实际运行：记录硬件浏览器与主线程响应 (9.3s)
+  ✓  29 [chromium-linux] › tests/e2e/phase-4.spec.ts:92:1 › 无未来消息/图表/DOM/状态导出；下一开盘成交、日记、保存刷新/JSON恢复/删除与离线 (4.3s)
+  ✓  30 [chromium-linux] › tests/e2e/phase-4.spec.ts:204:1 › 自动逐根播放、暂停、跨页面暂停与显式结束，不重复成交 (6.1s)
+  ✓  31 [chromium-linux] › tests/e2e/phase-4.spec.ts:248:1 › 拒单与缺口阻断；损坏JSON不破坏当前内存回放 (3.7s)
+PHASE4_PERFORMANCE {"bars":50000,"advanceMs":1657,"resumeMs":2625,"maximum":548.2000000001863,"samples":152,"cpu":"INTEL(R) XEON(R) PLATINUM 8573C","cores":3,"platform":"linux","release":"6.18.57","browser":"154.0.8037.57","node":"v24.19.0","limitations":"synthetic; Worker persistent execution; one manual pending entry; full known prefix curves; resume by linear replay"}
+  ✓  32 [chromium-linux] › tests/e2e/phase-4.spec.ts:276:1 › 50,000根实际逐根会话推进和断点恢复性能，不运行N次前缀回测 (10.1s)
+  ✓  33 [chromium-linux] › tests/e2e/phase-4.spec.ts:352:1 › 模拟配额失败保留内存可导出；原数据集删除后恢复明确拒绝 (2.8s)
+  ✓  34 [chromium-linux] › tests/e2e/phase-5a.spec.ts:82:3 › iid 固定种子报告、分位/频率/图形、保存刷新重开/JSON与CSV，阻断外网 (5.6s)
+  ✓  35 [chromium-linux] › tests/e2e/phase-5a.spec.ts:82:3 › block 固定种子报告、分位/频率/图形、保存刷新重开/JSON与CSV，阻断外网 (5.4s)
+  ✓  36 [chromium-linux] › tests/e2e/phase-5a.spec.ts:153:1 › 参数预算、常量源、损坏报告明确拒绝，不生成假0%风险 (3.5s)
+  ✓  37 [chromium-linux] › tests/e2e/phase-5a.spec.ts:178:1 › 源实验/数据删除后，完整风险JSON仍可重建源并复现 (4.1s)
+PHASE5A_PERFORMANCE {"sourceBars":50000,"evaluations":2000000,"elapsedMs":9109,"maximum":82,"samples":450,"cpu":"INTEL(R) XEON(R) PLATINUM 8573C","cores":3,"os":"linux 6.18.57","browser":"154.0.8037.57","node":"v24.19.0","limitations":"synthetic MA source; verify source then IID equity-ratio resampling; 101 display points, all steps in risk statistics"}
+  ✓  38 [chromium-linux] › tests/e2e/phase-5a.spec.ts:213:1 › 50,000根源+200万步真实风险Worker、取消与主线程响应 (26.1s)
+  ✓  39 [chromium-linux] › tests/e2e/phase-5b.spec.ts:75:1 › 卡片编辑、实时边界、双侧组合、条件复制/禁用、版本复制/确认删除与键盘窄屏 (3.3s)
+  ✓  40 [chromium-linux] › tests/e2e/phase-5b.spec.ts:154:1 › 实际Worker规则→回测→保存导出→刷新重开与确定复现，规则库删除后旧实验仍可用，阻断外网 (5.5s)
+  ✓  41 [chromium-linux] › tests/e2e/phase-5b.spec.ts:238:1 › 坏JSON、版本、未知字段与不可覆盖冲突均明确失败；空规则不能保存 (2.0s)
+  ✓  42 [chromium-linux] › tests/e2e/phase-5b.spec.ts:276:1 › 迟到的JSON读取不会覆盖新编辑的草稿 (2.1s)
+PHASE5B_PERFORMANCE {"bars":50000,"conditions":10,"elapsedMs":4434,"maximum":411.70000000018626,"samples":172,"cpu":"INTEL(R) XEON(R) PLATINUM 8573C","cores":3,"os":"linux 6.18.57","browser":"154.0.8037.57","node":"v24.19.0","limitations":"synthetic; full rules/backtest/statistics/hashes/Worker transfer and all-point charts; observed timer interval, not total memory or physical Windows acceptance"}
+  ✓  43 [chromium-linux] › tests/e2e/phase-5b.spec.ts:294:1 › 50,000根、双侧各5条件真实Worker与主线程响应 (9.8s)
+  ✓  44 [chromium-linux] › tests/e2e/shell.spec.ts:3:1 › 生产包仅使用本机资源，可导航、刷新、后退并切换主题 (2.8s)
+  ✓  45 [chromium-linux] › tests/e2e/shell.spec.ts:95:1 › 390px 窄屏可导航且页面没有横向溢出 (1.4s)
+
+  45 passed (4.0m)

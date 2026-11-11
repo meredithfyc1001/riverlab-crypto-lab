@@ -77,3 +77,5 @@ Phase4本机完整check已通过338项Vitest/35项E2E，原317/30全部保留；
 ## Phase 5B 当前行动
 
 用户明确授权完整执行Issue#10，先汇报并固定[设计](docs/phase-5b-design.md)，再实现纯TS流式规则、不可变版本/严格JSON和独立IndexedDB、可视化编辑及原回测接入。Phase3规则暂不可用且严格拒绝，旧引擎/报告/hash保持。保留354/40全部回归，新增因果/独立参考/确定复现/存储及50k Worker测试。执行npm ci/check和所有Python参考，读取三平台实际日志；后置Windows中文空格路径BAT/Chrome+Edge测试成功后上传绑定最终headSHA的14天ZIP。目标Draft PR#10（将现有Issue转为PR以保留编号），等待用户验收，不合并/发布/部署。
+
+Phase5B工程已实现，Issue#10已转换为[Draft PR#10](https://github.com/meredithfyc1001/riverlab-crypto-lab/pull/10)，原任务全文[归档](docs/phase-5b-task.md)。功能快照fe17089三平台各457项Vitest/45项E2E及Windows中文空格BAT/Chrome+Edge ZIP全部实际成功；本机完整457/45与Linux开发ZIP通过。后续同周期MA/EMA逐根复用及2项额外等价测试已通过93项策略专项/构建/本机ZIP，仍须随最终提交重新完整CI。归档快照不冒充最终head，最新实际完整SHA、CI和ZIP下载由PR#10维护；用户Windows/物理断网仍待本人反馈，不自动合并/Release/部署。

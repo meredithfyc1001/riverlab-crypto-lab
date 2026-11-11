@@ -1,6 +1,6 @@
 # RiverLab Crypto Lab 工作指令
 
-作用于整个独立仓库。PR #9 已于 2026-11-11 合并为 b0c9664fc5c37cf70686ca3735e317ad3c8a0a88。用户明确授权按 Issue #10 启动 Phase 5B 可视化规则策略，见 [Phase 5B 设计](docs/phase-5b-design.md)。独立 feat/phase-5b-rule-editor、目标 Draft PR #10；不合并/Release/部署。先读 [progress.md](progress.md)、[plan.md](plan.md) 与相关契约；[原始规划](docs/product-plan-v0.1.md)全文保留。
+作用于整个独立仓库。PR #9 已于 2026-11-11 合并为 b0c9664fc5c37cf70686ca3735e317ad3c8a0a88。用户明确授权的 Phase 5B 可视化规则策略已实现，Draft PR #10 待用户验收，见 [Phase 5B 设计](docs/phase-5b-design.md)。独立 feat/phase-5b-rule-editor、现有Issue已转换为Draft PR #10；不合并/Release/部署。先读 [progress.md](progress.md)、[plan.md](plan.md) 与相关契约；[原始规划](docs/product-plan-v0.1.md)全文保留。
 
 ## 范围与研发节奏
 

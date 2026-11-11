@@ -1,0 +1,55 @@
+[WebServer] (node:7051) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 2 tests using 1 worker
+
+(node:7068) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  1 [chromium-linux] › tests/e2e/phase-2c.spec.ts:313:1 › 50,000根真实策略成交统计Worker性能与主线程响应 (18.5s)
+(node:7214) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+PHASE5B_PERFORMANCE {"bars":50000,"conditions":10,"elapsedMs":4881,"maximum":356.4000000001397,"samples":200,"cpu":"INTEL(R) XEON(R) PLATINUM 8573C","cores":3,"os":"linux 6.18.57","browser":"154.0.8037.57","node":"v24.19.0","limitations":"synthetic; full rules/backtest/statistics/hashes/Worker transfer and all-point charts; observed timer interval, not total memory or physical Windows acceptance"}
+  ✓  2 [chromium-linux] › tests/e2e/phase-5b.spec.ts:294:1 › 50,000根、双侧各5条件真实Worker与主线程响应 (11.5s)
+
+
+  1) [chromium-linux] › tests/e2e/phase-2c.spec.ts:313:1 › 50,000根真实策略成交统计Worker性能与主线程响应 ───────────
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: getByText('回测成功；结果尚未保存，刷新会丢失。')
+    Expected: visible
+    Timeout: 5000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeVisible" getByText('回测成功；结果尚未保存，刷新会丢失。') with timeout 5000ms
+      - waiting for getByText('回测成功；结果尚未保存，刷新会丢失。')
+
+
+      61 |   await expect(
+      62 |     page.getByText('回测成功；结果尚未保存，刷新会丢失。'),
+    > 63 |   ).toBeVisible();
+         |     ^
+      64 |   await expect(page.getByTestId('result-curves')).toHaveAttribute(
+      65 |     'data-ready',
+      66 |     'true',
+        at run (/workspace/riverlab-crypto-lab/tests/e2e/phase-2c.spec.ts:63:5)
+        at /workspace/riverlab-crypto-lab/tests/e2e/phase-2c.spec.ts:329:3
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/phase-2c-50-000根真实策略成交统计Worker性能与主线程响应-chromium-linux/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/phase-2c-50-000根真实策略成交统计Worker性能与主线程响应-chromium-linux/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/phase-2c-50-000根真实策略成交统计Worker性能与主线程响应-chromium-linux/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/phase-2c-50-000根真实策略成交统计Worker性能与主线程响应-chromium-linux/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  1 failed
+    [chromium-linux] › tests/e2e/phase-2c.spec.ts:313:1 › 50,000根真实策略成交统计Worker性能与主线程响应 ────────────
+  1 passed (34.3s)

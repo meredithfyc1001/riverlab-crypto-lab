@@ -59,6 +59,23 @@ describe('declarative streaming rules, independent Decimal100 reference', () => 
     ).toEqual(reference.expected);
     expect(strategy.version).toBe(RULE_STRATEGY_VERSION);
   });
+  it.each(['MA', 'EMA'] as const)(
+    'identical %s conditions share current values without advancing twice',
+    (average) => {
+      const condition: RuleCondition = {
+        kind: 'price-ma',
+        enabled: true,
+        average,
+        period: 3,
+        operator: 'gt',
+      };
+      const a = single(condition),
+        b = single(condition);
+      b.buy.conditions.push({ ...condition });
+      const closes = [100, 110, 90, 120, 80, 130, 90, 100];
+      expect(run(closes, a).signals).toEqual(run(closes, b).signals);
+    },
+  );
   it('strictly excludes the current wick from breakout and includes historical wick/equality', () => {
     const rule = single({
       kind: 'breakout',
