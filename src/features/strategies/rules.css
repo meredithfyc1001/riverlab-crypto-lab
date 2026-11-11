@@ -1,0 +1,106 @@
+.rule-editor {
+  min-width: 0;
+}
+.rule-editor label {
+  display: grid;
+  gap: 0.4rem;
+  margin: 0.65rem 0;
+}
+.rule-editor label:has(input[type='checkbox']) {
+  display: flex;
+  align-items: center;
+}
+.rule-editor input:not([type='checkbox']),
+.rule-editor select {
+  min-width: 0;
+  max-width: 100%;
+  width: 100%;
+}
+.rule-editor fieldset {
+  min-width: 0;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 0.85rem;
+}
+.rule-sides,
+.rule-fields {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.8rem;
+}
+.rule-group {
+  align-self: start;
+}
+.rule-condition {
+  margin: 0.8rem 0;
+}
+.rule-library {
+  list-style: none;
+  padding: 0;
+}
+.rule-library li {
+  border-top: 1px solid var(--border);
+  padding: 0.8rem 0;
+}
+.rule-editor code,
+.rule-editor p {
+  overflow-wrap: anywhere;
+}
+.rule-editor .sample-actions {
+  flex-wrap: wrap;
+}
+@media (max-width: 720px) {
+  .rule-sides,
+  .rule-fields {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+.rule-editor {
+  margin-block: 1rem;
+  padding: 24px;
+}
+.rule-editor h2 {
+  margin-bottom: 12px;
+}
+.rule-editor p {
+  margin-block: 10px;
+  line-height: 1.7;
+}
+.rule-editor input:not([type='checkbox']),
+.rule-editor select {
+  padding: 10px;
+  font: inherit;
+  color: var(--text);
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+}
+.rule-editor button {
+  background: var(--panel-hover);
+  border: 1px solid var(--border);
+  color: var(--text);
+  border-radius: 5px;
+  padding: 9px 12px;
+  font-size: 12px;
+  line-height: 1.5;
+}
+.rule-editor button:hover:enabled {
+  border-color: var(--accent);
+}
+.rule-editor button:disabled {
+  cursor: default;
+  opacity: 0.5;
+}
+.rule-editor [role='alert'] {
+  background: var(--amber-bg);
+  color: var(--amber);
+  padding: 12px;
+  border-radius: 6px;
+}
+.rule-editor [data-testid='rule-version'] {
+  color: var(--muted);
+  font-size: 12px;
+}
+.rule-library code {
+  font-size: 11px;
+}

@@ -27,15 +27,17 @@ export function canonicalJson(value: unknown): string {
   );
 }
 /** Same canonical ASCII byte stream as canonicalJson, without a full report-sized string. */
-export function contentHash(value: unknown): string {
-  const hash = sha256.create();
+export function forEachCanonicalChunk(
+  value: unknown,
+  consume: (bytes: Uint8Array) => void,
+): void {
   let parts: string[] = [];
   let length = 0;
   const flush = () => {
     const ascii = parts.join('');
     const bytes = new Uint8Array(ascii.length);
     for (let i = 0; i < ascii.length; i++) bytes[i] = ascii.charCodeAt(i);
-    hash.update(bytes);
+    consume(bytes);
     parts = [];
     length = 0;
   };
@@ -101,6 +103,13 @@ export function contentHash(value: unknown): string {
   };
   encode(value);
   if (length) flush();
+}
+
+export function contentHash(value: unknown): string {
+  const hash = sha256.create();
+  forEachCanonicalChunk(value, (bytes) => {
+    hash.update(bytes);
+  });
   return Array.from(hash.digest(), (b) => b.toString(16).padStart(2, '0')).join(
     '',
   );

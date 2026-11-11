@@ -1,11 +1,15 @@
 import type { Candle } from '../data';
+import { createRuleStrategy, normalizeRule } from './rules';
+import type { StrategyRuleV1 } from './rules';
 import { parseDecimal } from '../math';
 
 export type StrategyConfig =
+  | { kind: 'rules'; rule: StrategyRuleV1 }
   | { kind: 'ma'; fastPeriod: number; slowPeriod: number }
   | { kind: 'rsi'; period: number; lower: number; upper: number }
   | { kind: 'breakout'; lookback: number };
 export type StrategyInput =
+  | { kind: 'rules'; rule: StrategyRuleV1 }
   | { kind: 'ma'; fastPeriod?: number; slowPeriod?: number }
   | { kind: 'rsi'; period?: number; lower?: number; upper?: number }
   | { kind: 'breakout'; lookback?: number };
@@ -24,7 +28,12 @@ const period = (n: number) => Number.isInteger(n) && n >= 1 && n <= 50_000;
 export function normalizeStrategy(input: StrategyInput): StrategyConfig {
   if (!input || Object.getPrototypeOf(input) !== Object.prototype)
     throw new Error('Invalid strategy configuration.');
-  let config: StrategyConfig;
+  if (input.kind === 'rules') {
+    if (Object.keys(input).length !== 2 || !Object.hasOwn(input, 'rule'))
+      throw new Error('Unknown rule strategy parameter.');
+    return { kind: 'rules', rule: normalizeRule(input.rule) };
+  }
+  let config: Exclude<StrategyConfig, { kind: 'rules' }>;
   switch (input.kind) {
     case 'ma':
       config = { fastPeriod: 10, slowPeriod: 30, ...input };
@@ -79,6 +88,8 @@ export function createStrategy(
   intervalMs: number,
 ): Strategy {
   const config = Object.freeze(normalizeStrategy(input));
+  if (config.kind === 'rules')
+    return createRuleStrategy(config.rule, intervalMs);
   if (
     !Number.isSafeInteger(intervalMs) ||
     intervalMs <= 0 ||

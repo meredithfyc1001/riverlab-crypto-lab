@@ -1,0 +1,10 @@
+
+> riverlab-crypto-lab@0.5.1-test typecheck
+> tsc -b
+
+src/features/strategies/ResearchResults.tsx(35,22): error TS2339: Property 'lookback' does not exist on type '{ kind: "rules"; rule: StrategyRuleV1; } | { kind: "breakout"; lookback: number; }'.
+  Property 'lookback' does not exist on type '{ kind: "rules"; rule: StrategyRuleV1; }'.
+src/features/strategies/RuleEditor.tsx(90,17): error TS2345: Argument of type 'string' is not assignable to parameter of type 'SetStateAction<`${string}-${string}-${string}-${string}-${string}`>'.
+src/features/strategies/ResearchResults.tsx(35,22): error TS2339: Property 'lookback' does not exist on type '{ kind: "rules"; rule: StrategyRuleV1; } | { kind: "breakout"; lookback: number; }'.
+  Property 'lookback' does not exist on type '{ kind: "rules"; rule: StrategyRuleV1; }'.
+src/features/strategies/RuleEditor.tsx(90,17): error TS2345: Argument of type 'string' is not assignable to parameter of type 'SetStateAction<`${string}-${string}-${string}-${string}-${string}`>'.

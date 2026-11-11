@@ -1,0 +1,14 @@
+[WebServer] (node:1472) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 4 tests using 1 worker
+
+(node:1522) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  1 [chromium-linux] › tests/e2e/phase-5b.spec.ts:77:1 › 卡片编辑、实时边界、双侧组合、条件复制/禁用、版本复制/确认删除与键盘窄屏 (9.1s)
+  ✓  2 [chromium-linux] › tests/e2e/phase-5b.spec.ts:156:1 › 实际Worker规则→回测→保存导出→刷新重开与确定复现，规则库删除后旧实验仍可用，阻断外网 (8.6s)
+  ✓  3 [chromium-linux] › tests/e2e/phase-5b.spec.ts:240:1 › 坏JSON、版本、未知字段与不可覆盖冲突均明确失败；空规则不能保存 (2.0s)
+PHASE5B_PERFORMANCE {"bars":50000,"conditions":10,"elapsedMs":5336,"maximum":413.9000000000233,"samples":218,"cpu":"INTEL(R) XEON(R) PLATINUM 8573C","cores":3,"os":"linux 6.18.57","browser":"154.0.8037.57","node":"v24.19.0","limitations":"synthetic; full rules/backtest/statistics/hashes/Worker transfer and all-point charts; observed timer interval, not total memory or physical Windows acceptance"}
+  ✓  4 [chromium-linux] › tests/e2e/phase-5b.spec.ts:280:1 › 50,000根、双侧各5条件真实Worker与主线程响应 (11.3s)
+
+  4 passed (35.6s)

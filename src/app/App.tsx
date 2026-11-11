@@ -1,3 +1,5 @@
+import { useRuleLibrary } from './useRuleLibrary';
+import { RuleEditor } from '../features/strategies';
 import { useRiskWorkbench } from './useRiskWorkbench';
 import { RiskCenter } from '../features/risk';
 import { useReplayWorkbench } from './useReplayWorkbench';
@@ -19,6 +21,7 @@ import { DatasetCenter } from '../features/datasets';
 
 export function App() {
   const library = useDatasetLibrary();
+  const rules = useRuleLibrary();
   const backtest = useBacktestWorkbench();
   const research = useResearchWorkbench();
   const replay = useReplayWorkbench();
@@ -90,7 +93,7 @@ export function App() {
         </nav>
         <div className="sidebar-bottom">
           <span className="status-dot" /> 离线优先 · 本地研究
-          <small>v0.5.0-test / Phase 5A 风险分析</small>
+          <small>v0.5.1-test / Phase 5B 规则编辑器</small>
         </div>
       </aside>
 
@@ -122,7 +125,7 @@ export function App() {
               <h1>{activePage.label}</h1>
               <p className="page-description">{activePage.description}</p>
             </div>
-            <span className="badge">Phase 5A · 风险分析</span>
+            <span className="badge">Phase 5B · 规则编辑器</span>
           </div>
 
           {activeId === 'overview' ? (
@@ -154,9 +157,9 @@ export function App() {
                 <section className="stat-card">
                   <span>项目阶段</span>
                   <strong>
-                    风险分析 <small>Phase 5A</small>
+                    规则编辑器 <small>Phase 5B</small>
                   </strong>
-                  <p>固定种子重采样、风险分位与独立报告</p>
+                  <p>声明式条件组合、版本保存与可复现回测</p>
                 </section>
                 <section className="stat-card">
                   <span>研究数据</span>
@@ -205,7 +208,7 @@ export function App() {
                               ? '回测工作台可用'
                               : page.id === 'strategies'
                                 ? '策略研究可用'
-                                : '待开发'}
+                                : '风险分析可用'}
                         </small>
                       </a>
                     ))}
@@ -280,6 +283,14 @@ export function App() {
             </>
           ) : activeId === 'strategies' ? (
             <>
+              <RuleEditor
+                records={rules.records}
+                busy={rules.busy}
+                onSave={rules.save}
+                onDelete={rules.remove}
+              />
+              {rules.message && <p role="status">{rules.message}</p>}
+              {rules.error && <p role="alert">{rules.error}</p>}
               <ResearchCenter
                 datasets={library.datasets}
                 dataset={backtest.dataset}
@@ -306,6 +317,7 @@ export function App() {
             <>
               {activeId === 'backtests' ? (
                 <BacktestCenter
+                  rules={rules.records}
                   datasets={library.datasets}
                   dataset={backtest.dataset}
                   busy={backtest.busy}

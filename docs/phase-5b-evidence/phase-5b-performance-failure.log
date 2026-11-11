@@ -1,0 +1,284 @@
+# Instructions
+
+- Following Playwright test failed.
+- Explain why, be concise, respect Playwright best practices.
+- Provide a snippet of code with the fix, if possible.
+
+# Test info
+
+- Name: phase-5b.spec.ts >> 50,000根、双侧各5条件真实Worker与主线程响应
+- Location: tests/e2e/phase-5b.spec.ts:294:1
+
+# Error details
+
+```
+Error: expect(locator).toBeVisible() failed
+
+Locator: getByText('回测成功；结果尚未保存，刷新会丢失。')
+Expected: visible
+Timeout: 5000ms
+Error: element(s) not found
+
+Call log:
+  - Expect "toBeVisible" getByText('回测成功；结果尚未保存，刷新会丢失。') with timeout 5000ms
+  - waiting for getByText('回测成功；结果尚未保存，刷新会丢失。')
+
+```
+
+```yaml
+- link "跳至主要内容":
+  - /url: "#main-content"
+- complementary:
+  - link "RiverLab Crypto Lab 工作台":
+    - /url: "#/overview"
+    - strong: RiverLab
+    - text: CRYPTO LAB
+  - text: 研究空间
+  - navigation "主要导航":
+    - link "工作台":
+      - /url: "#/overview"
+    - link "数据中心":
+      - /url: "#/datasets"
+    - link "行情中心":
+      - /url: "#/charts"
+    - link "策略中心":
+      - /url: "#/strategies"
+    - link "回测中心":
+      - /url: "#/backtests"
+    - link "风险中心":
+      - /url: "#/risk"
+    - link "实验中心":
+      - /url: "#/experiments"
+    - link "历史回放":
+      - /url: "#/replay"
+  - text: 离线优先 · 本地研究 v0.5.1-test / Phase 5B 规则编辑器
+- banner:
+  - text: 研究空间 /
+  - strong: 回测中心
+  - text: 仅研究与模拟
+  - button "切换为浅色主题": 浅色
+- main:
+  - paragraph: RIVERLAB / RESEARCH WORKSPACE
+  - heading "回测中心" [level=1]
+  - paragraph: 用可复现的实验检验想法。
+  - text: Phase 5B · 规则编辑器
+  - heading "回测配置" [level=2]
+  - paragraph: 现货 · 单币种 · 多头 · 无杠杆 · 虚拟 USDT。请先在数据中心保存通过检查的数据集。
+  - text: 回测数据集
+  - combobox "回测数据集" [disabled]:
+    - option "请选择已保存数据集"
+    - option "SYNTHETIC/RULE · synthetic-rule.csv" [selected]
+  - heading "SYNTHETIC/RULE · synthetic-rule.csv" [level=3]
+  - paragraph: 用户文件 · 来源未核实 · 50000 根 · 周期 60 秒
+  - paragraph: 2025-01-01 00:00:00.000 UTC 至 2025-02-04 17:20:00.000 UTC（末根收盘）
+  - paragraph: 文件名和填写的来源说明不构成真实行情认证，请核对数据提供方、币种、市场与采集口径。
+  - paragraph: 缺口 0；警告 2。来源与首尾完整性不能认证。
+  - group: 数据身份与质量警告
+  - text: 策略
+  - combobox "策略" [disabled]:
+    - option "MA 交叉"
+    - option "RSI 阈值"
+    - option "价格突破"
+    - option "自定义规则 V1" [selected]
+  - text: 规则策略版本
+  - combobox "规则策略版本" [disabled]:
+    - option "请选择已保存版本"
+    - option "我的组合规则 · v1 · 867da332-f365-4109-85c0-640eb0ff9407" [selected]
+  - paragraph: 在策略中心创建并保存版本；本次运行锁定完整规则，后续编辑不改变旧实验。预热不足hold，双侧冲突hold，持续满足只触发一次。Phase3网格/样本外暂不支持。
+  - group: 规则版本与中文解释
+  - paragraph: 样本不足会保留预热/hold，不伪造交易。MA 至少慢线周期+1根，RSI 至少周期+1根，突破至少回看周期+1根。
+  - text: 虚拟初始资金 USDT
+  - textbox "虚拟初始资金 USDT" [disabled]: "1000"
+  - text: 双边手续费 bps
+  - textbox "双边手续费 bps" [disabled]: "10"
+  - text: 买入滑点 bps
+  - textbox "买入滑点 bps" [disabled]: "10"
+  - text: 卖出滑点 bps
+  - textbox "卖出滑点 bps" [disabled]: "10"
+  - text: 数量小数位
+  - textbox "数量小数位" [disabled]: "8"
+  - text: 最小名义额 USDT
+  - textbox "最小名义额 USDT" [disabled]: "0"
+  - text: 止损 bps（留空关闭）
+  - spinbutton "止损 bps（留空关闭）" [disabled]
+  - text: 止盈 bps（留空关闭）
+  - spinbutton "止盈 bps（留空关闭）" [disabled]
+  - paragraph: 1 bps=0.01%。买入/卖出分别扣手续费；滑点已进入成交价。买价/费用向上、卖价/估值/数量向下，18位定点。
+  - group:
+    - text: 本次成交假设与风险
+    - paragraph: 收盘形成信号，下一根开盘成交；末根信号到期，不自动平仓。已有仓开盘风控优先，取消待执行信号；根内双触发保守止损优先，时间未知。止损跳空按开盘，止盈跳空按阈值；保护基于含滑点买价、不含手续费，仍扣卖出成本。无限流动性、无盘口冲击、不参考整根量，成交不裁剪到高低价；历史结果不保证实际成交。缺口/重复/异常/未确认数据一律阻断，不自动修复。
+  - checkbox "我确认本数据集全部 K 线已收盘并已阅读警告和成交假设" [checked] [disabled]
+  - text: 我确认本数据集全部 K 线已收盘并已阅读警告和成交假设
+  - button "运行回测" [disabled]
+  - status: 正在 Worker 中执行策略、成交、账本和统计…
+  - button "取消当前任务"
+  - strong: 仅供学习研究 · 不提供投资建议
+  - paragraph: 历史表现不代表未来表现。所有研究与模拟均不涉及真实资金。
+  - text: RiverLab Crypto Lab 保持好奇，也保持审慎。
+```
+
+# Test source
+
+```ts
+  1   | import { test, expect } from '@playwright/test';
+  2   | import type { Page } from '@playwright/test';
+  3   | import { readFile, writeFile } from 'node:fs/promises';
+  4   | import { cpus, platform, release } from 'node:os';
+  5   | const navigate = async (page: Page, name: string) =>
+  6   |   page.getByRole('navigation').getByRole('link', { name, exact: true }).click();
+  7   | async function prepare(page: Page, rows = 48) {
+  8   |   await page.goto('/#/datasets');
+  9   |   const csv =
+  10  |     'timestamp,open,high,low,close,volume\n' +
+  11  |     Array.from({ length: rows }, (_, i) => {
+  12  |       const p = 100 + (i % 12 < 6 ? i % 6 : 6 - (i % 6));
+  13  |       return `${1735689600000 + i * 60000},${p},${p + 1},${p - 1},${p},1`;
+  14  |     }).join('\n');
+  15  |   await page.getByLabel('选择本地 CSV').setInputFiles({
+  16  |     name: 'synthetic-rule.csv',
+  17  |     mimeType: 'text/csv',
+  18  |     buffer: Buffer.from(csv),
+  19  |   });
+  20  |   await expect(
+  21  |     page.getByText(`读到 ${rows} 条数据记录。`, { exact: false }),
+  22  |   ).toBeVisible();
+  23  |   await page.getByLabel('预期固定周期（秒）').fill('60');
+  24  |   await page.getByRole('button', { name: '检查并生成导入报告' }).click();
+  25  |   await expect(page.getByText('检查完成（仅文件内）')).toBeVisible();
+  26  |   await page
+  27  |     .getByLabel('币种 / 交易对（自述，不认证来源）')
+  28  |     .fill('SYNTHETIC/RULE');
+  29  |   await page.getByRole('checkbox', { name: /我已阅读 .* 项警告/ }).check();
+  30  |   await page
+  31  |     .getByRole('button', { name: '保存已检查数据集', exact: true })
+  32  |     .click();
+  33  |   await expect(
+  34  |     page.getByText('已保存数据集（IndexedDB 事务已完成）。请另行备份。'),
+  35  |   ).toBeVisible();
+  36  |   await navigate(page, '策略中心');
+  37  |   await expect(page.getByTestId('rule-editor')).toBeVisible();
+  38  | }
+  39  | async function saveRule(page: Page) {
+  40  |   await page.getByRole('button', { name: '保存策略版本', exact: true }).click();
+  41  |   await expect(page.getByTestId('rule-version')).toContainText('浏览器已保存');
+  42  | }
+  43  | async function selectRule(page: Page) {
+  44  |   await navigate(page, '回测中心');
+  45  |   await expect(page.getByLabel('回测数据集')).toBeVisible();
+  46  |   await page.getByLabel('回测数据集').selectOption({ index: 1 });
+  47  |   await expect(
+  48  |     page.getByText('已读取并校验保存的数据集，请确认收盘状态。'),
+  49  |   ).toBeVisible();
+  50  |   await page
+  51  |     .getByRole('combobox', { name: '策略', exact: true })
+  52  |     .selectOption('rules');
+  53  |   await page.getByLabel('规则策略版本').selectOption({ index: 1 });
+  54  |   await page.getByRole('checkbox', { name: /我确认本数据集全部 K 线/ }).check();
+  55  | }
+  56  | async function run(page: Page) {
+  57  |   await page.getByRole('button', { name: '运行回测', exact: true }).click();
+  58  |   await expect(
+  59  |     page.getByText('回测成功；结果尚未保存，刷新会丢失。'),
+> 60  |   ).toBeVisible();
+      |     ^ Error: expect(locator).toBeVisible() failed
+  61  |   await expect(page.getByTestId('result-curves')).toHaveAttribute(
+  62  |     'data-ready',
+  63  |     'true',
+  64  |   );
+  65  | }
+  66  | async function exported(page: Page, label = '导出实验 JSON') {
+  67  |   const event = page.waitForEvent('download');
+  68  |   await page.getByRole('button', { name: label, exact: true }).click();
+  69  |   const path = (await (await event).path())!;
+  70  |   return { path, record: JSON.parse(await readFile(path, 'utf8')) };
+  71  | }
+  72  | const group = (page: Page, side: string, n: number) =>
+  73  |   page.getByRole('group', { name: `${side}条件${n}`, exact: true });
+  74  | 
+  75  | test('卡片编辑、实时边界、双侧组合、条件复制/禁用、版本复制/确认删除与键盘窄屏', async ({
+  76  |   page,
+  77  | }, info) => {
+  78  |   await page.goto('/#/strategies');
+  79  |   const editor = page.getByTestId('rule-editor');
+  80  |   await expect(
+  81  |     page.getByText('规则校验通过，可以保存并在回测中心选择具体版本。'),
+  82  |   ).toBeVisible();
+  83  |   await page.getByLabel('策略名称').fill('组合 中文 策略');
+  84  |   await group(page, '买入', 1).getByLabel('快线周期').fill('5');
+  85  |   await expect(editor.getByRole('alert')).toContainText('快线小于慢线');
+  86  |   await group(page, '买入', 1).getByLabel('快线周期').fill('2');
+  87  |   await group(page, '买入', 1).getByLabel('均线类型').selectOption('EMA');
+  88  |   await page.getByLabel('买入组合方式').selectOption('OR');
+  89  |   for (let n = 1; n < 5; n++)
+  90  |     await page
+  91  |       .getByRole('button', { name: `添加买入条件（${n}/5）`, exact: true })
+  92  |       .click();
+  93  |   await expect(
+  94  |     page.getByRole('button', { name: '添加买入条件（5/5）' }),
+  95  |   ).toBeDisabled();
+  96  |   await group(page, '买入', 2).getByLabel('条件类型').selectOption('rsi');
+  97  |   await group(page, '买入', 2).getByLabel('RSI阈值').fill('101');
+  98  |   await expect(editor.getByRole('alert')).toContainText('0–100');
+  99  |   await group(page, '买入', 2).getByLabel('RSI阈值').fill('50');
+  100 |   await group(page, '买入', 3).getByLabel('条件类型').selectOption('breakout');
+  101 |   await group(page, '买入', 4).getByLabel('启用此条件').uncheck();
+  102 |   await group(page, '买入', 5)
+  103 |     .getByRole('button', { name: '删除此条件' })
+  104 |     .click();
+  105 |   await group(page, '买入', 4)
+  106 |     .getByRole('button', { name: '复制此条件' })
+  107 |     .click();
+  108 |   await expect(
+  109 |     group(page, '买入', 5).getByLabel('启用此条件'),
+  110 |   ).not.toBeChecked();
+  111 |   await page.setViewportSize({ width: 390, height: 844 });
+  112 |   await page.getByRole('button', { name: '切换为浅色主题' }).click();
+  113 |   expect(
+  114 |     await page.evaluate(
+  115 |       () => document.documentElement.scrollWidth <= innerWidth,
+  116 |     ),
+  117 |   ).toBe(true);
+  118 |   await saveRule(page);
+  119 |   const first = (await exported(page, '导出策略 JSON')).record;
+  120 |   expect(first.rule.buy.conditions).toHaveLength(5);
+  121 |   expect(first.rule.buy.operator).toBe('OR');
+  122 |   const input = page.getByLabel('策略名称');
+  123 |   await input.focus();
+  124 |   await input.press('End');
+  125 |   await input.press('x');
+  126 |   await expect(page.getByTestId('rule-version')).toContainText('v2');
+  127 |   await saveRule(page);
+  128 |   await page.getByRole('button', { name: '复制为新策略', exact: true }).click();
+  129 |   await expect(page.getByTestId('rule-version')).toContainText('v1');
+  130 |   await saveRule(page);
+  131 |   await expect(
+  132 |     page.getByRole('list', { name: '规则策略版本库' }).locator('li'),
+  133 |   ).toHaveCount(3);
+  134 |   const copied = (await exported(page, '导出策略 JSON')).record;
+  135 |   expect(copied.familyId).not.toBe(first.familyId);
+  136 |   await page.getByRole('button', { name: /删除策略 .*副本 v1/ }).click();
+  137 |   await page.getByRole('button', { name: '取消删除', exact: true }).click();
+  138 |   await expect(
+  139 |     page.getByRole('list', { name: '规则策略版本库' }).locator('li'),
+  140 |   ).toHaveCount(3);
+  141 |   await page.getByRole('button', { name: /删除策略 .*副本 v1/ }).click();
+  142 |   await page
+  143 |     .getByRole('button', { name: '确认删除策略版本', exact: true })
+  144 |     .click();
+  145 |   await expect(
+  146 |     page.getByRole('list', { name: '规则策略版本库' }).locator('li'),
+  147 |   ).toHaveCount(2);
+  148 |   await page.screenshot({
+  149 |     path: info.outputPath('rule-editor-390.png'),
+  150 |     fullPage: true,
+  151 |   });
+  152 | });
+  153 | 
+  154 | test('实际Worker规则→回测→保存导出→刷新重开与确定复现，规则库删除后旧实验仍可用，阻断外网', async ({
+  155 |   page,
+  156 | }) => {
+  157 |   const external: string[] = [],
+  158 |     errors: string[] = [];
+  159 |   page.on('pageerror', (e) => errors.push(e.message));
+  160 |   await page.route('**/*', (route) => {
+```

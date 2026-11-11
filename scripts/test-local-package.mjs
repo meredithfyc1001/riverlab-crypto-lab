@@ -58,7 +58,7 @@ for (const row of manifest.trim().split('\n')) {
 const build = JSON.parse(
   await readFile(join(folder, 'build-info.json'), 'utf8'),
 );
-assert.equal(build.phase, '5A');
+assert.equal(build.phase, '5B');
 assert.equal(
   build.version,
   JSON.parse(await readFile('package.json', 'utf8')).version,
@@ -360,6 +360,82 @@ try {
   await page
     .locator('[data-testid="replay-chart"][data-ready="true"]')
     .waitFor();
+  await page
+    .getByRole('navigation')
+    .getByRole('link', { name: '策略中心', exact: true })
+    .click();
+  await page.getByLabel('策略名称').fill('Windows ZIP 自定义规则');
+  await page.getByRole('button', { name: '保存策略版本', exact: true }).click();
+  await page
+    .getByTestId('rule-version')
+    .filter({ hasText: '浏览器已保存' })
+    .waitFor();
+  const ruleDownload = page.waitForEvent('download');
+  await page
+    .getByRole('button', { name: '导出策略 JSON', exact: true })
+    .click();
+  const rulePath = await (await ruleDownload).path();
+  const ruleRecord = JSON.parse(await readFile(rulePath, 'utf8'));
+  assert.equal(ruleRecord.rule.schemaVersion, 1);
+  await page
+    .getByRole('navigation')
+    .getByRole('link', { name: '回测中心', exact: true })
+    .click();
+  await page.getByLabel('回测数据集').selectOption({ index: 1 });
+  await page.getByText('已读取并校验保存的数据集，请确认收盘状态。').waitFor();
+  await page
+    .getByRole('combobox', { name: '策略', exact: true })
+    .selectOption('rules');
+  await page.getByLabel('规则策略版本').selectOption({ index: 1 });
+  await page.getByRole('checkbox', { name: /我确认本数据集全部 K 线/ }).check();
+  await page.getByRole('button', { name: '运行回测', exact: true }).click();
+  await page.getByText('回测成功；结果尚未保存，刷新会丢失。').waitFor();
+  await page
+    .locator('[data-testid="result-curves"][data-ready="true"]')
+    .waitFor();
+  await page.getByRole('button', { name: '保存回测实验', exact: true }).click();
+  await page
+    .getByText('实验已保存（事务已完成）。请另行导出JSON备份。')
+    .waitFor();
+  const ruleExperimentDownload = page.waitForEvent('download');
+  await page
+    .getByRole('button', { name: '导出实验 JSON', exact: true })
+    .click();
+  const ruleExperiment = JSON.parse(
+    await readFile(await (await ruleExperimentDownload).path(), 'utf8'),
+  );
+  assert.deepEqual(
+    ruleExperiment.payload.result.manifest.strategy.config.rule,
+    ruleRecord.rule,
+  );
+  await page.reload();
+  await page
+    .getByRole('navigation')
+    .getByRole('link', { name: '实验中心', exact: true })
+    .click();
+  await page.getByRole('button', { name: /打开实验 .*rules/ }).click();
+  await page.getByText('实验校验与重算一致，已重新打开结果。').waitFor();
+  const reopenedDownload = page.waitForEvent('download');
+  await page
+    .getByRole('button', { name: '导出实验 JSON', exact: true })
+    .click();
+  assert.deepEqual(
+    JSON.parse(await readFile(await (await reopenedDownload).path(), 'utf8'))
+      .payload,
+    ruleExperiment.payload,
+  );
+  await page
+    .getByRole('navigation')
+    .getByRole('link', { name: '策略中心', exact: true })
+    .click();
+  await page.getByLabel('导入策略 JSON（128KiB以内）').setInputFiles(rulePath);
+  await page.getByText('JSON已校验，仅在内存待保存。').waitFor();
+  await page.screenshot({
+    path: resolve(
+      `work/local-package/package-${process.env.E2E_BROWSER ?? 'chromium'}-rules.png`,
+    ),
+    fullPage: true,
+  });
   assert.deepEqual(external, []);
   assert.deepEqual(errors, []);
   assert(
@@ -401,6 +477,7 @@ try {
       'strategy research batch and JSON CSV download',
       'seeded risk analysis, fan plot, snapshot reload and JSON CSV',
       'prefix replay, virtual next-open trade, journal, checkpoint reload and JSON CSV',
+      'declarative rule creation, version save, Worker backtest, experiment reload/recompute and rule JSON import/export',
       'Enter exits and frees port',
       'missing dist fails',
     ],

@@ -2,6 +2,8 @@ import { utc } from './format';
 import { useState } from 'react';
 import type { Dataset, DatasetSummary } from '../../core/data/dataset';
 import { DEFAULT_CONFIG, normalizeConfig } from '../../core/backtests';
+import type { RuleRecord } from '../../core/rule-library';
+import { explainCondition } from '../../core/strategies';
 import { normalizeStrategy } from '../../core/strategies';
 import type { StrategyInput } from '../../core/strategies';
 import { normalizeRisk } from '../../core/risk';
@@ -9,19 +11,23 @@ import type { WorkbenchInput } from '../../core/experiments';
 import { parseDecimal } from '../../core/math';
 import './backtests.css';
 export function BacktestCenter({
+  rules,
   datasets,
   dataset,
   busy,
   onSelect,
   onRun,
 }: {
+  rules: RuleRecord[];
   datasets: DatasetSummary[];
   dataset: Dataset | null;
   busy: boolean;
   onSelect: (id: string) => void;
   onRun: (input: WorkbenchInput) => void;
 }) {
-  const [kind, setKind] = useState<'ma' | 'rsi' | 'breakout'>('ma');
+  const [kind, setKind] = useState<'ma' | 'rsi' | 'breakout' | 'rules'>('ma');
+  const [ruleId, setRuleId] = useState('');
+  const selectedRule = rules.find((r) => r.id === ruleId);
   const [params, setParams] = useState({
     fastPeriod: '10',
     slowPeriod: '30',
@@ -51,22 +57,25 @@ export function BacktestCenter({
         throw new Error('数据含缺口，阻止运行；不会填补或忽略。');
       const end =
         dataset.candles.at(-1)!.timestampUtcMs + dataset.quality.intervalMs!;
-      if (end > Date.now()) throw new Error('数据包含尚未到收盘时间的K线。');
+      if (kind === 'rules' && !selectedRule)
+        throw new Error('请选择已保存的具体规则版本。');
       const strategy = normalizeStrategy(
-        (kind === 'ma'
-          ? {
-              kind,
-              fastPeriod: num(params.fastPeriod),
-              slowPeriod: num(params.slowPeriod),
-            }
-          : kind === 'rsi'
+        (kind === 'rules'
+          ? { kind, rule: selectedRule!.rule }
+          : kind === 'ma'
             ? {
                 kind,
-                period: num(params.period),
-                lower: num(params.lower),
-                upper: num(params.upper),
+                fastPeriod: num(params.fastPeriod),
+                slowPeriod: num(params.slowPeriod),
               }
-            : { kind, lookback: num(params.lookback) }) as StrategyInput,
+            : kind === 'rsi'
+              ? {
+                  kind,
+                  period: num(params.period),
+                  lower: num(params.lower),
+                  upper: num(params.upper),
+                }
+              : { kind, lookback: num(params.lookback) }) as StrategyInput,
       );
       const config = normalizeConfig({
         initialCash: costs.initialCash,
@@ -110,7 +119,9 @@ export function BacktestCenter({
             ['lower', 'RSI 下阈值'],
             ['upper', 'RSI 上阈值'],
           ]
-        : [['lookback', '突破回看周期']];
+        : kind === 'rules'
+          ? []
+          : [['lookback', '突破回看周期']];
   return (
     <section className="panel backtest-controls">
       <h2>回测配置</h2>
@@ -182,8 +193,53 @@ export function BacktestCenter({
             <option value="ma">MA 交叉</option>
             <option value="rsi">RSI 阈值</option>
             <option value="breakout">价格突破</option>
+            <option value="rules">自定义规则 V1</option>
           </select>
         </label>
+        {kind === 'rules' && (
+          <div>
+            <label>
+              规则策略版本
+              <select
+                value={ruleId}
+                disabled={busy}
+                onChange={(e) => setRuleId(e.target.value)}
+              >
+                <option value="">请选择已保存版本</option>
+                {rules.map((r) => (
+                  <option key={r.id} value={r.id}>
+                    {r.name} · v{r.rule.revision} · {r.familyId}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <p>
+              在策略中心创建并保存版本；本次运行锁定完整规则，后续编辑不改变旧实验。预热不足hold，双侧冲突hold，持续满足只触发一次。Phase3网格/样本外暂不支持。
+            </p>
+            {selectedRule && (
+              <details>
+                <summary>规则版本与中文解释</summary>
+                <p>
+                  v{selectedRule.rule.revision} · {selectedRule.ruleHash}
+                </p>
+                {(['buy', 'sell'] as const).map((side) => (
+                  <div key={side}>
+                    <h3>
+                      {side === 'buy' ? '买入' : '卖出'} ·{' '}
+                      {selectedRule.rule[side].operator} ·{' '}
+                      {selectedRule.rule[side].enabled ? '启用' : '禁用'}
+                    </h3>
+                    {selectedRule.rule[side].conditions.map((c, i) => (
+                      <p key={i}>
+                        {i + 1}. {explainCondition(c)}
+                      </p>
+                    ))}
+                  </div>
+                ))}
+              </details>
+            )}
+          </div>
+        )}
         <div className="backtest-grid">
           {fields.map(([key, label]) => (
             <label key={key}>

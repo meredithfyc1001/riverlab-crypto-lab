@@ -1,0 +1,24 @@
+
+> riverlab-crypto-lab@0.5.1-test lint
+> eslint . --max-warnings 0
+
+
+/workspace/riverlab-crypto-lab/src/app/useRuleLibrary.ts
+  28:18  warning  The ref value 'generation.current' will likely have changed by the time this effect cleanup function runs. If this ref points to a node rendered by React, copy 'generation.current' to a variable inside the effect, and use that variable in the cleanup function  react-hooks/exhaustive-deps
+
+/workspace/riverlab-crypto-lab/src/features/backtests/BacktestCenter.tsx
+  60:17  error  Error: Cannot call impure function during render
+
+`Date.now` is an impure function. Calling an impure function can produce unstable results that update unpredictably when the component happens to re-render. (https://react.dev/reference/rules/components-and-hooks-must-be-pure#components-and-hooks-must-be-idempotent).
+
+/workspace/riverlab-crypto-lab/src/features/backtests/BacktestCenter.tsx:60:17
+  58 |       const end =
+  59 |         dataset.candles.at(-1)!.timestampUtcMs + dataset.quality.intervalMs!;
+> 60 |       if (end > Date.now()) throw new Error('数据包含尚未到收盘时间的K线。');
+     |                 ^^^^^^^^^^ Cannot call impure function
+  61 |       if (kind === 'rules' && !selectedRule)
+  62 |         throw new Error('请选择已保存的具体规则版本。');
+  63 |       const strategy = normalizeStrategy(  react-hooks/purity
+
+✖ 2 problems (1 error, 1 warning)
+

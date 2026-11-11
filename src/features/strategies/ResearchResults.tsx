@@ -32,7 +32,9 @@ export function ResearchResults({
       ? r.strategy.fastPeriod
       : r.strategy.kind === 'rsi'
         ? r.strategy.lower
-        : r.strategy.lookback;
+        : r.strategy.kind === 'breakout'
+          ? r.strategy.lookback
+          : '规则暂不可用';
   const b = (r: ResearchRow) =>
     r.strategy.kind === 'ma'
       ? r.strategy.slowPeriod

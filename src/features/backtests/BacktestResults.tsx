@@ -15,6 +15,12 @@ const metric = (m: Metric, percent = false) =>
       ? percentage(m.value)
       : m.value;
 const reasons: Record<string, string> = {
+  'rules-warmup': '规则预热不足，不可判定',
+  'rules-conflict': '买卖规则同根冲突，保持不动',
+  'rules-repeat': '条件持续满足，不重复触发',
+  'rules-no-match': '规则未满足',
+  'rules-buy': '买入规则重新满足',
+  'rules-sell': '卖出规则重新满足',
   'no-next-candle': '无下一根K线，订单到期',
   'risk-priority': '开盘风控优先，取消待执行信号',
   'position-already-open': '已有持仓，禁止加仓',

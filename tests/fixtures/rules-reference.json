@@ -1,0 +1,3912 @@
+[
+  {
+    "name": "MA cross above",
+    "rule": {
+      "schemaVersion": 1,
+      "revision": 1,
+      "buy": {
+        "enabled": true,
+        "operator": "AND",
+        "conditions": [
+          {
+            "kind": "cross",
+            "enabled": true,
+            "average": "MA",
+            "fastPeriod": 2,
+            "slowPeriod": 3,
+            "direction": "above"
+          }
+        ]
+      },
+      "sell": {
+        "enabled": false,
+        "operator": "AND",
+        "conditions": [
+          {
+            "kind": "rsi",
+            "enabled": true,
+            "period": 2,
+            "operator": "gte",
+            "threshold": 70
+          }
+        ]
+      }
+    },
+    "closes": [
+      100, 100, 100, 110, 120, 95, 85, 85, 105, 115, 90, 100, 125, 80, 80, 110
+    ],
+    "expected": [
+      {
+        "action": "hold",
+        "reason": "rules-warmup"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-warmup"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-warmup"
+      },
+      {
+        "action": "buy",
+        "reason": "rules-buy"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      },
+      {
+        "action": "buy",
+        "reason": "rules-buy"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      },
+      {
+        "action": "buy",
+        "reason": "rules-buy"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      },
+      {
+        "action": "buy",
+        "reason": "rules-buy"
+      }
+    ]
+  },
+  {
+    "name": "MA cross below",
+    "rule": {
+      "schemaVersion": 1,
+      "revision": 1,
+      "buy": {
+        "enabled": true,
+        "operator": "AND",
+        "conditions": [
+          {
+            "kind": "cross",
+            "enabled": true,
+            "average": "MA",
+            "fastPeriod": 2,
+            "slowPeriod": 3,
+            "direction": "below"
+          }
+        ]
+      },
+      "sell": {
+        "enabled": false,
+        "operator": "AND",
+        "conditions": [
+          {
+            "kind": "rsi",
+            "enabled": true,
+            "period": 2,
+            "operator": "gte",
+            "threshold": 70
+          }
+        ]
+      }
+    },
+    "closes": [
+      100, 100, 100, 110, 120, 95, 85, 85, 105, 115, 90, 100, 125, 80, 80, 110
+    ],
+    "expected": [
+      {
+        "action": "hold",
+        "reason": "rules-warmup"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-warmup"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-warmup"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      },
+      {
+        "action": "buy",
+        "reason": "rules-buy"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      },
+      {
+        "action": "buy",
+        "reason": "rules-buy"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      },
+      {
+        "action": "buy",
+        "reason": "rules-buy"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      }
+    ]
+  },
+  {
+    "name": "price MA gt",
+    "rule": {
+      "schemaVersion": 1,
+      "revision": 1,
+      "buy": {
+        "enabled": true,
+        "operator": "AND",
+        "conditions": [
+          {
+            "kind": "price-ma",
+            "enabled": true,
+            "average": "MA",
+            "period": 3,
+            "operator": "gt"
+          }
+        ]
+      },
+      "sell": {
+        "enabled": false,
+        "operator": "AND",
+        "conditions": [
+          {
+            "kind": "rsi",
+            "enabled": true,
+            "period": 2,
+            "operator": "gte",
+            "threshold": 70
+          }
+        ]
+      }
+    },
+    "closes": [
+      100, 100, 100, 110, 120, 95, 85, 85, 105, 115, 90, 100, 125, 80, 80, 110
+    ],
+    "expected": [
+      {
+        "action": "hold",
+        "reason": "rules-warmup"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-warmup"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      },
+      {
+        "action": "buy",
+        "reason": "rules-buy"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-repeat"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      },
+      {
+        "action": "buy",
+        "reason": "rules-buy"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-repeat"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      },
+      {
+        "action": "buy",
+        "reason": "rules-buy"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      },
+      {
+        "action": "buy",
+        "reason": "rules-buy"
+      }
+    ]
+  },
+  {
+    "name": "constant price MA gt",
+    "rule": {
+      "schemaVersion": 1,
+      "revision": 1,
+      "buy": {
+        "enabled": true,
+        "operator": "AND",
+        "conditions": [
+          {
+            "kind": "price-ma",
+            "enabled": true,
+            "average": "MA",
+            "period": 1,
+            "operator": "gt"
+          }
+        ]
+      },
+      "sell": {
+        "enabled": false,
+        "operator": "AND",
+        "conditions": [
+          {
+            "kind": "rsi",
+            "enabled": true,
+            "period": 2,
+            "operator": "gte",
+            "threshold": 70
+          }
+        ]
+      }
+    },
+    "closes": [100, 100, 100, 100, 100, 100],
+    "expected": [
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      }
+    ]
+  },
+  {
+    "name": "price MA gte",
+    "rule": {
+      "schemaVersion": 1,
+      "revision": 1,
+      "buy": {
+        "enabled": true,
+        "operator": "AND",
+        "conditions": [
+          {
+            "kind": "price-ma",
+            "enabled": true,
+            "average": "MA",
+            "period": 3,
+            "operator": "gte"
+          }
+        ]
+      },
+      "sell": {
+        "enabled": false,
+        "operator": "AND",
+        "conditions": [
+          {
+            "kind": "rsi",
+            "enabled": true,
+            "period": 2,
+            "operator": "gte",
+            "threshold": 70
+          }
+        ]
+      }
+    },
+    "closes": [
+      100, 100, 100, 110, 120, 95, 85, 85, 105, 115, 90, 100, 125, 80, 80, 110
+    ],
+    "expected": [
+      {
+        "action": "hold",
+        "reason": "rules-warmup"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-warmup"
+      },
+      {
+        "action": "buy",
+        "reason": "rules-buy"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-repeat"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-repeat"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      },
+      {
+        "action": "buy",
+        "reason": "rules-buy"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-repeat"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      },
+      {
+        "action": "buy",
+        "reason": "rules-buy"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      },
+      {
+        "action": "buy",
+        "reason": "rules-buy"
+      }
+    ]
+  },
+  {
+    "name": "constant price MA gte",
+    "rule": {
+      "schemaVersion": 1,
+      "revision": 1,
+      "buy": {
+        "enabled": true,
+        "operator": "AND",
+        "conditions": [
+          {
+            "kind": "price-ma",
+            "enabled": true,
+            "average": "MA",
+            "period": 1,
+            "operator": "gte"
+          }
+        ]
+      },
+      "sell": {
+        "enabled": false,
+        "operator": "AND",
+        "conditions": [
+          {
+            "kind": "rsi",
+            "enabled": true,
+            "period": 2,
+            "operator": "gte",
+            "threshold": 70
+          }
+        ]
+      }
+    },
+    "closes": [100, 100, 100, 100, 100, 100],
+    "expected": [
+      {
+        "action": "buy",
+        "reason": "rules-buy"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-repeat"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-repeat"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-repeat"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-repeat"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-repeat"
+      }
+    ]
+  },
+  {
+    "name": "price MA lt",
+    "rule": {
+      "schemaVersion": 1,
+      "revision": 1,
+      "buy": {
+        "enabled": true,
+        "operator": "AND",
+        "conditions": [
+          {
+            "kind": "price-ma",
+            "enabled": true,
+            "average": "MA",
+            "period": 3,
+            "operator": "lt"
+          }
+        ]
+      },
+      "sell": {
+        "enabled": false,
+        "operator": "AND",
+        "conditions": [
+          {
+            "kind": "rsi",
+            "enabled": true,
+            "period": 2,
+            "operator": "gte",
+            "threshold": 70
+          }
+        ]
+      }
+    },
+    "closes": [
+      100, 100, 100, 110, 120, 95, 85, 85, 105, 115, 90, 100, 125, 80, 80, 110
+    ],
+    "expected": [
+      {
+        "action": "hold",
+        "reason": "rules-warmup"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-warmup"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      },
+      {
+        "action": "buy",
+        "reason": "rules-buy"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-repeat"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-repeat"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      },
+      {
+        "action": "buy",
+        "reason": "rules-buy"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-repeat"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      },
+      {
+        "action": "buy",
+        "reason": "rules-buy"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-repeat"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      }
+    ]
+  },
+  {
+    "name": "constant price MA lt",
+    "rule": {
+      "schemaVersion": 1,
+      "revision": 1,
+      "buy": {
+        "enabled": true,
+        "operator": "AND",
+        "conditions": [
+          {
+            "kind": "price-ma",
+            "enabled": true,
+            "average": "MA",
+            "period": 1,
+            "operator": "lt"
+          }
+        ]
+      },
+      "sell": {
+        "enabled": false,
+        "operator": "AND",
+        "conditions": [
+          {
+            "kind": "rsi",
+            "enabled": true,
+            "period": 2,
+            "operator": "gte",
+            "threshold": 70
+          }
+        ]
+      }
+    },
+    "closes": [100, 100, 100, 100, 100, 100],
+    "expected": [
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      }
+    ]
+  },
+  {
+    "name": "price MA lte",
+    "rule": {
+      "schemaVersion": 1,
+      "revision": 1,
+      "buy": {
+        "enabled": true,
+        "operator": "AND",
+        "conditions": [
+          {
+            "kind": "price-ma",
+            "enabled": true,
+            "average": "MA",
+            "period": 3,
+            "operator": "lte"
+          }
+        ]
+      },
+      "sell": {
+        "enabled": false,
+        "operator": "AND",
+        "conditions": [
+          {
+            "kind": "rsi",
+            "enabled": true,
+            "period": 2,
+            "operator": "gte",
+            "threshold": 70
+          }
+        ]
+      }
+    },
+    "closes": [
+      100, 100, 100, 110, 120, 95, 85, 85, 105, 115, 90, 100, 125, 80, 80, 110
+    ],
+    "expected": [
+      {
+        "action": "hold",
+        "reason": "rules-warmup"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-warmup"
+      },
+      {
+        "action": "buy",
+        "reason": "rules-buy"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      },
+      {
+        "action": "buy",
+        "reason": "rules-buy"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-repeat"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-repeat"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      },
+      {
+        "action": "buy",
+        "reason": "rules-buy"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-repeat"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      },
+      {
+        "action": "buy",
+        "reason": "rules-buy"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-repeat"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      }
+    ]
+  },
+  {
+    "name": "constant price MA lte",
+    "rule": {
+      "schemaVersion": 1,
+      "revision": 1,
+      "buy": {
+        "enabled": true,
+        "operator": "AND",
+        "conditions": [
+          {
+            "kind": "price-ma",
+            "enabled": true,
+            "average": "MA",
+            "period": 1,
+            "operator": "lte"
+          }
+        ]
+      },
+      "sell": {
+        "enabled": false,
+        "operator": "AND",
+        "conditions": [
+          {
+            "kind": "rsi",
+            "enabled": true,
+            "period": 2,
+            "operator": "gte",
+            "threshold": 70
+          }
+        ]
+      }
+    },
+    "closes": [100, 100, 100, 100, 100, 100],
+    "expected": [
+      {
+        "action": "buy",
+        "reason": "rules-buy"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-repeat"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-repeat"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-repeat"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-repeat"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-repeat"
+      }
+    ]
+  },
+  {
+    "name": "EMA cross above",
+    "rule": {
+      "schemaVersion": 1,
+      "revision": 1,
+      "buy": {
+        "enabled": true,
+        "operator": "AND",
+        "conditions": [
+          {
+            "kind": "cross",
+            "enabled": true,
+            "average": "EMA",
+            "fastPeriod": 2,
+            "slowPeriod": 3,
+            "direction": "above"
+          }
+        ]
+      },
+      "sell": {
+        "enabled": false,
+        "operator": "AND",
+        "conditions": [
+          {
+            "kind": "rsi",
+            "enabled": true,
+            "period": 2,
+            "operator": "gte",
+            "threshold": 70
+          }
+        ]
+      }
+    },
+    "closes": [
+      100, 100, 100, 110, 120, 95, 85, 85, 105, 115, 90, 100, 125, 80, 80, 110
+    ],
+    "expected": [
+      {
+        "action": "hold",
+        "reason": "rules-warmup"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-warmup"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-warmup"
+      },
+      {
+        "action": "buy",
+        "reason": "rules-buy"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      },
+      {
+        "action": "buy",
+        "reason": "rules-buy"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      },
+      {
+        "action": "buy",
+        "reason": "rules-buy"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      },
+      {
+        "action": "buy",
+        "reason": "rules-buy"
+      }
+    ]
+  },
+  {
+    "name": "EMA cross below",
+    "rule": {
+      "schemaVersion": 1,
+      "revision": 1,
+      "buy": {
+        "enabled": true,
+        "operator": "AND",
+        "conditions": [
+          {
+            "kind": "cross",
+            "enabled": true,
+            "average": "EMA",
+            "fastPeriod": 2,
+            "slowPeriod": 3,
+            "direction": "below"
+          }
+        ]
+      },
+      "sell": {
+        "enabled": false,
+        "operator": "AND",
+        "conditions": [
+          {
+            "kind": "rsi",
+            "enabled": true,
+            "period": 2,
+            "operator": "gte",
+            "threshold": 70
+          }
+        ]
+      }
+    },
+    "closes": [
+      100, 100, 100, 110, 120, 95, 85, 85, 105, 115, 90, 100, 125, 80, 80, 110
+    ],
+    "expected": [
+      {
+        "action": "hold",
+        "reason": "rules-warmup"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-warmup"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-warmup"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      },
+      {
+        "action": "buy",
+        "reason": "rules-buy"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      },
+      {
+        "action": "buy",
+        "reason": "rules-buy"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      },
+      {
+        "action": "buy",
+        "reason": "rules-buy"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      }
+    ]
+  },
+  {
+    "name": "price EMA gt",
+    "rule": {
+      "schemaVersion": 1,
+      "revision": 1,
+      "buy": {
+        "enabled": true,
+        "operator": "AND",
+        "conditions": [
+          {
+            "kind": "price-ma",
+            "enabled": true,
+            "average": "EMA",
+            "period": 3,
+            "operator": "gt"
+          }
+        ]
+      },
+      "sell": {
+        "enabled": false,
+        "operator": "AND",
+        "conditions": [
+          {
+            "kind": "rsi",
+            "enabled": true,
+            "period": 2,
+            "operator": "gte",
+            "threshold": 70
+          }
+        ]
+      }
+    },
+    "closes": [
+      100, 100, 100, 110, 120, 95, 85, 85, 105, 115, 90, 100, 125, 80, 80, 110
+    ],
+    "expected": [
+      {
+        "action": "hold",
+        "reason": "rules-warmup"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-warmup"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      },
+      {
+        "action": "buy",
+        "reason": "rules-buy"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-repeat"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      },
+      {
+        "action": "buy",
+        "reason": "rules-buy"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-repeat"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      },
+      {
+        "action": "buy",
+        "reason": "rules-buy"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-repeat"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      },
+      {
+        "action": "buy",
+        "reason": "rules-buy"
+      }
+    ]
+  },
+  {
+    "name": "constant price EMA gt",
+    "rule": {
+      "schemaVersion": 1,
+      "revision": 1,
+      "buy": {
+        "enabled": true,
+        "operator": "AND",
+        "conditions": [
+          {
+            "kind": "price-ma",
+            "enabled": true,
+            "average": "EMA",
+            "period": 1,
+            "operator": "gt"
+          }
+        ]
+      },
+      "sell": {
+        "enabled": false,
+        "operator": "AND",
+        "conditions": [
+          {
+            "kind": "rsi",
+            "enabled": true,
+            "period": 2,
+            "operator": "gte",
+            "threshold": 70
+          }
+        ]
+      }
+    },
+    "closes": [100, 100, 100, 100, 100, 100],
+    "expected": [
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      }
+    ]
+  },
+  {
+    "name": "price EMA gte",
+    "rule": {
+      "schemaVersion": 1,
+      "revision": 1,
+      "buy": {
+        "enabled": true,
+        "operator": "AND",
+        "conditions": [
+          {
+            "kind": "price-ma",
+            "enabled": true,
+            "average": "EMA",
+            "period": 3,
+            "operator": "gte"
+          }
+        ]
+      },
+      "sell": {
+        "enabled": false,
+        "operator": "AND",
+        "conditions": [
+          {
+            "kind": "rsi",
+            "enabled": true,
+            "period": 2,
+            "operator": "gte",
+            "threshold": 70
+          }
+        ]
+      }
+    },
+    "closes": [
+      100, 100, 100, 110, 120, 95, 85, 85, 105, 115, 90, 100, 125, 80, 80, 110
+    ],
+    "expected": [
+      {
+        "action": "hold",
+        "reason": "rules-warmup"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-warmup"
+      },
+      {
+        "action": "buy",
+        "reason": "rules-buy"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-repeat"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-repeat"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      },
+      {
+        "action": "buy",
+        "reason": "rules-buy"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-repeat"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      },
+      {
+        "action": "buy",
+        "reason": "rules-buy"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-repeat"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      },
+      {
+        "action": "buy",
+        "reason": "rules-buy"
+      }
+    ]
+  },
+  {
+    "name": "constant price EMA gte",
+    "rule": {
+      "schemaVersion": 1,
+      "revision": 1,
+      "buy": {
+        "enabled": true,
+        "operator": "AND",
+        "conditions": [
+          {
+            "kind": "price-ma",
+            "enabled": true,
+            "average": "EMA",
+            "period": 1,
+            "operator": "gte"
+          }
+        ]
+      },
+      "sell": {
+        "enabled": false,
+        "operator": "AND",
+        "conditions": [
+          {
+            "kind": "rsi",
+            "enabled": true,
+            "period": 2,
+            "operator": "gte",
+            "threshold": 70
+          }
+        ]
+      }
+    },
+    "closes": [100, 100, 100, 100, 100, 100],
+    "expected": [
+      {
+        "action": "buy",
+        "reason": "rules-buy"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-repeat"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-repeat"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-repeat"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-repeat"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-repeat"
+      }
+    ]
+  },
+  {
+    "name": "price EMA lt",
+    "rule": {
+      "schemaVersion": 1,
+      "revision": 1,
+      "buy": {
+        "enabled": true,
+        "operator": "AND",
+        "conditions": [
+          {
+            "kind": "price-ma",
+            "enabled": true,
+            "average": "EMA",
+            "period": 3,
+            "operator": "lt"
+          }
+        ]
+      },
+      "sell": {
+        "enabled": false,
+        "operator": "AND",
+        "conditions": [
+          {
+            "kind": "rsi",
+            "enabled": true,
+            "period": 2,
+            "operator": "gte",
+            "threshold": 70
+          }
+        ]
+      }
+    },
+    "closes": [
+      100, 100, 100, 110, 120, 95, 85, 85, 105, 115, 90, 100, 125, 80, 80, 110
+    ],
+    "expected": [
+      {
+        "action": "hold",
+        "reason": "rules-warmup"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-warmup"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      },
+      {
+        "action": "buy",
+        "reason": "rules-buy"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-repeat"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-repeat"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      },
+      {
+        "action": "buy",
+        "reason": "rules-buy"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      },
+      {
+        "action": "buy",
+        "reason": "rules-buy"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-repeat"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      }
+    ]
+  },
+  {
+    "name": "constant price EMA lt",
+    "rule": {
+      "schemaVersion": 1,
+      "revision": 1,
+      "buy": {
+        "enabled": true,
+        "operator": "AND",
+        "conditions": [
+          {
+            "kind": "price-ma",
+            "enabled": true,
+            "average": "EMA",
+            "period": 1,
+            "operator": "lt"
+          }
+        ]
+      },
+      "sell": {
+        "enabled": false,
+        "operator": "AND",
+        "conditions": [
+          {
+            "kind": "rsi",
+            "enabled": true,
+            "period": 2,
+            "operator": "gte",
+            "threshold": 70
+          }
+        ]
+      }
+    },
+    "closes": [100, 100, 100, 100, 100, 100],
+    "expected": [
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      }
+    ]
+  },
+  {
+    "name": "price EMA lte",
+    "rule": {
+      "schemaVersion": 1,
+      "revision": 1,
+      "buy": {
+        "enabled": true,
+        "operator": "AND",
+        "conditions": [
+          {
+            "kind": "price-ma",
+            "enabled": true,
+            "average": "EMA",
+            "period": 3,
+            "operator": "lte"
+          }
+        ]
+      },
+      "sell": {
+        "enabled": false,
+        "operator": "AND",
+        "conditions": [
+          {
+            "kind": "rsi",
+            "enabled": true,
+            "period": 2,
+            "operator": "gte",
+            "threshold": 70
+          }
+        ]
+      }
+    },
+    "closes": [
+      100, 100, 100, 110, 120, 95, 85, 85, 105, 115, 90, 100, 125, 80, 80, 110
+    ],
+    "expected": [
+      {
+        "action": "hold",
+        "reason": "rules-warmup"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-warmup"
+      },
+      {
+        "action": "buy",
+        "reason": "rules-buy"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      },
+      {
+        "action": "buy",
+        "reason": "rules-buy"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-repeat"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-repeat"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      },
+      {
+        "action": "buy",
+        "reason": "rules-buy"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      },
+      {
+        "action": "buy",
+        "reason": "rules-buy"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-repeat"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      }
+    ]
+  },
+  {
+    "name": "constant price EMA lte",
+    "rule": {
+      "schemaVersion": 1,
+      "revision": 1,
+      "buy": {
+        "enabled": true,
+        "operator": "AND",
+        "conditions": [
+          {
+            "kind": "price-ma",
+            "enabled": true,
+            "average": "EMA",
+            "period": 1,
+            "operator": "lte"
+          }
+        ]
+      },
+      "sell": {
+        "enabled": false,
+        "operator": "AND",
+        "conditions": [
+          {
+            "kind": "rsi",
+            "enabled": true,
+            "period": 2,
+            "operator": "gte",
+            "threshold": 70
+          }
+        ]
+      }
+    },
+    "closes": [100, 100, 100, 100, 100, 100],
+    "expected": [
+      {
+        "action": "buy",
+        "reason": "rules-buy"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-repeat"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-repeat"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-repeat"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-repeat"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-repeat"
+      }
+    ]
+  },
+  {
+    "name": "RSI gt 0",
+    "rule": {
+      "schemaVersion": 1,
+      "revision": 1,
+      "buy": {
+        "enabled": true,
+        "operator": "AND",
+        "conditions": [
+          {
+            "kind": "rsi",
+            "enabled": true,
+            "period": 2,
+            "operator": "gt",
+            "threshold": 0
+          }
+        ]
+      },
+      "sell": {
+        "enabled": false,
+        "operator": "AND",
+        "conditions": [
+          {
+            "kind": "rsi",
+            "enabled": true,
+            "period": 2,
+            "operator": "gte",
+            "threshold": 70
+          }
+        ]
+      }
+    },
+    "closes": [
+      100, 100, 100, 110, 120, 95, 85, 85, 105, 115, 90, 100, 125, 80, 80, 110
+    ],
+    "expected": [
+      {
+        "action": "hold",
+        "reason": "rules-warmup"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-warmup"
+      },
+      {
+        "action": "buy",
+        "reason": "rules-buy"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-repeat"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-repeat"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-repeat"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-repeat"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-repeat"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-repeat"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-repeat"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-repeat"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-repeat"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-repeat"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-repeat"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-repeat"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-repeat"
+      }
+    ]
+  },
+  {
+    "name": "RSI gt 50",
+    "rule": {
+      "schemaVersion": 1,
+      "revision": 1,
+      "buy": {
+        "enabled": true,
+        "operator": "AND",
+        "conditions": [
+          {
+            "kind": "rsi",
+            "enabled": true,
+            "period": 2,
+            "operator": "gt",
+            "threshold": 50
+          }
+        ]
+      },
+      "sell": {
+        "enabled": false,
+        "operator": "AND",
+        "conditions": [
+          {
+            "kind": "rsi",
+            "enabled": true,
+            "period": 2,
+            "operator": "gte",
+            "threshold": 70
+          }
+        ]
+      }
+    },
+    "closes": [
+      100, 100, 100, 110, 120, 95, 85, 85, 105, 115, 90, 100, 125, 80, 80, 110
+    ],
+    "expected": [
+      {
+        "action": "hold",
+        "reason": "rules-warmup"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-warmup"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      },
+      {
+        "action": "buy",
+        "reason": "rules-buy"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-repeat"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      },
+      {
+        "action": "buy",
+        "reason": "rules-buy"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-repeat"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      },
+      {
+        "action": "buy",
+        "reason": "rules-buy"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-repeat"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      },
+      {
+        "action": "buy",
+        "reason": "rules-buy"
+      }
+    ]
+  },
+  {
+    "name": "RSI gt 100",
+    "rule": {
+      "schemaVersion": 1,
+      "revision": 1,
+      "buy": {
+        "enabled": true,
+        "operator": "AND",
+        "conditions": [
+          {
+            "kind": "rsi",
+            "enabled": true,
+            "period": 2,
+            "operator": "gt",
+            "threshold": 100
+          }
+        ]
+      },
+      "sell": {
+        "enabled": false,
+        "operator": "AND",
+        "conditions": [
+          {
+            "kind": "rsi",
+            "enabled": true,
+            "period": 2,
+            "operator": "gte",
+            "threshold": 70
+          }
+        ]
+      }
+    },
+    "closes": [
+      100, 100, 100, 110, 120, 95, 85, 85, 105, 115, 90, 100, 125, 80, 80, 110
+    ],
+    "expected": [
+      {
+        "action": "hold",
+        "reason": "rules-warmup"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-warmup"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      }
+    ]
+  },
+  {
+    "name": "constant RSI gt",
+    "rule": {
+      "schemaVersion": 1,
+      "revision": 1,
+      "buy": {
+        "enabled": true,
+        "operator": "AND",
+        "conditions": [
+          {
+            "kind": "rsi",
+            "enabled": true,
+            "period": 2,
+            "operator": "gt",
+            "threshold": 50
+          }
+        ]
+      },
+      "sell": {
+        "enabled": false,
+        "operator": "AND",
+        "conditions": [
+          {
+            "kind": "rsi",
+            "enabled": true,
+            "period": 2,
+            "operator": "gte",
+            "threshold": 70
+          }
+        ]
+      }
+    },
+    "closes": [100, 100, 100, 100, 100, 100],
+    "expected": [
+      {
+        "action": "hold",
+        "reason": "rules-warmup"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-warmup"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      }
+    ]
+  },
+  {
+    "name": "RSI gte 0",
+    "rule": {
+      "schemaVersion": 1,
+      "revision": 1,
+      "buy": {
+        "enabled": true,
+        "operator": "AND",
+        "conditions": [
+          {
+            "kind": "rsi",
+            "enabled": true,
+            "period": 2,
+            "operator": "gte",
+            "threshold": 0
+          }
+        ]
+      },
+      "sell": {
+        "enabled": false,
+        "operator": "AND",
+        "conditions": [
+          {
+            "kind": "rsi",
+            "enabled": true,
+            "period": 2,
+            "operator": "gte",
+            "threshold": 70
+          }
+        ]
+      }
+    },
+    "closes": [
+      100, 100, 100, 110, 120, 95, 85, 85, 105, 115, 90, 100, 125, 80, 80, 110
+    ],
+    "expected": [
+      {
+        "action": "hold",
+        "reason": "rules-warmup"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-warmup"
+      },
+      {
+        "action": "buy",
+        "reason": "rules-buy"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-repeat"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-repeat"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-repeat"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-repeat"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-repeat"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-repeat"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-repeat"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-repeat"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-repeat"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-repeat"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-repeat"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-repeat"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-repeat"
+      }
+    ]
+  },
+  {
+    "name": "RSI gte 50",
+    "rule": {
+      "schemaVersion": 1,
+      "revision": 1,
+      "buy": {
+        "enabled": true,
+        "operator": "AND",
+        "conditions": [
+          {
+            "kind": "rsi",
+            "enabled": true,
+            "period": 2,
+            "operator": "gte",
+            "threshold": 50
+          }
+        ]
+      },
+      "sell": {
+        "enabled": false,
+        "operator": "AND",
+        "conditions": [
+          {
+            "kind": "rsi",
+            "enabled": true,
+            "period": 2,
+            "operator": "gte",
+            "threshold": 70
+          }
+        ]
+      }
+    },
+    "closes": [
+      100, 100, 100, 110, 120, 95, 85, 85, 105, 115, 90, 100, 125, 80, 80, 110
+    ],
+    "expected": [
+      {
+        "action": "hold",
+        "reason": "rules-warmup"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-warmup"
+      },
+      {
+        "action": "buy",
+        "reason": "rules-buy"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-repeat"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-repeat"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      },
+      {
+        "action": "buy",
+        "reason": "rules-buy"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-repeat"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      },
+      {
+        "action": "buy",
+        "reason": "rules-buy"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-repeat"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      },
+      {
+        "action": "buy",
+        "reason": "rules-buy"
+      }
+    ]
+  },
+  {
+    "name": "RSI gte 100",
+    "rule": {
+      "schemaVersion": 1,
+      "revision": 1,
+      "buy": {
+        "enabled": true,
+        "operator": "AND",
+        "conditions": [
+          {
+            "kind": "rsi",
+            "enabled": true,
+            "period": 2,
+            "operator": "gte",
+            "threshold": 100
+          }
+        ]
+      },
+      "sell": {
+        "enabled": false,
+        "operator": "AND",
+        "conditions": [
+          {
+            "kind": "rsi",
+            "enabled": true,
+            "period": 2,
+            "operator": "gte",
+            "threshold": 70
+          }
+        ]
+      }
+    },
+    "closes": [
+      100, 100, 100, 110, 120, 95, 85, 85, 105, 115, 90, 100, 125, 80, 80, 110
+    ],
+    "expected": [
+      {
+        "action": "hold",
+        "reason": "rules-warmup"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-warmup"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      },
+      {
+        "action": "buy",
+        "reason": "rules-buy"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-repeat"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      }
+    ]
+  },
+  {
+    "name": "constant RSI gte",
+    "rule": {
+      "schemaVersion": 1,
+      "revision": 1,
+      "buy": {
+        "enabled": true,
+        "operator": "AND",
+        "conditions": [
+          {
+            "kind": "rsi",
+            "enabled": true,
+            "period": 2,
+            "operator": "gte",
+            "threshold": 50
+          }
+        ]
+      },
+      "sell": {
+        "enabled": false,
+        "operator": "AND",
+        "conditions": [
+          {
+            "kind": "rsi",
+            "enabled": true,
+            "period": 2,
+            "operator": "gte",
+            "threshold": 70
+          }
+        ]
+      }
+    },
+    "closes": [100, 100, 100, 100, 100, 100],
+    "expected": [
+      {
+        "action": "hold",
+        "reason": "rules-warmup"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-warmup"
+      },
+      {
+        "action": "buy",
+        "reason": "rules-buy"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-repeat"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-repeat"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-repeat"
+      }
+    ]
+  },
+  {
+    "name": "RSI lt 0",
+    "rule": {
+      "schemaVersion": 1,
+      "revision": 1,
+      "buy": {
+        "enabled": true,
+        "operator": "AND",
+        "conditions": [
+          {
+            "kind": "rsi",
+            "enabled": true,
+            "period": 2,
+            "operator": "lt",
+            "threshold": 0
+          }
+        ]
+      },
+      "sell": {
+        "enabled": false,
+        "operator": "AND",
+        "conditions": [
+          {
+            "kind": "rsi",
+            "enabled": true,
+            "period": 2,
+            "operator": "gte",
+            "threshold": 70
+          }
+        ]
+      }
+    },
+    "closes": [
+      100, 100, 100, 110, 120, 95, 85, 85, 105, 115, 90, 100, 125, 80, 80, 110
+    ],
+    "expected": [
+      {
+        "action": "hold",
+        "reason": "rules-warmup"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-warmup"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      }
+    ]
+  },
+  {
+    "name": "RSI lt 50",
+    "rule": {
+      "schemaVersion": 1,
+      "revision": 1,
+      "buy": {
+        "enabled": true,
+        "operator": "AND",
+        "conditions": [
+          {
+            "kind": "rsi",
+            "enabled": true,
+            "period": 2,
+            "operator": "lt",
+            "threshold": 50
+          }
+        ]
+      },
+      "sell": {
+        "enabled": false,
+        "operator": "AND",
+        "conditions": [
+          {
+            "kind": "rsi",
+            "enabled": true,
+            "period": 2,
+            "operator": "gte",
+            "threshold": 70
+          }
+        ]
+      }
+    },
+    "closes": [
+      100, 100, 100, 110, 120, 95, 85, 85, 105, 115, 90, 100, 125, 80, 80, 110
+    ],
+    "expected": [
+      {
+        "action": "hold",
+        "reason": "rules-warmup"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-warmup"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      },
+      {
+        "action": "buy",
+        "reason": "rules-buy"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-repeat"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-repeat"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      },
+      {
+        "action": "buy",
+        "reason": "rules-buy"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      },
+      {
+        "action": "buy",
+        "reason": "rules-buy"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-repeat"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      }
+    ]
+  },
+  {
+    "name": "RSI lt 100",
+    "rule": {
+      "schemaVersion": 1,
+      "revision": 1,
+      "buy": {
+        "enabled": true,
+        "operator": "AND",
+        "conditions": [
+          {
+            "kind": "rsi",
+            "enabled": true,
+            "period": 2,
+            "operator": "lt",
+            "threshold": 100
+          }
+        ]
+      },
+      "sell": {
+        "enabled": false,
+        "operator": "AND",
+        "conditions": [
+          {
+            "kind": "rsi",
+            "enabled": true,
+            "period": 2,
+            "operator": "gte",
+            "threshold": 70
+          }
+        ]
+      }
+    },
+    "closes": [
+      100, 100, 100, 110, 120, 95, 85, 85, 105, 115, 90, 100, 125, 80, 80, 110
+    ],
+    "expected": [
+      {
+        "action": "hold",
+        "reason": "rules-warmup"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-warmup"
+      },
+      {
+        "action": "buy",
+        "reason": "rules-buy"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      },
+      {
+        "action": "buy",
+        "reason": "rules-buy"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-repeat"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-repeat"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-repeat"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-repeat"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-repeat"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-repeat"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-repeat"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-repeat"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-repeat"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-repeat"
+      }
+    ]
+  },
+  {
+    "name": "constant RSI lt",
+    "rule": {
+      "schemaVersion": 1,
+      "revision": 1,
+      "buy": {
+        "enabled": true,
+        "operator": "AND",
+        "conditions": [
+          {
+            "kind": "rsi",
+            "enabled": true,
+            "period": 2,
+            "operator": "lt",
+            "threshold": 50
+          }
+        ]
+      },
+      "sell": {
+        "enabled": false,
+        "operator": "AND",
+        "conditions": [
+          {
+            "kind": "rsi",
+            "enabled": true,
+            "period": 2,
+            "operator": "gte",
+            "threshold": 70
+          }
+        ]
+      }
+    },
+    "closes": [100, 100, 100, 100, 100, 100],
+    "expected": [
+      {
+        "action": "hold",
+        "reason": "rules-warmup"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-warmup"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      }
+    ]
+  },
+  {
+    "name": "RSI lte 0",
+    "rule": {
+      "schemaVersion": 1,
+      "revision": 1,
+      "buy": {
+        "enabled": true,
+        "operator": "AND",
+        "conditions": [
+          {
+            "kind": "rsi",
+            "enabled": true,
+            "period": 2,
+            "operator": "lte",
+            "threshold": 0
+          }
+        ]
+      },
+      "sell": {
+        "enabled": false,
+        "operator": "AND",
+        "conditions": [
+          {
+            "kind": "rsi",
+            "enabled": true,
+            "period": 2,
+            "operator": "gte",
+            "threshold": 70
+          }
+        ]
+      }
+    },
+    "closes": [
+      100, 100, 100, 110, 120, 95, 85, 85, 105, 115, 90, 100, 125, 80, 80, 110
+    ],
+    "expected": [
+      {
+        "action": "hold",
+        "reason": "rules-warmup"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-warmup"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      }
+    ]
+  },
+  {
+    "name": "RSI lte 50",
+    "rule": {
+      "schemaVersion": 1,
+      "revision": 1,
+      "buy": {
+        "enabled": true,
+        "operator": "AND",
+        "conditions": [
+          {
+            "kind": "rsi",
+            "enabled": true,
+            "period": 2,
+            "operator": "lte",
+            "threshold": 50
+          }
+        ]
+      },
+      "sell": {
+        "enabled": false,
+        "operator": "AND",
+        "conditions": [
+          {
+            "kind": "rsi",
+            "enabled": true,
+            "period": 2,
+            "operator": "gte",
+            "threshold": 70
+          }
+        ]
+      }
+    },
+    "closes": [
+      100, 100, 100, 110, 120, 95, 85, 85, 105, 115, 90, 100, 125, 80, 80, 110
+    ],
+    "expected": [
+      {
+        "action": "hold",
+        "reason": "rules-warmup"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-warmup"
+      },
+      {
+        "action": "buy",
+        "reason": "rules-buy"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      },
+      {
+        "action": "buy",
+        "reason": "rules-buy"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-repeat"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-repeat"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      },
+      {
+        "action": "buy",
+        "reason": "rules-buy"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      },
+      {
+        "action": "buy",
+        "reason": "rules-buy"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-repeat"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      }
+    ]
+  },
+  {
+    "name": "RSI lte 100",
+    "rule": {
+      "schemaVersion": 1,
+      "revision": 1,
+      "buy": {
+        "enabled": true,
+        "operator": "AND",
+        "conditions": [
+          {
+            "kind": "rsi",
+            "enabled": true,
+            "period": 2,
+            "operator": "lte",
+            "threshold": 100
+          }
+        ]
+      },
+      "sell": {
+        "enabled": false,
+        "operator": "AND",
+        "conditions": [
+          {
+            "kind": "rsi",
+            "enabled": true,
+            "period": 2,
+            "operator": "gte",
+            "threshold": 70
+          }
+        ]
+      }
+    },
+    "closes": [
+      100, 100, 100, 110, 120, 95, 85, 85, 105, 115, 90, 100, 125, 80, 80, 110
+    ],
+    "expected": [
+      {
+        "action": "hold",
+        "reason": "rules-warmup"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-warmup"
+      },
+      {
+        "action": "buy",
+        "reason": "rules-buy"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-repeat"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-repeat"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-repeat"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-repeat"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-repeat"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-repeat"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-repeat"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-repeat"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-repeat"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-repeat"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-repeat"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-repeat"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-repeat"
+      }
+    ]
+  },
+  {
+    "name": "constant RSI lte",
+    "rule": {
+      "schemaVersion": 1,
+      "revision": 1,
+      "buy": {
+        "enabled": true,
+        "operator": "AND",
+        "conditions": [
+          {
+            "kind": "rsi",
+            "enabled": true,
+            "period": 2,
+            "operator": "lte",
+            "threshold": 50
+          }
+        ]
+      },
+      "sell": {
+        "enabled": false,
+        "operator": "AND",
+        "conditions": [
+          {
+            "kind": "rsi",
+            "enabled": true,
+            "period": 2,
+            "operator": "gte",
+            "threshold": 70
+          }
+        ]
+      }
+    },
+    "closes": [100, 100, 100, 100, 100, 100],
+    "expected": [
+      {
+        "action": "hold",
+        "reason": "rules-warmup"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-warmup"
+      },
+      {
+        "action": "buy",
+        "reason": "rules-buy"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-repeat"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-repeat"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-repeat"
+      }
+    ]
+  },
+  {
+    "name": "breakout above",
+    "rule": {
+      "schemaVersion": 1,
+      "revision": 1,
+      "buy": {
+        "enabled": true,
+        "operator": "AND",
+        "conditions": [
+          {
+            "kind": "breakout",
+            "enabled": true,
+            "lookback": 2,
+            "direction": "above"
+          }
+        ]
+      },
+      "sell": {
+        "enabled": false,
+        "operator": "AND",
+        "conditions": [
+          {
+            "kind": "rsi",
+            "enabled": true,
+            "period": 2,
+            "operator": "gte",
+            "threshold": 70
+          }
+        ]
+      }
+    },
+    "closes": [
+      100, 100, 100, 110, 120, 95, 85, 85, 105, 115, 90, 100, 125, 80, 80, 110
+    ],
+    "expected": [
+      {
+        "action": "hold",
+        "reason": "rules-warmup"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-warmup"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      },
+      {
+        "action": "buy",
+        "reason": "rules-buy"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-repeat"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      },
+      {
+        "action": "buy",
+        "reason": "rules-buy"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-repeat"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      },
+      {
+        "action": "buy",
+        "reason": "rules-buy"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      },
+      {
+        "action": "buy",
+        "reason": "rules-buy"
+      }
+    ]
+  },
+  {
+    "name": "breakout below",
+    "rule": {
+      "schemaVersion": 1,
+      "revision": 1,
+      "buy": {
+        "enabled": true,
+        "operator": "AND",
+        "conditions": [
+          {
+            "kind": "breakout",
+            "enabled": true,
+            "lookback": 2,
+            "direction": "below"
+          }
+        ]
+      },
+      "sell": {
+        "enabled": false,
+        "operator": "AND",
+        "conditions": [
+          {
+            "kind": "rsi",
+            "enabled": true,
+            "period": 2,
+            "operator": "gte",
+            "threshold": 70
+          }
+        ]
+      }
+    },
+    "closes": [
+      100, 100, 100, 110, 120, 95, 85, 85, 105, 115, 90, 100, 125, 80, 80, 110
+    ],
+    "expected": [
+      {
+        "action": "hold",
+        "reason": "rules-warmup"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-warmup"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      },
+      {
+        "action": "buy",
+        "reason": "rules-buy"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-repeat"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      },
+      {
+        "action": "buy",
+        "reason": "rules-buy"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      },
+      {
+        "action": "buy",
+        "reason": "rules-buy"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      }
+    ]
+  },
+  {
+    "name": "AND and unknown",
+    "rule": {
+      "schemaVersion": 1,
+      "revision": 1,
+      "buy": {
+        "enabled": true,
+        "operator": "AND",
+        "conditions": [
+          {
+            "kind": "price-ma",
+            "enabled": true,
+            "average": "MA",
+            "period": 2,
+            "operator": "gte"
+          },
+          {
+            "kind": "rsi",
+            "enabled": true,
+            "period": 4,
+            "operator": "lte",
+            "threshold": 70
+          }
+        ]
+      },
+      "sell": {
+        "enabled": false,
+        "operator": "AND",
+        "conditions": [
+          {
+            "kind": "rsi",
+            "enabled": true,
+            "period": 2,
+            "operator": "gte",
+            "threshold": 70
+          }
+        ]
+      }
+    },
+    "closes": [
+      100, 100, 100, 110, 120, 95, 85, 85, 105, 115, 90, 100, 125, 80, 80, 110
+    ],
+    "expected": [
+      {
+        "action": "hold",
+        "reason": "rules-warmup"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-warmup"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-warmup"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-warmup"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      },
+      {
+        "action": "buy",
+        "reason": "rules-buy"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-repeat"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      },
+      {
+        "action": "buy",
+        "reason": "rules-buy"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      },
+      {
+        "action": "buy",
+        "reason": "rules-buy"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-repeat"
+      }
+    ]
+  },
+  {
+    "name": "AND dual",
+    "rule": {
+      "schemaVersion": 1,
+      "revision": 1,
+      "buy": {
+        "enabled": true,
+        "operator": "AND",
+        "conditions": [
+          {
+            "kind": "price-ma",
+            "enabled": true,
+            "average": "MA",
+            "period": 2,
+            "operator": "gte"
+          },
+          {
+            "kind": "rsi",
+            "enabled": true,
+            "period": 4,
+            "operator": "lte",
+            "threshold": 70
+          }
+        ]
+      },
+      "sell": {
+        "enabled": true,
+        "operator": "AND",
+        "conditions": [
+          {
+            "kind": "breakout",
+            "enabled": true,
+            "lookback": 2,
+            "direction": "below"
+          }
+        ]
+      }
+    },
+    "closes": [
+      100, 100, 100, 110, 120, 95, 85, 85, 105, 115, 90, 100, 125, 80, 80, 110
+    ],
+    "expected": [
+      {
+        "action": "hold",
+        "reason": "rules-warmup"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-warmup"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-warmup"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-warmup"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      },
+      {
+        "action": "sell",
+        "reason": "rules-sell"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-repeat"
+      },
+      {
+        "action": "buy",
+        "reason": "rules-buy"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-repeat"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      },
+      {
+        "action": "sell",
+        "reason": "rules-sell"
+      },
+      {
+        "action": "buy",
+        "reason": "rules-buy"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      },
+      {
+        "action": "sell",
+        "reason": "rules-sell"
+      },
+      {
+        "action": "buy",
+        "reason": "rules-buy"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-repeat"
+      }
+    ]
+  },
+  {
+    "name": "OR and unknown",
+    "rule": {
+      "schemaVersion": 1,
+      "revision": 1,
+      "buy": {
+        "enabled": true,
+        "operator": "OR",
+        "conditions": [
+          {
+            "kind": "price-ma",
+            "enabled": true,
+            "average": "MA",
+            "period": 2,
+            "operator": "gte"
+          },
+          {
+            "kind": "rsi",
+            "enabled": true,
+            "period": 4,
+            "operator": "lte",
+            "threshold": 70
+          }
+        ]
+      },
+      "sell": {
+        "enabled": false,
+        "operator": "AND",
+        "conditions": [
+          {
+            "kind": "rsi",
+            "enabled": true,
+            "period": 2,
+            "operator": "gte",
+            "threshold": 70
+          }
+        ]
+      }
+    },
+    "closes": [
+      100, 100, 100, 110, 120, 95, 85, 85, 105, 115, 90, 100, 125, 80, 80, 110
+    ],
+    "expected": [
+      {
+        "action": "hold",
+        "reason": "rules-warmup"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-warmup"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-warmup"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-warmup"
+      },
+      {
+        "action": "buy",
+        "reason": "rules-buy"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-repeat"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-repeat"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-repeat"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-repeat"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-repeat"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-repeat"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-repeat"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-repeat"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-repeat"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-repeat"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-repeat"
+      }
+    ]
+  },
+  {
+    "name": "OR dual",
+    "rule": {
+      "schemaVersion": 1,
+      "revision": 1,
+      "buy": {
+        "enabled": true,
+        "operator": "OR",
+        "conditions": [
+          {
+            "kind": "price-ma",
+            "enabled": true,
+            "average": "MA",
+            "period": 2,
+            "operator": "gte"
+          },
+          {
+            "kind": "rsi",
+            "enabled": true,
+            "period": 4,
+            "operator": "lte",
+            "threshold": 70
+          }
+        ]
+      },
+      "sell": {
+        "enabled": true,
+        "operator": "AND",
+        "conditions": [
+          {
+            "kind": "breakout",
+            "enabled": true,
+            "lookback": 2,
+            "direction": "below"
+          }
+        ]
+      }
+    },
+    "closes": [
+      100, 100, 100, 110, 120, 95, 85, 85, 105, 115, 90, 100, 125, 80, 80, 110
+    ],
+    "expected": [
+      {
+        "action": "hold",
+        "reason": "rules-warmup"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-warmup"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-warmup"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-warmup"
+      },
+      {
+        "action": "buy",
+        "reason": "rules-buy"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-conflict"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-conflict"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-repeat"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-repeat"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-repeat"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-conflict"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-repeat"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-repeat"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-conflict"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-repeat"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-repeat"
+      }
+    ]
+  },
+  {
+    "name": "conflict consumes both edges",
+    "rule": {
+      "schemaVersion": 1,
+      "revision": 1,
+      "buy": {
+        "enabled": true,
+        "operator": "AND",
+        "conditions": [
+          {
+            "kind": "price-ma",
+            "enabled": true,
+            "average": "MA",
+            "period": 2,
+            "operator": "gte"
+          }
+        ]
+      },
+      "sell": {
+        "enabled": true,
+        "operator": "AND",
+        "conditions": [
+          {
+            "kind": "price-ma",
+            "enabled": true,
+            "average": "MA",
+            "period": 2,
+            "operator": "gte"
+          }
+        ]
+      }
+    },
+    "closes": [
+      100, 100, 100, 110, 120, 95, 85, 85, 105, 115, 90, 100, 125, 80, 80, 110
+    ],
+    "expected": [
+      {
+        "action": "hold",
+        "reason": "rules-warmup"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-conflict"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-conflict"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-conflict"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-conflict"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-conflict"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-conflict"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-conflict"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-conflict"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-conflict"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-no-match"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-conflict"
+      },
+      {
+        "action": "hold",
+        "reason": "rules-conflict"
+      }
+    ]
+  }
+]

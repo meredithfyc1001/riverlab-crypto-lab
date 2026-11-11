@@ -5,9 +5,13 @@ export const BPS = 10000n;
 export const ACCOUNTING_LIMIT = 10n ** 96n;
 export const ceilDiv = (a: bigint, b: bigint): bigint => (a + b - 1n) / b;
 
+// Bounded memo of the pure decimal-to-integer conversion, with no market state.
+const unitCache = new Map<string, bigint>();
 export function readUnits(value: string): bigint {
   if (typeof value !== 'string' || value.length > 128)
     throw new Error('Decimal must be a string of at most 128 characters.');
+  const cached = unitCache.get(value);
+  if (cached !== undefined) return cached;
   const m = /^(\d+)(?:\.(\d+))?(?:e([+-]?\d{1,3}))?$/i.exec(value);
   if (!m) throw new Error(`Invalid nonnegative decimal: ${value}`);
   const digits = BigInt(m[1] + (m[2] ?? ''));
@@ -16,6 +20,8 @@ export function readUnits(value: string): bigint {
     shift >= 0 ? digits * 10n ** BigInt(shift) : digits / 10n ** BigInt(-shift);
   if (shift < 0 && digits % 10n ** BigInt(-shift) !== 0n)
     throw new Error(`Decimal exceeds 18 places: ${value}`);
+  if (unitCache.size >= 4096) unitCache.clear();
+  unitCache.set(value, units);
   return units;
 }
 

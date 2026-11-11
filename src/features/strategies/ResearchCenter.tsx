@@ -103,6 +103,9 @@ export function ResearchCenter({
   }
   return (
     <section className="panel research-controls">
+      <p>
+        规则策略 V1 暂不支持 Phase3 网格/样本外研究，请在回测中心选择具体版本。
+      </p>
       <h2>策略研究配置</h2>
       <p>
         比较与敏感度分析是描述性研究；所有候选事先锁定，不自动选优，不构成投资建议。

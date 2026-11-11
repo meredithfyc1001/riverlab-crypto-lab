@@ -1,0 +1,200 @@
+
+> riverlab-crypto-lab@0.5.1-test check
+> npm run format:check && npm run lint && npm test && npm run build && npm run test:e2e
+
+
+> riverlab-crypto-lab@0.5.1-test format:check
+> prettier --check .
+
+Checking formatting...
+All matched files use Prettier code style!
+
+> riverlab-crypto-lab@0.5.1-test lint
+> eslint . --max-warnings 0
+
+
+> riverlab-crypto-lab@0.5.1-test test
+> vitest run
+
+
+ RUN  v4.1.12 /workspace/riverlab-crypto-lab
+
+
+ Test Files  22 passed (22)
+      Tests  449 passed (449)
+   Start at  12:29:21
+   Duration  27.17s (transform 1.58s, setup 2.77s, import 2.95s, tests 5.18s, environment 12.40s)
+
+
+> riverlab-crypto-lab@0.5.1-test build
+> npm run typecheck && vite build
+
+
+> riverlab-crypto-lab@0.5.1-test typecheck
+> tsc -b
+
+vite v7.3.7 building client environment for production...
+transforming...
+✓ 127 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                            0.72 kB │ gzip:   0.48 kB
+dist/assets/csv.worker-C14LIkSc.js        11.77 kB
+dist/assets/backtest.worker-CgFLtTZW.js   40.05 kB
+dist/assets/research.worker-DQGPOzu8.js   43.16 kB
+dist/assets/replay.worker-CE8UrFbd.js     48.73 kB
+dist/assets/risk.worker-6uSLSw0c.js       51.14 kB
+dist/assets/index-DMpdv16p.css            24.10 kB │ gzip:   4.97 kB
+dist/assets/index-B1QPIpto.js            570.59 kB │ gzip: 186.54 kB
+
+(!) Some chunks are larger than 500 kB after minification. Consider:
+- Using dynamic import() to code-split the application
+- Use build.rollupOptions.output.manualChunks to improve chunking: https://rollupjs.org/configuration-options/#output-manualchunks
+- Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+✓ built in 3.66s
+
+> riverlab-crypto-lab@0.5.1-test test:e2e
+> playwright test
+
+[WebServer] (node:2393) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 45 tests using 1 worker
+
+(node:2411) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   1 [chromium-linux] › tests/e2e/csv-import.spec.ts:14:1 › 真实历史样本通过实际 Worker 解析并核对文件身份，断外部资源仍可运行 (2.8s)
+  ✓   2 [chromium-linux] › tests/e2e/csv-import.spec.ts:68:1 › 本地微秒 CSV 需要周期确认，歧义时间单位不能猜测 (2.1s)
+  ✓   3 [chromium-linux] › tests/e2e/csv-import.spec.ts:108:1 › 自定义字段顺序和带时区日期正确规范化到 UTC (1.7s)
+  ✓   4 [chromium-linux] › tests/e2e/csv-import.spec.ts:148:1 › 错误样本保留错误行、重复和缺口，390px 报告无页面溢出 (2.0s)
+  ✓   5 [chromium-linux] › tests/e2e/csv-import.spec.ts:201:1 › 空文件、非法 UTF-8 与超限文件清楚阻断并清除旧结果 (3.2s)
+  ✓   6 [chromium-linux] › tests/e2e/phase-1b.spec.ts:38:1 › 行情中心真实图表：缩放、平移、十字准星、指标周期/开关、主题与窄屏 (4.4s)
+  ✓   7 [chromium-linux] › tests/e2e/phase-1b.spec.ts:105:1 › IndexedDB 保存、选择重开、JSON 导出/删除/显式恢复，断外网保持本机 HTTP (3.7s)
+  ✓   8 [chromium-linux] › tests/e2e/phase-1b.spec.ts:171:1 › 持久浏览器配置：关闭浏览器进程、重新启动后可恢复数据 (5.4s)
+  ✓   9 [chromium-linux] › tests/e2e/phase-1b.spec.ts:217:1 › 存储拒绝与空间不足不显示成功；仍可导出内存数据备份 (1.8s)
+  ✓  10 [chromium-linux] › tests/e2e/phase-1b.spec.ts:241:1 › 无法访问 IndexedDB、损坏备份和有错误的 CSV 明确阻断 (1.7s)
+  ✓  11 [chromium-linux] › tests/e2e/phase-1b.spec.ts:278:1 › 微秒/UTC 亚秒、缺口传递到图表，指标重新预热 (2.4s)
+PHASE1B_PERFORMANCE {"rows":50000,"csvBytes":1600036,"inspectionMs":687,"reportMs":467,"prepareAndSaveMs":715,"reopenAndChartMs":1467,"zoomMs":171,"backupMs":738,"backupBytes":4401567,"backupInspectMs":562,"backupRestoreMs":1037,"maxObservedJsHeapBytes":250276184,"maxEventLoopDelayMs":385.19999999995343}
+  ✓  12 [chromium-linux] › tests/e2e/phase-1b.spec.ts:319:1 › 50,000 根合成数据：实际 Worker、保存/重开、图表响应及备份 (8.6s)
+  ✓  13 [chromium-linux] › tests/e2e/phase-1b.spec.ts:455:1 › 删除事务失败保留数据；重新打开时拒绝已损坏的存储记录 (4.9s)
+  ✓  14 [chromium-linux] › tests/e2e/phase-1b.spec.ts:507:1 › 两个已保存数据集间明确选择，图表与指标使用对应数据 (4.2s)
+  ✓  15 [chromium-linux] › tests/e2e/phase-1b.spec.ts:548:1 › 已保存长名称数据集在390px下不会撑宽数据中心或行情中心 (2.3s)
+  ✓  16 [chromium-linux] › tests/e2e/phase-2c.spec.ts:71:3 › ma 完整Worker回测、曲线、账本、JSON/CSV、保存刷新重开与删除，外网阻断 (4.8s)
+  ✓  17 [chromium-linux] › tests/e2e/phase-2c.spec.ts:71:3 › rsi 完整Worker回测、曲线、账本、JSON/CSV、保存刷新重开与删除，外网阻断 (4.7s)
+  ✓  18 [chromium-linux] › tests/e2e/phase-2c.spec.ts:71:3 › breakout 完整Worker回测、曲线、账本、JSON/CSV、保存刷新重开与删除，外网阻断 (4.7s)
+  ✓  19 [chromium-linux] › tests/e2e/phase-2c.spec.ts:178:1 › 严格参数/确认阻断、存储配额失败保留内存导出、损坏记录拒绝重开 (3.6s)
+  ✓  20 [chromium-linux] › tests/e2e/phase-2c.spec.ts:246:1 › 保护配置进入manifest，止盈止损事件保留根内未知时间和保守假设 (3.0s)
+  ✓  21 [chromium-linux] › tests/e2e/phase-2c.spec.ts:281:1 › 有缺口但已保存的完整数据仍然禁止回测，不截取子集 (1.8s)
+  ✘  22 [chromium-linux] › tests/e2e/phase-2c.spec.ts:313:1 › 50,000根真实策略成交统计Worker性能与主线程响应 (9.8s)
+(node:3697) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  23 [chromium-linux] › tests/e2e/phase-3.spec.ts:79:3 › 参数网格 ma：离线Worker、热力图、账本、JSON重算与CSV (4.7s)
+  ✓  24 [chromium-linux] › tests/e2e/phase-3.spec.ts:79:3 › 参数网格 rsi：离线Worker、热力图、账本、JSON重算与CSV (4.9s)
+  ✓  25 [chromium-linux] › tests/e2e/phase-3.spec.ts:79:3 › 参数网格 breakout：离线Worker、热力图、账本、JSON重算与CSV (3.7s)
+  ✓  26 [chromium-linux] › tests/e2e/phase-3.spec.ts:139:1 › 三策略在严格先后拆分及滚动窗口比较，参数始终锁定且测试不重叠 (3.1s)
+  ✓  27 [chromium-linux] › tests/e2e/phase-3.spec.ts:181:1 › 非法网格整批阻断、损坏报告拒绝，取消不保留部分结果 (3.4s)
+PHASE3_PERFORMANCE {"phase":"3","bars":50000,"candidates":3,"elapsedMs":7229,"maximum":288.19999999995343,"samples":337,"cpu":"INTEL(R) XEON(R) PLATINUM 8573C","cores":3,"platform":"linux","release":"6.18.57","browser":"154.0.8037.57","node":"v24.19.0","limits":"sequential Worker; independent full windows; 1,000,000 evaluation budget"}
+  ✓  28 [chromium-linux] › tests/e2e/phase-3.spec.ts:207:1 › 50,000根三策略批量实际运行：记录硬件浏览器与主线程响应 (11.7s)
+  ✓  29 [chromium-linux] › tests/e2e/phase-4.spec.ts:92:1 › 无未来消息/图表/DOM/状态导出；下一开盘成交、日记、保存刷新/JSON恢复/删除与离线 (5.1s)
+  ✓  30 [chromium-linux] › tests/e2e/phase-4.spec.ts:204:1 › 自动逐根播放、暂停、跨页面暂停与显式结束，不重复成交 (6.5s)
+  ✓  31 [chromium-linux] › tests/e2e/phase-4.spec.ts:248:1 › 拒单与缺口阻断；损坏JSON不破坏当前内存回放 (4.9s)
+PHASE4_PERFORMANCE {"bars":50000,"advanceMs":1991,"resumeMs":3015,"maximum":483.9000000001397,"samples":180,"cpu":"INTEL(R) XEON(R) PLATINUM 8573C","cores":3,"platform":"linux","release":"6.18.57","browser":"154.0.8037.57","node":"v24.19.0","limitations":"synthetic; Worker persistent execution; one manual pending entry; full known prefix curves; resume by linear replay"}
+  ✓  32 [chromium-linux] › tests/e2e/phase-4.spec.ts:276:1 › 50,000根实际逐根会话推进和断点恢复性能，不运行N次前缀回测 (11.7s)
+  ✓  33 [chromium-linux] › tests/e2e/phase-4.spec.ts:352:1 › 模拟配额失败保留内存可导出；原数据集删除后恢复明确拒绝 (3.1s)
+  ✓  34 [chromium-linux] › tests/e2e/phase-5a.spec.ts:82:3 › iid 固定种子报告、分位/频率/图形、保存刷新重开/JSON与CSV，阻断外网 (6.1s)
+  ✓  35 [chromium-linux] › tests/e2e/phase-5a.spec.ts:82:3 › block 固定种子报告、分位/频率/图形、保存刷新重开/JSON与CSV，阻断外网 (10.3s)
+  ✓  36 [chromium-linux] › tests/e2e/phase-5a.spec.ts:153:1 › 参数预算、常量源、损坏报告明确拒绝，不生成假0%风险 (5.2s)
+  ✓  37 [chromium-linux] › tests/e2e/phase-5a.spec.ts:178:1 › 源实验/数据删除后，完整风险JSON仍可重建源并复现 (6.2s)
+PHASE5A_PERFORMANCE {"sourceBars":50000,"evaluations":2000000,"elapsedMs":9330,"maximum":90.19999999995343,"samples":458,"cpu":"INTEL(R) XEON(R) PLATINUM 8573C","cores":3,"os":"linux 6.18.57","browser":"154.0.8037.57","node":"v24.19.0","limitations":"synthetic MA source; verify source then IID equity-ratio resampling; 101 display points, all steps in risk statistics"}
+  ✓  38 [chromium-linux] › tests/e2e/phase-5a.spec.ts:213:1 › 50,000根源+200万步真实风险Worker、取消与主线程响应 (29.7s)
+  ✓  39 [chromium-linux] › tests/e2e/phase-5b.spec.ts:75:1 › 卡片编辑、实时边界、双侧组合、条件复制/禁用、版本复制/确认删除与键盘窄屏 (3.8s)
+  ✓  40 [chromium-linux] › tests/e2e/phase-5b.spec.ts:154:1 › 实际Worker规则→回测→保存导出→刷新重开与确定复现，规则库删除后旧实验仍可用，阻断外网 (5.0s)
+  ✓  41 [chromium-linux] › tests/e2e/phase-5b.spec.ts:238:1 › 坏JSON、版本、未知字段与不可覆盖冲突均明确失败；空规则不能保存 (1.9s)
+  ✓  42 [chromium-linux] › tests/e2e/phase-5b.spec.ts:276:1 › 迟到的JSON读取不会覆盖新编辑的草稿 (2.2s)
+  ✘  43 [chromium-linux] › tests/e2e/phase-5b.spec.ts:294:1 › 50,000根、双侧各5条件真实Worker与主线程响应 (11.6s)
+(node:4734) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  44 [chromium-linux] › tests/e2e/shell.spec.ts:3:1 › 生产包仅使用本机资源，可导航、刷新、后退并切换主题 (3.5s)
+  ✓  45 [chromium-linux] › tests/e2e/shell.spec.ts:95:1 › 390px 窄屏可导航且页面没有横向溢出 (1.6s)
+
+
+  1) [chromium-linux] › tests/e2e/phase-2c.spec.ts:313:1 › 50,000根真实策略成交统计Worker性能与主线程响应 ───────────
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: getByText('回测成功；结果尚未保存，刷新会丢失。')
+    Expected: visible
+    Timeout: 5000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeVisible" getByText('回测成功；结果尚未保存，刷新会丢失。') with timeout 5000ms
+      - waiting for getByText('回测成功；结果尚未保存，刷新会丢失。')
+
+
+      61 |   await expect(
+      62 |     page.getByText('回测成功；结果尚未保存，刷新会丢失。'),
+    > 63 |   ).toBeVisible();
+         |     ^
+      64 |   await expect(page.getByTestId('result-curves')).toHaveAttribute(
+      65 |     'data-ready',
+      66 |     'true',
+        at run (/workspace/riverlab-crypto-lab/tests/e2e/phase-2c.spec.ts:63:5)
+        at /workspace/riverlab-crypto-lab/tests/e2e/phase-2c.spec.ts:329:3
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/phase-2c-50-000根真实策略成交统计Worker性能与主线程响应-chromium-linux/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/phase-2c-50-000根真实策略成交统计Worker性能与主线程响应-chromium-linux/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/phase-2c-50-000根真实策略成交统计Worker性能与主线程响应-chromium-linux/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/phase-2c-50-000根真实策略成交统计Worker性能与主线程响应-chromium-linux/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2) [chromium-linux] › tests/e2e/phase-5b.spec.ts:294:1 › 50,000根、双侧各5条件真实Worker与主线程响应 ────────────
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: getByText('回测成功；结果尚未保存，刷新会丢失。')
+    Expected: visible
+    Timeout: 5000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeVisible" getByText('回测成功；结果尚未保存，刷新会丢失。') with timeout 5000ms
+      - waiting for getByText('回测成功；结果尚未保存，刷新会丢失。')
+
+
+      58 |   await expect(
+      59 |     page.getByText('回测成功；结果尚未保存，刷新会丢失。'),
+    > 60 |   ).toBeVisible();
+         |     ^
+      61 |   await expect(page.getByTestId('result-curves')).toHaveAttribute(
+      62 |     'data-ready',
+      63 |     'true',
+        at run (/workspace/riverlab-crypto-lab/tests/e2e/phase-5b.spec.ts:60:5)
+        at /workspace/riverlab-crypto-lab/tests/e2e/phase-5b.spec.ts:333:3
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/phase-5b-50-000根、双侧各5条件真实Worker与主线程响应-chromium-linux/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/phase-5b-50-000根、双侧各5条件真实Worker与主线程响应-chromium-linux/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/phase-5b-50-000根、双侧各5条件真实Worker与主线程响应-chromium-linux/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/phase-5b-50-000根、双侧各5条件真实Worker与主线程响应-chromium-linux/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2 failed
+    [chromium-linux] › tests/e2e/phase-2c.spec.ts:313:1 › 50,000根真实策略成交统计Worker性能与主线程响应 ────────────
+    [chromium-linux] › tests/e2e/phase-5b.spec.ts:294:1 › 50,000根、双侧各5条件真实Worker与主线程响应 ─────────────
+  43 passed (4.0m)

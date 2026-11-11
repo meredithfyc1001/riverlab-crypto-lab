@@ -1,0 +1,21 @@
+
+> riverlab-crypto-lab@0.5.1-test lint
+> eslint . --max-warnings 0
+
+
+/workspace/riverlab-crypto-lab/src/features/backtests/BacktestCenter.tsx
+  133:48  error  Error: Cannot call impure function during render
+
+`Date.now` is an impure function. Calling an impure function can produce unstable results that update unpredictably when the component happens to re-render. (https://react.dev/reference/rules/components-and-hooks-must-be-pure#components-and-hooks-must-be-idempotent).
+
+/workspace/riverlab-crypto-lab/src/features/backtests/BacktestCenter.tsx:133:48
+  131 |         USDT。请先在数据中心保存通过检查的数据集。
+  132 |       </p>
+> 133 |       <form onSubmit={(event) => submit(event, Date.now())} noValidate>
+      |                                                ^^^^^^^^^^ Cannot call impure function
+  134 |         <label>
+  135 |           回测数据集
+  136 |           <select  react-hooks/purity
+
+✖ 1 problem (1 error, 0 warnings)
+
