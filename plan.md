@@ -2,7 +2,7 @@
 
 基线：[原始规划 v0.1](docs/product-plan-v0.1.md)全文保留，用户当前明确指令优先。Phase 2C 工程已于 2026-11-09 合并。用户于2026-11-09授权启动Phase3设计与开发；范围与口径见[Phase3设计](docs/phase-3-design.md)，[验收清单](docs/phase-3-acceptance.md)。
 
-当前main已核实为`7644abf2323dd461240e4e5f430dc406851c3746`，即PR#8实际合并提交。PR #6 不再待审；Phase4已合并，本轮独立Draft PR#9实施Phase5A风险重采样，不直接修改 main，不自动合并、tag、正式 Release 或部署。合并不补签用户 Windows 验收。
+当前main已核实为`b0c9664fc5c37cf70686ca3735e317ad3c8a0a88`，即PR#9实际合并提交。Phase5A已合并，本轮按Issue#10在独立分支实施Phase5B规则编辑器，不直接修改 main，不自动合并、tag、正式 Release 或部署。合并不补签用户 Windows 验收。
 
 ## 已交付基线与验收边界
 
@@ -68,8 +68,14 @@ Phase3已验证实现85e933a三平台各316/30与WindowsZIP双浏览器全部通
 
 Phase4本机完整check已通过338项Vitest/35项E2E，原317/30全部保留；独立Decimal与合并前引擎hash参考通过。Linux dirty开发ZIP烟测通过，BAT未在Linux执行。功能提交1edb8f1的run42623772196四作业已实际成功，三平台各338/35与WindowsZIP双浏览器均通过；后续仅归档证据文档，最新head检查和下载由PR#8交付说明维护，用户Windows验收仍待本人反馈。
 
-## Phase 5A 当前行动
+## Phase 5A 实施记录（历史，PR#9已合并）
 
 用户“好了，下一步”同意推进；原Phase5多候选，已征询偏好，默认推荐先实施[可复现Monte Carlo风险分析](docs/phase-5a-design.md)。独立分支feat/phase-5a-research-tools、Draft PR#9。先固定数学/随机/舍入口径与独立Python参考，再core/Worker/UI/独立库报告，保留338/35全部旧回归，执行本机和三平台CI、WindowsZIP，不自动合并或宣称M5正式发布通过。
 
 本机354项单元/40项浏览器、5个数值参考和Linux开发ZIP已完成；功能快照7595580三平台实际日志亦354/40全部成功，详细见progress。功能快照WindowsZIP也实际通过；打包phase标签修正后最新head必须重新完整CI/WindowsZIP，交付状态与当前SHA下载以Draft PR#9说明为准。用户Windows实机仍待本人反馈。
+
+## Phase 5B 当前行动
+
+用户明确授权完整执行Issue#10，先汇报并固定[设计](docs/phase-5b-design.md)，再实现纯TS流式规则、不可变版本/严格JSON和独立IndexedDB、可视化编辑及原回测接入。Phase3规则暂不可用且严格拒绝，旧引擎/报告/hash保持。保留354/40全部回归，新增因果/独立参考/确定复现/存储及50k Worker测试。执行npm ci/check和所有Python参考，读取三平台实际日志；后置Windows中文空格路径BAT/Chrome+Edge测试成功后上传绑定最终headSHA的14天ZIP。目标Draft PR#10（将现有Issue转为PR以保留编号），等待用户验收，不合并/发布/部署。
+
+Phase5B工程已实现，Issue#10已转换为[Draft PR#10](https://github.com/meredithfyc1001/riverlab-crypto-lab/pull/10)，原任务全文[归档](docs/phase-5b-task.md)。功能快照fe17089三平台各457项Vitest/45项E2E及Windows中文空格BAT/Chrome+Edge ZIP全部实际成功；本机完整457/45与Linux开发ZIP通过。后续同周期MA/EMA逐根复用及2项额外等价测试已通过93项策略专项/构建/本机ZIP，仍须随最终提交重新完整CI。归档快照不冒充最终head，最新实际完整SHA、CI和ZIP下载由PR#10维护；用户Windows/物理断网仍待本人反馈，不自动合并/Release/部署。

@@ -1,0 +1,163 @@
+{
+  "commitSha": "fe17089fa09564f3bdcb3715115fc0851db53f56",
+  "runId": 43023800278,
+  "runUrl": "https://github.com/meredithfyc1001/riverlab-crypto-lab/actions/runs/43023800278",
+  "snapshot": true,
+  "quality": [
+    {
+      "jobId": 130533288421,
+      "url": "https://github.com/meredithfyc1001/riverlab-crypto-lab/actions/runs/43023800278/job/130533288421",
+      "conclusion": "success",
+      "unitTests": 457,
+      "e2eTests": 45,
+      "performance": {
+        "bars": 50000,
+        "conditions": 10,
+        "elapsedMs": 3197,
+        "maximum": 319.80000000004657,
+        "samples": 125,
+        "cpu": "Intel(R) Xeon(R) Platinum 8370C CPU @ 2.80GHz",
+        "cores": 2,
+        "os": "linux 7.0.0-1019-azure",
+        "browser": "156.0.8078.4",
+        "node": "v24.22.2",
+        "limitations": "synthetic; full rules/backtest/statistics/hashes/Worker transfer and all-point charts; observed timer interval, not total memory or physical Windows acceptance"
+      },
+      "verifiedSteps": [
+        "npm ci",
+        "independent references (legacy Decimal60/80 + statistics + 2B + research + replay + risk + rules)",
+        "format/lint/strict types/production build",
+        "45 production E2E tests; no skipped/removed assertions"
+      ]
+    },
+    {
+      "jobId": 130533288780,
+      "url": "https://github.com/meredithfyc1001/riverlab-crypto-lab/actions/runs/43023800278/job/130533288780",
+      "conclusion": "success",
+      "unitTests": 457,
+      "e2eTests": 45,
+      "performance": {
+        "bars": 50000,
+        "conditions": 10,
+        "elapsedMs": 2635,
+        "maximum": 238.5,
+        "samples": 105,
+        "cpu": "AMD EPYC 9V74 80-Core Processor                ",
+        "cores": 2,
+        "os": "win32 10.0.26100",
+        "browser": "156.0.8078.80",
+        "node": "v24.22.2",
+        "limitations": "synthetic; full rules/backtest/statistics/hashes/Worker transfer and all-point charts; observed timer interval, not total memory or physical Windows acceptance"
+      },
+      "verifiedSteps": [
+        "npm ci",
+        "independent references (legacy Decimal60/80 + statistics + 2B + research + replay + risk + rules)",
+        "format/lint/strict types/production build",
+        "45 production E2E tests; no skipped/removed assertions"
+      ]
+    },
+    {
+      "jobId": 130533288225,
+      "url": "https://github.com/meredithfyc1001/riverlab-crypto-lab/actions/runs/43023800278/job/130533288225",
+      "conclusion": "success",
+      "unitTests": 457,
+      "e2eTests": 45,
+      "performance": {
+        "bars": 50000,
+        "conditions": 10,
+        "elapsedMs": 3365,
+        "maximum": 411.3999999999651,
+        "samples": 131,
+        "cpu": "AMD EPYC 7763 64-Core Processor                ",
+        "cores": 2,
+        "os": "win32 10.0.26100",
+        "browser": "156.0.4314.58",
+        "node": "v24.22.2",
+        "limitations": "synthetic; full rules/backtest/statistics/hashes/Worker transfer and all-point charts; observed timer interval, not total memory or physical Windows acceptance"
+      },
+      "verifiedSteps": [
+        "npm ci",
+        "independent references (legacy Decimal60/80 + statistics + 2B + research + replay + risk + rules)",
+        "format/lint/strict types/production build",
+        "45 production E2E tests; no skipped/removed assertions"
+      ]
+    }
+  ],
+  "package": {
+    "jobId": 130536125279,
+    "conclusion": "success",
+    "url": "https://github.com/meredithfyc1001/riverlab-crypto-lab/actions/runs/43023800278/job/130536125279",
+    "build": {
+      "path": "D:\\a\\riverlab-crypto-lab\\riverlab-crypto-lab\\work\\local-package\\RiverLab-Crypto-Lab-Local-Test.zip",
+      "bytes": 822640,
+      "sha256": "6af4b3b7eeeffcb03b701f2e9eabba18ce50c0666464ce6d87970762b37f8943",
+      "commitSha": "fe17089fa09564f3bdcb3715115fc0851db53f56",
+      "phase": "5B",
+      "version": "0.5.1-test",
+      "dirty": false
+    },
+    "browsers": [
+      {
+        "platform": "win32",
+        "node": "v24.22.2",
+        "browser": "156.0.8078.80",
+        "commitSha": "fe17089fa09564f3bdcb3715115fc0851db53f56",
+        "phase": "5B",
+        "version": "0.5.1-test",
+        "dirty": false,
+        "extractionPath": "D:\\a\\riverlab-crypto-lab\\riverlab-crypto-lab\\work\\Windows 中文 空格测试 chrome\\RiverLab-Crypto-Lab-Local-Test",
+        "externalRequests": [],
+        "errors": [],
+        "resourceCount": 48,
+        "checks": [
+          "ZIP hashes",
+          "BAT foreground launch",
+          "Chinese and space path",
+          "read-only and traversal protection",
+          "port conflict fails",
+          "no external origins",
+          "real Worker backtest and charts",
+          "save reload reopen",
+          "JSON CSV download",
+          "strategy research batch and JSON CSV download",
+          "seeded risk analysis, fan plot, snapshot reload and JSON CSV",
+          "prefix replay, virtual next-open trade, journal, checkpoint reload and JSON CSV",
+          "declarative rule creation, version save, Worker backtest, experiment reload/recompute and rule JSON import/export",
+          "Enter exits and frees port",
+          "missing dist fails"
+        ]
+      },
+      {
+        "platform": "win32",
+        "node": "v24.22.2",
+        "browser": "156.0.4314.58",
+        "commitSha": "fe17089fa09564f3bdcb3715115fc0851db53f56",
+        "phase": "5B",
+        "version": "0.5.1-test",
+        "dirty": false,
+        "extractionPath": "D:\\a\\riverlab-crypto-lab\\riverlab-crypto-lab\\work\\Windows 中文 空格测试 msedge\\RiverLab-Crypto-Lab-Local-Test",
+        "externalRequests": [],
+        "errors": [],
+        "resourceCount": 48,
+        "checks": [
+          "ZIP hashes",
+          "BAT foreground launch",
+          "Chinese and space path",
+          "read-only and traversal protection",
+          "port conflict fails",
+          "no external origins",
+          "real Worker backtest and charts",
+          "save reload reopen",
+          "JSON CSV download",
+          "strategy research batch and JSON CSV download",
+          "seeded risk analysis, fan plot, snapshot reload and JSON CSV",
+          "prefix replay, virtual next-open trade, journal, checkpoint reload and JSON CSV",
+          "declarative rule creation, version save, Worker backtest, experiment reload/recompute and rule JSON import/export",
+          "Enter exits and frees port",
+          "missing dist fails"
+        ]
+      }
+    ]
+  },
+  "userWindowsAcceptance": "not tested; CI does not substitute"
+}

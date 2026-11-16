@@ -1,0 +1,7 @@
+Independent legacy Decimal60 indicators and Decimal80 backtest references passed (read-only).
+Independent Decimal90 statistics reference matched
+Independent Decimal reference matches: 18 strategy cases, 5 risk cases
+Independent Phase 3 Decimal references passed: full / isolated train / test.
+Independent replay Decimal reference passed: next-open fees, cash, equity, realized/open pnl.
+Independent PCG32/Decimal100/Fraction risk reference matched: 3 methods/seed cases.
+Independent Decimal100 rules reference passed: 43 condition/group cases.

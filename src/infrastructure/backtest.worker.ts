@@ -1,6 +1,6 @@
+import { sealWorkerExperiment } from './experiment-hash';
 import {
   runExperiment,
-  sealExperiment,
   verifyExperiment,
   tradesCsv,
   reportJson,
@@ -10,12 +10,12 @@ const scope = globalThis as unknown as {
   onmessage: ((event: MessageEvent<WorkerRequest>) => void) | null;
   postMessage: (value: WorkerResponse) => void;
 };
-scope.onmessage = ({ data }) => {
+scope.onmessage = async ({ data }) => {
   try {
     if (data.kind === 'run') {
       const start = performance.now();
       const payload = runExperiment(data.input);
-      const record = sealExperiment(payload, {
+      const record = await sealWorkerExperiment(payload, {
         id: data.id,
         name: data.name,
         createdUtcMs: data.createdUtcMs,

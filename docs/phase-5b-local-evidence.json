@@ -1,0 +1,320 @@
+{
+  "snapshotCommit": "fe17089fa09564f3bdcb3715115fc0851db53f56",
+  "fullCheck": {
+    "command": "PLAYWRIGHT_CHROMIUM_EXECUTABLE=/usr/bin/chromium npm run check",
+    "exitCode": 0,
+    "unitTests": 457,
+    "e2eTests": 45,
+    "log": "phase-5b-evidence/local-full-check-success.log"
+  },
+  "performance": {
+    "PHASE1B_PERFORMANCE": {
+      "rows": 50000,
+      "csvBytes": 1600036,
+      "inspectionMs": 627,
+      "reportMs": 533,
+      "prepareAndSaveMs": 1183,
+      "reopenAndChartMs": 2304,
+      "zoomMs": 276,
+      "backupMs": 896,
+      "backupBytes": 4401567,
+      "backupInspectMs": 364,
+      "backupRestoreMs": 581,
+      "maxObservedJsHeapBytes": 254405428,
+      "maxEventLoopDelayMs": 597.1000000000931
+    },
+    "PHASE2C_PERFORMANCE": {
+      "rows": 50000,
+      "elapsedMs": 5000,
+      "maxDelayMs": 449.8000000002794,
+      "samples": 200,
+      "hardwareConcurrency": 3,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/156.0.8078.4 Safari/537.36",
+      "os": "linux 6.18.57",
+      "cpu": "INTEL(R) XEON(R) PLATINUM 8573C",
+      "browser": "154.0.8037.57",
+      "limitations": "人工合成；回测到全点曲线就绪含Worker传输/绘图，不是无限数据保证"
+    },
+    "PHASE3_PERFORMANCE": {
+      "phase": "3",
+      "bars": 50000,
+      "candidates": 3,
+      "elapsedMs": 5254,
+      "maximum": 100.8000000002794,
+      "samples": 257,
+      "cpu": "INTEL(R) XEON(R) PLATINUM 8573C",
+      "cores": 3,
+      "platform": "linux",
+      "release": "6.18.57",
+      "browser": "154.0.8037.57",
+      "node": "v24.19.0",
+      "limits": "sequential Worker; independent full windows; 1,000,000 evaluation budget"
+    },
+    "PHASE4_PERFORMANCE": {
+      "bars": 50000,
+      "advanceMs": 1657,
+      "resumeMs": 2625,
+      "maximum": 548.2000000001863,
+      "samples": 152,
+      "cpu": "INTEL(R) XEON(R) PLATINUM 8573C",
+      "cores": 3,
+      "platform": "linux",
+      "release": "6.18.57",
+      "browser": "154.0.8037.57",
+      "node": "v24.19.0",
+      "limitations": "synthetic; Worker persistent execution; one manual pending entry; full known prefix curves; resume by linear replay"
+    },
+    "PHASE5A_PERFORMANCE": {
+      "sourceBars": 50000,
+      "evaluations": 2000000,
+      "elapsedMs": 9109,
+      "maximum": 82,
+      "samples": 450,
+      "cpu": "INTEL(R) XEON(R) PLATINUM 8573C",
+      "cores": 3,
+      "os": "linux 6.18.57",
+      "browser": "154.0.8037.57",
+      "node": "v24.19.0",
+      "limitations": "synthetic MA source; verify source then IID equity-ratio resampling; 101 display points, all steps in risk statistics"
+    },
+    "PHASE5B_PERFORMANCE": {
+      "bars": 50000,
+      "conditions": 10,
+      "elapsedMs": 4434,
+      "maximum": 411.70000000018626,
+      "samples": 172,
+      "cpu": "INTEL(R) XEON(R) PLATINUM 8573C",
+      "cores": 3,
+      "os": "linux 6.18.57",
+      "browser": "154.0.8037.57",
+      "node": "v24.19.0",
+      "limitations": "synthetic; full rules/backtest/statistics/hashes/Worker transfer and all-point charts; observed timer interval, not total memory or physical Windows acceptance"
+    }
+  },
+  "cpuQuota": "2 CPUs; 3 visible logical cores",
+  "laterWorkingTree": "Identical MA/EMA periods share current-bar calculation; 93 rule unit tests and production build passed. The ZIP below includes this later working tree change.",
+  "package": {
+    "platform": "linux",
+    "node": "v24.19.0",
+    "browser": "154.0.8037.57",
+    "commitSha": "fe17089fa09564f3bdcb3715115fc0851db53f56",
+    "phase": "5B",
+    "version": "0.5.1-test",
+    "dirty": true,
+    "extractionPath": "/workspace/riverlab-crypto-lab/work/Windows 中文 空格测试 chromium/RiverLab-Crypto-Lab-Local-Test",
+    "externalRequests": [],
+    "errors": [],
+    "resources": [
+      {
+        "url": "http://127.0.0.1:4173/",
+        "status": 200
+      },
+      {
+        "url": "http://127.0.0.1:4173/assets/index-DMpdv16p.css",
+        "status": 200
+      },
+      {
+        "url": "http://127.0.0.1:4173/assets/index-CqoBH1bn.js",
+        "status": 200
+      },
+      {
+        "url": "http://127.0.0.1:4173/favicon.svg",
+        "status": 200
+      },
+      {
+        "url": "http://127.0.0.1:4173/assets/csv.worker-C14LIkSc.js",
+        "status": 200
+      },
+      {
+        "url": "http://127.0.0.1:4173/assets/csv.worker-C14LIkSc.js",
+        "status": 200
+      },
+      {
+        "url": "http://127.0.0.1:4173/assets/csv.worker-C14LIkSc.js",
+        "status": 200
+      },
+      {
+        "url": "http://127.0.0.1:4173/favicon.svg",
+        "status": 200
+      },
+      {
+        "url": "http://127.0.0.1:4173/assets/backtest.worker-wiJ-Qcge.js",
+        "status": 200
+      },
+      {
+        "url": "http://127.0.0.1:4173/assets/backtest.worker-wiJ-Qcge.js",
+        "status": 200
+      },
+      {
+        "url": "http://127.0.0.1:4173/assets/backtest.worker-wiJ-Qcge.js",
+        "status": 200
+      },
+      {
+        "url": "http://127.0.0.1:4173/",
+        "status": 200
+      },
+      {
+        "url": "http://127.0.0.1:4173/assets/index-DMpdv16p.css",
+        "status": 200
+      },
+      {
+        "url": "http://127.0.0.1:4173/assets/index-CqoBH1bn.js",
+        "status": 200
+      },
+      {
+        "url": "http://127.0.0.1:4173/favicon.svg",
+        "status": 200
+      },
+      {
+        "url": "http://127.0.0.1:4173/favicon.svg",
+        "status": 200
+      },
+      {
+        "url": "http://127.0.0.1:4173/assets/backtest.worker-wiJ-Qcge.js",
+        "status": 200
+      },
+      {
+        "url": "http://127.0.0.1:4173/favicon.svg",
+        "status": 200
+      },
+      {
+        "url": "http://127.0.0.1:4173/assets/research.worker-RMmFY_6o.js",
+        "status": 200
+      },
+      {
+        "url": "http://127.0.0.1:4173/favicon.svg",
+        "status": 200
+      },
+      {
+        "url": "http://127.0.0.1:4173/assets/risk.worker-BBzowE1Q.js",
+        "status": 200
+      },
+      {
+        "url": "http://127.0.0.1:4173/assets/risk.worker-BBzowE1Q.js",
+        "status": 200
+      },
+      {
+        "url": "http://127.0.0.1:4173/assets/risk.worker-BBzowE1Q.js",
+        "status": 200
+      },
+      {
+        "url": "http://127.0.0.1:4173/assets/risk.worker-BBzowE1Q.js",
+        "status": 200
+      },
+      {
+        "url": "http://127.0.0.1:4173/",
+        "status": 200
+      },
+      {
+        "url": "http://127.0.0.1:4173/assets/index-DMpdv16p.css",
+        "status": 200
+      },
+      {
+        "url": "http://127.0.0.1:4173/assets/index-CqoBH1bn.js",
+        "status": 200
+      },
+      {
+        "url": "http://127.0.0.1:4173/favicon.svg",
+        "status": 200
+      },
+      {
+        "url": "http://127.0.0.1:4173/assets/risk.worker-BBzowE1Q.js",
+        "status": 200
+      },
+      {
+        "url": "http://127.0.0.1:4173/favicon.svg",
+        "status": 200
+      },
+      {
+        "url": "http://127.0.0.1:4173/assets/replay.worker-KmtUEsOk.js",
+        "status": 200
+      },
+      {
+        "url": "http://127.0.0.1:4173/",
+        "status": 200
+      },
+      {
+        "url": "http://127.0.0.1:4173/assets/index-DMpdv16p.css",
+        "status": 200
+      },
+      {
+        "url": "http://127.0.0.1:4173/assets/index-CqoBH1bn.js",
+        "status": 200
+      },
+      {
+        "url": "http://127.0.0.1:4173/favicon.svg",
+        "status": 200
+      },
+      {
+        "url": "http://127.0.0.1:4173/assets/replay.worker-KmtUEsOk.js",
+        "status": 200
+      },
+      {
+        "url": "http://127.0.0.1:4173/favicon.svg",
+        "status": 200
+      },
+      {
+        "url": "http://127.0.0.1:4173/favicon.svg",
+        "status": 200
+      },
+      {
+        "url": "http://127.0.0.1:4173/assets/backtest.worker-wiJ-Qcge.js",
+        "status": 200
+      },
+      {
+        "url": "http://127.0.0.1:4173/assets/backtest.worker-wiJ-Qcge.js",
+        "status": 200
+      },
+      {
+        "url": "http://127.0.0.1:4173/",
+        "status": 200
+      },
+      {
+        "url": "http://127.0.0.1:4173/assets/index-DMpdv16p.css",
+        "status": 200
+      },
+      {
+        "url": "http://127.0.0.1:4173/assets/index-CqoBH1bn.js",
+        "status": 200
+      },
+      {
+        "url": "http://127.0.0.1:4173/favicon.svg",
+        "status": 200
+      },
+      {
+        "url": "http://127.0.0.1:4173/favicon.svg",
+        "status": 200
+      },
+      {
+        "url": "http://127.0.0.1:4173/assets/backtest.worker-wiJ-Qcge.js",
+        "status": 200
+      },
+      {
+        "url": "http://127.0.0.1:4173/assets/backtest.worker-wiJ-Qcge.js",
+        "status": 200
+      },
+      {
+        "url": "http://127.0.0.1:4173/favicon.svg",
+        "status": 200
+      }
+    ],
+    "checks": [
+      "ZIP hashes",
+      "Direct Node foreground launch; BAT not executed on Linux",
+      "Chinese and space path",
+      "read-only and traversal protection",
+      "port conflict fails",
+      "no external origins",
+      "real Worker backtest and charts",
+      "save reload reopen",
+      "JSON CSV download",
+      "strategy research batch and JSON CSV download",
+      "seeded risk analysis, fan plot, snapshot reload and JSON CSV",
+      "prefix replay, virtual next-open trade, journal, checkpoint reload and JSON CSV",
+      "declarative rule creation, version save, Worker backtest, experiment reload/recompute and rule JSON import/export",
+      "Enter exits and frees port",
+      "missing dist fails"
+    ]
+  },
+  "userWindows": "not tested; Linux did not run BAT; no physical offline or true disk exhaustion test"
+}

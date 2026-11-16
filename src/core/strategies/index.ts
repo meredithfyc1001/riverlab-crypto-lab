@@ -13,3 +13,16 @@ export type {
   StrategyConfig,
   StrategyDecision,
 } from './engine';
+
+export {
+  normalizeRule,
+  defaultRule,
+  explainCondition,
+  RULE_STRATEGY_VERSION,
+} from './rules';
+export type {
+  StrategyRuleV1,
+  RuleCondition,
+  RuleGroup,
+  Comparison,
+} from './rules';

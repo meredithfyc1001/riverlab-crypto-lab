@@ -163,6 +163,8 @@ export function windowDataset(dataset: Dataset, window: WindowSpec): Dataset {
   };
 }
 export function warmupBars(strategy: StrategyConfig): number {
+  if (strategy.kind === 'rules')
+    throw new Error('Phase3研究暂不支持规则策略，请使用单次回测。');
   return (
     (strategy.kind === 'ma'
       ? strategy.slowPeriod
@@ -204,7 +206,11 @@ export function validateResearch(input: ResearchInput) {
       if (parseDecimal(String(price)) === 0n) throw new Error('价格精度无效。');
   if (!Array.isArray(input.candidates)) throw new Error('缺少候选策略。');
   integer(input.candidates.length, 1, LIMITS.candidates);
-  const candidates = input.candidates.map((c) => normalizeStrategy(c));
+  const candidates = input.candidates.map((c) => {
+    if (c.kind === 'rules')
+      throw new Error('Phase3研究暂不支持规则策略，请使用单次回测。');
+    return normalizeStrategy(c);
+  });
   if (
     new Set(candidates.map((c) => canonicalJson(c))).size !== candidates.length
   )

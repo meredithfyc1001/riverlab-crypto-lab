@@ -1,6 +1,6 @@
 # RiverLab Crypto Lab 工作指令
 
-作用于整个独立仓库。Phase 2C 已于 2026-11-09 随 PR #6 合并，实际合并提交 `33b1d6695ca1115efefce59132d96f8534c43e72`。PR #7 已于2026-11-09合并为 d60ef1c3491492247a4a1cb5a67c05cb58e33703；PR #8 已合并为7644abf2323dd461240e4e5f430dc406851c3746；用户“好了，下一步”授权推进，Phase5A按推荐默认风险重采样，优先级已征询，不伪称用户逐项选择。见[Phase5A设计](docs/phase-5a-design.md)。先读 [progress.md](progress.md)、[plan.md](plan.md) 和相关专题。附件全文保存在 [原始规划 v0.1](docs/product-plan-v0.1.md)。用户当前明确指令优先。
+作用于整个独立仓库。PR #9 已于 2026-11-11 合并为 b0c9664fc5c37cf70686ca3735e317ad3c8a0a88。用户明确授权的 Phase 5B 可视化规则策略已实现，Draft PR #10 待用户验收，见 [Phase 5B 设计](docs/phase-5b-design.md)。独立 feat/phase-5b-rule-editor、现有Issue已转换为Draft PR #10；不合并/Release/部署。先读 [progress.md](progress.md)、[plan.md](plan.md) 与相关契约；[原始规划](docs/product-plan-v0.1.md)全文保留。
 
 ## 范围与研发节奏
 
@@ -16,7 +16,8 @@
 - Phase 2C 已获授权：调用原内核的 Worker 工作台、纯 TS 统计、实验保存/导出、Node24 仅回环静态服务 ZIP；保留旧成交规则。三平台检查成功后上传绑定 head SHA 的 artifact，14天有效；不分发 Node、不创建 Release、不部署。Windows CI 与用户实机验收分开。
 - Phase 3 已合并交付：core/research 编排原引擎与统计、专用Worker、策略中心研究UI、可复现JSON/CSV；全部候选先锁定，窗口独立本金/空仓/冷启动，不跨边界借用信号或预热，不自动宣称最佳策略。测试严格晚于训练，滚动测试不重叠；保留原金额/成交/存储契约及全部回归。
 - Phase 4 已合并交付：逐根回放、虚拟买卖/余额、交易日记、净值/风险、保存恢复。共享原成交会话，Worker保管未来数据，页面和状态导出只含已知前缀/复现动作；不可预先计算未来成交。保留旧版本/hash和全部回归。原独立分支PR#8已合并；Windows用户验收另列。
-- Phase 5A已实现、Draft PR#9待审；当前范围：已保存正式实验的净权益收益Monte Carlo重采样；固定PCG32/BigInt18、IID与区块抽样，模拟分位/频率不称未来置信区间或预测。Worker计算/校验，独立库保存/重开/JSON与CSV，不改变旧成交/保护/统计。独立Draft PR#9，不自动合并、Release、部署或提前做其他Phase5候选。
+- Phase 5A已实现并随PR#9合并；历史范围：已保存正式实验的净权益收益Monte Carlo重采样；固定PCG32/BigInt18、IID与区块抽样，模拟分位/频率不称未来置信区间或预测。Worker计算/校验，独立库保存/重开/JSON与CSV，不改变旧成交/保护/统计。原Draft PR#9现已合并；合并不补签Windows用户验收。
+- Phase 5B 当前授权：严格V1声明式规则、双侧最多5条件AND/OR卡片、MA/EMA/RSI/前N根突破、保守warm-up/冲突/边沿触发、独立不可变规则版本库和JSON，接入原回测。保留全部历史版本/hash/账本与回归；Phase3暂不支持规则，必须明确拒绝。详见5B设计。
 - 禁止真实账户、API Key、私钥、助记词、充值提现、真实订单或资金处理。未来网络数据能力必须独立评估和授权。
 - PR #5 已合并为 0ee6d8483bd6a5226a6d01a1d21b990b134bab46。PR #6 已合并为 33b1d6695ca1115efefce59132d96f8534c43e72，不再标记 Draft 待审。新改动仍基于已核实的 main 创建独立分支和待审 PR；不直接修改 main，不自动合并、创建 tag、Release 或部署。
 - 合并记录不等于用户 Windows 实机验收。本轮未收到新的逐项结果，验收状态记为待反馈，不补签历史未测试项目。CI、云端和用户结果继续分列。

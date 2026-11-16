@@ -1,0 +1,880 @@
+# Instructions
+
+- Following Playwright test failed.
+- Explain why, be concise, respect Playwright best practices.
+- Provide a snippet of code with the fix, if possible.
+
+# Test info
+
+- Name: phase-2c.spec.ts >> 50,000根真实策略成交统计Worker性能与主线程响应
+- Location: tests/e2e/phase-2c.spec.ts:313:1
+
+# Error details
+
+```
+Error: expect(locator).toBeVisible() failed
+
+Locator: getByText('回测成功；结果尚未保存，刷新会丢失。')
+Expected: visible
+Timeout: 5000ms
+Error: element(s) not found
+
+Call log:
+  - Expect "toBeVisible" getByText('回测成功；结果尚未保存，刷新会丢失。') with timeout 5000ms
+  - waiting for getByText('回测成功；结果尚未保存，刷新会丢失。')
+
+```
+
+```yaml
+- link "跳至主要内容":
+  - /url: "#main-content"
+- complementary:
+  - link "RiverLab Crypto Lab 工作台":
+    - /url: "#/overview"
+    - strong: RiverLab
+    - text: CRYPTO LAB
+  - text: 研究空间
+  - navigation "主要导航":
+    - link "工作台":
+      - /url: "#/overview"
+    - link "数据中心":
+      - /url: "#/datasets"
+    - link "行情中心":
+      - /url: "#/charts"
+    - link "策略中心":
+      - /url: "#/strategies"
+    - link "回测中心":
+      - /url: "#/backtests"
+    - link "风险中心":
+      - /url: "#/risk"
+    - link "实验中心":
+      - /url: "#/experiments"
+    - link "历史回放":
+      - /url: "#/replay"
+  - text: 离线优先 · 本地研究 v0.5.1-test / Phase 5B 规则编辑器
+- banner:
+  - text: 研究空间 /
+  - strong: 回测中心
+  - text: 仅研究与模拟
+  - button "切换为浅色主题": 浅色
+- main:
+  - paragraph: RIVERLAB / RESEARCH WORKSPACE
+  - heading "回测中心" [level=1]
+  - paragraph: 用可复现的实验检验想法。
+  - text: Phase 5B · 规则编辑器
+  - heading "回测配置" [level=2]
+  - paragraph: 现货 · 单币种 · 多头 · 无杠杆 · 虚拟 USDT。请先在数据中心保存通过检查的数据集。
+  - text: 回测数据集
+  - combobox "回测数据集":
+    - option "请选择已保存数据集"
+    - option "SYNTHETIC/USDT · synthetic-50000.csv" [selected]
+  - heading "SYNTHETIC/USDT · synthetic-50000.csv" [level=3]
+  - paragraph: 用户文件 · 来源未核实 · 50000 根 · 周期 60 秒
+  - paragraph: 2025-01-01 00:00:00.000 UTC 至 2025-02-04 17:20:00.000 UTC（末根收盘）
+  - paragraph: 文件名和填写的来源说明不构成真实行情认证，请核对数据提供方、币种、市场与采集口径。
+  - paragraph: 缺口 0；警告 2。来源与首尾完整性不能认证。
+  - group: 数据身份与质量警告
+  - text: 策略
+  - combobox "策略":
+    - option "MA 交叉" [selected]
+    - option "RSI 阈值"
+    - option "价格突破"
+    - option "自定义规则 V1"
+  - text: MA 快线周期
+  - spinbutton "MA 快线周期": "2"
+  - text: MA 慢线周期
+  - spinbutton "MA 慢线周期": "4"
+  - paragraph: 样本不足会保留预热/hold，不伪造交易。MA 至少慢线周期+1根，RSI 至少周期+1根，突破至少回看周期+1根。
+  - text: 虚拟初始资金 USDT
+  - textbox "虚拟初始资金 USDT": "1000"
+  - text: 双边手续费 bps
+  - textbox "双边手续费 bps": "10"
+  - text: 买入滑点 bps
+  - textbox "买入滑点 bps": "10"
+  - text: 卖出滑点 bps
+  - textbox "卖出滑点 bps": "10"
+  - text: 数量小数位
+  - textbox "数量小数位": "8"
+  - text: 最小名义额 USDT
+  - textbox "最小名义额 USDT": "0"
+  - text: 止损 bps（留空关闭）
+  - spinbutton "止损 bps（留空关闭）"
+  - text: 止盈 bps（留空关闭）
+  - spinbutton "止盈 bps（留空关闭）"
+  - paragraph: 1 bps=0.01%。买入/卖出分别扣手续费；滑点已进入成交价。买价/费用向上、卖价/估值/数量向下，18位定点。
+  - group:
+    - text: 本次成交假设与风险
+    - paragraph: 收盘形成信号，下一根开盘成交；末根信号到期，不自动平仓。已有仓开盘风控优先，取消待执行信号；根内双触发保守止损优先，时间未知。止损跳空按开盘，止盈跳空按阈值；保护基于含滑点买价、不含手续费，仍扣卖出成本。无限流动性、无盘口冲击、不参考整根量，成交不裁剪到高低价；历史结果不保证实际成交。缺口/重复/异常/未确认数据一律阻断，不自动修复。
+  - checkbox "我确认本数据集全部 K 线已收盘并已阅读警告和成交假设" [checked]
+  - text: 我确认本数据集全部 K 线已收盘并已阅读警告和成交假设
+  - button "运行回测"
+  - status: 回测成功；结果尚未保存，刷新会丢失。
+  - heading "回测结果 · SYNTHETIC/USDT · ma" [level=2]
+  - paragraph: 用户文件 · 来源未核实 · SYNTHETIC/USDT · 2025-01-01 00:00:00.000 UTC 至 2025-02-04 17:20:00.000 UTC · 周期 60 秒
+  - paragraph: 运行时间 2026-11-11 12:31:28.002 UTC；Worker核心计算 1830.4 ms；结果仅在内存，刷新会丢失。
+  - button "保存回测实验"
+  - button "导出实验 JSON"
+  - button "导出交易 CSV"
+  - button "复现本实验"
+  - term: 总净盈亏 USDT
+  - definition: "-999.99994031861768"
+  - term: 总收益率
+  - definition: "-99.9999940318%"
+  - term: 最大回撤
+  - definition: 99.9999942982%
+  - term: 最大回撤处金额 USDT
+  - definition: "1027.07098585480227"
+  - term: 最长回撤持续时间
+  - definition: 2998860 秒
+  - term: 当前未恢复回撤时间
+  - definition: 2998860 秒
+  - term: 已完成交易数
+  - definition: "4165"
+  - term: 胜率
+  - definition: 0%
+  - term: 利润因子
+  - definition: "0"
+  - term: 持仓暴露区间上界
+  - definition: 1499700 秒 · 49.99%
+  - term: 年化收益
+  - definition: NA（需要至少365天且252根有效收盘样本）
+  - term: 买入持有收益率
+  - definition: 4.7903145805%
+  - term: 已实现盈亏 USDT
+  - definition: "-999.9999413232"
+  - term: 未平仓浮动盈亏 USDT
+  - definition: "0.00000100458232"
+  - term: 累计成交手续费 USDT
+  - definition: "499.99997071933768"
+  - term: 现金余额 USDT
+  - definition: "0.00000088138232"
+  - term: 持仓数量
+  - definition: "0.00000056"
+  - term: 剩余持仓成本 USDT
+  - definition: "0.00005779541768"
+  - term: 持仓市值 USDT
+  - definition: "0.0000588"
+  - term: 总权益 USDT
+  - definition: "0.00005968138232"
+  - term: 买入持有终值 USDT
+  - definition: "1047.903145805004"
+  - term: 买入持有买入费用 USDT
+  - definition: "0.999000998996"
+  - paragraph: 同区间/本金；首开盘买入，沿用买滑点/费/精度/最小额；无保护；末收盘市值计量、不强制平仓、不扣卖成本。
+  - paragraph: 滑点已进入买卖名义额，费用单独扣除；已实现 + 浮动 = 总净盈亏。胜负仅使用已完成周期，均已扣手续费与实际滑点。
+  - group: 指标定义、舍入和不足样本规则
+  - group: 完整运行配置、版本、哈希与假设
+  - heading "净值曲线与回撤曲线" [level=3]
+  - paragraph: 上方：策略权益/买入持有（USDT）；下方：收盘回撤（%）。滚轮缩放、拖动平移；全部 50001 点（含初始锚点），仅绘制转换为近似数值。
+  - status: 正在绘制结果曲线…
+  - img "策略权益、买入持有及收盘回撤曲线"
+  - paragraph: TradingView Lightweight Charts™ · Apache-2.0 · Copyright (с) 2025 TradingView, Inc. · 本地打包。收盘曲线不代表根内风险。
+  - heading "交易记录与逐笔账本（8331 笔成交）" [level=3]
+  - paragraph: 每页50笔；根内精确时间未知，展示UTC区间与保守假设。表中权益按该笔参考价估值，末权益按末收盘价估值。
+  - button "上一页" [disabled]
+  - text: 第 1 / 167 页
+  - button "下一页"
+  - table "逐笔成交账本":
+    - rowgroup:
+      - row "序号/方向 UTC时间/区间 原因/假设 参考价/成交价 数量/名义额 手续费 成交后现金 成交后持仓/市值 成交后权益":
+        - columnheader "序号/方向"
+        - columnheader "UTC时间/区间"
+        - columnheader "原因/假设"
+        - columnheader "参考价/成交价"
+        - columnheader "数量/名义额"
+        - columnheader "手续费"
+        - columnheader "成交后现金"
+        - columnheader "成交后持仓/市值"
+        - columnheader "成交后权益"
+    - rowgroup:
+      - row "1 · 买入 2025-01-01 00:15:00.000 UTC ma-cross-up 103 103.103 9.68934947 999.00099840541 0.99900099840541 0.00000059618459 9.68934947 998.00299541 998.00299600618459":
+        - cell "1 · 买入"
+        - cell "2025-01-01 00:15:00.000 UTC"
+        - cell "ma-cross-up"
+        - cell "103 103.103"
+        - cell "9.68934947 999.00099840541"
+        - cell "0.99900099840541"
+        - cell "0.00000059618459"
+        - cell "9.68934947 998.00299541"
+        - cell "998.00299600618459"
+      - row "2 · 卖出 2025-01-01 00:21:00.000 UTC ma-cross-down 103 102.897 9.68934947 997.00499241459 0.99700499241459 996.00798801836 0 0 996.00798801836":
+        - cell "2 · 卖出"
+        - cell "2025-01-01 00:21:00.000 UTC"
+        - cell "ma-cross-down"
+        - cell "103 102.897"
+        - cell "9.68934947 997.00499241459"
+        - cell "0.99700499241459"
+        - cell "996.00798801836"
+        - cell "0 0"
+        - cell "996.00798801836"
+      - row "3 · 买入 2025-01-01 00:27:00.000 UTC ma-cross-up 103 103.103 9.65066947 995.01297436541 0.99501297436541 0.00000067858459 9.65066947 994.01895541 994.01895608858459":
+        - cell "3 · 买入"
+        - cell "2025-01-01 00:27:00.000 UTC"
+        - cell "ma-cross-up"
+        - cell "103 103.103"
+        - cell "9.65066947 995.01297436541"
+        - cell "0.99501297436541"
+        - cell "0.00000067858459"
+        - cell "9.65066947 994.01895541"
+        - cell "994.01895608858459"
+      - row "4 · 卖出 2025-01-01 00:33:00.000 UTC ma-cross-down 103 102.897 9.65066947 993.02493645459 0.99302493645459 992.03191219672 0 0 992.03191219672":
+        - cell "4 · 卖出"
+        - cell "2025-01-01 00:33:00.000 UTC"
+        - cell "ma-cross-down"
+        - cell "103 102.897"
+        - cell "9.65066947 993.02493645459"
+        - cell "0.99302493645459"
+        - cell "992.03191219672"
+        - cell "0 0"
+        - cell "992.03191219672"
+      - row "5 · 买入 2025-01-01 00:39:00.000 UTC ma-cross-up 103 103.103 9.61214388 991.04087045964 0.99104087045964 0.00000086662036 9.61214388 990.05081964 990.05082050662036":
+        - cell "5 · 买入"
+        - cell "2025-01-01 00:39:00.000 UTC"
+        - cell "ma-cross-up"
+        - cell "103 103.103"
+        - cell "9.61214388 991.04087045964"
+        - cell "0.99104087045964"
+        - cell "0.00000086662036"
+        - cell "9.61214388 990.05081964"
+        - cell "990.05082050662036"
+      - row "6 · 卖出 2025-01-01 00:45:00.000 UTC ma-cross-down 103 102.897 9.61214388 989.06076882036 0.98906076882036 988.07170891816 0 0 988.07170891816":
+        - cell "6 · 卖出"
+        - cell "2025-01-01 00:45:00.000 UTC"
+        - cell "ma-cross-down"
+        - cell "103 102.897"
+        - cell "9.61214388 989.06076882036"
+        - cell "0.98906076882036"
+        - cell "988.07170891816"
+        - cell "0 0"
+        - cell "988.07170891816"
+      - row "7 · 买入 2025-01-01 00:51:00.000 UTC ma-cross-up 103 103.103 9.57377209 987.08462379527 0.98708462379527 0.00000049909473 9.57377209 986.09852527 986.09852576909473":
+        - cell "7 · 买入"
+        - cell "2025-01-01 00:51:00.000 UTC"
+        - cell "ma-cross-up"
+        - cell "103 103.103"
+        - cell "9.57377209 987.08462379527"
+        - cell "0.98708462379527"
+        - cell "0.00000049909473"
+        - cell "9.57377209 986.09852527"
+        - cell "986.09852576909473"
+      - row "8 · 卖出 2025-01-01 00:57:00.000 UTC ma-cross-down 103 102.897 9.57377209 985.11242674473 0.98511242674473 984.12731481708 0 0 984.12731481708":
+        - cell "8 · 卖出"
+        - cell "2025-01-01 00:57:00.000 UTC"
+        - cell "ma-cross-down"
+        - cell "103 102.897"
+        - cell "9.57377209 985.11242674473"
+        - cell "0.98511242674473"
+        - cell "984.12731481708"
+        - cell "0 0"
+        - cell "984.12731481708"
+      - row "9 · 买入 2025-01-01 01:03:00.000 UTC ma-cross-up 103 103.103 9.53555348 983.14417044844 0.98314417044844 0.00000019819156 9.53555348 982.16200844 982.16200863819156":
+        - cell "9 · 买入"
+        - cell "2025-01-01 01:03:00.000 UTC"
+        - cell "ma-cross-up"
+        - cell "103 103.103"
+        - cell "9.53555348 983.14417044844"
+        - cell "0.98314417044844"
+        - cell "0.00000019819156"
+        - cell "9.53555348 982.16200844"
+        - cell "982.16200863819156"
+      - row "10 · 卖出 2025-01-01 01:09:00.000 UTC ma-cross-down 103 102.897 9.53555348 981.17984643156 0.98117984643156 980.19866678332 0 0 980.19866678332":
+        - cell "10 · 卖出"
+        - cell "2025-01-01 01:09:00.000 UTC"
+        - cell "ma-cross-down"
+        - cell "103 102.897"
+        - cell "9.53555348 981.17984643156"
+        - cell "0.98117984643156"
+        - cell "980.19866678332"
+        - cell "0 0"
+        - cell "980.19866678332"
+      - row "11 · 买入 2025-01-01 01:15:00.000 UTC ma-cross-up 103 103.103 9.49748743 979.21944649529 0.97921944649529 0.00000084153471 9.49748743 978.24120529 978.24120613153471":
+        - cell "11 · 买入"
+        - cell "2025-01-01 01:15:00.000 UTC"
+        - cell "ma-cross-up"
+        - cell "103 103.103"
+        - cell "9.49748743 979.21944649529"
+        - cell "0.97921944649529"
+        - cell "0.00000084153471"
+        - cell "9.49748743 978.24120529"
+        - cell "978.24120613153471"
+      - row "12 · 卖出 2025-01-01 01:21:00.000 UTC ma-cross-down 103 102.897 9.49748743 977.26296408471 0.97726296408471 976.28570196216 0 0 976.28570196216":
+        - cell "12 · 卖出"
+        - cell "2025-01-01 01:21:00.000 UTC"
+        - cell "ma-cross-down"
+        - cell "103 102.897"
+        - cell "9.49748743 977.26296408471"
+        - cell "0.97726296408471"
+        - cell "976.28570196216"
+        - cell "0 0"
+        - cell "976.28570196216"
+      - row "13 · 买入 2025-01-01 01:27:00.000 UTC ma-cross-up 103 103.103 9.45957335 975.31039110505 0.97531039110505 0.00000046600495 9.45957335 974.33605505 974.33605551600495":
+        - cell "13 · 买入"
+        - cell "2025-01-01 01:27:00.000 UTC"
+        - cell "ma-cross-up"
+        - cell "103 103.103"
+        - cell "9.45957335 975.31039110505"
+        - cell "0.97531039110505"
+        - cell "0.00000046600495"
+        - cell "9.45957335 974.33605505"
+        - cell "974.33605551600495"
+      - row "14 · 卖出 2025-01-01 01:33:00.000 UTC ma-cross-down 103 102.897 9.45957335 973.36171899495 0.97336171899495 972.38835774196 0 0 972.38835774196":
+        - cell "14 · 卖出"
+        - cell "2025-01-01 01:33:00.000 UTC"
+        - cell "ma-cross-down"
+        - cell "103 102.897"
+        - cell "9.45957335 973.36171899495"
+        - cell "0.97336171899495"
+        - cell "972.38835774196"
+        - cell "0 0"
+        - cell "972.38835774196"
+      - row "15 · 买入 2025-01-01 01:39:00.000 UTC ma-cross-up 103 103.103 9.42181062 971.41694035386 0.97141694035386 0.00000044774614 9.42181062 970.44649386 970.44649430774614":
+        - cell "15 · 买入"
+        - cell "2025-01-01 01:39:00.000 UTC"
+        - cell "ma-cross-up"
+        - cell "103 103.103"
+        - cell "9.42181062 971.41694035386"
+        - cell "0.97141694035386"
+        - cell "0.00000044774614"
+        - cell "9.42181062 970.44649386"
+        - cell "970.44649430774614"
+      - row "16 · 卖出 2025-01-01 01:45:00.000 UTC ma-cross-down 103 102.897 9.42181062 969.47604736614 0.96947604736614 968.50657176652 0 0 968.50657176652":
+        - cell "16 · 卖出"
+        - cell "2025-01-01 01:45:00.000 UTC"
+        - cell "ma-cross-down"
+        - cell "103 102.897"
+        - cell "9.42181062 969.47604736614"
+        - cell "0.96947604736614"
+        - cell "968.50657176652"
+        - cell "0 0"
+        - cell "968.50657176652"
+      - row "17 · 买入 2025-01-01 01:51:00.000 UTC ma-cross-up 103 103.103 9.38419864 967.53903237992 0.96753903237992 0.00000035422008 9.38419864 966.57245992 966.57246027422008":
+        - cell "17 · 买入"
+        - cell "2025-01-01 01:51:00.000 UTC"
+        - cell "ma-cross-up"
+        - cell "103 103.103"
+        - cell "9.38419864 967.53903237992"
+        - cell "0.96753903237992"
+        - cell "0.00000035422008"
+        - cell "9.38419864 966.57245992"
+        - cell "966.57246027422008"
+      - row "18 · 卖出 2025-01-01 01:57:00.000 UTC ma-cross-down 103 102.897 9.38419864 965.60588746008 0.96560588746008 964.64028192684 0 0 964.64028192684":
+        - cell "18 · 卖出"
+        - cell "2025-01-01 01:57:00.000 UTC"
+        - cell "ma-cross-down"
+        - cell "103 102.897"
+        - cell "9.38419864 965.60588746008"
+        - cell "0.96560588746008"
+        - cell "964.64028192684"
+        - cell "0 0"
+        - cell "964.64028192684"
+      - row "19 · 买入 2025-01-01 02:03:00.000 UTC ma-cross-up 103 103.103 9.34673681 963.67660532143 0.96367660532143 0.00000000008857 9.34673681 962.71389143 962.71389143008857":
+        - cell "19 · 买入"
+        - cell "2025-01-01 02:03:00.000 UTC"
+        - cell "ma-cross-up"
+        - cell "103 103.103"
+        - cell "9.34673681 963.67660532143"
+        - cell "0.96367660532143"
+        - cell "0.00000000008857"
+        - cell "9.34673681 962.71389143"
+        - cell "962.71389143008857"
+      - row "20 · 卖出 2025-01-01 02:09:00.000 UTC ma-cross-down 103 102.897 9.34673681 961.75117753857 0.96175117753857 960.78942636112 0 0 960.78942636112":
+        - cell "20 · 卖出"
+        - cell "2025-01-01 02:09:00.000 UTC"
+        - cell "ma-cross-down"
+        - cell "103 102.897"
+        - cell "9.34673681 961.75117753857"
+        - cell "0.96175117753857"
+        - cell "960.78942636112"
+        - cell "0 0"
+        - cell "960.78942636112"
+      - row "21 · 买入 2025-01-01 02:15:00.000 UTC ma-cross-up 103 103.103 9.30942452 959.82959628556 0.95982959628556 0.00000047927444 9.30942452 958.87072556 958.87072603927444":
+        - cell "21 · 买入"
+        - cell "2025-01-01 02:15:00.000 UTC"
+        - cell "ma-cross-up"
+        - cell "103 103.103"
+        - cell "9.30942452 959.82959628556"
+        - cell "0.95982959628556"
+        - cell "0.00000047927444"
+        - cell "9.30942452 958.87072556"
+        - cell "958.87072603927444"
+      - row "22 · 卖出 2025-01-01 02:21:00.000 UTC ma-cross-down 103 102.897 9.30942452 957.91185483444 0.95791185483444 956.95394345888 0 0 956.95394345888":
+        - cell "22 · 卖出"
+        - cell "2025-01-01 02:21:00.000 UTC"
+        - cell "ma-cross-down"
+        - cell "103 102.897"
+        - cell "9.30942452 957.91185483444"
+        - cell "0.95791185483444"
+        - cell "956.95394345888"
+        - cell "0 0"
+        - cell "956.95394345888"
+      - row "23 · 买入 2025-01-01 02:27:00.000 UTC ma-cross-up 103 103.103 9.27226119 955.99794547257 0.95599794547257 0.00000004083743 9.27226119 955.04290257 955.04290261083743":
+        - cell "23 · 买入"
+        - cell "2025-01-01 02:27:00.000 UTC"
+        - cell "ma-cross-up"
+        - cell "103 103.103"
+        - cell "9.27226119 955.99794547257"
+        - cell "0.95599794547257"
+        - cell "0.00000004083743"
+        - cell "9.27226119 955.04290257"
+        - cell "955.04290261083743"
+      - row "24 · 卖出 2025-01-01 02:33:00.000 UTC ma-cross-down 103 102.897 9.27226119 954.08785966743 0.95408785966743 953.1337718486 0 0 953.1337718486":
+        - cell "24 · 卖出"
+        - cell "2025-01-01 02:33:00.000 UTC"
+        - cell "ma-cross-down"
+        - cell "103 102.897"
+        - cell "9.27226119 954.08785966743"
+        - cell "0.95408785966743"
+        - cell "953.1337718486"
+        - cell "0 0"
+        - cell "953.1337718486"
+      - row "25 · 买入 2025-01-01 02:39:00.000 UTC ma-cross-up 103 103.103 9.23524621 952.18158998963 0.95218158998963 0.00000026898037 9.23524621 951.23035963 951.23035989898037":
+        - cell "25 · 买入"
+        - cell "2025-01-01 02:39:00.000 UTC"
+        - cell "ma-cross-up"
+        - cell "103 103.103"
+        - cell "9.23524621 952.18158998963"
+        - cell "0.95218158998963"
+        - cell "0.00000026898037"
+        - cell "9.23524621 951.23035963"
+        - cell "951.23035989898037"
+      - row "26 · 卖出 2025-01-01 02:45:00.000 UTC ma-cross-down 103 102.897 9.23524621 950.27912927037 0.95027912927037 949.32885041008 0 0 949.32885041008":
+        - cell "26 · 卖出"
+        - cell "2025-01-01 02:45:00.000 UTC"
+        - cell "ma-cross-down"
+        - cell "103 102.897"
+        - cell "9.23524621 950.27912927037"
+        - cell "0.95027912927037"
+        - cell "949.32885041008"
+        - cell "0 0"
+        - cell "949.32885041008"
+      - row "27 · 买入 2025-01-01 02:51:00.000 UTC ma-cross-up 103 103.103 9.19837899 948.38046900597 0.94838046900597 0.00000093510403 9.19837899 947.43303597 947.43303690510403":
+        - cell "27 · 买入"
+        - cell "2025-01-01 02:51:00.000 UTC"
+        - cell "ma-cross-up"
+        - cell "103 103.103"
+        - cell "9.19837899 948.38046900597"
+        - cell "0.94838046900597"
+        - cell "0.00000093510403"
+        - cell "9.19837899 947.43303597"
+        - cell "947.43303690510403"
+      - row "28 · 卖出 2025-01-01 02:57:00.000 UTC ma-cross-down 103 102.897 9.19837899 946.48560293403 0.94648560293403 945.5391182662 0 0 945.5391182662":
+        - cell "28 · 卖出"
+        - cell "2025-01-01 02:57:00.000 UTC"
+        - cell "ma-cross-down"
+        - cell "103 102.897"
+        - cell "9.19837899 946.48560293403"
+        - cell "0.94648560293403"
+        - cell "945.5391182662"
+        - cell "0 0"
+        - cell "945.5391182662"
+      - row "29 · 买入 2025-01-01 03:03:00.000 UTC ma-cross-up 103 103.103 9.16165895 944.59452272185 0.94459452272185 0.00000102162815 9.16165895 943.65087185 943.65087287162815":
+        - cell "29 · 买入"
+        - cell "2025-01-01 03:03:00.000 UTC"
+        - cell "ma-cross-up"
+        - cell "103 103.103"
+        - cell "9.16165895 944.59452272185"
+        - cell "0.94459452272185"
+        - cell "0.00000102162815"
+        - cell "9.16165895 943.65087185"
+        - cell "943.65087287162815"
+      - row "30 · 卖出 2025-01-01 03:09:00.000 UTC ma-cross-down 103 102.897 9.16165895 942.70722097815 0.94270722097815 941.7645147788 0 0 941.7645147788":
+        - cell "30 · 卖出"
+        - cell "2025-01-01 03:09:00.000 UTC"
+        - cell "ma-cross-down"
+        - cell "103 102.897"
+        - cell "9.16165895 942.70722097815"
+        - cell "0.94270722097815"
+        - cell "941.7645147788"
+        - cell "0 0"
+        - cell "941.7645147788"
+      - row "31 · 买入 2025-01-01 03:15:00.000 UTC ma-cross-up 103 103.103 9.1250855 940.8236903065 0.9408236903065 0.0000007819935 9.1250855 939.8838065 939.8838072819935":
+        - cell "31 · 买入"
+        - cell "2025-01-01 03:15:00.000 UTC"
+        - cell "ma-cross-up"
+        - cell "103 103.103"
+        - cell "9.1250855 940.8236903065"
+        - cell "0.9408236903065"
+        - cell "0.0000007819935"
+        - cell "9.1250855 939.8838065"
+        - cell "939.8838072819935"
+      - row "32 · 卖出 2025-01-01 03:21:00.000 UTC ma-cross-down 103 102.897 9.1250855 938.9439226935 0.9389439226935 938.0049795528 0 0 938.0049795528":
+        - cell "32 · 卖出"
+        - cell "2025-01-01 03:21:00.000 UTC"
+        - cell "ma-cross-down"
+        - cell "103 102.897"
+        - cell "9.1250855 938.9439226935"
+        - cell "0.9389439226935"
+        - cell "938.0049795528"
+        - cell "0 0"
+        - cell "938.0049795528"
+      - row "33 · 买入 2025-01-01 03:27:00.000 UTC ma-cross-up 103 103.103 9.08865805 937.06791092915 0.93706791092915 0.00000071272085 9.08865805 936.13177915 936.13177986272085":
+        - cell "33 · 买入"
+        - cell "2025-01-01 03:27:00.000 UTC"
+        - cell "ma-cross-up"
+        - cell "103 103.103"
+        - cell "9.08865805 937.06791092915"
+        - cell "0.93706791092915"
+        - cell "0.00000071272085"
+        - cell "9.08865805 936.13177915"
+        - cell "936.13177986272085"
+      - row "34 · 卖出 2025-01-01 03:33:00.000 UTC ma-cross-down 103 102.897 9.08865805 935.19564737085 0.93519564737085 934.2604524362 0 0 934.2604524362":
+        - cell "34 · 卖出"
+        - cell "2025-01-01 03:33:00.000 UTC"
+        - cell "ma-cross-down"
+        - cell "103 102.897"
+        - cell "9.08865805 935.19564737085"
+        - cell "0.93519564737085"
+        - cell "934.2604524362"
+        - cell "0 0"
+        - cell "934.2604524362"
+      - row "35 · 买入 2025-01-01 03:39:00.000 UTC ma-cross-up 103 103.103 9.05237602 933.32712479006 0.93332712479006 0.00000052134994 9.05237602 932.39473006 932.39473058134994":
+        - cell "35 · 买入"
+        - cell "2025-01-01 03:39:00.000 UTC"
+        - cell "ma-cross-up"
+        - cell "103 103.103"
+        - cell "9.05237602 933.32712479006"
+        - cell "0.93332712479006"
+        - cell "0.00000052134994"
+        - cell "9.05237602 932.39473006"
+        - cell "932.39473058134994"
+      - row "36 · 卖出 2025-01-01 03:45:00.000 UTC ma-cross-down 103 102.897 9.05237602 931.46233532994 0.93146233532994 930.53087351596 0 0 930.53087351596":
+        - cell "36 · 卖出"
+        - cell "2025-01-01 03:45:00.000 UTC"
+        - cell "ma-cross-down"
+        - cell "103 102.897"
+        - cell "9.05237602 931.46233532994"
+        - cell "0.93146233532994"
+        - cell "930.53087351596"
+        - cell "0 0"
+        - cell "930.53087351596"
+      - row "37 · 买入 2025-01-01 03:51:00.000 UTC ma-cross-up 103 103.103 9.01623883 929.60127208949 0.92960127208949 0.00000015438051 9.01623883 928.67259949 928.67259964438051":
+        - cell "37 · 买入"
+        - cell "2025-01-01 03:51:00.000 UTC"
+        - cell "ma-cross-up"
+        - cell "103 103.103"
+        - cell "9.01623883 929.60127208949"
+        - cell "0.92960127208949"
+        - cell "0.00000015438051"
+        - cell "9.01623883 928.67259949"
+        - cell "928.67259964438051"
+      - row "38 · 卖出 2025-01-01 03:57:00.000 UTC ma-cross-down 103 102.897 9.01623883 927.74392689051 0.92774392689051 926.816183118 0 0 926.816183118":
+        - cell "38 · 卖出"
+        - cell "2025-01-01 03:57:00.000 UTC"
+        - cell "ma-cross-down"
+        - cell "103 102.897"
+        - cell "9.01623883 927.74392689051"
+        - cell "0.92774392689051"
+        - cell "926.816183118"
+        - cell "0 0"
+        - cell "926.816183118"
+      - row "39 · 买入 2025-01-01 04:03:00.000 UTC ma-cross-up 103 103.103 8.98024589 925.89029199667 0.92589029199667 0.00000082933333 8.98024589 924.96532667 924.96532749933333":
+        - cell "39 · 买入"
+        - cell "2025-01-01 04:03:00.000 UTC"
+        - cell "ma-cross-up"
+        - cell "103 103.103"
+        - cell "8.98024589 925.89029199667"
+        - cell "0.92589029199667"
+        - cell "0.00000082933333"
+        - cell "8.98024589 924.96532667"
+        - cell "924.96532749933333"
+      - row "40 · 卖出 2025-01-01 04:09:00.000 UTC ma-cross-down 103 102.897 8.98024589 924.04036134333 0.92404036134333 923.11632181132 0 0 923.11632181132":
+        - cell "40 · 卖出"
+        - cell "2025-01-01 04:09:00.000 UTC"
+        - cell "ma-cross-down"
+        - cell "103 102.897"
+        - cell "8.98024589 924.04036134333"
+        - cell "0.92404036134333"
+        - cell "923.11632181132"
+        - cell "0 0"
+        - cell "923.11632181132"
+      - row "41 · 买入 2025-01-01 04:15:00.000 UTC ma-cross-up 103 103.103 8.94439664 922.19412677392 0.92219412677392 0.00000091062608 8.94439664 921.27285392 921.27285483062608":
+        - cell "41 · 买入"
+        - cell "2025-01-01 04:15:00.000 UTC"
+        - cell "ma-cross-up"
+        - cell "103 103.103"
+        - cell "8.94439664 922.19412677392"
+        - cell "0.92219412677392"
+        - cell "0.00000091062608"
+        - cell "8.94439664 921.27285392"
+        - cell "921.27285483062608"
+      - row "42 · 卖出 2025-01-01 04:21:00.000 UTC ma-cross-down 103 102.897 8.94439664 920.35158106608 0.92035158106608 919.43123039564 0 0 919.43123039564":
+        - cell "42 · 卖出"
+        - cell "2025-01-01 04:21:00.000 UTC"
+        - cell "ma-cross-down"
+        - cell "103 102.897"
+        - cell "8.94439664 920.35158106608"
+        - cell "0.92035158106608"
+        - cell "919.43123039564"
+        - cell "0 0"
+        - cell "919.43123039564"
+      - row "43 · 买入 2025-01-01 04:27:00.000 UTC ma-cross-up 103 103.103 8.90869051 918.51271765253 0.91851271765253 0.00000002545747 8.90869051 917.59512253 917.59512255545747":
+        - cell "43 · 买入"
+        - cell "2025-01-01 04:27:00.000 UTC"
+        - cell "ma-cross-up"
+        - cell "103 103.103"
+        - cell "8.90869051 918.51271765253"
+        - cell "0.91851271765253"
+        - cell "0.00000002545747"
+        - cell "8.90869051 917.59512253"
+        - cell "917.59512255545747"
+      - row "44 · 卖出 2025-01-01 04:33:00.000 UTC ma-cross-down 103 102.897 8.90869051 916.67752740747 0.91667752740747 915.76084990552 0 0 915.76084990552":
+        - cell "44 · 卖出"
+        - cell "2025-01-01 04:33:00.000 UTC"
+        - cell "ma-cross-down"
+        - cell "103 102.897"
+        - cell "8.90869051 916.67752740747"
+        - cell "0.91667752740747"
+        - cell "915.76084990552"
+        - cell "0 0"
+        - cell "915.76084990552"
+      - row "45 · 买入 2025-01-01 04:39:00.000 UTC ma-cross-up 103 103.103 8.87312691 914.84600380173 0.91484600380173 0.00000009998827 8.87312691 913.93207173 913.93207182998827":
+        - cell "45 · 买入"
+        - cell "2025-01-01 04:39:00.000 UTC"
+        - cell "ma-cross-up"
+        - cell "103 103.103"
+        - cell "8.87312691 914.84600380173"
+        - cell "0.91484600380173"
+        - cell "0.00000009998827"
+        - cell "8.87312691 913.93207173"
+        - cell "913.93207182998827"
+      - row "46 · 卖出 2025-01-01 04:45:00.000 UTC ma-cross-down 103 102.897 8.87312691 913.01813965827 0.91301813965827 912.1051216186 0 0 912.1051216186":
+        - cell "46 · 卖出"
+        - cell "2025-01-01 04:45:00.000 UTC"
+        - cell "ma-cross-down"
+        - cell "103 102.897"
+        - cell "8.87312691 913.01813965827"
+        - cell "0.91301813965827"
+        - cell "912.1051216186"
+        - cell "0 0"
+        - cell "912.1051216186"
+      - row "47 · 买入 2025-01-01 04:51:00.000 UTC ma-cross-up 103 103.103 8.83770528 911.19392748384 0.91119392748384 0.00000020727616 8.83770528 910.28364384 910.28364404727616":
+        - cell "47 · 买入"
+        - cell "2025-01-01 04:51:00.000 UTC"
+        - cell "ma-cross-up"
+        - cell "103 103.103"
+        - cell "8.83770528 911.19392748384"
+        - cell "0.91119392748384"
+        - cell "0.00000020727616"
+        - cell "8.83770528 910.28364384"
+        - cell "910.28364404727616"
+      - row "48 · 卖出 2025-01-01 04:57:00.000 UTC ma-cross-down 103 102.897 8.83770528 909.37336019616 0.90937336019616 908.46398704324 0 0 908.46398704324":
+        - cell "48 · 卖出"
+        - cell "2025-01-01 04:57:00.000 UTC"
+        - cell "ma-cross-down"
+        - cell "103 102.897"
+        - cell "8.83770528 909.37336019616"
+        - cell "0.90937336019616"
+        - cell "908.46398704324"
+        - cell "0 0"
+        - cell "908.46398704324"
+      - row "49 · 买入 2025-01-01 05:03:00.000 UTC ma-cross-up 103 103.103 8.80242505 907.55642993015 0.90755642993015 0.00000068315985 8.80242505 906.64978015 906.64978083315985":
+        - cell "49 · 买入"
+        - cell "2025-01-01 05:03:00.000 UTC"
+        - cell "ma-cross-up"
+        - cell "103 103.103"
+        - cell "8.80242505 907.55642993015"
+        - cell "0.90755642993015"
+        - cell "0.00000068315985"
+        - cell "8.80242505 906.64978015"
+        - cell "906.64978083315985"
+      - row "50 · 卖出 2025-01-01 05:09:00.000 UTC ma-cross-down 103 102.897 8.80242505 905.74313036985 0.90574313036985 904.83738792264 0 0 904.83738792264":
+        - cell "50 · 卖出"
+        - cell "2025-01-01 05:09:00.000 UTC"
+        - cell "ma-cross-down"
+        - cell "103 102.897"
+        - cell "8.80242505 905.74313036985"
+        - cell "0.90574313036985"
+        - cell "904.83738792264"
+        - cell "0 0"
+        - cell "904.83738792264"
+  - heading "拒绝、取消与到期事件（1）" [level=3]
+  - button "上一页" [disabled]
+  - text: 第 1 / 1 页
+  - button "下一页" [disabled]
+  - table "未成交订单事件":
+    - rowgroup:
+      - row "订单/目标K线 状态 原因 原信号/触发":
+        - columnheader "订单/目标K线"
+        - columnheader "状态"
+        - columnheader "原因"
+        - columnheader "原信号/触发"
+    - rowgroup:
+      - row "order-8 · 9 被拒绝 当前空仓，不能卖出 ma-cross-down":
+        - cell "order-8 · 9"
+        - cell "被拒绝"
+        - cell "当前空仓，不能卖出"
+        - cell "ma-cross-down"
+  - paragraph: 仅供学习研究，历史表现不代表未来表现 · 不提供投资建议。
+  - strong: 仅供学习研究 · 不提供投资建议
+  - paragraph: 历史表现不代表未来表现。所有研究与模拟均不涉及真实资金。
+  - text: RiverLab Crypto Lab 保持好奇，也保持审慎。
+```
+
+# Test source
+
+```ts
+  1   | import { test, expect } from '@playwright/test';
+  2   | import type { Page } from '@playwright/test';
+  3   | import { readFile, writeFile } from 'node:fs/promises';
+  4   | import { cpus, platform, release } from 'node:os';
+  5   | async function prepare(page: Page, rows = 24) {
+  6   |   await page.goto('/#/datasets');
+  7   |   if (rows === 24)
+  8   |     await page
+  9   |       .getByRole('button', { name: '真实历史样本 · BTCUSDT · 1 小时' })
+  10  |       .click();
+  11  |   else {
+  12  |     const csv =
+  13  |       'timestamp,open,high,low,close,volume\n' +
+  14  |       Array.from({ length: rows }, (_, i) => {
+  15  |         const p = 100 + (i % 12 < 6 ? i % 6 : 6 - (i % 6));
+  16  |         return `${1735689600000 + i * 60000},${p},${p + 2},${p - 2},${p},1`;
+  17  |       }).join('\n');
+  18  |     await page.getByLabel('选择本地 CSV').setInputFiles({
+  19  |       name: `synthetic-${rows}.csv`,
+  20  |       mimeType: 'text/csv',
+  21  |       buffer: Buffer.from(csv),
+  22  |     });
+  23  |   }
+  24  |   await expect(
+  25  |     page.getByText(`读到 ${rows} 条数据记录。`, { exact: false }),
+  26  |   ).toBeVisible();
+  27  |   await page.getByLabel('预期固定周期（秒）').fill(rows === 24 ? '3600' : '60');
+  28  |   await page.getByRole('button', { name: '检查并生成导入报告' }).click();
+  29  |   await expect(page.getByText('检查完成（仅文件内）')).toBeVisible();
+  30  |   await page
+  31  |     .getByLabel('币种 / 交易对（自述，不认证来源）')
+  32  |     .fill(rows === 24 ? 'BTC/USDT' : 'SYNTHETIC/USDT');
+  33  |   await page.getByRole('checkbox', { name: /我已阅读 .* 项警告/ }).check();
+  34  |   await page
+  35  |     .getByRole('button', { name: '保存已检查数据集', exact: true })
+  36  |     .click();
+  37  |   await expect(
+  38  |     page.getByText('已保存数据集（IndexedDB 事务已完成）。请另行备份。'),
+  39  |   ).toBeVisible();
+  40  |   await page
+  41  |     .getByRole('navigation')
+  42  |     .getByRole('link', { name: '回测中心' })
+  43  |     .click();
+  44  |   await page.getByLabel('回测数据集').selectOption({ index: 1 });
+  45  |   await expect(
+  46  |     page.getByText('已读取并校验保存的数据集，请确认收盘状态。'),
+  47  |   ).toBeVisible();
+  48  | }
+  49  | async function run(page: Page, kind = 'ma') {
+  50  |   await page
+  51  |     .getByRole('combobox', { name: '策略', exact: true })
+  52  |     .selectOption(kind);
+  53  |   if (kind === 'ma') {
+  54  |     await page.getByLabel('MA 快线周期').fill('2');
+  55  |     await page.getByLabel('MA 慢线周期').fill('4');
+  56  |   }
+  57  |   if (kind === 'rsi') await page.getByLabel('RSI 周期').fill('3');
+  58  |   if (kind === 'breakout') await page.getByLabel('突破回看周期').fill('2');
+  59  |   await page.getByRole('checkbox', { name: /我确认本数据集全部 K 线/ }).check();
+  60  |   await page.getByRole('button', { name: '运行回测', exact: true }).click();
+  61  |   await expect(
+  62  |     page.getByText('回测成功；结果尚未保存，刷新会丢失。'),
+> 63  |   ).toBeVisible();
+      |     ^ Error: expect(locator).toBeVisible() failed
+  64  |   await expect(page.getByTestId('result-curves')).toHaveAttribute(
+  65  |     'data-ready',
+  66  |     'true',
+  67  |   );
+  68  | }
+  69  | const pnl = (page: Page) => page.locator('[data-metric="总净盈亏 USDT"]');
+  70  | for (const kind of ['ma', 'rsi', 'breakout'])
+  71  |   test(`${kind} 完整Worker回测、曲线、账本、JSON/CSV、保存刷新重开与删除，外网阻断`, async ({
+  72  |     page,
+  73  |   }, info) => {
+  74  |     const external: string[] = [],
+  75  |       errors: string[] = [];
+  76  |     page.on('pageerror', (e) => errors.push(e.message));
+  77  |     await page.route('**/*', async (route) => {
+  78  |       const url = new URL(route.request().url());
+  79  |       if (url.origin === 'http://127.0.0.1:4173') await route.continue();
+  80  |       else {
+  81  |         external.push(url.href);
+  82  |         await route.abort();
+  83  |       }
+  84  |     });
+  85  |     await prepare(page);
+  86  |     await run(page, kind);
+  87  |     await expect(page.locator('[data-metric="年化收益"]')).toContainText('NA');
+  88  |     expect(
+  89  |       await page.evaluate(
+  90  |         () => document.documentElement.scrollWidth <= innerWidth,
+  91  |       ),
+  92  |     ).toBe(true);
+  93  |     await page.setViewportSize({ width: 390, height: 844 });
+  94  |     expect(
+  95  |       await page.evaluate(
+  96  |         () => document.documentElement.scrollWidth <= innerWidth,
+  97  |       ),
+  98  |     ).toBe(true);
+  99  |     await page.getByRole('button', { name: '切换为浅色主题' }).click();
+  100 |     await expect(page.getByTestId('result-curves')).toHaveAttribute(
+  101 |       'data-ready',
+  102 |       'true',
+  103 |     );
+  104 |     expect(
+  105 |       await page.evaluate(
+  106 |         () => document.documentElement.scrollWidth <= innerWidth,
+  107 |       ),
+  108 |     ).toBe(true);
+  109 |     await page.setViewportSize({ width: 1440, height: 1000 });
+  110 |     const before = await pnl(page).textContent();
+  111 |     const j = page.waitForEvent('download');
+  112 |     await page.getByRole('button', { name: '导出实验 JSON' }).click();
+  113 |     const json = JSON.parse(await readFile((await (await j).path())!, 'utf8'));
+  114 |     expect(json.payload.disclaimer).toBe(
+  115 |       '仅供学习研究，历史表现不代表未来表现',
+  116 |     );
+  117 |     expect(json.payload.result.manifest.strategy.config.kind).toBe(kind);
+  118 |     expect(json.payload.statistics.netPnl).toBe(before);
+  119 |     expect(json.payload.dataset.candles).toHaveLength(24);
+  120 |     const c = page.waitForEvent('download');
+  121 |     await page.getByRole('button', { name: '导出交易 CSV' }).click();
+  122 |     const csv = await readFile((await (await c).path())!, 'utf8');
+  123 |     expect(csv).toContain(json.payload.result.manifest.runHash);
+  124 |     expect(csv).toContain('timestampUtcMs');
+  125 |     await page
+  126 |       .getByRole('button', { name: '保存回测实验', exact: true })
+  127 |       .click();
+  128 |     await expect(
+  129 |       page.getByText('实验已保存（事务已完成）。请另行导出JSON备份。'),
+  130 |     ).toBeVisible();
+  131 |     await page.reload();
+  132 |     await expect(pnl(page)).toHaveCount(0);
+  133 |     await expect(page.getByLabel('回测数据集')).toHaveValue('');
+  134 |     await page
+  135 |       .getByRole('navigation')
+  136 |       .getByRole('link', { name: '实验中心' })
+  137 |       .click();
+  138 |     await page.getByRole('button', { name: /打开实验/ }).click();
+  139 |     await expect(
+  140 |       page.getByText('实验校验与重算一致，已重新打开结果。'),
+  141 |     ).toBeVisible();
+  142 |     await expect(pnl(page)).toHaveText(before!);
+  143 |     await page.getByRole('button', { name: '复现本实验', exact: true }).click();
+  144 |     await expect(
+  145 |       page.getByText('回测成功；结果尚未保存，刷新会丢失。'),
+  146 |     ).toBeVisible();
+  147 |     await expect(pnl(page)).toHaveText(before!);
+  148 |     const j2 = page.waitForEvent('download');
+  149 |     await page.getByRole('button', { name: '导出实验 JSON' }).click();
+  150 |     const again = JSON.parse(
+  151 |       await readFile((await (await j2).path())!, 'utf8'),
+  152 |     );
+  153 |     expect(again.payload).toEqual(json.payload);
+  154 |     expect(again.payloadHash).toBe(json.payloadHash);
+  155 |     await page.getByRole('button', { name: /删除实验 / }).click();
+  156 |     await page
+  157 |       .getByRole('button', { name: '确认删除实验', exact: true })
+  158 |       .click();
+  159 |     await expect(page.getByText('尚无已保存实验。')).toBeVisible();
+  160 |     await page.reload();
+  161 |     await expect(page.getByText('尚无已保存实验。')).toBeVisible();
+  162 |     await page.setViewportSize({ width: 390, height: 844 });
+  163 |     expect(
+```

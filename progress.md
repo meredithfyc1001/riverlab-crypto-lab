@@ -1,6 +1,44 @@
 # RiverLab Crypto Lab 进度
 
-## 当前恢复入口：Phase 5A待审交付（2026-11-09）
+## 当前恢复入口：Phase 5B 工程交付待验收（2026-11-11）
+
+用户明确授权按Issue#10完整开发。已完整读取任务、AGENTS/plan/progress、原规划及2B/2C/3/4/5A契约。GitHub确认PR#9于UTC11:55:09合并，main=b0c9664fc5c37cf70686ca3735e317ad3c8a0a88；已fetch/pull同步，从干净工作区建立feat/phase-5b-rule-editor。首次沙箱Git代理连接失败，经受支持权限重试成功；GH CLI读取Actions返回Forbidden，改用现有GitHub连接器读取，不修改网络/凭据。
+
+main最新CI run43015906736四作业实际success；已读取Ubuntu130506784972、Edge130506785350、Chrome130506785437完整日志，各354项Vitest/40项E2E、npm ci/check和5个独立参考成功；WindowsZIP130509235260双浏览器中文空格/BAT/旧功能/风险/保存导出/停止成功。这是基线证据，不是5B测试。Issue记录的此前单独Edge性能等待消息超时保留，不以本次main成功抹除，不代填用户Windows实机。
+
+已汇报DSL、预热/冲突/重复、指标精度、旧报告兼容与Windows包风险，先写[设计](docs/phase-5b-design.md)。本轮无真实交易/下单/联网行情。目标Draft PR#10，用户验收前不合并/发布/部署；历史未测事实保持。5B测试尚待实际执行。
+
+## Phase 5B 功能快照三平台与Windows包实际通过
+
+已将Issue#10转换为[Draft PR#10](https://github.com/meredithfyc1001/riverlab-crypto-lab/pull/10)，原始任务在docs/phase-5b-task.md保留，工作分支feat/phase-5b-rule-editor，main仍b0c9664，无合并/Release/部署。功能快照fe17089fa09564f3bdcb3715115fc0851db53f56的[run43023800278](https://github.com/meredithfyc1001/riverlab-crypto-lab/actions/runs/43023800278)四作业全部success，已读取实际完整日志。Ubuntu130533288421、Chrome130533288780、Edge130533288225各npm ci/check、457项Vitest/45项E2E、全部8个独立Python参考成功；原354/40回归保留，无删断言/跳过/阈值放宽。
+
+| 平台            | 浏览器        | 50k/10条件 ms | 最大主线程间隔 ms |
+| --------------- | ------------- | ------------: | ----------------: |
+| Ubuntu Chromium | 156.0.8078.4  |          3197 |             319.8 |
+| Windows Chrome  | 156.0.8078.80 |          2635 |             238.5 |
+| Windows Edge    | 156.0.4314.58 |          3365 |             411.4 |
+
+Node24.22.2/2逻辑核；Ubuntu Linux7.0.0-1019-azure/Xeon8370C，Windows10.0.26100，Chrome EPYC9V74、Edge EPYC7763。全部为人工合成数据，含规则/账本/统计/hash/Worker传输/全点绘图，20秒/1000ms门槛保持，不是所有机器保证。[结构化CI证据](docs/phase-5b-ci-evidence.json)。
+
+WindowsZIP job130536125279实际双浏览器中文空格路径Expand-Archive/BAT前台127.0.0.1启动、旧回测/研究/风险/回放、新自定义规则创建→回测→保存实验/JSON→刷新重开重算→规则JSON导入、0外部请求/0页面错误、穿越/Host/POST拒绝、端口占用/缺dist预期失败及Enter停止释放端口全部通过。Chrome156.0.8078.80、Edge156.0.4314.58。build-info完整SHA为fe17089、phase=5B、version=0.5.1-test、dirty=false均实际校验。快照内层822640bytes，SHA256=6af4b3b7eeeffcb03b701f2e9eabba18ce50c0666464ce6d87970762b37f8943；快照artifact13857355262有效至UTC2026-11-25 12:57:31。**此为功能快照；最终下载必须用PR#10正文绑定最新head的成功包，不用旧快照替代。**
+
+本机Linux完整check退出0：25文件/457项Vitest、45项E2E、格式/lint/strict核心/应用/测试/生产构建全部通过。[原日志](docs/phase-5b-evidence/local-full-check-success.log)。50k/10条件4434ms、最大411.7ms；旧2C 50k5000ms到全点图亦通过。Intel Xeon8573C/3可见核/cgroup2CPU，Node24.19.0/Chromium154.0.8037.57；最初性能失败不抹除。全部独立参考成功。[本机证据](docs/phase-5b-local-evidence.json)。
+
+收尾复核将同类型同周期MA/EMA在每个已完成timestamp只计算一次，各条件交叉历史独立；不改变数值/预热/规则语义。新增2项MA/EMA重复条件等价测试，93项规则专项、严格构建与本机ZIP通过；后续完整测试与CI须对最新提交执行。Linux开发ZIP实际新规则/保存刷新/导出/停止全部通过、0外部请求/0页面错误，包含此工作树改动但build-info明确dirty=true、源fe17089，BAT未在Linux执行，不冒充最终下载或Windows实机。
+
+React Best Practices复核：无条件Hooks，generation阻止迟到导入覆盖新草稿，Worker任务取消/世代清理，原生label/fieldset/键盘，最多10条件与100版本、结果分页；domain计算在core，app装配feature，兄弟模块未互相导入。390px深浅截图已查看，修正原生控件未统一样式后无横向溢出。无新依赖，默认Vite主包570.7kB/gzip186.6kB体积提示保留，不调高阈值。
+
+最终提交的实际完整SHA、三平台CI/WindowsZIP及14天有效下载以PR#10正文维护，收尾提交仍运行原全部检查。Windows用户实机/物理断网/真实磁盘耗尽/受管策略均待本人执行，验收表不代签。保持Draft等待用户明确验收，不自动合并/发布/部署。
+
+## Phase 5B 实现与首次验证
+
+已实现纯TS规则V1、双侧最多5条件AND/OR、MA/EMA/RSI/排除当前根突破，未知预热/冲突hold/边沿单次触发，接入原回测；不可变家族版本、独立IndexedDB、严格JSON、可视化卡片/深浅/390px/键盘。Phase3规则明确拒绝，旧实验/风险可嵌入规则复现。原成交/保护/统计/旧策略版本及hash公式不变。设计、任务原文归档、验收及复核文档齐全。
+
+npm ci259包成功；首轮新增89项规则/5项存储通过，43组独立Decimal100及所有旧参考通过；额外风险来源复现/任意JSON编码等价/转换边界/原生digest回退继续补测。初次TS类型遗漏、React lint生命周期/时钟纯度及ES2023方法不符合项目ES2022均已修正，日志在docs/phase-5b-evidence。原规划SHA不变。
+
+首轮4项浏览器专项全通过，50k/10条件5336ms、最大413.9ms。首次完整check449项单元通过，但浏览器43通过/2失败：2C及5B50k回测原5秒成功消息等待。trace显示结果随后出现，不改变等待/性能阈值。原生编码/字段缓存没有明确收益已撤回；整份canonicalJson的native SHA字符串路径更慢，失败与误跑旧dist不计为新实现验证。最终提取原编码字节块供Worker原生SHA使用，保留核心同步流式hash回退与等价断言；纯数值转换有界4096memo，算式/精度/价格边界不变，单独验证5000无关值前后不影响。最终完整check、WindowsZIP与CI尚须实际执行后归档，不提前记通过。
+
+## Phase 5A 待审时历史记录（2026-11-09，PR#9现已合并）
 
 PR#8已于北京时间22:17:32合并，实际main为7644abf2323dd461240e4e5f430dc406851c3746。用户“好了，下一步”同意推进，未提供Windows逐项或版本，不补签。Phase5原为候选集合，已异步征询优先级，暂按推荐默认风险Monte Carlo重采样，不写成用户明确逐项选择。已核对原规划与源实验/统计契约，建立干净独立feat/phase-5a-research-tools，目标Draft PR#9。
 

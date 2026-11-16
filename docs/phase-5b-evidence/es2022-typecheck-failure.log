@@ -1,0 +1,9 @@
+
+> riverlab-crypto-lab@0.5.1-test build
+> npm run typecheck && vite build
+
+
+> riverlab-crypto-lab@0.5.1-test typecheck
+> tsc -b
+
+tests/unit/identity-shapes.test.ts(27,41): error TS2550: Property 'toReversed' does not exist on type '({ ''?: undefined; 'a\0b'?: undefined; a?: undefined; b?: undefined; '\0'?: undefined; 'a\0'?: undefined; '\0b'?: undefined; 'a:'?: undefined; 'a"'?: undefined; } | { '': number; 'a\0b'?: undefined; a?: undefined; b?: undefined; '\0'?: undefined; 'a\0'?: undefined; '\0b'?: undefined; 'a:'?: undefined; 'a"'?: undefin...'. Do you need to change your target library? Try changing the 'lib' compiler option to 'es2023' or later.

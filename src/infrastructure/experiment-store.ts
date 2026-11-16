@@ -39,7 +39,7 @@ export class ExperimentStore extends LocalDatabase {
           s.createdUtcMs < 0 ||
           !/^[a-f0-9]{64}$/.test(s.payloadHash) ||
           !/^[a-f0-9]{64}$/.test(s.runHash) ||
-          !['ma', 'rsi', 'breakout'].includes(s.strategy),
+          !['ma', 'rsi', 'breakout', 'rules'].includes(s.strategy),
       )
     )
       throw new Error('实验摘要损坏，未打开或修复。请用JSON报告备份。');

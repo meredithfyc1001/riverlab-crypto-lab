@@ -83,6 +83,10 @@ export function useBacktestWorkbench() {
       });
   }
   function run(input: WorkbenchInput) {
+    if (input.completedThroughUtcMs > Date.now()) {
+      setError('数据包含尚未到收盘时间的K线，阻止运行。');
+      return;
+    }
     setRecord(null);
     setSaved(false);
     void perform(async (current) => {
