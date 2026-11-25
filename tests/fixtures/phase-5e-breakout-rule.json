@@ -1,0 +1,38 @@
+{
+  "format": "riverlab-strategy-rule",
+  "schemaVersion": 1,
+  "id": "phase-5e-breakout@1",
+  "familyId": "phase-5e-breakout",
+  "name": "5E 合成突破验收",
+  "createdUtcMs": 1735689600000,
+  "rule": {
+    "schemaVersion": 1,
+    "revision": 1,
+    "buy": {
+      "enabled": true,
+      "operator": "AND",
+      "conditions": [
+        {
+          "enabled": true,
+          "kind": "breakout",
+          "lookback": 1,
+          "direction": "above"
+        }
+      ]
+    },
+    "sell": {
+      "enabled": true,
+      "operator": "AND",
+      "conditions": [
+        {
+          "enabled": true,
+          "kind": "breakout",
+          "lookback": 2,
+          "direction": "below"
+        }
+      ]
+    }
+  },
+  "ruleHash": "7335d971c1d49699fe10cc8354c2a052029d21f43ee89eabd15303340f359798",
+  "recordHash": "27260d40f1d3e80551573f72c9a15b04bb0e807485ab54c6b12ee77bbcdfec50"
+}
