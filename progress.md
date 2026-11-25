@@ -15,6 +15,10 @@
 
 50,000 根压力抽样曾出现主线程间隔 1052ms。改用兼容的规范字节编码，保留全账本和全部点；同程序 3+3 次测得完整报告 Hash 中位数 1259→928ms，RC 全流程中位 3696ms、最大 4437ms、主线程最大 410ms。初次完整检查发现控制字符正则不符合 lint，改为匹配允许的可打印 ASCII；新增性能脚本的格式问题随后修正。[分段实测、异常与内存](docs/rc-performance.md)
 
+本轮 Linux 实装 260 个依赖包，完整 check 通过 472 项 Vitest、49 项 Playwright；独立数值参考全通过。功能提交 `333d9da` 的 clean Linux ZIP 通过 17 项检查，Linux 直接启动 Node，首访 JS 294.67 kB（gzip 94.90 kB）。[本机验收明细](docs/rc-acceptance.md)
+
+修复后功能提交 `333d9da` 已在三平台各通过 472/49、八组参考和三次分段测量。六项用户旧版实机通过记录保持原边界。[三平台日志](https://github.com/meredithfyc1001/riverlab-crypto-lab/actions/runs/45548374961)
+
 最终提交的三平台作业、Windows ZIP 下载、内层 SHA-256 和到期时间在 [Draft PR #11](https://github.com/meredithfyc1001/riverlab-crypto-lab/pull/11) 的交付说明维护；逐次检查按对应提交登记。用户 RC 实机及物理断网待实测。[设计](docs/rc-design.md) · [复核](docs/rc-review.md) · [用户清单](docs/rc-acceptance.md)
 
 ## Phase 5B 当时的恢复入口（2026-11-11）
