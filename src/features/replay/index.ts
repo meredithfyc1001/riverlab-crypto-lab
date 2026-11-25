@@ -1,3 +1,5 @@
+import { lazy } from 'react';
+
 export const replayPage = {
   id: 'replay',
   label: '历史回放',
@@ -7,4 +9,6 @@ export const replayPage = {
   scope: '逐根回放、虚拟买卖、账本/日记与保存恢复；只揭示已播放前缀。',
 } as const;
 
-export { ReplayCenter } from './ReplayCenter';
+export const ReplayCenter = lazy(() =>
+  import('./ReplayCenter').then((module) => ({ default: module.ReplayCenter })),
+);

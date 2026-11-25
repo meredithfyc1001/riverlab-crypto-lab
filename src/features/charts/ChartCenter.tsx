@@ -137,7 +137,7 @@ export function ChartCenter({
         <section className="panel">
           <h2>尚无可显示的数据</h2>
           <p>
-            请在数据中心检查 CSV
+            请在数据中心载入内置历史或人工合成样本，也可检查自己的 CSV
             并选择“用于行情中心”，或明确打开已保存的数据集。
           </p>
           <a className="text-link" href="#/datasets">

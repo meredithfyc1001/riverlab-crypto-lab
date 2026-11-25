@@ -1,19 +1,19 @@
 # RiverLab Crypto Lab
 
-中文、Windows 优先、离线优先的历史数据研究工具。Phase 0/1A 已合并且用户总体验收通过；1B/2A/2B 已合并，但用户 Windows 实机尚未验收。**Phase 2C 已合并**（PR #6，实际提交 `33b1d6695ca1115efefce59132d96f8534c43e72`），已将三策略、保守风控与18位BigInt账本接入Worker回测工作台，包含纯TS统计、实验保存/重开、JSON/CSV与Windows本地测试ZIP。合并不代替用户Windows验收；本轮未收到新的实机反馈。CI和用户实机状态分列于progress，不自动合并。
-
-**Phase 5A 已合并（PR #9，b0c9664）**；当前在独立 `feat/phase-5b-rule-editor` 开发 Phase 5B 可视化声明式规则，目标 Draft PR #10。Phase 3/4 的研究及历史回放保持；不自动合并、发布或部署。
+RiverLab 是中文、Windows 优先的单币种现货历史研究工具。本分支版本为 **1.0.0-rc.1**，用于本地候选验收。基线为 PR #10 合并后的 `0.5.1-test`（`e27a728`）。2026-11-25 用户 Windows Chrome 实机已测六项 PASS，已测产品项 FAIL 为 0，物理断网暂缓。详见[实机记录与历史回归](docs/v1-rc-windows-baseline.md)。
 
 **仅供学习研究 · 不提供投资建议 · 历史表现不代表未来表现。** 不连接真实账户、不接收密钥、不处理真实资金。
 
 ## Windows 快速开始
 
-安装 Node.js 24 LTS 和 Git，在 PowerShell 运行：
+使用测试包请先安装 Node.js 24 LTS，将内层 ZIP 完整解压，双击 `start-local.bat`。浏览器打开本地地址后保持控制台开启。退出和包校验见下方“下载 Windows 本地测试包”。
+
+从源码运行需要 Git。在 PowerShell 运行：
 
 ```powershell
 git clone https://github.com/meredithfyc1001/riverlab-crypto-lab.git
 cd riverlab-crypto-lab
-git switch main
+git switch feat/v1-rc-hardening
 npm ci
 npm run dev
 ```
@@ -81,19 +81,20 @@ Edge/Chrome 打开 http://127.0.0.1:4173。可断开外部网络后刷新和操�
 
 “保存回测实验”明确写入IndexedDB；实验中心可打开、复现、确认删除。保存数据快照、身份/hash、完整配置/实际信号、版本、假设与统计；重开在Worker校验并重算比对，损坏/不支持版本拒绝。删除实验不改原数据；数据集被删后实验内嵌快照仍可重开。JSON含完整复现数据和配置，CSV为逐笔成交；均附研究警告。报告校验和不能认证来源。
 
-当前配置和未保存结果只在网页会话保留，刷新后重置；已保存数据与实验刷新可见，需明确选择打开。IndexedDB隔离于浏览器/配置/HTTP来源和端口，**不保证永久保存**；配额/权限/事务失败明确提示，保留内存结果可导出。跨标签页列表变更需刷新。JSON需自己保管，后续算法版本可能需要保留旧测试包才能重算。实验JSON为完整报告和复现资料，本轮未提供实验JSON文件导入界面；原数据集JSON备份恢复保持可用。
+当前配置和未保存结果只在网页会话保留，刷新后重置；已保存数据与实验刷新可见，需明确选择打开。IndexedDB隔离于浏览器/配置/HTTP来源和端口，**不保证永久保存**；配额/权限/事务失败明确提示，保留内存结果可导出。跨标签页列表变更需刷新。JSON需自己保管，后续算法版本可能需要保留旧测试包才能重算。在实验中心选择实验 JSON，等候 Worker 校验和重算，核对预览中的标识，再确认保存。重名与原记录同 ID 的区别、每种备份所需资料见[备份与恢复](docs/rc-backup.md)。
 
 ## 下载 Windows 本地测试包
 
-Phase 5B 请从 [PR #10](https://github.com/meredithfyc1001/riverlab-crypto-lab/pull/10) 说明中的当前head测试包链接下载；先核对完整提交SHA。三平台检查与WindowsZIP验证全部成功后才上传 `RiverLab-Crypto-Lab-Local-Test-<完整head SHA>`，需登录有仓库访问权的GitHub账号，保留14天，具体到期时间见该artifact。外层artifact含内层 `RiverLab-Crypto-Lab-Local-Test.zip`、校验和与Windows证据；核对包内build-info的版本/完整SHA和SHA256SUMS。排队或失败不等于可用包。
+在 [Draft PR #11](https://github.com/meredithfyc1001/riverlab-crypto-lab/pull/11) 的交付说明中核对完整 head SHA、Windows 内层 ZIP 的 SHA-256、下载链接及到期时间。GitHub Actions 仅在三平台检查和 Windows ZIP 双浏览器验证成功后上传 `RiverLab-Crypto-Lab-Local-Test-<完整head SHA>`，保留 14 天。下载私库制品需要具有访问权的 GitHub 账号。
 
-main已为Phase3合并d60ef1c；[旧main包](https://github.com/meredithfyc1001/riverlab-crypto-lab/actions/runs/42610440364/artifacts/13670985121)保留至北京时间2026-11-23 19:41:32，**不含Phase3**。不要把历史包当作PR当前head。
-
-取出内层ZIP并全部解压到含中文/空格路径，系统先装Node.js24 LTS，双击 `start-local.bat`。无需npm ci/开发服务器，浏览器打开 `http://127.0.0.1:4173`，默认只监听回环。保持前台窗口，Enter、q再Enter或Ctrl+C停止，不留后台服务。端口占用明确退出，不自动切换存储来源；如手动使用其他端口，浏览器数据隔离。首次下载及安装Node需联网，包启动与核心功能无需外网。详见[包内说明](scripts/local-test/README-local-test.md)和[用户验收清单](docs/phase-2c-acceptance.md)。
+取出内层ZIP并全部解压到含中文/空格路径，系统先装Node.js24 LTS，双击 `start-local.bat`。无需npm ci/开发服务器，浏览器打开 `http://127.0.0.1:4173`，默认只监听回环。保持前台窗口，Enter、q再Enter或Ctrl+C停止，不留后台服务。端口占用明确退出，不自动切换存储来源；如手动使用其他端口，浏览器数据隔离。首次下载及安装Node需联网，包启动与核心功能无需外网。详见[包内说明](scripts/local-test/README-local-test.md)和[RC 验收清单](docs/rc-acceptance.md)。
 
 开发者构建测试包：`npm run build` → `npm run package:local` → `npm run test:package`（本机Chromium可设置PLAYWRIGHT_CHROMIUM_EXECUTABLE）。产物在work/local-package，含dist、服务/BAT/说明、版本/提交SHA/dirty标记、逐文件SHA256，ZIP外另有SHA256。CI只打包clean head提交，三组check成功后Windows实际解压/启动Chrome与Edge验证全部成功才上传；不创建Release、不部署。本机dirty包仅供开发验证，不能冒充最终PR artifact。
 
 ## 文档
+
+- [RC 设计](docs/rc-design.md)、[工程复核](docs/rc-review.md)、[Windows 验收清单](docs/rc-acceptance.md)。
+- [首次导入](docs/data-import-format.md)、[六类 JSON 备份与恢复](docs/rc-backup.md)。
 
 - [Phase 2C设计](docs/phase-2c-design.md)、[实现复核](docs/phase-2c-review.md)、[Windows用户验收](docs/phase-2c-acceptance.md)及[原始测试证据](docs/phase-2c-evidence)。
 
@@ -125,7 +126,7 @@ Phase 2C 已合并。后续改动继续使用独立分支和待审 PR；用户 W
 
 保存回放状态后刷新需明确打开，恢复保持暂停；未保存状态刷新清除。保存与JSON只含原数据集身份/hash、配置、游标、决策、日记及重算校验，不含行情，**必须保留原保存数据集且身份/hash一致**。原数据删除、ID变化或损坏时明确拒绝，不自动替换；状态JSON不是独立行情备份。当前排队单恢复后只在下一根执行一次。快照采用独立IndexedDB库，不覆盖原数据集/回测实验；浏览器存储不保证永久可靠，请实际下载JSON并保管原CSV/数据集备份。
 
-上限50,000根、1,000次手工决策、1,000条日记、每条2,000字符、JSON10MiB；成交与日记CSV只导出已播放事件。所有模拟成本已扣，浮盈不算完成交易胜负；短样本年化NA。按[设计](docs/phase-4-design.md)及[Windows清单](docs/phase-4-acceptance.md)验收，CI与用户实机分别记录。源码测试可切换feat/phase-4-historical-replay；ZIP无需npm ci，Node24LTS预装。仅供学习研究，历史表现不代表未来表现。
+上限50,000根、1,000次手工决策、1,000条日记、每条2,000字符、JSON10MiB；成交与日记CSV只导出已播放事件。所有模拟成本已扣，浮盈不算完成交易胜负；短样本年化NA。按[设计](docs/phase-4-design.md)及[Windows清单](docs/phase-4-acceptance.md)验收，CI与用户实机分别记录。ZIP无需npm ci，Node24LTS预装。仅供学习研究，历史表现不代表未来表现。
 
 Phase4功能提交1edb8f1已通过三平台各338项Vitest/35项E2E与WindowsZIP双浏览器实测，见[CI证据快照](docs/phase-4-ci-evidence.json)及progress；最终提交下载使用PR#8说明绑定当前head的链接。用户Windows实机/物理断网尚待反馈，不以CI补签。
 
@@ -137,9 +138,9 @@ Phase4功能提交1edb8f1已通过三平台各338项Vitest/35项E2E与WindowsZIP
 
 支持保存/重开/删除、全部路径摘要CSV和完整JSON，导入后重建源实验并重采样逐项比对。源复现输入已内嵌，原数据或实验删除后仍可恢复；原记录不覆盖。JSON导入仅在内存、仍需明确保存；刷新未保存结果清除，保存列表需主动打开。浏览器存储不是永久备份，JSON25MiB上限，含数据快照需自行保管。
 
-路径20–2000、步数1–50,000、总路径×步数最多200万，区块最长min(源长度,1000)，seed0–4294967295，阈值1–99%。默认500路径/100步/seed42/50%阈值。图中最多101个位置和首5条示例路径仅作展示，全部步骤参与统计；不生成未来UTC或年化。见[方法与边界](docs/phase-5a-design.md)、[验收清单](docs/phase-5a-acceptance.md)。源码测试分支feat/phase-5a-research-tools；下载使用PR#9实际head包，不创建Release或公开部署。仅供学习研究，历史表现不代表未来表现。
+路径20–2000、步数1–50,000、总路径×步数最多200万，区块最长min(源长度,1000)，seed0–4294967295，阈值1–99%。默认500路径/100步/seed42/50%阈值。图中最多101个位置和首5条示例路径仅作展示，全部步骤参与统计；不生成未来UTC或年化。见[方法与边界](docs/phase-5a-design.md)、[验收清单](docs/phase-5a-acceptance.md)。仅供学习研究，历史表现不代表未来表现。
 
-## Phase 5B 规则策略编辑器（Draft 待验收）
+## 规则策略编辑器（Phase 5B 已合并）
 
 1. 在策略中心新建规则：买入/卖出分别启用，选择AND或OR，各1–5条条件，可复制/删除/禁用。条件支持MA/EMA交叉、收盘与MA/EMA比较、Wilder RSI显式阈值与等号、前N根high/low突破（当前根不入窗口）。表单实时校验并解释。
 2. 保存具体版本后在回测中心选择“自定义规则 V1”及版本，再选择已保存数据/成本/保护并确认收盘。结果、逐笔账本、实验保存/JSON/CSV/刷新重开/复现仍走原Worker和18位资金引擎。旧三策略与报告不改版本/hash。
@@ -147,4 +148,4 @@ Phase4功能提交1edb8f1已通过三平台各338项Vitest/35项E2E与WindowsZIP
 4. 保存后的修改生成同一家族新版本，复制为新策略从v1开始。旧版本不可覆盖，删除前确认；旧实验内嵌完整规则，删除规则不影响复现。JSON128KiB内、严格字段/版本/hash，导入仅内存，需明确保存；同家族同版本冲突拒绝。每库最多100版本，IndexedDB不是永久备份。
 5. EMA/RSI仍为IEEE754指标标量，极近阈值受舍入影响；MA比较用18位整数，资金全程BigInt。Phase3网格/样本外研究暂不支持规则，UI提示且核心拒绝。只做单币种现货多头历史模拟，没有用户脚本、真实下单或联网行情。
 
-[设计](docs/phase-5b-design.md) · [验收清单](docs/phase-5b-acceptance.md) · [实施与测试](docs/phase-5b-review.md)。Windows包从PR#10最终head成功CI下载，核对build-info phase=5B/version=0.5.1-test/完整SHA/dirty=false及SHA256SUMS，14天有效。不自动合并/Release/部署，用户实机和物理断网待本人反馈。
+[设计](docs/phase-5b-design.md) · [验收清单](docs/phase-5b-acceptance.md) · [实施与测试](docs/phase-5b-review.md)。

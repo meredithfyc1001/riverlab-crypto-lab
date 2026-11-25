@@ -1,8 +1,15 @@
 # RiverLab Crypto Lab 执行计划
 
-基线：[原始规划 v0.1](docs/product-plan-v0.1.md)全文保留，用户当前明确指令优先。Phase 2C 工程已于 2026-11-09 合并。用户于2026-11-09授权启动Phase3设计与开发；范围与口径见[Phase3设计](docs/phase-3-design.md)，[验收清单](docs/phase-3-acceptance.md)。
+## V1.0 RC 本轮范围
 
-当前main已核实为`b0c9664fc5c37cf70686ca3735e317ad3c8a0a88`，即PR#9实际合并提交。Phase5A已合并，本轮按Issue#10在独立分支实施Phase5B规则编辑器，不直接修改 main，不自动合并、tag、正式 Release 或部署。合并不补签用户 Windows 验收。
+PR #10 已合并到 `e27a728ac53dc7a3f6ad73fbcbd298f4527ccb54`（0.5.1-test）。按用户 2026-11-25 授权，从该 main 建立 `feat/v1-rc-hardening`，交付 `1.0.0-rc.1` 的独立 Draft PR。保留[原始规划](docs/product-plan-v0.1.md)及以下历史阶段记录。
+
+1. 归档脱敏 Windows 实机结果。用三个原始实验 JSON 锁定 24 根 BTCUSDT 的策略、账本、曲线、统计和 runHash。
+2. 分别审计完整依赖树和生产依赖，处理可兼容修复的公告，记录残余影响。在 50,000 根场景定位 Worker、计算和显示耗时。
+3. 完善空库首次导入和实验文件恢复，评估按页加载，维持八页导航、离线静态资源、原数学契约和既有回归。
+4. 全量检查、独立参考、真实 CI 日志与 Windows ZIP 双浏览器实测通过后，才交付绑定最终 head 的包。对用户实机验收另行登记；尾项为物理断网，继续 NOT TESTED。
+
+[RC 设计](docs/rc-design.md) · [工程复核](docs/rc-review.md) · [验收清单](docs/rc-acceptance.md)
 
 ## 已交付基线与验收边界
 
@@ -48,7 +55,7 @@ Phase2C已合并；用户Windows实机结果尚未反馈，M2用户验收不因�
 
 M0/M1/M2/M3/M4/M5门槛继续以原规划为准；用户授权当前阶段不补签先前未测试项目。原规划SHA256应保持0a3081d44d3557e6d0f1b1eda3378c2e83282b3c6677dcd45b88a3190b86f84b。
 
-## 当前技术交付状态
+## Phase 2C 当时的技术交付状态
 
 Phase 2C 最终工程 f4101bc 已随 PR #6 合并为 33b1d6695ca1115efefce59132d96f8534c43e72。旧 artifact 的 14 天保留期已结束。当前合并提交的 [main CI](https://github.com/meredithfyc1001/riverlab-crypto-lab/actions/runs/42610440364) 三平台各 307 项 Vitest、24 项 E2E 已实际读取日志确认通过；Windows ZIP 的 Chrome/Edge 实际验证也已通过，新包对应完整 main 合并 SHA，保留至北京时间2026-11-23 19:41:32；下载与校验见 progress.md。用户清单待反馈，不把合并或 CI 成功等同于实机验收。
 
@@ -74,7 +81,7 @@ Phase4本机完整check已通过338项Vitest/35项E2E，原317/30全部保留；
 
 本机354项单元/40项浏览器、5个数值参考和Linux开发ZIP已完成；功能快照7595580三平台实际日志亦354/40全部成功，详细见progress。功能快照WindowsZIP也实际通过；打包phase标签修正后最新head必须重新完整CI/WindowsZIP，交付状态与当前SHA下载以Draft PR#9说明为准。用户Windows实机仍待本人反馈。
 
-## Phase 5B 当前行动
+## Phase 5B 实施记录（PR #10 已合并）
 
 用户明确授权完整执行Issue#10，先汇报并固定[设计](docs/phase-5b-design.md)，再实现纯TS流式规则、不可变版本/严格JSON和独立IndexedDB、可视化编辑及原回测接入。Phase3规则暂不可用且严格拒绝，旧引擎/报告/hash保持。保留354/40全部回归，新增因果/独立参考/确定复现/存储及50k Worker测试。执行npm ci/check和所有Python参考，读取三平台实际日志；后置Windows中文空格路径BAT/Chrome+Edge测试成功后上传绑定最终headSHA的14天ZIP。目标Draft PR#10（将现有Issue转为PR以保留编号），等待用户验收，不合并/发布/部署。
 

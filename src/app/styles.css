@@ -763,3 +763,24 @@ tbody tr:last-child > * {
     transition: none !important;
   }
 }
+
+.dataset-next-step {
+  margin-bottom: 18px;
+  padding: 16px 20px;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow-wrap: anywhere;
+}
+.dataset-next-step p {
+  color: var(--muted);
+  margin: 8px 0;
+  font-size: 13px;
+  line-height: 1.8;
+}
+.dataset-next-step .text-link {
+  display: inline-block;
+  margin-right: 16px;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}

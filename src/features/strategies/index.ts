@@ -1,3 +1,5 @@
+import { lazy } from 'react';
+
 export const strategiesPage = {
   id: 'strategies',
   label: '策略中心',
@@ -7,7 +9,17 @@ export const strategiesPage = {
   scope: '可视化规则版本与单次回测；原三策略参数敏感度及时间隔离研究。',
 } as const;
 
-export { ResearchCenter } from './ResearchCenter';
-export { ResearchResults } from './ResearchResults';
+export const ResearchCenter = lazy(() =>
+  import('./ResearchCenter').then((module) => ({
+    default: module.ResearchCenter,
+  })),
+);
+export const ResearchResults = lazy(() =>
+  import('./ResearchResults').then((module) => ({
+    default: module.ResearchResults,
+  })),
+);
 
-export { RuleEditor } from './RuleEditor';
+export const RuleEditor = lazy(() =>
+  import('./RuleEditor').then((module) => ({ default: module.RuleEditor })),
+);

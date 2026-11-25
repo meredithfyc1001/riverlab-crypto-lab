@@ -5,6 +5,7 @@ import type {
   ExperimentSummary,
   WorkbenchInput,
 } from '../core/experiments';
+import { summarizeExperiment } from '../core/experiments';
 import { DatasetStore, storageMessage } from '../infrastructure/dataset-store';
 import { ExperimentStore } from '../infrastructure/experiment-store';
 import { workerTask } from '../infrastructure/backtest-worker';
@@ -12,6 +13,7 @@ import type { WorkerRequest } from '../infrastructure/backtest-worker';
 
 export function useBacktestWorkbench() {
   const [dataset, setDataset] = useState<Dataset | null>(null);
+  const [preview, setPreview] = useState<Experiment | null>(null);
   const [record, setRecord] = useState<Experiment | null>(null);
   const [experiments, setExperiments] = useState<ExperimentSummary[]>([]);
   const [busy, setBusy] = useState(false);
@@ -51,12 +53,14 @@ export function useBacktestWorkbench() {
     try {
       await action(current);
     } catch (e) {
-      if (current())
+      if (current()) {
+        setMessage('');
         setError(
           e instanceof Error && /无法完成|Worker|实验记录损坏/.test(e.message)
             ? e.message
             : storageMessage(e),
         );
+      }
     } finally {
       if (current()) {
         setBusy(false);
@@ -65,11 +69,20 @@ export function useBacktestWorkbench() {
       }
     }
   }
-  async function compute(request: WorkerRequest) {
+  function compute(
+    request: Extract<WorkerRequest, { kind: 'export' }>,
+  ): Promise<Blob>;
+  function compute(
+    request: Exclude<WorkerRequest, { kind: 'export' }>,
+  ): Promise<Experiment>;
+  async function compute(request: WorkerRequest): Promise<Experiment | Blob> {
     const next = workerTask(request);
     task.current = next;
     setCanCancel(true);
-    return next.promise;
+    const result = await next.promise;
+    if (request.kind === 'export' && 'file' in result) return result.file;
+    if (request.kind !== 'export' && 'record' in result) return result.record;
+    throw new Error('Worker 返回了不匹配的结果。');
   }
   function selectDataset(id: string) {
     setDataset(null);
@@ -89,6 +102,7 @@ export function useBacktestWorkbench() {
     }
     setRecord(null);
     setSaved(false);
+    setPreview(null);
     void perform(async (current) => {
       setMessage('正在 Worker 中执行策略、成交、账本和统计…');
       const response = await compute({
@@ -99,31 +113,64 @@ export function useBacktestWorkbench() {
         createdUtcMs: Date.now(),
       });
       if (current()) {
-        setRecord(response.record);
+        setRecord(response);
         setMessage('回测成功；结果尚未保存，刷新会丢失。');
       }
     });
   }
-  function save() {
-    if (!record) return;
+  function importFile(file: File) {
+    setPreview(null);
     void perform(async (current) => {
-      await store.current.save(record);
-      const list = await store.current.list();
+      setMessage('正在 Worker 中读取实验 JSON、校验并重算…');
+      const response = await compute({ kind: 'import', file });
       if (current()) {
-        setExperiments(list);
-        setSaved(true);
-        setMessage('实验已保存（事务已完成）。请另行导出JSON备份。');
+        setPreview(response);
+        setMessage('实验校验与重算一致，请核对恢复预览。');
       }
     });
+  }
+  function discardImport() {
+    setPreview(null);
+    setMessage('');
+    setError('');
+  }
+  function persist(next: Experiment, imported: boolean) {
+    if (busy) return;
+    void perform(async (current) => {
+      const summary = summarizeExperiment(next);
+      await store.current.save(next);
+      if (current()) {
+        setExperiments((list) => [
+          ...list.filter((item) => item.id !== next.id),
+          summary,
+        ]);
+        setRecord(next);
+        setPreview(null);
+        setSaved(true);
+        setMessage(
+          imported
+            ? '导入的实验已保存，可以刷新后重新打开。'
+            : '实验已保存（事务已完成）。请另行导出JSON备份。',
+        );
+      }
+    });
+  }
+  function save() {
+    if (record) persist(record, false);
+  }
+  function confirmImport() {
+    if (preview) persist(preview, true);
   }
   function open(id: string) {
     setRecord(null);
     setSaved(false);
+    setPreview(null);
     void perform(async (current) => {
       const raw = await store.current.load(id);
+      if (!current()) return;
       const next = await compute({ kind: 'verify', record: raw });
       if (current()) {
-        setRecord(next.record);
+        setRecord(next);
         setSaved(true);
         setMessage('实验校验与重算一致，已重新打开结果。');
       }
@@ -145,14 +192,9 @@ export function useBacktestWorkbench() {
   function exportRecord(format: 'json' | 'csv') {
     if (!record) return;
     void perform(async (current) => {
-      const response = await compute({ kind: 'export', record, format });
+      const file = await compute({ kind: 'export', record, format });
       if (!current()) return;
-      const url = URL.createObjectURL(
-        new Blob([response.text!], {
-          type:
-            format === 'json' ? 'application/json' : 'text/csv;charset=utf-8',
-        }),
-      );
+      const url = URL.createObjectURL(file);
       const a = document.createElement('a');
       a.href = url;
       a.download = `riverlab-experiment-${record.id}.${format}`;
@@ -195,6 +237,10 @@ export function useBacktestWorkbench() {
     run,
     save,
     open,
+    preview,
+    importFile,
+    confirmImport,
+    discardImport,
     remove,
     exportRecord,
     reproduce,

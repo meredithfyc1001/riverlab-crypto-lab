@@ -20,6 +20,19 @@ describe('streaming canonical SHA-256 byte equivalence', () => {
       createHash('sha256').update(canonicalJson(value), 'ascii').digest('hex'),
     );
   });
+  it('preserves every ASCII byte, quoting boundaries and lexicographic numeric-looking keys', () => {
+    const ascii = Array.from({ length: 128 }, (_, i) =>
+      String.fromCharCode(i),
+    ).join('');
+    const value = {
+      '10': ascii.repeat(513),
+      '2': [ascii, -0, 1e-7, 1e21],
+      [ascii]: '汉字😀',
+    };
+    expect(contentHash(value)).toBe(
+      createHash('sha256').update(canonicalJson(value), 'ascii').digest('hex'),
+    );
+  });
   it('crosses 64KiB boundaries, escaped UTF16, repeated keys, and non-ASCII object keys', () => {
     const value = Array.from({ length: 3000 }, (_, i) => ({
       i,

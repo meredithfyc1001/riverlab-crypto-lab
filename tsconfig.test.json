@@ -8,5 +8,10 @@
       "@testing-library/jest-dom"
     ]
   },
-  "include": ["tests/unit", "tests/integration", "tests/setup.ts"]
+  "include": [
+    "tests/unit",
+    "tests/integration",
+    "tests/performance",
+    "tests/setup.ts"
+  ]
 }

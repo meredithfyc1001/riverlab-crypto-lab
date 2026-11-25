@@ -358,3 +358,41 @@ test('50,000根真实策略成交统计Worker性能与主线程响应', async ({
     JSON.stringify(result, null, 2),
   );
 });
+
+test('结果分包延迟时保留回测配置和真实完成状态，载入后绘制全部曲线', async ({
+  page,
+}) => {
+  let release!: () => void;
+  const delayed = new Promise<void>((resolve) => {
+    release = resolve;
+  });
+  let requested = false;
+  await page.route('**/assets/BacktestResults-*.js', async (route) => {
+    requested = true;
+    await delayed;
+    await route.continue();
+  });
+  try {
+    await prepare(page);
+    await expect.poll(() => requested).toBe(true);
+    const success = page.getByText('回测成功；结果尚未保存，刷新会丢失。');
+    await expect(success).toHaveCount(0);
+    await page
+      .getByRole('checkbox', { name: /我确认本数据集全部 K 线/ })
+      .check();
+    await page.getByRole('button', { name: '运行回测', exact: true }).click();
+    await expect(success).toBeVisible();
+    await expect(page.getByRole('heading', { name: '回测配置' })).toBeVisible();
+    await expect(
+      page.getByRole('checkbox', { name: /我确认本数据集全部 K 线/ }),
+    ).toBeChecked();
+    await expect(page.getByText('正在载入回测结果…')).toBeVisible();
+  } finally {
+    release();
+  }
+  await expect(page.getByTestId('result-curves')).toHaveAttribute(
+    'data-ready',
+    'true',
+  );
+  await expect(page.getByText(/全部 25 点（含初始锚点）/)).toBeVisible();
+});

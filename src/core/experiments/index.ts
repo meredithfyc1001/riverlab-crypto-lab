@@ -1,7 +1,7 @@
 import { runBacktest, ALGORITHM_VERSION } from '../backtests';
 import type { BacktestInput, BacktestResult } from '../backtests';
 import type { Dataset } from '../data/dataset';
-import { contentHash, canonicalJson } from '../backtests/identity';
+import { contentHash } from '../backtests/identity';
 import {
   calculateStatistics,
   METRIC_DEFINITIONS,
@@ -107,7 +107,9 @@ export function verifyExperiment(value: unknown): Experiment {
       strategy: m.strategy.config,
       completedThroughUtcMs: m.completedThroughUtcMs,
     });
-    if (canonicalJson(actual) !== canonicalJson(e.payload))
+    // The first digest checked every imported field. Hash the same canonical
+    // byte stream of the independent replay without materializing two full reports as strings.
+    if (contentHash(actual) !== e.payloadHash)
       throw new Error('重算结果不一致');
     return e;
   } catch (error) {

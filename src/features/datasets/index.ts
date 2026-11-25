@@ -1,3 +1,5 @@
+import { lazy } from 'react';
+
 export const datasetsPage = {
   id: 'datasets',
   label: '数据中心',
@@ -7,6 +9,14 @@ export const datasetsPage = {
   scope: 'CSV 历史数据导入、字段映射、UTC 时间与质量报告。',
 } as const;
 
-export { DatasetCenter } from './DatasetCenter';
+export const DatasetCenter = lazy(() =>
+  import('./DatasetCenter').then((module) => ({
+    default: module.DatasetCenter,
+  })),
+);
 
-export { DatasetLibrary } from './DatasetLibrary';
+export const DatasetLibrary = lazy(() =>
+  import('./DatasetLibrary').then((module) => ({
+    default: module.DatasetLibrary,
+  })),
+);

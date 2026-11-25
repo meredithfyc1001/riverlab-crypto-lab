@@ -4,10 +4,12 @@ import type { ReportView } from './worker-types';
 export function ImportActions({
   report,
   disabled,
+  saved,
   onPrepare,
 }: {
   report: ReportView;
   disabled: boolean;
+  saved: boolean;
   onPrepare: (symbol: string, save: boolean) => void;
 }) {
   const [ack, setAck] = useState(false);
@@ -58,6 +60,11 @@ export function ImportActions({
           保存已检查数据集
         </button>
       </div>
+      {saved && (
+        <a className="primary-link" href="#/backtests">
+          前往回测中心选择已保存数据集
+        </a>
+      )}
       <p className="muted">
         浏览器本地存储可能被清理、拒绝或因隐私模式丢失，不是永久可靠存储；请另外导出备份。
       </p>

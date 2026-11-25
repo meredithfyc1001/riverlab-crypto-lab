@@ -1,3 +1,5 @@
+import { lazy } from 'react';
+
 export const experimentsPage = {
   id: 'experiments',
   label: '实验中心',
@@ -7,4 +9,8 @@ export const experimentsPage = {
   scope: '保存完整实验，校验重开与复现，导出JSON报告和逐笔CSV。',
 } as const;
 
-export { ExperimentCenter } from './ExperimentCenter';
+export const ExperimentCenter = lazy(() =>
+  import('./ExperimentCenter').then((module) => ({
+    default: module.ExperimentCenter,
+  })),
+);

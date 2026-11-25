@@ -1,6 +1,8 @@
 # RiverLab Crypto Lab 工作指令
 
-作用于整个独立仓库。PR #9 已于 2026-11-11 合并为 b0c9664fc5c37cf70686ca3735e317ad3c8a0a88。用户明确授权的 Phase 5B 可视化规则策略已实现，Draft PR #10 待用户验收，见 [Phase 5B 设计](docs/phase-5b-design.md)。独立 feat/phase-5b-rule-editor、现有Issue已转换为Draft PR #10；不合并/Release/部署。先读 [progress.md](progress.md)、[plan.md](plan.md) 与相关契约；[原始规划](docs/product-plan-v0.1.md)全文保留。
+作用于整个仓库。本期为 V1.0 RC 稳定性与发布准备，分支 `feat/v1-rc-hardening`。PR #10 已合并，基线为 `e27a728ac53dc7a3f6ad73fbcbd298f4527ccb54`（0.5.1-test）。先读 [RC 设计](docs/rc-design.md)、[progress.md](progress.md)、[plan.md](plan.md)、[实机记录](docs/v1-rc-windows-baseline.md)和[原始规划](docs/product-plan-v0.1.md)。
+
+2026-11-25 的用户 Windows Chrome 实机报告涵盖六项 PASS、已测产品项零 FAIL。物理断网由用户暂缓，记 NOT TESTED。历史 Edge CI、各版用户实测与当前候选 CI 分列。不得提交主机名、私人路径、现场截图或原始现场档案。
 
 ## 范围与研发节奏
 
@@ -17,10 +19,10 @@
 - Phase 3 已合并交付：core/research 编排原引擎与统计、专用Worker、策略中心研究UI、可复现JSON/CSV；全部候选先锁定，窗口独立本金/空仓/冷启动，不跨边界借用信号或预热，不自动宣称最佳策略。测试严格晚于训练，滚动测试不重叠；保留原金额/成交/存储契约及全部回归。
 - Phase 4 已合并交付：逐根回放、虚拟买卖/余额、交易日记、净值/风险、保存恢复。共享原成交会话，Worker保管未来数据，页面和状态导出只含已知前缀/复现动作；不可预先计算未来成交。保留旧版本/hash和全部回归。原独立分支PR#8已合并；Windows用户验收另列。
 - Phase 5A已实现并随PR#9合并；历史范围：已保存正式实验的净权益收益Monte Carlo重采样；固定PCG32/BigInt18、IID与区块抽样，模拟分位/频率不称未来置信区间或预测。Worker计算/校验，独立库保存/重开/JSON与CSV，不改变旧成交/保护/统计。原Draft PR#9现已合并；合并不补签Windows用户验收。
-- Phase 5B 当前授权：严格V1声明式规则、双侧最多5条件AND/OR卡片、MA/EMA/RSI/前N根突破、保守warm-up/冲突/边沿触发、独立不可变规则版本库和JSON，接入原回测。保留全部历史版本/hash/账本与回归；Phase3暂不支持规则，必须明确拒绝。详见5B设计。
+- Phase 5B 已合并：严格V1声明式规则、双侧最多5条件AND/OR卡片、MA/EMA/RSI/前N根突破、保守warm-up/冲突/边沿触发、独立不可变规则版本库和JSON，接入原回测。保留全部历史版本/hash/账本与回归；Phase3暂不支持规则，必须明确拒绝。详见5B设计。
 - 禁止真实账户、API Key、私钥、助记词、充值提现、真实订单或资金处理。未来网络数据能力必须独立评估和授权。
 - PR #5 已合并为 0ee6d8483bd6a5226a6d01a1d21b990b134bab46。PR #6 已合并为 33b1d6695ca1115efefce59132d96f8534c43e72，不再标记 Draft 待审。新改动仍基于已核实的 main 创建独立分支和待审 PR；不直接修改 main，不自动合并、创建 tag、Release 或部署。
-- 合并记录不等于用户 Windows 实机验收。本轮未收到新的逐项结果，验收状态记为待反馈，不补签历史未测试项目。CI、云端和用户结果继续分列。
+- 合并记录不等于用户 Windows 实机验收。仅归档用户实际执行的项目，未执行的历史项目保留原状态。CI、云端和用户结果继续分列。
 - 不擅自改变路线、删减需求或将建议写为已确认。正常范围内实现与修复无需反复确认。
 
 ## 工程约束
@@ -38,7 +40,7 @@
 
 ## 验收与记录
 
-1. 执行 npm run check：格式、lint、Vitest、严格类型检查、生产构建、生产包 Playwright 烟测。
+1. RC 保留 459 项 Vitest、45 项 Playwright 及全部独立数值参考；新测试须追加。50,000 根场景保留 20 秒整体与 1000ms 主线程间隔门槛。执行 npm run check：格式、lint、Vitest、严格类型检查、生产构建、生产包 Playwright 烟测。
 2. 缺浏览器时按 README 安装或显式选择系统 Chromium；Windows 优先测试 chrome 和 msedge。
 3. 更新 progress.md：命令、实际平台、成功/失败/未测、环境限制、停点和下一行动。修复后保留失败事实，不伪造证据。
 4. Linux Chromium、Windows CI 和用户 Windows 实机结果分开记录。仅本机资源的 HTTP 测试不等于 file://、单文件或完整离线发行验收。

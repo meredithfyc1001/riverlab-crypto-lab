@@ -1,6 +1,35 @@
 # RiverLab Crypto Lab 进度
 
-## 当前恢复入口：Phase 5B 工程交付待验收（2026-11-11）
+## V1.0 RC 开发与验证（2026-11-25）
+
+从 GitHub fetch 最新 main，确认 PR #10 已于 2026-11-16 合并。基线为 `e27a728ac53dc7a3f6ad73fbcbd298f4527ccb54`，候选分支为 `feat/v1-rc-hardening`。Windows 旧版实机六项 PASS，已测产品 FAIL 为 0，Edge 仅有历史 CI，用户暂缓物理断网。归档已过滤主机名、私人路径与现场截图。[Windows 明细及回归](docs/v1-rc-windows-baseline.md)
+
+三个实验原件与现场 ZIP 中对应文件的字节一致。本机使用原件重算，MA 2/4、规则 V1/V2 的全部成交、25 点权益、统计及 runHash 均通过。八组独立 Python 数值参考全部通过。原锁文件复现 9 个中危包（1 条开发工具公告），生产为 0；兼容升级后全量与生产审计各为 0。[审计与原始输出](docs/rc-dependency-audit.md)
+
+开发和 CI 失败记录如下，旧快照的包不得作 RC 验收包。
+
+| 提交      | 已执行的检查                                                 | 失败点及处理                                                                                                                                                                                                                                                                     |
+| --------- | ------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `829d16d` | 三平台各 462 项 Vitest 和 45 项 E2E 成功                     | Windows ZIP 的 Chrome 作业解压后找不到 SHA256SUMS，尚未启动 BAT，Edge 包测试和上传跳过。改用 Windows 自带 tar.exe 传递路径参数、保留退出信息并明确核对解压目录。[Windows 作业](https://github.com/meredithfyc1001/riverlab-crypto-lab/actions/runs/45547167241/job/138981961007) |
+| `d55ca92` | 三平台各 468 项 Vitest 成功、48/49 项 E2E 成功，实验恢复通过 | 配额测试读到原始 `full`，五秒内无法获得“空间不足”提示，三组质量失败，ZIP 跳过。修正错误传递；原配额与拒绝存储用例本机复测 2/2。[失败运行](https://github.com/meredithfyc1001/riverlab-crypto-lab/actions/runs/45547503972)                                                       |
+
+Windows 中文路径的下一次验证给出了明确原因。功能提交 `333d9da` 上三平台检查全过，Windows 的 tar.exe 却把中文目的路径转成问号并报告 could not chdir，Chrome 包启动前即终止，Edge 和上传跳过。改由 PowerShell 7 通过环境变量向 .NET ZipFile 提供 Unicode 路径，解压过程以异常中止，并在同一进程及 Node 验证清单。BAT 启动、浏览器流程及中文空格路径保持原检查。[Windows 解压失败日志](https://github.com/meredithfyc1001/riverlab-crypto-lab/actions/runs/45548374961/job/138985525161)
+
+50,000 根压力抽样曾出现主线程间隔 1052ms。改用兼容的规范字节编码，保留全账本和全部点；同程序 3+3 次测得完整报告 Hash 中位数 1259→928ms，RC 全流程中位 3696ms、最大 4437ms、主线程最大 410ms。初次完整检查发现控制字符正则不符合 lint，改为匹配允许的可打印 ASCII；新增性能脚本的格式问题随后修正。[分段实测、异常与内存](docs/rc-performance.md)
+
+本机前两次完整 check 各 472/49 通过。提交 `684c5ce` 在第三次完整运行中再次捕获原 5B 的五秒等待失败，472 项 Vitest 成功，E2E 48/49。浏览器 trace 显示断言开始约 4567ms 后 Worker 已交付结果，结果页和图表的首次分包请求分别耗时约 8/31ms。失败快照显示整页回退到“正在载入回测中心”。页面改为在选择数据后并行预载结果及图表，已完成的表单和状态继续显示，只有待载入的结果区显示等待提示。另复用 18 位定点值的规范字符串，保持原 5 秒成功提示和原全点曲线断言。分段证据见[性能记录](docs/rc-performance.md)。
+
+同一提交 `684c5ce` 的三平台 CI 各通过 472/49 及全部独立参考；Unicode 修复后的 Windows ZIP 已在 Chrome 157.0.8103.79、Edge 157.0.4341.60 实际解压、启动、恢复原件、校验全 JSON 和停止服务，两浏览器各 17 项成功、零外部请求/页面错误。它是定位问题期间的快照。最新候选的 ZIP 按新 head 重新验证后才交付。[Windows 包作业](https://github.com/meredithfyc1001/riverlab-crypto-lab/actions/runs/45549334210/job/138988366674)
+
+本轮 Linux 实装 260 个依赖包，完整 check 通过 472 项 Vitest、49 项 Playwright；独立数值参考全通过。功能提交 `333d9da` 的 clean Linux ZIP 通过 17 项检查，Linux 直接启动 Node，首访 JS 294.67 kB（gzip 94.90 kB）。[本机验收明细](docs/rc-acceptance.md)
+
+修复后功能提交 `333d9da` 已在三平台各通过 472/49、八组参考和三次分段测量。六项用户旧版实机通过记录保持原边界。[三平台日志](https://github.com/meredithfyc1001/riverlab-crypto-lab/actions/runs/45548374961)
+
+整合后的本地全量 check 已通过 473 项 Vitest、50 项 E2E，包括结果分包延迟用例与定点输出缓存淘汰。真实 50k 十条件专项连续五次通过。本地 ZIP 的额外复测中，端口占用反例已按预期退出，但 Linux 测试脚本随后向已退出子进程写 Enter，引起 EPIPE。已把失败窗口的 Enter 限于需要 pause 的 Windows BAT，继续校验两平台的失败退出码、正常服务的 Enter 停止与端口释放。
+
+最终提交的三平台作业、Windows ZIP 下载、内层 SHA-256 和到期时间在 [Draft PR #11](https://github.com/meredithfyc1001/riverlab-crypto-lab/pull/11) 的交付说明维护；逐次检查按对应提交登记。用户 RC 实机及物理断网待实测。[设计](docs/rc-design.md) · [复核](docs/rc-review.md) · [用户清单](docs/rc-acceptance.md)
+
+## Phase 5B 当时的恢复入口（2026-11-11）
 
 用户明确授权按Issue#10完整开发。已完整读取任务、AGENTS/plan/progress、原规划及2B/2C/3/4/5A契约。GitHub确认PR#9于UTC11:55:09合并，main=b0c9664fc5c37cf70686ca3735e317ad3c8a0a88；已fetch/pull同步，从干净工作区建立feat/phase-5b-rule-editor。首次沙箱Git代理连接失败，经受支持权限重试成功；GH CLI读取Actions返回Forbidden，改用现有GitHub连接器读取，不修改网络/凭据。
 
