@@ -37,7 +37,7 @@ async function saveMarket(page: Page, symbol: string, phase: number) {
   // summary before leaving the page that owns the preparation Worker.
   await expect(
     page
-      .getByLabel('已保存的数据集', { exact: true })
+      .getByRole('combobox', { name: '已保存的数据集' })
       .locator('option')
       .filter({ hasText: symbol + '/USDT' }),
   ).toHaveCount(1);

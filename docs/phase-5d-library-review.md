@@ -40,3 +40,5 @@
 ## 候选提交的 CI 记录
 
 `de8c4fc` 的首轮 Windows Chrome 通过 629 项 Vitest 及 59/60 项 E2E，新增的混合损坏库和事务失败用例均通过。既有共享资金池用例在选择第二项数据集时超过 30 秒；最终快照里两个选择器只有 ALPHA/USDT。trace 显示脚本在约 2.8 秒时已开始等待 BETA/USDT，当时尚未启动组合回测。该夹具先后两次使用相同的保存成功文案。已补充以本次交易对匹配已保存摘要的等待条件，保留原成功文案断言及 30 秒时限。Ubuntu Chromium、Windows Edge 在该轮均为 629/60 通过。最终提交在三平台重新验证。[首轮 Chrome 日志与 trace](https://github.com/meredithfyc1001/riverlab-crypto-lab/actions/runs/45590906468/job/139124542910)
+
+首版等待条件用精确 label 文本查询，未选中页面上已存在的 ALPHA 摘要。本机两项共享用例在新断言处失败；同次 50,000 根 CSV 检查也曾在 5 秒内未收到 Worker 完成状态。修正后使用数据集库已有测试采用的 combobox 可访问名称定位当前币种。保留 CSV 及共享用例的原时限，并重新执行全量检查。
