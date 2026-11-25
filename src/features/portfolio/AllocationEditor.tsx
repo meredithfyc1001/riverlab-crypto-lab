@@ -110,7 +110,11 @@ export function AllocationEditor({
           <p>
             源文件 SHA-256 <code>{selected.file.sha256}</code>
           </p>
-          {Object.entries(selected.quality.issueCounts).map(([code, count]) => <p key={code}>{code} · {count} 项</p>)}
+          {Object.entries(selected.quality.issueCounts).map(([code, count]) => (
+            <p key={code}>
+              {code} · {count} 项
+            </p>
+          ))}
         </details>
       )}
       {row.kind === 'rules' && !rules.length && (

@@ -6,7 +6,7 @@
 
 两至五资产共同时钟、独立固定点账本、组合买持和相关性、规则快照、组合持久化与异机恢复已接入。单币种运行版本与原实验数据格式保留。初次浏览器专项发现自定义规则下拉的标签同时匹配两个控件，已给三个选择器明确可访问名称。独立 Python 参考均通过；初次数值专项中对旧信号记录嵌套层级的断言已纠正。[设计](docs/phase-5c-design.md) · [实现复核与容量](docs/phase-5c-review.md) · [Windows 实机清单](docs/phase-5c-acceptance.md)
 
-本机完整检查、最终提交三平台 CI、Windows 内层 ZIP 摘要及准确到期时间由本轮 Draft PR 交付说明记录。Phase 5C-A 用户实机验收待执行。
+本机首轮完整检查 516 项 Vitest、51 项 E2E 全部通过。随后增加归零权益与五资产页面验证。组合专项 E2E 2/2、十一个数值测试及 Linux 解压包 18 项检查通过。首个 CI 快照的三平台独立参考通过，格式检查发现 AllocationEditor.tsx 需格式化，ZIP 跳过，已修正后重新提交。最终 head 的完整结果、Windows 内层 ZIP 摘要及准确到期时间见 [Draft PR #12](https://github.com/meredithfyc1001/riverlab-crypto-lab/pull/12)。Phase 5C-A 用户实机验收待执行。
 
 ## V1.0 RC 开发与验证（2026-11-25）
 

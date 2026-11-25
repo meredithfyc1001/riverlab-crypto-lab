@@ -225,6 +225,46 @@ describe('Phase 5C-A independent portfolio accounting', () => {
     expect(r.assets[0].statistics.benchmark.finalEquity.value).not.toBeNull();
   });
 
+  it('marks both one-atom positions to zero and explains undefined terminal weights', () => {
+    const input = portfolio([
+      [0.5, 0.8, 1],
+      [0.5, 0.8, 1],
+    ]);
+    input.initialCash = '0.000000000000000002';
+    for (const a of input.assets) {
+      a.weightPercent = '50';
+      a.strategy = { kind: 'breakout', lookback: 1 };
+      a.costs = {
+        feeBps: 0,
+        buySlippageBps: 0,
+        sellSlippageBps: 0,
+        quantityDecimals: 18,
+        minNotional: '0',
+      };
+      a.dataset = {
+        ...market([0.5, 0.8, 1], [0.5, 0.8, 0.5]),
+        id: a.dataset.id,
+        symbol: a.dataset.symbol,
+      };
+    }
+    const r = runPortfolio(input);
+    expect(r.curve.at(-1)?.equity).toBe('0');
+    expect(r.totalReturn.value).toBe('-1');
+    expect(r.maxDrawdown.value).toBe('1');
+    for (const asset of r.assets) {
+      expect(asset.returnContribution.value).toBe('-0.5');
+      expect(asset.equityWeight).toEqual({
+        value: null,
+        reason: expect.stringContaining('权益为零'),
+      });
+      expect(asset.holdingWeight).toEqual(asset.equityWeight);
+      expect(asset.feeShare).toEqual({
+        value: null,
+        reason: expect.stringContaining('手续费为零'),
+      });
+    }
+  });
+
   it('reproduces every output field from a separately reconstructed input', () => {
     expect(runPortfolio(portfolio())).toEqual(
       runPortfolio(JSON.parse(JSON.stringify(portfolio()))),
