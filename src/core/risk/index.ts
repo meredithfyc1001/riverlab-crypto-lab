@@ -8,6 +8,7 @@ export const riskBoundary: ModuleBoundary = {
 
 export {
   normalizeRisk,
+  entryProtection,
   protectionFor,
   triggerAtOpen,
   triggerIntrabar,

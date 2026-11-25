@@ -1,6 +1,8 @@
 # RiverLab Crypto Lab 工作指令
 
-作用于整个仓库。当前阶段为 Phase 5C-A，分支 `feat/phase-5c-portfolio-backtest`，稳定基线为 PR #11 实际合并提交 `c8ded9304785a06c713f5a830caf292bacbc918f`。先读[组合设计](docs/phase-5c-design.md)、[RC 实机复测](docs/phase-5c-rc-baseline.md)、[计划](plan.md)及[进度](progress.md)。保留单币种版本、Hash 和原 RC 全部 473/50 回归。组合实验单独版本与存储。
+作用于整个仓库。当前阶段 Phase 5C-B 从 PR #12 的实际合并提交 `fd4de40c32623eab3eb16555fc0df723d6e22357` 开发，独立分支 `feat/phase-5c-b-shared-pool`。先读[共享资金池设计](docs/phase-5c-b-design.md)、[5C-A 实机验收记录](docs/phase-5c-b-windows-baseline.md)、[计划](plan.md)和[进度](progress.md)。原固定子账户、单资产和 RC 历史报告按其保存格式与算法重算。保留 518 项单元及集成测试、52 项 E2E 和全部既有独立参考。
+
+新模式按统一时钟先保护退出、后卖、再统一分配买入，最后处理根内保护并收盘估值。所有金额用 18 位 BigInt 计，逐笔核对共享账本，按真实现金执行。数据上限包含全部原始快照 10,000 根，报告最多 32 MiB。CI 验证和用户物理断网分别登记。最终 PR 保持 Draft。
 
 Windows RC 已测项目零 FAIL、零 BLOCKED，物理断网暂缓。保留实机两项观察。不得提交主机名、私人路径、现场截图或原始现场档案。
 

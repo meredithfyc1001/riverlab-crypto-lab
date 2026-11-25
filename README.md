@@ -1,6 +1,6 @@
 # RiverLab Crypto Lab
 
-RiverLab 是中文、Windows 优先的本地现货历史研究工具。Phase 5C-A 测试版为 **1.1.0-test.1**，支持单币种研究和多币种独立子账户组合。稳定基线为 PR #11 的实际合并提交 `c8ded9304785a06c713f5a830caf292bacbc918f`。
+RiverLab 是中文、Windows 优先的本地现货历史研究工具。Phase 5C-B 测试版为 **1.1.0-test.2**，支持单币种研究、多币种固定子账户、策略共享现金及定期调仓。开发基线为 PR #12 的实际合并提交 `fd4de40c32623eab3eb16555fc0df723d6e22357`。
 
 **仅供学习研究 · 不提供投资建议 · 历史表现不代表未来表现。** 不连接真实账户、不接收密钥、不处理真实资金。
 
@@ -13,7 +13,7 @@ RiverLab 是中文、Windows 优先的本地现货历史研究工具。Phase 5C-
 ```powershell
 git clone https://github.com/meredithfyc1001/riverlab-crypto-lab.git
 cd riverlab-crypto-lab
-git switch feat/phase-5c-portfolio-backtest
+git switch feat/phase-5c-b-shared-pool
 npm ci
 npm run dev
 ```
@@ -30,11 +30,17 @@ Edge/Chrome 打开终端提示的本机地址，默认 http://127.0.0.1:5173。�
 
 ## 多币种组合回测
 
-在数据中心分别检查并保存 2～5 个不同交易对的数据集。从「回测中心」进入「组合回测」，填写统一报价货币、初始本金及各子账户权重。权重精确合计 100%；每个账户可选择自己的内置策略或已保存规则修订，并设置费用、滑点、止盈止损。交易对支持 BTC/USDT、BTC-USDT 或与明确报价币匹配的紧凑符号。
+在数据中心分别检查并保存 2～5 个不同交易对的数据集。从「回测中心」进入「组合回测」，选择固定子账户模式，填写统一报价货币、初始本金及各子账户权重。权重精确合计 100%；每个账户可选择自己的内置策略或已保存规则修订，并设置费用、滑点、止盈止损。交易对支持 BTC/USDT、BTC-USDT 或与明确报价币匹配的紧凑符号。
 
 核对每项数据的原始范围、两端截取和所选 UTC 开盘区间，确认后运行。各子账户从共同区间独立冷启动。组合结果展示含现金的实际账户权重、按持仓市值计算的资产权重、组合与子账户权益曲线、买入持有基准、相关性及独立成交明细。
 
 组合源快照合计最多 10,000 根，含截去部分；报告上限 32 MiB。保存后可重开或完整复现。换到新浏览器时，在组合页导入完整 JSON，核对重算结果后保存。CSV 用于汇总分析。JSON 备份包含用到的规则与原始行情，不依赖原配置中的其他本地库。[技术设计](docs/phase-5c-design.md) · [实现复核](docs/phase-5c-review.md)
+
+### 共享资金池和定期再平衡
+
+选择同一报价币、同周期的 2～5 个交易对，并确认共同 UTC 区间。策略共享模式可分别设置策略或规则修订、预算、保护与成交成本。预算之和至多 100%，差额为目标现金储备。定期再平衡模式填写资产和现金目标，合计精确等于 100%。例如周期为 3 时，第 3 根收盘排定首次调仓，第 4 根开盘才可成交。
+
+同一开盘时刻的卖出收入在模拟中立即到账。各资产按统一开盘权益申请买入资金，资金紧张时按比例缩减，手续费计入预算。数量和最小名义额可能留下现金及目标偏差。查看逐笔共享余额、对应资产数量、调仓表及组合收盘权益，再保存或导出。选对应的共享模式，可从空白浏览器导入完整 JSON 重新计算；旧固定子账户报告从固定子账户入口打开。[资金与调仓设计](docs/phase-5c-b-design.md) · [Windows 验收清单](docs/phase-5c-b-acceptance.md)
 
 ## 图表、保存与备份
 
@@ -93,9 +99,9 @@ Edge/Chrome 打开 http://127.0.0.1:4173。可断开外部网络后刷新和操�
 
 ## 下载 Windows 本地测试包
 
-在 [Phase 5C-A Draft PR](https://github.com/meredithfyc1001/riverlab-crypto-lab/pull/12) 的交付说明中核对完整 head SHA、Windows 内层 ZIP 的 SHA-256、下载链接及到期时间。GitHub Actions 仅在三平台检查和 Windows ZIP 双浏览器验证成功后上传 `RiverLab-Crypto-Lab-Local-Test-<完整head SHA>`，保留 14 天。下载私库制品需要具有访问权的 GitHub 账号。
+在 [Phase 5C-B Draft PR](https://github.com/meredithfyc1001/riverlab-crypto-lab/pull/13) 的交付说明中核对完整 head SHA、Windows 内层 ZIP 的 SHA-256、下载链接及到期时间。GitHub Actions 仅在三平台检查和 Windows ZIP 双浏览器验证成功后上传 `RiverLab-Crypto-Lab-Local-Test-<完整head SHA>`，保留 14 天。下载私库制品需要具有访问权的 GitHub 账号。
 
-取出内层ZIP并全部解压到含中文/空格路径，系统先装Node.js24 LTS，双击 `start-local.bat`。无需npm ci/开发服务器，浏览器打开 `http://127.0.0.1:4173`，默认只监听回环。保持前台窗口，Enter、q再Enter或Ctrl+C停止，不留后台服务。端口占用明确退出，不自动切换存储来源；如手动使用其他端口，浏览器数据隔离。首次下载及安装Node需联网，包启动与核心功能无需外网。详见[包内说明](scripts/local-test/README-local-test.md)和[组合 Windows 验收清单](docs/phase-5c-acceptance.md)。
+取出内层ZIP并全部解压到含中文/空格路径，系统先装Node.js24 LTS，双击 `start-local.bat`。无需npm ci/开发服务器，浏览器打开 `http://127.0.0.1:4173`，默认只监听回环。保持前台窗口，Enter、q再Enter或Ctrl+C停止，不留后台服务。端口占用明确退出，不自动切换存储来源；如手动使用其他端口，浏览器数据隔离。首次下载及安装Node需联网，包启动与核心功能无需外网。详见[包内说明](scripts/local-test/README-local-test.md)和[共享资金池 Windows 验收清单](docs/phase-5c-b-acceptance.md)。
 
 开发者构建测试包：`npm run build` → `npm run package:local` → `npm run test:package`（本机Chromium可设置PLAYWRIGHT_CHROMIUM_EXECUTABLE）。产物在work/local-package，含dist、服务/BAT/说明、版本/提交SHA/dirty标记、逐文件SHA256，ZIP外另有SHA256。CI只打包clean head提交，三组check成功后Windows实际解压/启动Chrome与Edge验证全部成功才上传；不创建Release、不部署。本机dirty包仅供开发验证，不能冒充最终PR artifact。
 

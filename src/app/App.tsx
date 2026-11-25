@@ -17,6 +17,7 @@ import { Suspense, useEffect, useState } from 'react';
 import { PageBoundary } from './PageBoundary';
 import { version } from '../../package.json';
 import { PortfolioCenter } from '../features/portfolio';
+import { useSharedPoolWorkbench } from './useSharedPoolWorkbench';
 import { usePortfolioWorkbench } from './usePortfolioWorkbench';
 import { pages, routes, pageFromHash } from './navigation';
 import { syntheticExample } from './synthetic-example';
@@ -42,6 +43,7 @@ export function App() {
   );
   const [theme, setTheme] = useState<'dark' | 'light'>('dark');
   const portfolio = usePortfolioWorkbench(activeId === 'portfolio');
+  const sharedPool = useSharedPoolWorkbench(activeId === 'portfolio');
   const navId = activeId === 'portfolio' ? 'backtests' : activeId;
   const prepareResultView =
     (activeId === 'backtests' && backtest.dataset !== null) ||
@@ -114,7 +116,7 @@ export function App() {
         </nav>
         <div className="sidebar-bottom">
           <span className="status-dot" /> 离线优先 · 本地研究
-          <small>v{version} / Phase 5C-A</small>
+          <small>v{version} / Phase 5C-B</small>
         </div>
       </aside>
 
@@ -146,7 +148,7 @@ export function App() {
               <h1>{activePage.label}</h1>
               <p className="page-description">{activePage.description}</p>
             </div>
-            <span className="badge">Phase 5C-A</span>
+            <span className="badge">Phase 5C-B</span>
           </div>
 
           <PageBoundary key={activeId}>
@@ -212,7 +214,7 @@ export function App() {
                       <strong>
                         组合回测 <small>v{version}</small>
                       </strong>
-                      <p>多币种独立子账户与组合实验复现</p>
+                      <p>固定子账户、共享资金池与定期目标权重再平衡</p>
                     </section>
                     <section className="stat-card">
                       <span>研究数据</span>
@@ -383,6 +385,7 @@ export function App() {
                   rules={rules.records}
                   ruleError={rules.error}
                   workbench={portfolio}
+                  sharedWorkbench={sharedPool}
                   theme={theme}
                 />
               ) : activeId === 'backtests' || activeId === 'experiments' ? (

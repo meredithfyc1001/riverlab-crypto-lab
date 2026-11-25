@@ -10,7 +10,7 @@ export type Execution =
 export function executeAtReference(
   balance: Balance,
   open: bigint,
-  intent: OrderIntent,
+  intent: OrderIntent | { side: OrderIntent['side']; quantity: bigint | 'all' },
   config: BacktestConfig,
 ): Execution {
   const buy = intent.side === 'buy';
@@ -26,9 +26,15 @@ export function executeAtReference(
     return { notional, fee: ceilDiv(notional * BigInt(config.feeBps), BPS) };
   };
   let quantity: bigint;
-  if (intent.quantity !== 'all')
-    quantity = (parseDecimal(intent.quantity) / step) * step;
-  else if (!buy) quantity = balance.quantity;
+  if (intent.quantity !== 'all') {
+    // Computed portfolio reductions can exceed the external decimal-input limit.
+    const requested =
+      typeof intent.quantity === 'bigint'
+        ? intent.quantity
+        : parseDecimal(intent.quantity);
+    if (requested < 0n) throw new Error('Negative order quantity.');
+    quantity = (requested / step) * step;
+  } else if (!buy) quantity = balance.quantity;
   else {
     // Search in integer quantity ticks. Includes fee rounding in affordability.
     let lo = 0n,

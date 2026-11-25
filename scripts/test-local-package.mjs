@@ -9,10 +9,12 @@ import {
 import { resolve, join, dirname } from 'node:path';
 import { spawn, execFileSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
+import { gunzipSync } from 'node:zlib';
 import { createServer } from 'node:net';
 import { request } from 'node:http';
 import assert from 'node:assert/strict';
 import { chromium } from '@playwright/test';
+import { exerciseSharedModes } from './shared-pool-browser.mjs';
 const zip = resolve('work/local-package/RiverLab-Crypto-Lab-Local-Test.zip');
 const target = resolve(
   `work/Windows 中文 空格测试 ${process.env.E2E_BROWSER ?? 'chromium'}`,
@@ -88,7 +90,7 @@ for (const row of manifest.trim().split('\n')) {
 const build = JSON.parse(
   await readFile(join(folder, 'build-info.json'), 'utf8'),
 );
-assert.equal(build.phase, 'Phase 5C-A');
+assert.equal(build.phase, 'Phase 5C-B');
 assert.equal(
   build.version,
   JSON.parse(await readFile('package.json', 'utf8')).version,
@@ -624,24 +626,78 @@ try {
   await restorePage.getByText('回测成功；结果尚未保存，刷新会丢失。').waitFor();
   const { record: reproduced } = await exportExperiment(restorePage);
   assert.deepEqual(reproduced.payload, ruleExperiment.payload);
-  // The real Windows 0.5.1-test export must also survive the RC verification.
-  const historicalPath = resolve(
-    'tests/fixtures/windows-20261125/rules-v2.json',
-  );
-  const historical = JSON.parse(await readFile(historicalPath, 'utf8'));
-  await restoreInput.setInputFiles(historicalPath);
-  await preview.waitFor();
-  await restorePage.getByRole('button', { name: '确认保存导入的实验' }).click();
-  await restorePage
-    .getByText('导入的实验已保存，可以刷新后重新打开。')
-    .waitFor();
-  await restorePage.reload();
-  await restorePage
-    .getByRole('button', { name: '打开实验 ' + historical.name, exact: true })
-    .click();
-  await restorePage.getByText('实验校验与重算一致，已重新打开结果。').waitFor();
-  assert.deepEqual((await exportExperiment(restorePage)).record, historical);
+  const historicalRunHashes = {};
+  for (const filename of ['ma-2-4', 'rules-v1', 'rules-v2']) {
+    const historicalPath = resolve(
+      `tests/fixtures/windows-20261125/${filename}.json`,
+    );
+    const historical = JSON.parse(await readFile(historicalPath, 'utf8'));
+    const historicalPage = await freshPage();
+    await historicalPage.goto(url + '/#/experiments');
+    await historicalPage
+      .getByLabel('导入回测实验 JSON（最多 256 MiB）')
+      .setInputFiles(historicalPath);
+    await historicalPage
+      .getByRole('region', { name: '实验恢复预览' })
+      .waitFor();
+    await historicalPage
+      .getByRole('button', { name: '确认保存导入的实验' })
+      .click();
+    await historicalPage
+      .getByText('导入的实验已保存，可以刷新后重新打开。')
+      .waitFor();
+    await historicalPage.reload();
+    await historicalPage
+      .getByRole('button', { name: '打开实验 ' + historical.name, exact: true })
+      .click();
+    await historicalPage
+      .getByText('实验校验与重算一致，已重新打开结果。')
+      .waitFor();
+    assert.deepEqual(
+      (await exportExperiment(historicalPage)).record,
+      historical,
+    );
+    await historicalPage
+      .getByRole('button', { name: '复现本实验', exact: true })
+      .click();
+    await historicalPage
+      .getByText('回测成功；结果尚未保存，刷新会丢失。')
+      .waitFor();
+    assert.deepEqual(
+      (await exportExperiment(historicalPage)).record.payload,
+      historical.payload,
+    );
+    historicalRunHashes[filename] = historical.payload.result.manifest.runHash;
+    await historicalPage.context().close();
+  }
   const portfolioHash = await checkPortfolio(page, freshPage, ruleRecord.rule);
+  const frozen = gunzipSync(
+    await readFile('tests/fixtures/phase-5c-a-synthetic.json.gz'),
+  );
+  assert.equal(
+    hash(frozen),
+    '4245d698561691cea2da72d91c0aa533182752ae52885f398bcfafbe1001f5a5',
+  );
+  const frozenPage = await freshPage();
+  await frozenPage.goto(url + '/#/portfolio');
+  await frozenPage.getByLabel('导入组合 JSON').setInputFiles({
+    name: 'historical-5c-a.json',
+    mimeType: 'application/json',
+    buffer: frozen,
+  });
+  await frozenPage
+    .getByRole('button', { name: '完整复现', exact: true })
+    .click();
+  await frozenPage.getByText(/完整复现通过/).waitFor();
+  assert.deepEqual(
+    await readFile(await downloadPortfolio(frozenPage, '导出组合 JSON')),
+    frozen,
+  );
+  await frozenPage.context().close();
+  const sharedPortfolioHashes = await exerciseSharedModes(page, freshPage, [
+    'BTC/USDT',
+    'DEMO/USDT',
+  ]);
   assert.deepEqual(external, []);
   assert.deepEqual(errors, []);
   assert(
@@ -667,8 +723,10 @@ try {
     zipSha256,
     extractionDirectory: `Windows 中文 空格测试 ${process.env.E2E_BROWSER ?? 'chromium'}`,
     restoredRunHash: restored.payload.result.manifest.runHash,
-    historicalRunHash: historical.payload.result.manifest.runHash,
+    historicalRunHash: historicalRunHashes['rules-v2'],
+    historicalRunHashes,
     portfolioHash,
+    sharedPortfolioHashes,
     externalRequests: external,
     errors,
     resources: responses,
@@ -689,8 +747,11 @@ try {
       'prefix replay, virtual next-open trade, journal, checkpoint reload and JSON CSV',
       'declarative rule creation, version save, Worker backtest, experiment reload/recompute and rule JSON import/export',
       'fresh profile experiment JSON preview, discard on refresh, confirmed restore, reload, full export equality and reproduced payload',
-      'Windows 0.5.1-test historical rule V2 export restored and compared in full',
+      'Windows 0.5.1-test historical MA 2/4 and rules V1, V2 exports restored and fully reproduced',
       'two-asset portfolio, confirmed 20-hour overlap, stored rule, real trades, save, JSON/CSV, reopen and fresh-profile full report equality',
+      'frozen 5C-A baseline portfolio imported into a blank profile, replayed and re-exported byte-identical',
+      'shared strategy pool with cash reserve, order ledger, JSON/CSV, save, fresh-profile restore and full replay',
+      'periodic target-weight rebalancing, partial trades, JSON/CSV, save, fresh-profile restore and full replay',
       'Enter exits and frees port',
       'missing dist fails',
     ],

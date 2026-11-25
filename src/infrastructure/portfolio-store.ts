@@ -1,7 +1,8 @@
+import type { PortfolioRecordMetadata } from '../core/portfolio/report-common';
 import {
   assertPortfolioSummary,
   summarizePortfolio,
-} from '../core/portfolio/report';
+} from '../core/portfolio/report-common';
 import type {
   PortfolioExperiment,
   PortfolioSummary,
@@ -9,14 +10,16 @@ import type {
 import { LocalDatabase } from './local-database';
 
 /** Separate database. Worker generation or verification precedes every UI save. */
-export class PortfolioStore extends LocalDatabase {
+export class PortfolioStore<
+  T extends PortfolioRecordMetadata = PortfolioExperiment,
+> extends LocalDatabase {
   constructor(
     factory: () => IDBFactory = () => indexedDB,
     name = 'riverlab-crypto-lab-portfolios',
   ) {
     super(factory, name, ['experiments', 'summaries']);
   }
-  async save(record: PortfolioExperiment): Promise<void> {
+  async save(record: T): Promise<void> {
     const summary = summarizePortfolio(record);
     assertPortfolioSummary(summary);
     try {

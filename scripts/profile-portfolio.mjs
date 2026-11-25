@@ -4,11 +4,14 @@ import { cpus, release } from 'node:os';
 import { resolve } from 'node:path';
 import { chromium } from '@playwright/test';
 import { build, preview } from 'vite';
+import { sampleShared } from './profile-shared-sample.mjs';
+
+const shared = process.argv.includes('--shared');
 
 await mkdir('work', { recursive: true });
 const outDir = await mkdtemp(resolve('work/portfolio-profile-'));
 const config = {
-  root: resolve('tests/performance/portfolio'),
+  root: resolve('tests/performance', shared ? 'shared-pool' : 'portfolio'),
   configFile: false,
   logLevel: 'error',
   build: { outDir, target: ['chrome120', 'edge120'] },
@@ -31,7 +34,7 @@ try {
   });
   const session = await browser.newBrowserCDPSession();
   console.log(
-    'PORTFOLIO_ENV',
+    shared ? 'SHARED_POOL_ENV' : 'PORTFOLIO_ENV',
     JSON.stringify({
       channel,
       browser: browser.version(),
@@ -40,12 +43,17 @@ try {
       cpu: cpus()[0].model,
     }),
   );
-  for (const count of [2, 5]) {
+  const url = 'http://127.0.0.1:' + server.httpServer.address().port;
+  const modes = shared ? ['shared-strategy', 'rebalance'] : ['independent'];
+  for (const { count, mode } of [2, 5].flatMap((count) =>
+    modes.map((mode) => ({ count, mode })),
+  )) {
     const page = await browser.newPage();
-    await page.goto('http://127.0.0.1:' + server.httpServer.address().port);
-    await page.waitForFunction(
-      () => typeof globalThis.samplePortfolio === 'function',
-    );
+    await page.goto(url);
+    if (!shared)
+      await page.waitForFunction(
+        () => typeof globalThis.samplePortfolio === 'function',
+      );
     // RSS sums may count shared pages more than once. Include only this browser's
     // processes reported by CDP; other browser sessions and Node are excluded.
     let peakBrowserRssKiB = 0,
@@ -73,14 +81,16 @@ try {
     }
     const sampling = sampleRss();
     try {
-      const s = await page.evaluate(
-        (count) => globalThis.samplePortfolio(count),
-        count,
-      );
+      const s = shared
+        ? await sampleShared(browser, page, url, count, mode)
+        : await page.evaluate(
+            (count) => globalThis.samplePortfolio(count),
+            count,
+          );
       finished = true;
       await sampling;
       console.log(
-        'PORTFOLIO_PROFILE',
+        shared ? 'SHARED_POOL_PROFILE' : 'PORTFOLIO_PROFILE',
         JSON.stringify({ ...s, peakBrowserRssKiB: peakBrowserRssKiB || null }),
       );
       assert.equal(s.totalSourceBars, 10000);

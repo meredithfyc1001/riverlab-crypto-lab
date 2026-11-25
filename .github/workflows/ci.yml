@@ -36,6 +36,9 @@ jobs:
           cache: npm
           cache-dependency-path: package-lock.json
       - run: npm ci
+      - name: Audit locked dependencies
+        if: runner.os == 'Linux'
+        run: npm audit
       - name: Install Chromium on Linux
         if: runner.os == 'Linux'
         run: npx playwright install --with-deps chromium
@@ -50,11 +53,14 @@ jobs:
           python tests/reference/risk_reference.py --check
           python tests/reference/rules_reference.py --check
           python tests/reference/portfolio_reference.py --check
+          python tests/reference/shared_pool_reference.py --check
       - run: npm run check
       - name: Profile 50,000 candles in the platform browser
         run: node scripts/profile-backtest.mjs
       - name: Profile two and five assets at the portfolio limit
         run: node scripts/profile-portfolio.mjs
+      - name: Profile shared strategies and periodic rebalancing
+        run: node scripts/profile-portfolio.mjs --shared
       - name: Read-only formatting diagnostics
         if: failure()
         run: node scripts/format-diagnostics.mjs
