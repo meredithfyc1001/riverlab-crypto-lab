@@ -31,78 +31,65 @@ export function forEachCanonicalChunk(
   value: unknown,
   consume: (bytes: Uint8Array) => void,
 ): void {
-  let parts: string[] = [];
-  let length = 0;
+  let ascii = '';
   const flush = () => {
-    const ascii = parts.join('');
     const bytes = new Uint8Array(ascii.length);
     for (let i = 0; i < ascii.length; i++) bytes[i] = ascii.charCodeAt(i);
     consume(bytes);
-    parts = [];
-    length = 0;
+    ascii = '';
   };
-  const quoted = new Map<string, string>();
-  const quote = (text: string) => {
-    const cached = quoted.get(text);
+  // Most report fields are plain ASCII keys, amounts, hashes or enum values.
+  // Only strings that need escaping go through the JSON encoder.
+  const escaped = new Map<string, string>();
+  const plainAscii = /^[\x20-\x21\x23-\x5b\x5d-\x7e]*$/;
+  const quote = (value: string) => {
+    if (plainAscii.test(value)) return '"' + value + '"';
+    const cached = escaped.get(value);
     if (cached !== undefined) return cached;
-    const encoded = JSON.stringify(text).replace(
+    const encoded = JSON.stringify(value).replace(
       /[\u007f-\uffff]/g,
       (c) => `\\u${c.charCodeAt(0).toString(16).padStart(4, '0')}`,
     );
-    if (quoted.size < 2048) quoted.set(text, encoded);
+    if (escaped.size < 2048) escaped.set(value, encoded);
     return encoded;
   };
-  const emit = (text: string) => {
-    parts.push(text);
-    length += text.length;
-    if (length >= 64 * 1024) flush();
-  };
   const encode = (v: unknown): void => {
-    if (v === null) {
-      emit('null');
-      return;
-    }
     if (typeof v === 'string') {
-      emit(quote(v));
-      return;
-    }
-    if (
+      ascii += quote(v);
+    } else if (
+      v === null ||
       typeof v === 'boolean' ||
       (typeof v === 'number' && Number.isFinite(v))
     ) {
-      emit(JSON.stringify(v));
-      return;
-    }
-    if (Array.isArray(v)) {
-      emit('[');
+      ascii += String(v);
+    } else if (Array.isArray(v)) {
+      ascii += '[';
       for (let i = 0; i < v.length; i++) {
-        if (i) emit(',');
+        if (i) ascii += ',';
         if (i in v) encode(v[i]);
       }
-      emit(']');
-      return;
-    }
-    if (
+      ascii += ']';
+    } else if (
       v &&
       typeof v === 'object' &&
       Object.getPrototypeOf(v) === Object.prototype
     ) {
-      emit('{');
-      let first = true;
-      for (const key of Object.keys(v).sort()) {
-        if (!first) emit(',');
-        first = false;
-        emit(quote(key));
-        emit(':');
+      ascii += '{';
+      const keys = Object.keys(v).sort();
+      for (let i = 0; i < keys.length; i++) {
+        const key = keys[i];
+        if (i) ascii += ',';
+        ascii += quote(key) + ':';
         encode((v as Record<string, unknown>)[key]);
       }
-      emit('}');
-      return;
+      ascii += '}';
+    } else {
+      throw new Error('Identity requires finite, plain JSON values.');
     }
-    throw new Error('Identity requires finite, plain JSON values.');
+    if (ascii.length >= 64 * 1024) flush();
   };
   encode(value);
-  if (length) flush();
+  if (ascii.length) flush();
 }
 
 export function contentHash(value: unknown): string {

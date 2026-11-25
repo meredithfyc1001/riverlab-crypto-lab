@@ -53,8 +53,9 @@ export function useDatasetLibrary() {
     try {
       await action();
     } catch (failure) {
-      setError(storageMessage(failure));
-      throw failure;
+      const message = storageMessage(failure);
+      setError(message);
+      throw new Error(message, { cause: failure });
     } finally {
       setBusy(false);
     }

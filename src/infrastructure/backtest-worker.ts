@@ -24,8 +24,13 @@ export function workerTask(request: WorkerRequest) {
       rejectTask = reject;
       worker.onmessage = (event: MessageEvent<WorkerResponse>) => {
         worker.terminate();
-        if (event.data.ok) resolve(event.data);
-        else reject(new Error(event.data.message));
+        if (event.data?.ok) resolve(event.data);
+        else
+          reject(
+            new Error(
+              event.data?.message || '无法读取Worker结果，未生成结果。',
+            ),
+          );
       };
       worker.onerror = () => {
         worker.terminate();

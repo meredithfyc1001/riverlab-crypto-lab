@@ -1,4 +1,11 @@
-import { readFile, mkdir, rm, writeFile, stat } from 'node:fs/promises';
+import {
+  readFile,
+  readdir,
+  mkdir,
+  rm,
+  writeFile,
+  stat,
+} from 'node:fs/promises';
 import { resolve, join, dirname } from 'node:path';
 import { spawn, execFileSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
@@ -13,25 +20,26 @@ const target = resolve(
 await rm(target, { force: true, recursive: true });
 await mkdir(target, { recursive: true });
 if (process.platform === 'win32') {
+  // Use the OS-provided bsdtar. Passing Unicode paths as arguments avoids legacy
+  // PowerShell cmdlet error handling; any extraction failure now fails this step.
   execFileSync(
-    'powershell.exe',
-    [
-      '-NoProfile',
-      '-NonInteractive',
-      '-Command',
-      'Expand-Archive -LiteralPath $env:RIVERLAB_TEST_ZIP -DestinationPath $env:RIVERLAB_TEST_DEST -Force',
-    ],
-    {
-      env: {
-        ...process.env,
-        RIVERLAB_TEST_ZIP: zip,
-        RIVERLAB_TEST_DEST: target,
-      },
-      stdio: 'pipe',
-    },
+    join(process.env.SystemRoot, 'System32', 'tar.exe'),
+    ['-xf', zip, '-C', target],
+    { stdio: 'inherit' },
+  );
+  const roots = await readdir(target);
+  assert.deepEqual(
+    roots,
+    ['RiverLab-Crypto-Lab-Local-Test'],
+    'Extracted ZIP root: ' + JSON.stringify(roots),
+  );
+  const entries = await readdir(join(target, roots[0]));
+  assert(
+    entries.includes('SHA256SUMS.txt'),
+    'Missing extracted manifest; files: ' + JSON.stringify(entries),
   );
 } else {
-  // Independently read the generated ZIP local headers. Windows uses actual Expand-Archive above.
+  // Windows uses a separate native ZIP extractor above.
   const data = await readFile(zip);
   let offset = 0;
   while (data.readUInt32LE(offset) === 0x04034b50) {
