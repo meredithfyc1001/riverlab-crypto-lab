@@ -30,13 +30,15 @@ describe('Phase 0 应用框架', () => {
     expect(document.documentElement).toHaveAttribute('data-theme', 'dark');
   });
 
-  it('深链接指向回测配置，未选保存数据不能运行且无账户输入', () => {
+  it('深链接指向回测配置，未选保存数据不能运行且无账户输入', async () => {
     window.history.replaceState(null, '', '/#/backtests');
     render(<App />);
     expect(
       screen.getByRole('heading', { level: 1, name: '回测中心' }),
     ).toBeVisible();
-    expect(screen.getByRole('heading', { name: '回测配置' })).toBeVisible();
+    expect(
+      await screen.findByRole('heading', { name: '回测配置' }),
+    ).toBeVisible();
     expect(
       screen.queryByLabelText(/API Key|私钥|账户密码/),
     ).not.toBeInTheDocument();

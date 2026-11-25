@@ -1,3 +1,5 @@
+import { lazy } from 'react';
+
 export const chartsPage = {
   id: 'charts',
   label: '行情中心',
@@ -7,4 +9,6 @@ export const chartsPage = {
   scope: '本地历史 K 线、成交量与 MA/EMA/RSI，不接入实时行情。',
 } as const;
 
-export { ChartCenter } from './ChartCenter';
+export const ChartCenter = lazy(() =>
+  import('./ChartCenter').then((module) => ({ default: module.ChartCenter })),
+);

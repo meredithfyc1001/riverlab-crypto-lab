@@ -11,6 +11,9 @@ import {
 
 export function useDatasetLibrary() {
   const store = useRef(new DatasetStore());
+  const [libraryState, setLibraryState] = useState<
+    'loading' | 'ready' | 'error'
+  >('loading');
   const [datasets, setDatasets] = useState<DatasetSummary[]>([]);
   const [dataset, setDataset] = useState<Dataset | null>(null);
   const [pendingRestore, setPendingRestore] = useState<Dataset | null>(null);
@@ -28,10 +31,16 @@ export function useDatasetLibrary() {
     store.current
       .list()
       .then((list) => {
-        if (active) setDatasets(list);
+        if (active) {
+          setDatasets(list);
+          setLibraryState('ready');
+        }
       })
       .catch((failure) => {
-        if (active) setError(storageMessage(failure));
+        if (active) {
+          setError(storageMessage(failure));
+          setLibraryState('error');
+        }
       });
     return () => {
       active = false;
@@ -131,6 +140,7 @@ export function useDatasetLibrary() {
     });
   }
   return {
+    libraryState,
     datasets,
     dataset,
     pendingRestore,

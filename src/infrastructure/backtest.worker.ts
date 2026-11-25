@@ -1,3 +1,4 @@
+import { readExperimentFile } from './experiment-file';
 import { sealWorkerExperiment } from './experiment-hash';
 import {
   runExperiment,
@@ -22,18 +23,20 @@ scope.onmessage = async ({ data }) => {
         elapsedMs: performance.now() - start,
       });
       scope.postMessage({ ok: true, record });
+    } else if (data.kind === 'import') {
+      const record = await readExperimentFile(data.file);
+      scope.postMessage({ ok: true, record });
     } else {
       const record = verifyExperiment(data.record);
-      scope.postMessage({
-        ok: true,
-        record,
-        ...(data.kind === 'export'
-          ? {
-              text:
-                data.format === 'json' ? reportJson(record) : tradesCsv(record),
-            }
-          : {}),
-      });
+      if (data.kind === 'export') {
+        const file =
+          data.format === 'json'
+            ? new Blob([reportJson(record)], { type: 'application/json' })
+            : new Blob([tradesCsv(record)], { type: 'text/csv;charset=utf-8' });
+        scope.postMessage({ ok: true, file });
+      } else {
+        scope.postMessage({ ok: true, record });
+      }
     }
   } catch (error) {
     scope.postMessage({

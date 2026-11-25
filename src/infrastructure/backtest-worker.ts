@@ -8,16 +8,18 @@ export type WorkerRequest =
       createdUtcMs: number;
     }
   | { kind: 'verify'; record: unknown }
+  | { kind: 'import'; file: Blob }
   | { kind: 'export'; record: Experiment; format: 'json' | 'csv' };
 export type WorkerResponse =
-  | { ok: true; record: Experiment; text?: string }
+  | { ok: true; record: Experiment }
+  | { ok: true; file: Blob }
   | { ok: false; message: string };
 export function workerTask(request: WorkerRequest) {
   const worker = new Worker(new URL('./backtest.worker.ts', import.meta.url), {
     type: 'module',
   });
   let rejectTask: (error: Error) => void = () => {};
-  const promise = new Promise<{ record: Experiment; text?: string }>(
+  const promise = new Promise<Extract<WorkerResponse, { ok: true }>>(
     (resolve, reject) => {
       rejectTask = reject;
       worker.onmessage = (event: MessageEvent<WorkerResponse>) => {

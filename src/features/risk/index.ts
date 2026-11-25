@@ -1,3 +1,5 @@
+import { lazy } from 'react';
+
 export const riskPage = {
   id: 'risk',
   label: '风险中心',
@@ -7,4 +9,6 @@ export const riskPage = {
   scope: '可复现Monte Carlo净权益情景分析，不预测未来。',
 } as const;
 
-export { RiskCenter } from './RiskCenter';
+export const RiskCenter = lazy(() =>
+  import('./RiskCenter').then((module) => ({ default: module.RiskCenter })),
+);

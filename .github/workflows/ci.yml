@@ -40,6 +40,7 @@ jobs:
         if: runner.os == 'Linux'
         run: npx playwright install --with-deps chromium
       - name: Independent numerical references
+        shell: bash
         run: |
           python tests/reference/legacy_reference_check.py
           python tests/reference/statistics_reference.py --check
@@ -89,8 +90,14 @@ jobs:
       - name: Record source SHA
         id: source
         shell: bash
-        run: echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+        env:
+          EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          actual=$(git rev-parse HEAD)
+          test "$actual" = "$EXPECTED_SHA"
+          echo "sha=$actual" >> "$GITHUB_OUTPUT"
       - name: Upload verified Windows local test package (14 days)
+        id: package
         uses: actions/upload-artifact@v4
         with:
           name: RiverLab-Crypto-Lab-Local-Test-${{ steps.source.outputs.sha }}
@@ -101,3 +108,19 @@ jobs:
             work/local-package/package-*.png
           if-no-files-found: error
           retention-days: 14
+      - name: Publish package identity and download link
+        shell: pwsh
+        env:
+          PACKAGE_URL: ${{ steps.package.outputs.artifact-url }}
+          ARTIFACT_DIGEST: ${{ steps.package.outputs.artifact-digest }}
+        run: |
+          $build = Get-Content -Raw work/local-package/RiverLab-Crypto-Lab-Local-Test/build-info.json | ConvertFrom-Json
+          $zip = Get-FileHash work/local-package/RiverLab-Crypto-Lab-Local-Test.zip -Algorithm SHA256
+          @(
+            "[$($build.product) $($build.version) Windows ZIP]($env:PACKAGE_URL)"
+            ""
+            "- Commit: $($build.commitSha)"
+            "- Inner ZIP SHA-256: $($zip.Hash.ToLowerInvariant())"
+            "- Actions artifact SHA-256: $env:ARTIFACT_DIGEST"
+            "- Retention: 14 days from upload"
+          ) >> $env:GITHUB_STEP_SUMMARY

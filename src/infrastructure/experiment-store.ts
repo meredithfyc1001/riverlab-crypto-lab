@@ -12,11 +12,17 @@ export class ExperimentStore extends LocalDatabase {
   }
   async save(e: Experiment): Promise<void> {
     // Full hash/recalculation occurs in the Worker before this adapter is called.
-    await this.transaction<void>('readwrite', (tx, done) => {
-      tx.objectStore('experiments').add(e);
-      tx.objectStore('summaries').add(summarizeExperiment(e));
-      done(undefined);
-    });
+    try {
+      await this.transaction<void>('readwrite', (tx, done) => {
+        tx.objectStore('experiments').add(e);
+        tx.objectStore('summaries').add(summarizeExperiment(e));
+        done(undefined);
+      });
+    } catch (error) {
+      if (error instanceof DOMException && error.name === 'ConstraintError')
+        throw new Error('相同 ID 的实验已存在，已拒绝覆盖。', { cause: error });
+      throw error;
+    }
   }
   async list(): Promise<ExperimentSummary[]> {
     const list = await this.transaction<ExperimentSummary[]>(

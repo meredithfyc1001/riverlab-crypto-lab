@@ -262,3 +262,28 @@
     justify-content: space-between;
   }
 }
+
+.first-import {
+  margin-top: 20px;
+  padding: 0 0 0 14px;
+  border-left: 3px solid var(--accent);
+}
+.dataset-center .first-import h3 {
+  margin: 0 0 6px;
+  color: var(--text);
+}
+.first-import p,
+.first-import ol {
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.8;
+}
+.first-import ol {
+  margin: 8px 0 0;
+  padding-left: 1.5em;
+}
+.dataset-center .start-historical {
+  color: var(--bg);
+  background: var(--accent);
+  font-weight: 600;
+}

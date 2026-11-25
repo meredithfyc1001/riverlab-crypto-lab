@@ -1,6 +1,14 @@
 # RiverLab Crypto Lab 进度
 
-## 当前恢复入口：Phase 5B 工程交付待验收（2026-11-11）
+## V1.0 RC 开发与验证（2026-11-25）
+
+从 GitHub fetch 最新 main，确认 PR #10 已于 2026-11-16 合并。基线为 `e27a728ac53dc7a3f6ad73fbcbd298f4527ccb54`，候选分支为 `feat/v1-rc-hardening`。Windows 旧版实机六项 PASS，已测产品 FAIL 为 0，Edge 仅有历史 CI，用户暂缓物理断网。归档已过滤主机名、私人路径与现场截图。[Windows 明细及回归](docs/v1-rc-windows-baseline.md)
+
+三个实验原件与现场 ZIP 中对应文件的字节一致。本机使用原件重算，MA 2/4、规则 V1/V2 的全部成交、25 点权益、统计及 runHash 均通过。八组独立 Python 数值参考全部通过。原锁文件复现 9 个中危包（1 条开发工具公告），生产为 0；兼容升级后全量与生产审计各为 0。[审计与原始输出](docs/rc-dependency-audit.md)
+
+最终提交的三平台作业、Windows ZIP 下载、内层 SHA-256 和到期时间在 [Draft PR #11](https://github.com/meredithfyc1001/riverlab-crypto-lab/pull/11) 的交付说明维护；逐次检查按对应提交登记。用户 RC 实机及物理断网待实测。[设计](docs/rc-design.md) · [复核](docs/rc-review.md) · [用户清单](docs/rc-acceptance.md)
+
+## Phase 5B 当时的恢复入口（2026-11-11）
 
 用户明确授权按Issue#10完整开发。已完整读取任务、AGENTS/plan/progress、原规划及2B/2C/3/4/5A契约。GitHub确认PR#9于UTC11:55:09合并，main=b0c9664fc5c37cf70686ca3735e317ad3c8a0a88；已fetch/pull同步，从干净工作区建立feat/phase-5b-rule-editor。首次沙箱Git代理连接失败，经受支持权限重试成功；GH CLI读取Actions返回Forbidden，改用现有GitHub连接器读取，不修改网络/凭据。
 

@@ -4,7 +4,7 @@ import react from '@vitejs/plugin-react';
 export default defineConfig({
   plugins: [react()],
   base: './',
-  build: { target: ['chrome120', 'edge120'] },
+  build: { cssCodeSplit: false, target: ['chrome120', 'edge120'] },
   test: {
     environment: 'jsdom',
     setupFiles: ['./tests/setup.ts'],

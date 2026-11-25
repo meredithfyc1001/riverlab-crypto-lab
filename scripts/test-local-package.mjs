@@ -49,6 +49,11 @@ if (process.platform === 'win32') {
 }
 const folder = join(target, 'RiverLab-Crypto-Lab-Local-Test');
 const hash = (b) => createHash('sha256').update(b).digest('hex');
+const zipSha256 = hash(await readFile(zip));
+assert.equal(
+  await readFile(zip + '.sha256', 'utf8'),
+  zipSha256 + '  RiverLab-Crypto-Lab-Local-Test.zip\n',
+);
 const manifest = await readFile(join(folder, 'SHA256SUMS.txt'), 'utf8');
 for (const row of manifest.trim().split('\n')) {
   const [expected, file] = row.split('  ');
@@ -58,7 +63,7 @@ for (const row of manifest.trim().split('\n')) {
 const build = JSON.parse(
   await readFile(join(folder, 'build-info.json'), 'utf8'),
 );
-assert.equal(build.phase, '5B');
+assert.equal(build.phase, 'V1.0 RC');
 assert.equal(
   build.version,
   JSON.parse(await readFile('package.json', 'utf8')).version,
@@ -130,6 +135,14 @@ async function raw(path, method = 'GET', host = `127.0.0.1:${port}`) {
     req.end();
   });
 }
+async function exportExperiment(page) {
+  const download = page.waitForEvent('download');
+  await page
+    .getByRole('button', { name: '导出实验 JSON', exact: true })
+    .click();
+  const path = await (await download).path();
+  return { path, record: JSON.parse(await readFile(path, 'utf8')) };
+}
 let running, browser;
 try {
   running = launch();
@@ -178,24 +191,28 @@ try {
         ? undefined
         : process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE,
   });
-  const context = await browser.newContext({ acceptDownloads: true });
-  const page = await context.newPage();
   const external = [],
     errors = [],
     responses = [];
-  page.on('pageerror', (e) => errors.push(e.message));
-  page.on('console', (m) => {
-    if (m.type() === 'error') errors.push(m.text());
-  });
-  page.on('response', (r) => {
-    responses.push({ url: r.url(), status: r.status() });
-  });
-  await context.route('**/*', (route) => {
-    const u = new URL(route.request().url());
-    if (u.origin === url) return route.continue();
-    external.push(u.href);
-    return route.abort();
-  });
+  async function freshPage() {
+    const context = await browser.newContext({ acceptDownloads: true });
+    const page = await context.newPage();
+    page.on('pageerror', (e) => errors.push(e.message));
+    page.on('console', (m) => {
+      if (m.type() === 'error') errors.push(m.text());
+    });
+    page.on('response', (r) => {
+      responses.push({ url: r.url(), status: r.status() });
+    });
+    await context.route('**/*', (route) => {
+      const u = new URL(route.request().url());
+      if (u.origin === url) return route.continue();
+      external.push(u.href);
+      return route.abort();
+    });
+    return page;
+  }
+  const page = await freshPage();
   await page.goto(url + '/#/datasets');
   await page
     .getByRole('button', { name: '真实历史样本 · BTCUSDT · 1 小时' })
@@ -397,13 +414,8 @@ try {
   await page
     .getByText('实验已保存（事务已完成）。请另行导出JSON备份。')
     .waitFor();
-  const ruleExperimentDownload = page.waitForEvent('download');
-  await page
-    .getByRole('button', { name: '导出实验 JSON', exact: true })
-    .click();
-  const ruleExperiment = JSON.parse(
-    await readFile(await (await ruleExperimentDownload).path(), 'utf8'),
-  );
+  const { path: ruleExperimentPath, record: ruleExperiment } =
+    await exportExperiment(page);
   assert.deepEqual(
     ruleExperiment.payload.result.manifest.strategy.config.rule,
     ruleRecord.rule,
@@ -415,13 +427,8 @@ try {
     .click();
   await page.getByRole('button', { name: /打开实验 .*rules/ }).click();
   await page.getByText('实验校验与重算一致，已重新打开结果。').waitFor();
-  const reopenedDownload = page.waitForEvent('download');
-  await page
-    .getByRole('button', { name: '导出实验 JSON', exact: true })
-    .click();
   assert.deepEqual(
-    JSON.parse(await readFile(await (await reopenedDownload).path(), 'utf8'))
-      .payload,
+    (await exportExperiment(page)).record.payload,
     ruleExperiment.payload,
   );
   await page
@@ -436,6 +443,56 @@ try {
     ),
     fullPage: true,
   });
+  // An isolated profile has neither the source dataset nor the rule version.
+  const restorePage = await freshPage();
+  await restorePage.goto(url + '/#/experiments');
+  const restoreInput = restorePage.getByLabel(
+    '导入回测实验 JSON（最多 256 MiB）',
+  );
+  const preview = restorePage.getByRole('region', { name: '实验恢复预览' });
+  const openRestored = restorePage.getByRole('button', { name: /打开实验/ });
+  await restoreInput.setInputFiles(ruleExperimentPath);
+  await preview.waitFor();
+  assert.equal(await openRestored.count(), 0);
+  // Refresh loses a preview. Importing the JSON again still requires confirmation.
+  await restorePage.reload();
+  await restoreInput.waitFor();
+  assert.equal(await preview.count(), 0);
+  assert.equal(await openRestored.count(), 0);
+  await restoreInput.setInputFiles(ruleExperimentPath);
+  await preview.waitFor();
+  await restorePage.getByRole('button', { name: '确认保存导入的实验' }).click();
+  await restorePage
+    .getByText('导入的实验已保存，可以刷新后重新打开。')
+    .waitFor();
+  await restorePage.reload();
+  await openRestored.click();
+  await restorePage.getByText('实验校验与重算一致，已重新打开结果。').waitFor();
+  const { record: restored } = await exportExperiment(restorePage);
+  assert.deepEqual(restored, ruleExperiment);
+  await restorePage
+    .getByRole('button', { name: '复现本实验', exact: true })
+    .click();
+  await restorePage.getByText('回测成功；结果尚未保存，刷新会丢失。').waitFor();
+  const { record: reproduced } = await exportExperiment(restorePage);
+  assert.deepEqual(reproduced.payload, ruleExperiment.payload);
+  // The real Windows 0.5.1-test export must also survive the RC verification.
+  const historicalPath = resolve(
+    'tests/fixtures/windows-20261125/rules-v2.json',
+  );
+  const historical = JSON.parse(await readFile(historicalPath, 'utf8'));
+  await restoreInput.setInputFiles(historicalPath);
+  await preview.waitFor();
+  await restorePage.getByRole('button', { name: '确认保存导入的实验' }).click();
+  await restorePage
+    .getByText('导入的实验已保存，可以刷新后重新打开。')
+    .waitFor();
+  await restorePage.reload();
+  await restorePage
+    .getByRole('button', { name: '打开实验 ' + historical.name, exact: true })
+    .click();
+  await restorePage.getByText('实验校验与重算一致，已重新打开结果。').waitFor();
+  assert.deepEqual((await exportExperiment(restorePage)).record, historical);
   assert.deepEqual(external, []);
   assert.deepEqual(errors, []);
   assert(
@@ -458,7 +515,10 @@ try {
     phase: build.phase,
     version: build.version,
     dirty: build.dirty,
-    extractionPath: folder,
+    zipSha256,
+    extractionDirectory: `Windows 中文 空格测试 ${process.env.E2E_BROWSER ?? 'chromium'}`,
+    restoredRunHash: restored.payload.result.manifest.runHash,
+    historicalRunHash: historical.payload.result.manifest.runHash,
     externalRequests: external,
     errors,
     resources: responses,
@@ -478,6 +538,8 @@ try {
       'seeded risk analysis, fan plot, snapshot reload and JSON CSV',
       'prefix replay, virtual next-open trade, journal, checkpoint reload and JSON CSV',
       'declarative rule creation, version save, Worker backtest, experiment reload/recompute and rule JSON import/export',
+      'fresh profile experiment JSON preview, discard on refresh, confirmed restore, reload, full export equality and reproduced payload',
+      'Windows 0.5.1-test historical rule V2 export restored and compared in full',
       'Enter exits and frees port',
       'missing dist fails',
     ],

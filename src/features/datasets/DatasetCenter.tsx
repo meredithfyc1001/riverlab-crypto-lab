@@ -50,7 +50,11 @@ function intervalFromSeconds(value: string): number | null {
 
 export function DatasetCenter({
   onPrepared,
-}: { onPrepared?: (dataset: Dataset, save: boolean) => Promise<void> } = {}) {
+  emptyLibrary = false,
+}: {
+  onPrepared?: (dataset: Dataset, save: boolean) => Promise<void>;
+  emptyLibrary?: boolean;
+} = {}) {
   const [file, setFile] = useState<File | null>(null);
   const [source, setSource] = useState<DataSource>(userSource);
   const [sourceNote, setSourceNote] = useState('');
@@ -61,6 +65,7 @@ export function DatasetCenter({
   const [timeUnit, setTimeUnit] = useState<TimeUnit>('auto');
   const [seconds, setSeconds] = useState('');
   const [report, setReport] = useState<ReportView | null>(null);
+  const [savedReport, setSavedReport] = useState<ReportView | null>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
   const generation = useRef(0);
@@ -206,6 +211,7 @@ export function DatasetCenter({
           result.report,
         );
         await onPrepared(dataset, save);
+        if (save) setSavedReport(report);
       },
     );
   }
@@ -218,7 +224,6 @@ export function DatasetCenter({
             <span className="eyebrow">LOCAL DATA / CSV</span>
             <h2 id="import-title">导入历史 K 线 CSV</h2>
           </div>
-          <span className="badge">Phase 1A</span>
         </div>
         <p className="muted">
           文件仅在浏览器内处理，不会上传。支持 UTF-8 CSV（含 BOM）、最多 10 MiB
@@ -226,6 +231,50 @@ export function DatasetCenter({
           中运行。仅当前数据中心会话保留报告，离开页面或刷新会清除，原 CSV
           不会改写。
         </p>
+        {emptyLibrary && (
+          <section
+            className="first-import"
+            aria-labelledby="first-import-title"
+          >
+            <h3 id="first-import-title">尚无已保存的数据集</h3>
+            <p>
+              可先载入 BTCUSDT 的 24 根真实历史 K
+              线，也可用人工合成数据练习导入。
+            </p>
+            <ol>
+              <li>选择内置样本或自己的 CSV。</li>
+              <li>
+                核对字段和时间单位，填写预期周期并生成质量报告。BTCUSDT 样本为
+                3,600 秒，合成样本为 60 秒。
+              </li>
+              <li>填写交易对，阅读警告后选择“保存已检查数据集”。</li>
+              <li>在回测中心选择已保存的数据集并配置策略。</li>
+            </ol>
+          </section>
+        )}
+        <div className="sample-actions" aria-label="内置来源样本">
+          {samples.map((sample) => (
+            <button
+              type="button"
+              disabled={busy}
+              key={sample.id}
+              className={
+                emptyLibrary && sample.id === 'historical'
+                  ? 'start-historical'
+                  : undefined
+              }
+              onClick={() =>
+                selectFile(
+                  new File([sample.text], sample.name, { type: 'text/csv' }),
+                  sample.source,
+                  { delimiter: ',', hasHeader: sample.hasHeader },
+                )
+              }
+            >
+              {sample.source.label}
+            </button>
+          ))}
+        </div>
         <label className="file-picker">
           选择本地 CSV
           <input
@@ -239,24 +288,6 @@ export function DatasetCenter({
             }}
           />
         </label>
-        <div className="sample-actions" aria-label="内置来源样本">
-          {samples.map((sample) => (
-            <button
-              type="button"
-              disabled={busy}
-              key={sample.id}
-              onClick={() =>
-                selectFile(
-                  new File([sample.text], sample.name, { type: 'text/csv' }),
-                  sample.source,
-                  { delimiter: ',', hasHeader: sample.hasHeader },
-                )
-              }
-            >
-              {sample.source.label}
-            </button>
-          ))}
-        </div>
         <div role="status" aria-live="polite">
           {busy
             ? '正在本地读取与检查 CSV…'
@@ -529,6 +560,7 @@ export function DatasetCenter({
               key={`${identity?.sha256}-${timeUnit}-${seconds}-${report.warningCount}`}
               report={report}
               disabled={busy}
+              saved={savedReport === report}
               onPrepare={prepare}
             />
           )}
