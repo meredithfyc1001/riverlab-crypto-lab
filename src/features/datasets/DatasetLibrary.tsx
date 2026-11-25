@@ -8,6 +8,7 @@ export interface LibraryProps {
   busy: boolean;
   message: string;
   error: string;
+  libraryDiagnostic: string;
   open: (id: string) => Promise<void>;
   remove: (id: string) => Promise<void>;
   saveCurrent: () => Promise<void>;
@@ -154,10 +155,11 @@ export function DatasetLibrary(props: LibraryProps) {
       </fieldset>
       {props.busy && <p role="status">正在处理本地数据，请稍候…</p>}
       {props.message && <p role="status">{props.message}</p>}
-      {props.error && (
-        <p role="alert" className="import-error">
-          {props.error}
-        </p>
+      {(props.libraryDiagnostic || props.error) && (
+        <div role="alert" className="import-error">
+          {props.libraryDiagnostic && <p>{props.libraryDiagnostic}</p>}
+          {props.error && <p>{props.error}</p>}
+        </div>
       )}
     </section>
   );

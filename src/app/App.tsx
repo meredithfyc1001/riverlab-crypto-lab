@@ -169,8 +169,6 @@ export function App() {
                 )}
               {library.libraryDiagnostic &&
                 [
-                  'datasets',
-                  'charts',
                   'strategies',
                   'replay',
                   'backtests',

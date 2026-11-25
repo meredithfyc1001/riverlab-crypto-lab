@@ -1,5 +1,5 @@
 import { useLibraryList } from './useLibraryList';
-import { useRef, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import { assertDataset } from '../core/data/dataset';
 import type { Dataset } from '../core/data/dataset';
 import {
@@ -13,6 +13,15 @@ import {
 export function useDatasetLibrary() {
   const store = useRef(new DatasetStore());
   const list = useLibraryList(store, '数据集库');
+  const [savedIds, setSavedIds] = useState<string[]>([]);
+  const datasets = useMemo(() => {
+    // Keep the initial IndexedDB order, then append records in the order
+    // their saves committed in this session, even across list refreshes.
+    const order = new Map(savedIds.map((id, index) => [id, index]));
+    return [...list.items].sort(
+      (a, b) => (order.get(a.id) ?? -1) - (order.get(b.id) ?? -1),
+    );
+  }, [list.items, savedIds]);
   const [dataset, setDataset] = useState<Dataset | null>(null);
   const [pendingRestore, setPendingRestore] = useState<Dataset | null>(null);
   const [busy, setBusy] = useState(false);
@@ -32,15 +41,19 @@ export function useDatasetLibrary() {
       setBusy(false);
     }
   }
+  async function saveAndRefresh(next: Dataset) {
+    await store.current.save(next);
+    setSavedIds((ids) => [...ids.filter((id) => id !== next.id), next.id]);
+    await list.refresh();
+  }
   async function prepared(next: Dataset, save: boolean) {
     assertDataset(next);
     // Keep in memory even when persistence fails, so users can export a backup.
     setDataset(next);
     await run(async () => {
       if (save) {
-        await store.current.save(next);
+        await saveAndRefresh(next);
         setMessage('已保存数据集（IndexedDB 事务已完成）。请另行备份。');
-        await list.refresh();
       } else {
         setMessage('已载入行情中心，仅在当前网页内存；尚未保存。');
         window.location.hash = '/charts';
@@ -58,6 +71,7 @@ export function useDatasetLibrary() {
   async function remove(id: string) {
     await run(async () => {
       await store.current.delete(id);
+      setSavedIds((ids) => ids.filter((key) => key !== id));
       await list.refresh();
       if (dataset?.id === id) setDataset(null);
       setMessage('已删除本地数据集（事务已完成）。');
@@ -105,18 +119,17 @@ export function useDatasetLibrary() {
     if (!pendingRestore) return;
     await run(async () => {
       const next = { ...pendingRestore, id: crypto.randomUUID() };
-      await store.current.save(next);
+      await saveAndRefresh(next);
       setDataset(next);
       setPendingRestore(null);
       setMessage('备份已恢复为新副本（事务已完成），未覆盖已有数据。');
-      await list.refresh();
     });
   }
   return {
     libraryState: list.state,
     libraryDiagnostic: list.diagnostic,
     libraryEmpty: list.empty,
-    datasets: list.items,
+    datasets,
     dataset,
     pendingRestore,
     busy,

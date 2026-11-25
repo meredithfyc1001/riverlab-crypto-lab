@@ -8,6 +8,8 @@ PR #14 于 2026-11-25 11:45:05 UTC 合并，最终 5D 功能提交为 `b37094a91
 
 首轮本机完整检查通过 667 项 Vitest，在 E2E 源码的 ES2022 类型检查发现 DOM NodeList 展开问题。已改用 Array.from，补入规则库容量边界用例，保留原计时与测试门槛。三项高级研究专项 E2E 已用 Linux Chromium 生产构建验证，四个旧库也完成真实浏览器故障注入与原数据对照。满载 5E 使用 50,000 根行情、100,000 根次求值时，串行 8.09 秒、两 Worker 5.46 秒，同一输入结果一致；对应报告空配置恢复 4.00 秒。单币与组合生产上限维持 50,000 / 10,000 根。最终提交的全量检查、三平台作业、Windows 两份证据、ZIP 和有效期随 Draft PR 更新。[测量与独立扩容方案](docs/phase-5e-capacity.md) · [Phase 5E PR](https://github.com/meredithfyc1001/riverlab-crypto-lab/pulls?q=is%3Apr+head%3Afeat%2Fphase-5e-advanced-research)
 
+候选提交 `33b11bee29b3216363930beb69b627e7cca65826` 通过 668 项 Vitest。本机生产浏览器回归发现两处历史交互问题。数据集库被拒读取后再导入损坏备份，两个独立警告同时占用原来的一处错误区域。另一次在同名行情先后保存后进入回放，按数据库主键排列的列表可能将旧行情排在本次新增行情之后。复核保留原 E2E 断言，合并同一面板的诊断并恢复保存后的列表顺序。[候选提交 CI](https://github.com/meredithfyc1001/riverlab-crypto-lab/actions/runs/45610908683)
+
 ## Phase 5D 报告库可用性补丁
 
 原 Draft PR #14 的 `e580125d8adf15d1aca947ec8b500ad6a8e77952` 已复现两处故障。只损坏一个共享摘要时，旧联合列表无法返回其他四条来源；只损坏一个 5D 摘要时，另两份报告能按 ID 重算并逐字节导出，列表却报错。已在同一分支修正 5D 的逐条摘要校验与各库错误呈现。测试使用隔离数据库，修复后八份正文与修复前联合 Hash 一致。依赖树及生产依赖审计各零公告，全部独立 Python 参考通过。补丁提交绑定的三平台检查、Windows 双浏览器验证、新包摘要及下载有效期在 PR 正文更新；新版用户实机待验收，物理断网 NOT TESTED。[故障复核](docs/phase-5d-library-review.md) · [新版 Windows 验收单](docs/phase-5d-acceptance.md) · [Draft PR #14](https://github.com/meredithfyc1001/riverlab-crypto-lab/pull/14)
