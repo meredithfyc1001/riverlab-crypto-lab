@@ -1,0 +1,2654 @@
+[
+  {
+    "spec": {
+      "name": "five-way-clock",
+      "initialCash": "1000.000000000000000013",
+      "rebalanceEvery": 0,
+      "cashWeightPercent": "0",
+      "assets": [
+        {
+          "symbol": "AAA/USDT",
+          "weightPercent": "50",
+          "bars": [
+            [90, 90, 90, 90],
+            [95, 95, 95, 95],
+            [100, 100, 100, 100],
+            [250, 250, 250, 250],
+            [311, 311, 311, 311],
+            [280, 280, 280, 280],
+            [260, 260, 260, 260]
+          ],
+          "costs": {
+            "feeBps": 13,
+            "buySlippageBps": 7,
+            "sellSlippageBps": 3,
+            "quantityDecimals": 18,
+            "minNotional": "0"
+          },
+          "risk": {}
+        },
+        {
+          "symbol": "BBB/USDT",
+          "weightPercent": "20",
+          "bars": [
+            [13, 13, 13, 13],
+            [13, 13, 13, 13],
+            [13, 13, 13, 13],
+            [15, 15, 15, 15],
+            [17, 17, 17, 17],
+            [19, 19, 19, 19],
+            [14, 14, 14, 14]
+          ],
+          "costs": {
+            "feeBps": 31,
+            "buySlippageBps": 21,
+            "sellSlippageBps": 0,
+            "quantityDecimals": 8,
+            "minNotional": "0"
+          },
+          "risk": {}
+        },
+        {
+          "symbol": "CCC/USDT",
+          "weightPercent": "15",
+          "bars": [
+            [17, 17, 17, 17],
+            [17, 17, 17, 17],
+            [17, 17, 17, 17],
+            [19, 19, 19, 19],
+            [20, 20, 20, 20],
+            [21, 21, 21, 21],
+            [18, 18, 18, 18]
+          ],
+          "costs": {
+            "feeBps": 0,
+            "buySlippageBps": 0,
+            "sellSlippageBps": 0,
+            "quantityDecimals": 3,
+            "minNotional": "120"
+          },
+          "risk": {}
+        },
+        {
+          "symbol": "DDD/USDT",
+          "weightPercent": "5",
+          "bars": [
+            [2, 2, 2, 2],
+            [2, 2, 2, 2],
+            [2, 2, 2, 2],
+            [3, 3, 3, 3],
+            [5, 5, 5, 5],
+            [8, 8, 8, 8],
+            [7, 7, 7, 7]
+          ],
+          "costs": {
+            "feeBps": 19,
+            "buySlippageBps": 0,
+            "sellSlippageBps": 0,
+            "quantityDecimals": 2,
+            "minNotional": "0"
+          },
+          "risk": {}
+        },
+        {
+          "symbol": "EEE/USDT",
+          "weightPercent": "5",
+          "bars": [
+            [5, 5, 5, 5],
+            [5, 5, 5, 5],
+            [5, 5, 5, 5],
+            [7, 7, 7, 7],
+            [9, 9, 9, 9],
+            [8, 8, 8, 8],
+            [5, 5, 5, 5]
+          ],
+          "costs": {
+            "feeBps": 0,
+            "buySlippageBps": 0,
+            "sellSlippageBps": 0,
+            "quantityDecimals": 18,
+            "minNotional": "55"
+          },
+          "risk": {}
+        }
+      ]
+    },
+    "expected": {
+      "fills": [
+        {
+          "barIndex": 2,
+          "symbol": "AAA/USDT",
+          "phase": "buy",
+          "side": "buy",
+          "price": "100.07",
+          "quantity": "4.990015428229501308",
+          "notional": "499.350843902926195892",
+          "fee": "0.649156097073804055",
+          "cashBefore": "1000.000000000000000013",
+          "cashAfter": "500.000000000000000066",
+          "quantityBefore": "0",
+          "quantityAfter": "4.990015428229501308"
+        },
+        {
+          "barIndex": 4,
+          "symbol": "BBB/USDT",
+          "phase": "buy",
+          "side": "buy",
+          "price": "17.0357",
+          "quantity": "10.33586621",
+          "notional": "176.078715993697",
+          "fee": "0.5458440195804607",
+          "cashBefore": "500.000000000000000066",
+          "cashAfter": "323.375439986722539366",
+          "quantityBefore": "0",
+          "quantityAfter": "10.33586621"
+        },
+        {
+          "barIndex": 4,
+          "symbol": "CCC/USDT",
+          "phase": "buy",
+          "side": "buy",
+          "price": "20",
+          "quantity": "6.623",
+          "notional": "132.46",
+          "fee": "0",
+          "cashBefore": "323.375439986722539366",
+          "cashAfter": "190.915439986722539366",
+          "quantityBefore": "0",
+          "quantityAfter": "6.623"
+        },
+        {
+          "barIndex": 4,
+          "symbol": "DDD/USDT",
+          "phase": "buy",
+          "side": "buy",
+          "price": "5",
+          "quantity": "8.81",
+          "notional": "44.05",
+          "fee": "0.083695",
+          "cashBefore": "190.915439986722539366",
+          "cashAfter": "146.781744986722539366",
+          "quantityBefore": "0",
+          "quantityAfter": "8.81"
+        },
+        {
+          "barIndex": 6,
+          "symbol": "AAA/USDT",
+          "phase": "sell",
+          "side": "sell",
+          "price": "259.922",
+          "quantity": "4.990015428229501308",
+          "notional": "1297.014790136268438977",
+          "fee": "1.686119227177148971",
+          "cashBefore": "146.781744986722539366",
+          "cashAfter": "1442.110415895813829372",
+          "quantityBefore": "4.990015428229501308",
+          "quantityAfter": "0"
+        }
+      ],
+      "rejects": [
+        {
+          "barIndex": 4,
+          "symbol": "EEE/USDT",
+          "phase": "buy",
+          "rejection": "below-min-notional"
+        },
+        {
+          "barIndex": 5,
+          "symbol": "EEE/USDT",
+          "phase": "buy",
+          "rejection": "below-min-notional"
+        }
+      ],
+      "grants": [
+        {
+          "barIndex": 2,
+          "symbol": "AAA/USDT",
+          "requestedBudget": "500.000000000000000006",
+          "approvedBudget": "500.000000000000000006"
+        },
+        {
+          "barIndex": 4,
+          "symbol": "BBB/USDT",
+          "requestedBudget": "410.37895963587498137",
+          "approvedBudget": "176.624560040458335433"
+        },
+        {
+          "barIndex": 4,
+          "symbol": "CCC/USDT",
+          "requestedBudget": "307.784219726906236028",
+          "approvedBudget": "132.468420030343751575"
+        },
+        {
+          "barIndex": 4,
+          "symbol": "DDD/USDT",
+          "requestedBudget": "102.594739908968745342",
+          "approvedBudget": "44.156140010114583858"
+        },
+        {
+          "barIndex": 4,
+          "symbol": "EEE/USDT",
+          "requestedBudget": "102.594739908968745342",
+          "approvedBudget": "44.156140010114583858"
+        },
+        {
+          "barIndex": 5,
+          "symbol": "EEE/USDT",
+          "requestedBudget": "97.49652614404914528",
+          "approvedBudget": "49.285218842673394086"
+        }
+      ],
+      "curve": [
+        {
+          "cash": "1000.000000000000000013",
+          "equity": "1000.000000000000000013",
+          "marketValue": "0",
+          "benchmarkEquity": "1000.000000000000000013",
+          "contributions": ["0", "0", "0", "0", "0"],
+          "drawdown": "0",
+          "weights": ["0", "0", "0", "0", "0", "100"]
+        },
+        {
+          "cash": "1000.000000000000000013",
+          "equity": "1000.000000000000000013",
+          "marketValue": "0",
+          "benchmarkEquity": "997.870824291278921566",
+          "contributions": ["0", "0", "0", "0", "0"],
+          "drawdown": "0",
+          "weights": ["0", "0", "0", "0", "0", "100"]
+        },
+        {
+          "cash": "1000.000000000000000013",
+          "equity": "1000.000000000000000013",
+          "marketValue": "0",
+          "benchmarkEquity": "1025.593132225887262166",
+          "contributions": ["0", "0", "0", "0", "0"],
+          "drawdown": "0",
+          "weights": ["0", "0", "0", "0", "0", "100"]
+        },
+        {
+          "cash": "500.000000000000000066",
+          "equity": "999.001542822950130866",
+          "marketValue": "499.0015428229501308",
+          "benchmarkEquity": "1053.315440160495602766",
+          "contributions": ["-0.998457177049869147", "0", "0", "0", "0"],
+          "drawdown": "0.000998457177",
+          "weights": [
+            "49.950027245492111183",
+            "0",
+            "0",
+            "0",
+            "0",
+            "50.049972754507888816"
+          ]
+        },
+        {
+          "cash": "500.000000000000000066",
+          "equity": "1747.503857057375327066",
+          "marketValue": "1247.503857057375327",
+          "benchmarkEquity": "1958.190538418745820766",
+          "contributions": ["747.503857057375327053", "0", "0", "0", "0"],
+          "drawdown": "0",
+          "weights": [
+            "71.387759862118368205",
+            "0",
+            "0",
+            "0",
+            "0",
+            "28.612240137881631794"
+          ]
+        },
+        {
+          "cash": "146.781744986722539366",
+          "equity": "2050.896268736097446154",
+          "marketValue": "1904.114523749374906788",
+          "benchmarkEquity": "2385.735555440967576086",
+          "contributions": [
+            "1051.894798179374906841",
+            "-0.9148344432774607",
+            "0",
+            "-0.083695",
+            "0"
+          ],
+          "drawdown": "0",
+          "weights": [
+            "75.669102422998634874",
+            "8.56746039517075872",
+            "6.458639669846925594",
+            "2.147841442373222651",
+            "0",
+            "7.156956069610458158"
+          ]
+        },
+        {
+          "cash": "146.781744986722539366",
+          "equity": "1949.930522880982905606",
+          "marketValue": "1803.14877789426036624",
+          "benchmarkEquity": "2328.140106466395864366",
+          "contributions": [
+            "897.204319904260366293",
+            "19.7568979767225393",
+            "6.623",
+            "26.346305",
+            "0"
+          ],
+          "drawdown": "0.049230059752",
+          "weights": [
+            "71.654056568124245028",
+            "10.071202829311598656",
+            "7.132715672069571011",
+            "3.614487755997953487",
+            "0",
+            "7.527537174496631816"
+          ]
+        },
+        {
+          "cash": "1442.110415895813829372",
+          "equity": "1767.696542835813829372",
+          "marketValue": "325.58612694",
+          "benchmarkEquity": "2089.307224177962501966",
+          "contributions": [
+            "795.328670909091290059",
+            "-31.9224330732774607",
+            "-13.246",
+            "17.536305",
+            "0"
+          ],
+          "drawdown": "0.13808583604",
+          "weights": [
+            "0",
+            "8.185914461758391269",
+            "6.744030839634490702",
+            "3.488720971364596789",
+            "0",
+            "81.581333727242521238"
+          ]
+        }
+      ],
+      "rebalances": [],
+      "netPnl": "767.696542835813829359",
+      "fees": "2.964814343831413726",
+      "maxDrawdown": "0.13808583604",
+      "benchmarkReturn": "1.089307224177",
+      "benchmarkRejects": ["EEE/USDT"],
+      "assets": [
+        {
+          "symbol": "AAA/USDT",
+          "quantity": "0",
+          "fees": "2.335275324250953026",
+          "buySpend": "499.999999999999999947",
+          "sellProceeds": "1295.328670909091290006",
+          "netPnl": "795.328670909091290059"
+        },
+        {
+          "symbol": "BBB/USDT",
+          "quantity": "10.33586621",
+          "fees": "0.5458440195804607",
+          "buySpend": "176.6245600132774607",
+          "sellProceeds": "0",
+          "netPnl": "-31.9224330732774607"
+        },
+        {
+          "symbol": "CCC/USDT",
+          "quantity": "6.623",
+          "fees": "0",
+          "buySpend": "132.46",
+          "sellProceeds": "0",
+          "netPnl": "-13.246"
+        },
+        {
+          "symbol": "DDD/USDT",
+          "quantity": "8.81",
+          "fees": "0.083695",
+          "buySpend": "44.133695",
+          "sellProceeds": "0",
+          "netPnl": "17.536305"
+        },
+        {
+          "symbol": "EEE/USDT",
+          "quantity": "0",
+          "fees": "0",
+          "buySpend": "0",
+          "sellProceeds": "0",
+          "netPnl": "0"
+        }
+      ]
+    }
+  },
+  {
+    "spec": {
+      "name": "sell-proceeds",
+      "initialCash": "1000",
+      "rebalanceEvery": 0,
+      "cashWeightPercent": "0",
+      "assets": [
+        {
+          "symbol": "AAA/USDT",
+          "weightPercent": "55",
+          "bars": [
+            [90, 90, 90, 90],
+            [95, 95, 95, 95],
+            [100, 100, 100, 100],
+            [300, 300, 300, 300],
+            [240, 240, 240, 240],
+            [260, 260, 260, 260],
+            [270, 270, 270, 270]
+          ],
+          "costs": {
+            "feeBps": 23,
+            "buySlippageBps": 0,
+            "sellSlippageBps": 41,
+            "quantityDecimals": 18,
+            "minNotional": "0"
+          },
+          "risk": {}
+        },
+        {
+          "symbol": "BBB/USDT",
+          "weightPercent": "25",
+          "bars": [
+            [15, 15, 15, 15],
+            [15, 15, 15, 15],
+            [15, 15, 15, 15],
+            [15, 15, 15, 15],
+            [19, 19, 19, 19],
+            [20, 20, 20, 20],
+            [22, 22, 22, 22]
+          ],
+          "costs": {
+            "feeBps": 1,
+            "buySlippageBps": 0,
+            "sellSlippageBps": 0,
+            "quantityDecimals": 5,
+            "minNotional": "0"
+          },
+          "risk": {}
+        },
+        {
+          "symbol": "CCC/USDT",
+          "weightPercent": "20",
+          "bars": [
+            [25, 25, 25, 25],
+            [25, 25, 25, 25],
+            [25, 25, 25, 25],
+            [25, 25, 25, 25],
+            [27, 27, 27, 27],
+            [29, 29, 29, 29],
+            [28, 28, 28, 28]
+          ],
+          "costs": {
+            "feeBps": 0,
+            "buySlippageBps": 0,
+            "sellSlippageBps": 0,
+            "quantityDecimals": 0,
+            "minNotional": "0"
+          },
+          "risk": {}
+        }
+      ]
+    },
+    "expected": {
+      "fills": [
+        {
+          "barIndex": 2,
+          "symbol": "AAA/USDT",
+          "phase": "buy",
+          "side": "buy",
+          "price": "100",
+          "quantity": "5.487379028235059363",
+          "notional": "548.7379028235059363",
+          "fee": "1.262097176494063654",
+          "cashBefore": "1000",
+          "cashAfter": "450.000000000000000046",
+          "quantityBefore": "0",
+          "quantityAfter": "5.487379028235059363"
+        },
+        {
+          "barIndex": 5,
+          "symbol": "AAA/USDT",
+          "phase": "sell",
+          "side": "sell",
+          "price": "258.934",
+          "quantity": "5.487379028235059363",
+          "notional": "1420.869001297016861099",
+          "fee": "3.267998702983138781",
+          "cashBefore": "450.000000000000000046",
+          "cashAfter": "1867.601002594033722364",
+          "quantityBefore": "5.487379028235059363",
+          "quantityAfter": "0"
+        },
+        {
+          "barIndex": 5,
+          "symbol": "BBB/USDT",
+          "phase": "buy",
+          "side": "buy",
+          "price": "20",
+          "quantity": "23.34267",
+          "notional": "466.8534",
+          "fee": "0.04668534",
+          "cashBefore": "1867.601002594033722364",
+          "cashAfter": "1400.700917254033722364",
+          "quantityBefore": "0",
+          "quantityAfter": "23.34267"
+        },
+        {
+          "barIndex": 5,
+          "symbol": "CCC/USDT",
+          "phase": "buy",
+          "side": "buy",
+          "price": "29",
+          "quantity": "12",
+          "notional": "348",
+          "fee": "0",
+          "cashBefore": "1400.700917254033722364",
+          "cashAfter": "1052.700917254033722364",
+          "quantityBefore": "0",
+          "quantityAfter": "12"
+        },
+        {
+          "barIndex": 6,
+          "symbol": "AAA/USDT",
+          "phase": "buy",
+          "side": "buy",
+          "price": "270",
+          "quantity": "3.866040741441789614",
+          "notional": "1043.83100018928319578",
+          "fee": "2.400811300435351351",
+          "cashBefore": "1052.700917254033722364",
+          "cashAfter": "6.469105764315175233",
+          "quantityBefore": "0",
+          "quantityAfter": "3.866040741441789614"
+        }
+      ],
+      "rejects": [],
+      "grants": [
+        {
+          "barIndex": 2,
+          "symbol": "AAA/USDT",
+          "requestedBudget": "550",
+          "approvedBudget": "550"
+        },
+        {
+          "barIndex": 5,
+          "symbol": "BBB/USDT",
+          "requestedBudget": "466.900250648508430591",
+          "approvedBudget": "466.900250648508430591"
+        },
+        {
+          "barIndex": 5,
+          "symbol": "CCC/USDT",
+          "requestedBudget": "373.520200518806744472",
+          "approvedBudget": "373.520200518806744472"
+        },
+        {
+          "barIndex": 6,
+          "symbol": "AAA/USDT",
+          "requestedBudget": "1046.2318114897185473",
+          "approvedBudget": "1046.2318114897185473"
+        }
+      ],
+      "curve": [
+        {
+          "cash": "1000",
+          "equity": "1000",
+          "marketValue": "0",
+          "benchmarkEquity": "1000",
+          "contributions": ["0", "0", "0"],
+          "drawdown": "0",
+          "weights": ["0", "0", "0", "100"]
+        },
+        {
+          "cash": "1000",
+          "equity": "1000",
+          "marketValue": "0",
+          "benchmarkEquity": "998.712905323505936346",
+          "contributions": ["0", "0", "0"],
+          "drawdown": "0",
+          "weights": ["0", "0", "0", "100"]
+        },
+        {
+          "cash": "1000",
+          "equity": "1000",
+          "marketValue": "0",
+          "benchmarkEquity": "1029.198344369256266141",
+          "contributions": ["0", "0", "0"],
+          "drawdown": "0",
+          "weights": ["0", "0", "0", "100"]
+        },
+        {
+          "cash": "450.000000000000000046",
+          "equity": "998.737902823505936346",
+          "marketValue": "548.7379028235059363",
+          "benchmarkEquity": "1059.683783415006595936",
+          "contributions": ["-1.262097176494063654", "0", "0"],
+          "drawdown": "0.001262097176",
+          "weights": ["54.94313385645856538", "0", "0", "45.056866143541434619"]
+        },
+        {
+          "cash": "450.000000000000000046",
+          "equity": "2096.213708470517808946",
+          "marketValue": "1646.2137084705178089",
+          "benchmarkEquity": "2279.101345245019787736",
+          "contributions": ["1096.213708470517808946", "0", "0"],
+          "drawdown": "0",
+          "weights": ["78.532723157872191559", "0", "0", "21.46727684212780844"]
+        },
+        {
+          "cash": "450.000000000000000046",
+          "equity": "1766.970966776414247166",
+          "marketValue": "1316.97096677641424712",
+          "benchmarkEquity": "1995.936076696015830196",
+          "contributions": ["766.970966776414247166", "0", "0"],
+          "drawdown": "0.157065446315",
+          "weights": [
+            "74.532688512649382984",
+            "0",
+            "0",
+            "25.467311487350617015"
+          ]
+        },
+        {
+          "cash": "1052.700917254033722364",
+          "equity": "1867.554317254033722364",
+          "marketValue": "814.8534",
+          "benchmarkEquity": "2150.542832879017149376",
+          "contributions": ["867.601002594033722364", "-0.04668534", "0"],
+          "drawdown": "0.109082098973",
+          "weights": [
+            "0",
+            "24.99811628967450025",
+            "18.633996172688741448",
+            "56.367887537636758301"
+          ]
+        },
+        {
+          "cash": "6.469105764315175233",
+          "equity": "1899.838845953598371013",
+          "marketValue": "1893.36974018928319578",
+          "benchmarkEquity": "2236.843710970517808966",
+          "contributions": ["865.200191293598371013", "46.63865466", "-12"],
+          "drawdown": "0.093680745299",
+          "weights": [
+            "54.943133856458565375",
+            "27.030647420109792866",
+            "17.685710591487003304",
+            "0.340508131944638453"
+          ]
+        }
+      ],
+      "rebalances": [],
+      "netPnl": "899.838845953598371013",
+      "fees": "6.977592519912553786",
+      "maxDrawdown": "0.157065446315",
+      "benchmarkReturn": "1.23684371097",
+      "benchmarkRejects": [],
+      "assets": [
+        {
+          "symbol": "AAA/USDT",
+          "quantity": "3.866040741441789614",
+          "fees": "6.930907179912553786",
+          "buySpend": "1596.231811489718547085",
+          "sellProceeds": "1417.601002594033722318",
+          "netPnl": "865.200191293598371013"
+        },
+        {
+          "symbol": "BBB/USDT",
+          "quantity": "23.34267",
+          "fees": "0.04668534",
+          "buySpend": "466.90008534",
+          "sellProceeds": "0",
+          "netPnl": "46.63865466"
+        },
+        {
+          "symbol": "CCC/USDT",
+          "quantity": "12",
+          "fees": "0",
+          "buySpend": "348",
+          "sellProceeds": "0",
+          "netPnl": "-12"
+        }
+      ]
+    }
+  },
+  {
+    "spec": {
+      "name": "late-dual-trigger",
+      "initialCash": "1000",
+      "rebalanceEvery": 0,
+      "cashWeightPercent": "0",
+      "assets": [
+        {
+          "symbol": "AAA/USDT",
+          "weightPercent": "60",
+          "bars": [
+            [90, 90, 90, 90],
+            [95, 95, 95, 95],
+            [100, 100, 100, 100],
+            [115, 115, 115, 115],
+            [140, 155, 85, 136],
+            [137, 137, 137, 137]
+          ],
+          "costs": {
+            "feeBps": 0,
+            "buySlippageBps": 0,
+            "sellSlippageBps": 0,
+            "quantityDecimals": 18,
+            "minNotional": "0"
+          },
+          "risk": {
+            "stopLossBps": 1000,
+            "takeProfitBps": 5000
+          }
+        },
+        {
+          "symbol": "BBB/USDT",
+          "weightPercent": "40",
+          "bars": [
+            [27, 27, 27, 27],
+            [27, 27, 27, 27],
+            [27, 27, 27, 27],
+            [30, 30, 30, 30],
+            [32, 32, 32, 32],
+            [35, 35, 35, 35]
+          ],
+          "costs": {
+            "feeBps": 13,
+            "buySlippageBps": 0,
+            "sellSlippageBps": 0,
+            "quantityDecimals": 4,
+            "minNotional": "0"
+          },
+          "risk": {}
+        }
+      ]
+    },
+    "expected": {
+      "fills": [
+        {
+          "barIndex": 2,
+          "symbol": "AAA/USDT",
+          "phase": "buy",
+          "side": "buy",
+          "price": "100",
+          "quantity": "6",
+          "notional": "600",
+          "fee": "0",
+          "cashBefore": "1000",
+          "cashAfter": "400",
+          "quantityBefore": "0",
+          "quantityAfter": "6"
+        },
+        {
+          "barIndex": 4,
+          "symbol": "BBB/USDT",
+          "phase": "buy",
+          "side": "buy",
+          "price": "32",
+          "quantity": "12.4837",
+          "notional": "399.4784",
+          "fee": "0.51932192",
+          "cashBefore": "400",
+          "cashAfter": "0.00227808",
+          "quantityBefore": "0",
+          "quantityAfter": "12.4837"
+        },
+        {
+          "barIndex": 4,
+          "symbol": "AAA/USDT",
+          "phase": "protection-after-buys",
+          "side": "sell",
+          "price": "90",
+          "quantity": "6",
+          "notional": "540",
+          "fee": "0",
+          "cashBefore": "0.00227808",
+          "cashAfter": "540.00227808",
+          "quantityBefore": "6",
+          "quantityAfter": "0"
+        },
+        {
+          "barIndex": 5,
+          "symbol": "AAA/USDT",
+          "phase": "buy",
+          "side": "buy",
+          "price": "137",
+          "quantity": "3.941622467737226277",
+          "notional": "540.002278079999999949",
+          "fee": "0",
+          "cashBefore": "540.00227808",
+          "cashAfter": "0.000000000000000051",
+          "quantityBefore": "0",
+          "quantityAfter": "3.941622467737226277"
+        }
+      ],
+      "rejects": [],
+      "grants": [
+        {
+          "barIndex": 2,
+          "symbol": "AAA/USDT",
+          "requestedBudget": "600",
+          "approvedBudget": "600"
+        },
+        {
+          "barIndex": 4,
+          "symbol": "BBB/USDT",
+          "requestedBudget": "496",
+          "approvedBudget": "400"
+        },
+        {
+          "barIndex": 5,
+          "symbol": "AAA/USDT",
+          "requestedBudget": "586.159066848",
+          "approvedBudget": "540.00227808"
+        }
+      ],
+      "curve": [
+        {
+          "cash": "1000",
+          "equity": "1000",
+          "marketValue": "0",
+          "benchmarkEquity": "1000",
+          "contributions": ["0", "0"],
+          "drawdown": "0",
+          "weights": ["0", "0", "100"]
+        },
+        {
+          "cash": "1000",
+          "equity": "1000",
+          "marketValue": "0",
+          "benchmarkEquity": "999.48067795",
+          "contributions": ["0", "0"],
+          "drawdown": "0",
+          "weights": ["0", "0", "100"]
+        },
+        {
+          "cash": "1000",
+          "equity": "1000",
+          "marketValue": "0",
+          "benchmarkEquity": "1032.81401128333333333",
+          "contributions": ["0", "0"],
+          "drawdown": "0",
+          "weights": ["0", "0", "100"]
+        },
+        {
+          "cash": "400",
+          "equity": "1000",
+          "marketValue": "600",
+          "benchmarkEquity": "1066.14734461666666666",
+          "contributions": ["0", "0"],
+          "drawdown": "0",
+          "weights": ["60", "0", "40"]
+        },
+        {
+          "cash": "400",
+          "equity": "1090",
+          "marketValue": "690",
+          "benchmarkEquity": "1210.53384461666666665",
+          "contributions": ["90", "0"],
+          "drawdown": "0",
+          "weights": ["63.302752293577981651", "0", "36.697247706422018348"]
+        },
+        {
+          "cash": "540.00227808",
+          "equity": "939.48067808",
+          "marketValue": "399.4784",
+          "benchmarkEquity": "1380.124844616666666636",
+          "contributions": ["-60", "-0.51932192"],
+          "drawdown": "0.138091121027",
+          "weights": ["0", "42.521193817035909805", "57.478806182964090194"]
+        },
+        {
+          "cash": "0.000000000000000051",
+          "equity": "976.93177808",
+          "marketValue": "976.931778079999999949",
+          "benchmarkEquity": "1431.178011283333333302",
+          "contributions": ["-60", "36.93177808"],
+          "drawdown": "0.103732313688",
+          "weights": [
+            "55.275331419895702769",
+            "44.724668580104297225",
+            "0.000000000000000005"
+          ]
+        }
+      ],
+      "rebalances": [],
+      "netPnl": "-23.06822192",
+      "fees": "0.51932192",
+      "maxDrawdown": "0.138091121027",
+      "benchmarkReturn": "0.431178011283",
+      "benchmarkRejects": [],
+      "assets": [
+        {
+          "symbol": "AAA/USDT",
+          "quantity": "3.941622467737226277",
+          "fees": "0",
+          "buySpend": "1140.002278079999999949",
+          "sellProceeds": "540",
+          "netPnl": "-60"
+        },
+        {
+          "symbol": "BBB/USDT",
+          "quantity": "12.4837",
+          "fees": "0.51932192",
+          "buySpend": "399.99772192",
+          "sellProceeds": "0",
+          "netPnl": "36.93177808"
+        }
+      ]
+    }
+  },
+  {
+    "spec": {
+      "name": "gap-protects-first",
+      "initialCash": "1000",
+      "rebalanceEvery": 0,
+      "cashWeightPercent": "0",
+      "assets": [
+        {
+          "symbol": "AAA/USDT",
+          "weightPercent": "60",
+          "bars": [
+            [90, 90, 90, 90],
+            [95, 95, 95, 95],
+            [100, 100, 100, 100],
+            [110, 110, 110, 110],
+            [154, 154, 154, 154],
+            [155, 155, 155, 155]
+          ],
+          "costs": {
+            "feeBps": 0,
+            "buySlippageBps": 0,
+            "sellSlippageBps": 0,
+            "quantityDecimals": 18,
+            "minNotional": "0"
+          },
+          "risk": {
+            "stopLossBps": 1000,
+            "takeProfitBps": 5000
+          }
+        },
+        {
+          "symbol": "BBB/USDT",
+          "weightPercent": "40",
+          "bars": [
+            [25, 25, 25, 25],
+            [25, 25, 25, 25],
+            [25, 25, 25, 25],
+            [30, 30, 30, 30],
+            [32, 32, 32, 32],
+            [35, 35, 35, 35]
+          ],
+          "costs": {
+            "feeBps": 0,
+            "buySlippageBps": 0,
+            "sellSlippageBps": 0,
+            "quantityDecimals": 18,
+            "minNotional": "0"
+          },
+          "risk": {}
+        }
+      ]
+    },
+    "expected": {
+      "fills": [
+        {
+          "barIndex": 2,
+          "symbol": "AAA/USDT",
+          "phase": "buy",
+          "side": "buy",
+          "price": "100",
+          "quantity": "6",
+          "notional": "600",
+          "fee": "0",
+          "cashBefore": "1000",
+          "cashAfter": "400",
+          "quantityBefore": "0",
+          "quantityAfter": "6"
+        },
+        {
+          "barIndex": 4,
+          "symbol": "AAA/USDT",
+          "phase": "protection-open",
+          "side": "sell",
+          "price": "150",
+          "quantity": "6",
+          "notional": "900",
+          "fee": "0",
+          "cashBefore": "400",
+          "cashAfter": "1300",
+          "quantityBefore": "6",
+          "quantityAfter": "0"
+        },
+        {
+          "barIndex": 4,
+          "symbol": "BBB/USDT",
+          "phase": "buy",
+          "side": "buy",
+          "price": "32",
+          "quantity": "16.25",
+          "notional": "520",
+          "fee": "0",
+          "cashBefore": "1300",
+          "cashAfter": "780",
+          "quantityBefore": "0",
+          "quantityAfter": "16.25"
+        },
+        {
+          "barIndex": 5,
+          "symbol": "AAA/USDT",
+          "phase": "buy",
+          "side": "buy",
+          "price": "155",
+          "quantity": "5.032258064516129032",
+          "notional": "779.99999999999999996",
+          "fee": "0",
+          "cashBefore": "780",
+          "cashAfter": "0.00000000000000004",
+          "quantityBefore": "0",
+          "quantityAfter": "5.032258064516129032"
+        }
+      ],
+      "rejects": [],
+      "grants": [
+        {
+          "barIndex": 2,
+          "symbol": "AAA/USDT",
+          "requestedBudget": "600",
+          "approvedBudget": "600"
+        },
+        {
+          "barIndex": 4,
+          "symbol": "BBB/USDT",
+          "requestedBudget": "520",
+          "approvedBudget": "520"
+        },
+        {
+          "barIndex": 5,
+          "symbol": "AAA/USDT",
+          "requestedBudget": "809.25",
+          "approvedBudget": "780"
+        }
+      ],
+      "curve": [
+        {
+          "cash": "1000",
+          "equity": "1000",
+          "marketValue": "0",
+          "benchmarkEquity": "1000",
+          "contributions": ["0", "0"],
+          "drawdown": "0",
+          "weights": ["0", "0", "100"]
+        },
+        {
+          "cash": "1000",
+          "equity": "1000",
+          "marketValue": "0",
+          "benchmarkEquity": "1000",
+          "contributions": ["0", "0"],
+          "drawdown": "0",
+          "weights": ["0", "0", "100"]
+        },
+        {
+          "cash": "1000",
+          "equity": "1000",
+          "marketValue": "0",
+          "benchmarkEquity": "1033.33333333333333333",
+          "contributions": ["0", "0"],
+          "drawdown": "0",
+          "weights": ["0", "0", "100"]
+        },
+        {
+          "cash": "400",
+          "equity": "1000",
+          "marketValue": "600",
+          "benchmarkEquity": "1066.66666666666666666",
+          "contributions": ["0", "0"],
+          "drawdown": "0",
+          "weights": ["60", "0", "40"]
+        },
+        {
+          "cash": "400",
+          "equity": "1060",
+          "marketValue": "660",
+          "benchmarkEquity": "1213.33333333333333332",
+          "contributions": ["60", "0"],
+          "drawdown": "0",
+          "weights": ["62.264150943396226415", "0", "37.735849056603773584"]
+        },
+        {
+          "cash": "780",
+          "equity": "1300",
+          "marketValue": "520",
+          "benchmarkEquity": "1538.666666666666666624",
+          "contributions": ["300", "0"],
+          "drawdown": "0",
+          "weights": ["0", "40", "60"]
+        },
+        {
+          "cash": "0.00000000000000004",
+          "equity": "1348.75",
+          "marketValue": "1348.74999999999999996",
+          "benchmarkEquity": "1593.33333333333333329",
+          "contributions": ["300", "48.75"],
+          "drawdown": "0",
+          "weights": [
+            "57.831325301204819274",
+            "42.168674698795180722",
+            "0.000000000000000002"
+          ]
+        }
+      ],
+      "rebalances": [],
+      "netPnl": "348.75",
+      "fees": "0",
+      "maxDrawdown": "0",
+      "benchmarkReturn": "0.593333333333",
+      "benchmarkRejects": [],
+      "assets": [
+        {
+          "symbol": "AAA/USDT",
+          "quantity": "5.032258064516129032",
+          "fees": "0",
+          "buySpend": "1379.99999999999999996",
+          "sellProceeds": "900",
+          "netPnl": "300"
+        },
+        {
+          "symbol": "BBB/USDT",
+          "quantity": "16.25",
+          "fees": "0",
+          "buySpend": "520",
+          "sellProceeds": "0",
+          "netPnl": "48.75"
+        }
+      ]
+    }
+  },
+  {
+    "spec": {
+      "name": "failed-protection",
+      "initialCash": "1000",
+      "rebalanceEvery": 0,
+      "cashWeightPercent": "0",
+      "assets": [
+        {
+          "symbol": "AAA/USDT",
+          "weightPercent": "50",
+          "bars": [
+            [10, 10, 10, 10],
+            [12, 12, 12, 12],
+            [10, 10, 10, 10],
+            [8, 8, 8, 8],
+            [7, 7, 7, 7],
+            [6, 6, 6, 6]
+          ],
+          "costs": {
+            "feeBps": 0,
+            "buySlippageBps": 0,
+            "sellSlippageBps": 0,
+            "quantityDecimals": 18,
+            "minNotional": "450"
+          },
+          "risk": {
+            "stopLossBps": 1000
+          }
+        },
+        {
+          "symbol": "BBB/USDT",
+          "weightPercent": "40",
+          "bars": [
+            [20, 20, 20, 20],
+            [20, 20, 20, 20],
+            [20, 20, 20, 20],
+            [22, 22, 22, 22],
+            [23, 23, 23, 23],
+            [22, 22, 22, 22]
+          ],
+          "costs": {
+            "feeBps": 67,
+            "buySlippageBps": 0,
+            "sellSlippageBps": 0,
+            "quantityDecimals": 18,
+            "minNotional": "0"
+          },
+          "risk": {}
+        }
+      ]
+    },
+    "expected": {
+      "fills": [
+        {
+          "barIndex": 2,
+          "symbol": "AAA/USDT",
+          "phase": "buy",
+          "side": "buy",
+          "price": "10",
+          "quantity": "50",
+          "notional": "500",
+          "fee": "0",
+          "cashBefore": "1000",
+          "cashAfter": "500",
+          "quantityBefore": "0",
+          "quantityAfter": "50"
+        },
+        {
+          "barIndex": 4,
+          "symbol": "BBB/USDT",
+          "phase": "buy",
+          "side": "buy",
+          "price": "23",
+          "quantity": "14.684224392224271295",
+          "notional": "337.737161021158239785",
+          "fee": "2.262838978841760207",
+          "cashBefore": "500",
+          "cashAfter": "160.000000000000000008",
+          "quantityBefore": "0",
+          "quantityAfter": "14.684224392224271295"
+        }
+      ],
+      "rejects": [
+        {
+          "barIndex": 3,
+          "symbol": "AAA/USDT",
+          "phase": "protection-open",
+          "rejection": "below-min-notional"
+        },
+        {
+          "barIndex": 4,
+          "symbol": "AAA/USDT",
+          "phase": "protection-open",
+          "rejection": "below-min-notional"
+        },
+        {
+          "barIndex": 5,
+          "symbol": "AAA/USDT",
+          "phase": "protection-open",
+          "rejection": "below-min-notional"
+        }
+      ],
+      "grants": [
+        {
+          "barIndex": 2,
+          "symbol": "AAA/USDT",
+          "requestedBudget": "500",
+          "approvedBudget": "500"
+        },
+        {
+          "barIndex": 4,
+          "symbol": "BBB/USDT",
+          "requestedBudget": "340",
+          "approvedBudget": "340"
+        }
+      ],
+      "curve": [
+        {
+          "cash": "1000",
+          "equity": "1000",
+          "marketValue": "0",
+          "benchmarkEquity": "1000",
+          "contributions": ["0", "0"],
+          "drawdown": "0",
+          "weights": ["0", "0", "100"]
+        },
+        {
+          "cash": "1000",
+          "equity": "1000",
+          "marketValue": "0",
+          "benchmarkEquity": "997.337836495480282109",
+          "contributions": ["0", "0"],
+          "drawdown": "0",
+          "weights": ["0", "0", "100"]
+        },
+        {
+          "cash": "1000",
+          "equity": "1000",
+          "marketValue": "0",
+          "benchmarkEquity": "1097.337836495480282109",
+          "contributions": ["0", "0"],
+          "drawdown": "0",
+          "weights": ["0", "0", "100"]
+        },
+        {
+          "cash": "500",
+          "equity": "1000",
+          "marketValue": "500",
+          "benchmarkEquity": "997.337836495480282109",
+          "contributions": ["0", "0"],
+          "drawdown": "0",
+          "weights": ["50", "0", "50"]
+        },
+        {
+          "cash": "500",
+          "equity": "900",
+          "marketValue": "400",
+          "benchmarkEquity": "937.071620145028310319",
+          "contributions": ["-100", "0"],
+          "drawdown": "0.1",
+          "weights": ["44.444444444444444444", "0", "55.555555555555555555"]
+        },
+        {
+          "cash": "160.000000000000000008",
+          "equity": "847.737161021158239793",
+          "marketValue": "687.737161021158239785",
+          "benchmarkEquity": "906.938511969802324424",
+          "contributions": ["-150", "-2.262838978841760207"],
+          "drawdown": "0.152262838978",
+          "weights": [
+            "41.286381686795552467",
+            "39.839843827812194975",
+            "18.873774485392252557"
+          ]
+        },
+        {
+          "cash": "160.000000000000000008",
+          "equity": "783.052936628933968498",
+          "marketValue": "623.05293662893396849",
+          "benchmarkEquity": "837.071620145028310319",
+          "contributions": ["-200", "-16.947063371066031502"],
+          "drawdown": "0.216947063371",
+          "weights": [
+            "38.311586096785341874",
+            "41.255567984929142457",
+            "20.432845918285515667"
+          ]
+        }
+      ],
+      "rebalances": [],
+      "netPnl": "-216.947063371066031502",
+      "fees": "2.262838978841760207",
+      "maxDrawdown": "0.216947063371",
+      "benchmarkReturn": "-0.162928379854",
+      "benchmarkRejects": [],
+      "assets": [
+        {
+          "symbol": "AAA/USDT",
+          "quantity": "50",
+          "fees": "0",
+          "buySpend": "500",
+          "sellProceeds": "0",
+          "netPnl": "-200"
+        },
+        {
+          "symbol": "BBB/USDT",
+          "quantity": "14.684224392224271295",
+          "fees": "2.262838978841760207",
+          "buySpend": "339.999999999999999992",
+          "sellProceeds": "0",
+          "netPnl": "-16.947063371066031502"
+        }
+      ]
+    }
+  },
+  {
+    "spec": {
+      "name": "partial-rebalance",
+      "initialCash": "1234.567890123456789023",
+      "rebalanceEvery": 2,
+      "cashWeightPercent": "10",
+      "assets": [
+        {
+          "symbol": "AAA/USDT",
+          "weightPercent": "55.125",
+          "bars": [
+            [19, 19, 19, 19],
+            [20, 20, 20, 20],
+            [24, 24, 24, 24],
+            [29, 29, 29, 29],
+            [45, 45, 45, 45],
+            [40, 40, 40, 40],
+            [11, 11, 11, 11],
+            [15, 15, 15, 15],
+            [33, 33, 33, 33]
+          ],
+          "costs": {
+            "feeBps": 17,
+            "buySlippageBps": 21,
+            "sellSlippageBps": 13,
+            "quantityDecimals": 4,
+            "minNotional": "0"
+          },
+          "risk": {}
+        },
+        {
+          "symbol": "BBB/USDT",
+          "weightPercent": "34.875",
+          "bars": [
+            [40, 40, 40, 40],
+            [33, 33, 33, 33],
+            [35, 35, 35, 35],
+            [49, 49, 49, 49],
+            [24, 24, 24, 24],
+            [19, 19, 19, 19],
+            [59, 59, 59, 59],
+            [39, 39, 39, 39],
+            [12, 12, 12, 12]
+          ],
+          "costs": {
+            "feeBps": 32,
+            "buySlippageBps": 11,
+            "sellSlippageBps": 23,
+            "quantityDecimals": 5,
+            "minNotional": "0"
+          },
+          "risk": {}
+        }
+      ]
+    },
+    "expected": {
+      "fills": [
+        {
+          "barIndex": 2,
+          "symbol": "AAA/USDT",
+          "phase": "buy",
+          "side": "buy",
+          "price": "24.0504",
+          "quantity": "28.249",
+          "notional": "679.3997496",
+          "fee": "1.15497957432",
+          "cashBefore": "1234.567890123456789023",
+          "cashAfter": "554.013160949136789023",
+          "quantityBefore": "0",
+          "quantityAfter": "28.249"
+        },
+        {
+          "barIndex": 2,
+          "symbol": "BBB/USDT",
+          "phase": "buy",
+          "side": "buy",
+          "price": "35.0385",
+          "quantity": "12.24887",
+          "notional": "429.182031495",
+          "fee": "1.373382500784",
+          "cashBefore": "554.013160949136789023",
+          "cashAfter": "123.457746953352789023",
+          "quantityBefore": "0",
+          "quantityAfter": "12.24887"
+        },
+        {
+          "barIndex": 4,
+          "symbol": "AAA/USDT",
+          "phase": "sell",
+          "side": "sell",
+          "price": "44.9415",
+          "quantity": "7.5632",
+          "notional": "339.9015528",
+          "fee": "0.57783263976",
+          "cashBefore": "123.457746953352789023",
+          "cashAfter": "462.781467113592789023",
+          "quantityBefore": "28.249",
+          "quantityAfter": "20.6858"
+        },
+        {
+          "barIndex": 4,
+          "symbol": "BBB/USDT",
+          "phase": "buy",
+          "side": "buy",
+          "price": "24.0264",
+          "quantity": "12.19833",
+          "notional": "293.081955912",
+          "fee": "0.9378622589184",
+          "cashBefore": "462.781467113592789023",
+          "cashAfter": "168.761648942674389023",
+          "quantityBefore": "12.24887",
+          "quantityAfter": "24.4472"
+        },
+        {
+          "barIndex": 6,
+          "symbol": "BBB/USDT",
+          "phase": "sell",
+          "side": "sell",
+          "price": "58.8643",
+          "quantity": "13.57867",
+          "notional": "799.298904481",
+          "fee": "2.5577564943392",
+          "cashBefore": "168.761648942674389023",
+          "cashAfter": "965.502796929335189023",
+          "quantityBefore": "24.4472",
+          "quantityAfter": "10.86853"
+        },
+        {
+          "barIndex": 6,
+          "symbol": "AAA/USDT",
+          "phase": "buy",
+          "side": "buy",
+          "price": "11.0231",
+          "quantity": "70.8282",
+          "notional": "780.74633142",
+          "fee": "1.327268763414",
+          "cashBefore": "965.502796929335189023",
+          "cashAfter": "183.429196745921189023",
+          "quantityBefore": "20.6858",
+          "quantityAfter": "91.514"
+        },
+        {
+          "barIndex": 8,
+          "symbol": "AAA/USDT",
+          "phase": "sell",
+          "side": "sell",
+          "price": "32.9571",
+          "quantity": "35.8241",
+          "notional": "1180.65844611",
+          "fee": "2.007119358387",
+          "cashBefore": "183.429196745921189023",
+          "cashAfter": "1362.080523497534189023",
+          "quantityBefore": "91.514",
+          "quantityAfter": "55.6899"
+        },
+        {
+          "barIndex": 8,
+          "symbol": "BBB/USDT",
+          "phase": "buy",
+          "side": "buy",
+          "price": "12.0132",
+          "quantity": "85.38699",
+          "notional": "1025.770988268",
+          "fee": "3.2824671624576",
+          "cashBefore": "1362.080523497534189023",
+          "cashAfter": "333.027068067076589023",
+          "quantityBefore": "10.86853",
+          "quantityAfter": "96.25552"
+        }
+      ],
+      "rejects": [],
+      "grants": [
+        {
+          "barIndex": 2,
+          "symbol": "AAA/USDT",
+          "requestedBudget": "680.555549430555554948",
+          "approvedBudget": "680.555549430555554948"
+        },
+        {
+          "barIndex": 2,
+          "symbol": "BBB/USDT",
+          "requestedBudget": "430.555551680555555171",
+          "approvedBudget": "430.555551680555555171"
+        },
+        {
+          "barIndex": 4,
+          "symbol": "BBB/USDT",
+          "requestedBudget": "294.582972305865485171",
+          "approvedBudget": "294.019932402233510121"
+        },
+        {
+          "barIndex": 6,
+          "symbol": "AAA/USDT",
+          "requestedBudget": "783.608489144796022948",
+          "approvedBudget": "782.073810236401670121"
+        },
+        {
+          "barIndex": 8,
+          "symbol": "BBB/USDT",
+          "requestedBudget": "1031.009157244765048421",
+          "approvedBudget": "1029.053565147780770121"
+        }
+      ],
+      "curve": [
+        {
+          "cash": "1234.567890123456789023",
+          "equity": "1234.567890123456789023",
+          "marketValue": "0",
+          "benchmarkEquity": "1234.567890123456789023",
+          "contributions": ["0", "0"],
+          "drawdown": "0",
+          "weights": ["0", "0", "100"]
+        },
+        {
+          "cash": "1234.567890123456789023",
+          "equity": "1234.567890123456789023",
+          "marketValue": "0",
+          "benchmarkEquity": "1230.144200591741789023",
+          "contributions": ["0", "0"],
+          "drawdown": "0",
+          "weights": ["0", "0", "100"]
+        },
+        {
+          "cash": "1234.567890123456789023",
+          "equity": "1234.567890123456789023",
+          "marketValue": "0",
+          "benchmarkEquity": "1190.802780591741789023",
+          "contributions": ["0", "0"],
+          "drawdown": "0",
+          "weights": ["0", "0", "100"]
+        },
+        {
+          "cash": "123.457746953352789023",
+          "equity": "1230.144196953352789023",
+          "marketValue": "1106.68645",
+          "benchmarkEquity": "1354.969900591741789023",
+          "contributions": ["-2.57872917432", "-1.844963995784"],
+          "drawdown": "0.0035831915",
+          "weights": [
+            "55.113538858218011717",
+            "34.850422500205213755",
+            "10.036038641576774526"
+          ]
+        },
+        {
+          "cash": "123.457746953352789023",
+          "equity": "1542.873376953352789023",
+          "marketValue": "1419.41563",
+          "benchmarkEquity": "1683.433040591741789023",
+          "contributions": ["138.66627082568", "169.639216004216"],
+          "drawdown": "0",
+          "weights": [
+            "53.097098714457130441",
+            "38.901094475113642174",
+            "8.001806810429227383"
+          ]
+        },
+        {
+          "cash": "168.761648942674389023",
+          "equity": "1686.355448942674389023",
+          "marketValue": "1517.5938",
+          "benchmarkEquity": "1986.415440591741789023",
+          "contributions": ["589.62999098592", "-137.8424321667024"],
+          "drawdown": "0",
+          "weights": [
+            "55.199572580243341819",
+            "34.792949515351272238",
+            "10.007477904405385941"
+          ]
+        },
+        {
+          "cash": "168.761648942674389023",
+          "equity": "1460.690448942674389023",
+          "marketValue": "1291.9288",
+          "benchmarkEquity": "1754.412140591741789023",
+          "contributions": ["486.20099098592", "-260.0784321667024"],
+          "drawdown": "0.133818169912",
+          "weights": [
+            "56.646635883663057354",
+            "31.799810859051453677",
+            "11.553553257285488967"
+          ]
+        },
+        {
+          "cash": "183.429196745921189023",
+          "equity": "1831.326466745921189023",
+          "marketValue": "1647.89727",
+          "benchmarkEquity": "1148.318440591741789023",
+          "contributions": ["-116.650609197494", "713.4091858199584"],
+          "drawdown": "0",
+          "weights": [
+            "54.968571594376650982",
+            "35.015235221245032839",
+            "10.016193184378316177"
+          ]
+        },
+        {
+          "cash": "183.429196745921189023",
+          "equity": "1980.011866745921189023",
+          "marketValue": "1796.58267",
+          "benchmarkEquity": "1076.694840591741789023",
+          "contributions": ["249.405390802506", "496.0385858199584"],
+          "drawdown": "0",
+          "weights": [
+            "69.328372372636325426",
+            "21.407582303868693458",
+            "9.264045323494981115"
+          ]
+        },
+        {
+          "cash": "333.027068067076589023",
+          "equity": "3325.860008067076589023",
+          "marketValue": "2992.83294",
+          "benchmarkEquity": "1429.607520591741789023",
+          "contributions": ["1893.113417554119", "198.1787003895008"],
+          "drawdown": "0",
+          "weights": [
+            "55.256886806491692994",
+            "34.729851442884435449",
+            "10.013261750623871556"
+          ]
+        }
+      ],
+      "rebalances": [
+        {
+          "barIndex": 2,
+          "beforePercent": ["0", "0", "100"],
+          "afterPercent": [
+            "55.113538858218011717",
+            "34.850422500205213755",
+            "10.036038641576774526"
+          ],
+          "deviationPercent": [
+            "-0.011461141781988283",
+            "-0.024577499794786245",
+            "0.036038641576774526"
+          ]
+        },
+        {
+          "barIndex": 4,
+          "beforePercent": [
+            "75.280005923688593547",
+            "17.408899546338943025",
+            "7.311094529972463426"
+          ],
+          "afterPercent": [
+            "55.199572580243341819",
+            "34.792949515351272238",
+            "10.007477904405385941"
+          ],
+          "deviationPercent": [
+            "0.074572580243341819",
+            "-0.082050484648727762",
+            "0.007477904405385941"
+          ]
+        },
+        {
+          "barIndex": 6,
+          "beforePercent": [
+            "12.375319884947854951",
+            "78.446318015197666449",
+            "9.178362099854478598"
+          ],
+          "afterPercent": [
+            "54.968571594376650982",
+            "35.015235221245032839",
+            "10.016193184378316177"
+          ],
+          "deviationPercent": [
+            "-0.156428405623349018",
+            "0.140235221245032839",
+            "0.016193184378316177"
+          ]
+        },
+        {
+          "barIndex": 8,
+          "beforePercent": [
+            "90.585809572018587477",
+            "3.912107194359814508",
+            "5.502083233621598014"
+          ],
+          "afterPercent": [
+            "55.256886806491692994",
+            "34.729851442884435449",
+            "10.013261750623871556"
+          ],
+          "deviationPercent": [
+            "0.131886806491692994",
+            "-0.145148557115564551",
+            "0.013261750623871556"
+          ]
+        }
+      ],
+      "netPnl": "2091.2921179436198",
+      "fees": "13.2186687523802",
+      "maxDrawdown": "0.133818169912",
+      "benchmarkReturn": "0.157982102101",
+      "benchmarkRejects": [],
+      "assets": [
+        {
+          "symbol": "AAA/USDT",
+          "quantity": "55.6899",
+          "fees": "5.067200335881",
+          "buySpend": "1462.628329357734",
+          "sellProceeds": "1517.975046911853",
+          "netPnl": "1893.113417554119"
+        },
+        {
+          "symbol": "BBB/USDT",
+          "quantity": "96.25552",
+          "fees": "8.1514684164992",
+          "buySpend": "1753.62868759716",
+          "sellProceeds": "796.7411479866608",
+          "netPnl": "198.1787003895008"
+        }
+      ]
+    }
+  },
+  {
+    "spec": {
+      "name": "indivisible-and-minimum",
+      "initialCash": "25.000000000000000001",
+      "rebalanceEvery": 1,
+      "cashWeightPercent": "20",
+      "assets": [
+        {
+          "symbol": "AAA/USDT",
+          "weightPercent": "30",
+          "bars": [
+            [15, 15, 15, 15],
+            [11, 11, 11, 11],
+            [19, 19, 19, 19],
+            [12, 12, 12, 12]
+          ],
+          "costs": {
+            "feeBps": 0,
+            "buySlippageBps": 0,
+            "sellSlippageBps": 0,
+            "quantityDecimals": 0,
+            "minNotional": "0"
+          },
+          "risk": {}
+        },
+        {
+          "symbol": "BBB/USDT",
+          "weightPercent": "50",
+          "bars": [
+            [7, 7, 7, 7],
+            [9, 9, 9, 9],
+            [5, 5, 5, 5],
+            [13, 13, 13, 13]
+          ],
+          "costs": {
+            "feeBps": 10,
+            "buySlippageBps": 0,
+            "sellSlippageBps": 0,
+            "quantityDecimals": 18,
+            "minNotional": "17.5"
+          },
+          "risk": {}
+        }
+      ]
+    },
+    "expected": {
+      "fills": [],
+      "rejects": [
+        {
+          "barIndex": 1,
+          "symbol": "AAA/USDT",
+          "phase": "buy",
+          "rejection": "zero-quantity"
+        },
+        {
+          "barIndex": 1,
+          "symbol": "BBB/USDT",
+          "phase": "buy",
+          "rejection": "below-min-notional"
+        },
+        {
+          "barIndex": 2,
+          "symbol": "AAA/USDT",
+          "phase": "buy",
+          "rejection": "zero-quantity"
+        },
+        {
+          "barIndex": 2,
+          "symbol": "BBB/USDT",
+          "phase": "buy",
+          "rejection": "below-min-notional"
+        },
+        {
+          "barIndex": 3,
+          "symbol": "AAA/USDT",
+          "phase": "buy",
+          "rejection": "zero-quantity"
+        },
+        {
+          "barIndex": 3,
+          "symbol": "BBB/USDT",
+          "phase": "buy",
+          "rejection": "below-min-notional"
+        }
+      ],
+      "grants": [
+        {
+          "barIndex": 1,
+          "symbol": "AAA/USDT",
+          "requestedBudget": "7.5",
+          "approvedBudget": "7.5"
+        },
+        {
+          "barIndex": 1,
+          "symbol": "BBB/USDT",
+          "requestedBudget": "12.5",
+          "approvedBudget": "12.5"
+        },
+        {
+          "barIndex": 2,
+          "symbol": "AAA/USDT",
+          "requestedBudget": "7.5",
+          "approvedBudget": "7.5"
+        },
+        {
+          "barIndex": 2,
+          "symbol": "BBB/USDT",
+          "requestedBudget": "12.5",
+          "approvedBudget": "12.5"
+        },
+        {
+          "barIndex": 3,
+          "symbol": "AAA/USDT",
+          "requestedBudget": "7.5",
+          "approvedBudget": "7.5"
+        },
+        {
+          "barIndex": 3,
+          "symbol": "BBB/USDT",
+          "requestedBudget": "12.5",
+          "approvedBudget": "12.5"
+        }
+      ],
+      "curve": [
+        {
+          "cash": "25.000000000000000001",
+          "equity": "25.000000000000000001",
+          "marketValue": "0",
+          "benchmarkEquity": "25.000000000000000001",
+          "contributions": ["0", "0"],
+          "drawdown": "0",
+          "weights": ["0", "0", "100"]
+        },
+        {
+          "cash": "25.000000000000000001",
+          "equity": "25.000000000000000001",
+          "marketValue": "0",
+          "benchmarkEquity": "25.000000000000000001",
+          "contributions": ["0", "0"],
+          "drawdown": "0",
+          "weights": ["0", "0", "100"]
+        },
+        {
+          "cash": "25.000000000000000001",
+          "equity": "25.000000000000000001",
+          "marketValue": "0",
+          "benchmarkEquity": "25.000000000000000001",
+          "contributions": ["0", "0"],
+          "drawdown": "0",
+          "weights": ["0", "0", "100"]
+        },
+        {
+          "cash": "25.000000000000000001",
+          "equity": "25.000000000000000001",
+          "marketValue": "0",
+          "benchmarkEquity": "25.000000000000000001",
+          "contributions": ["0", "0"],
+          "drawdown": "0",
+          "weights": ["0", "0", "100"]
+        },
+        {
+          "cash": "25.000000000000000001",
+          "equity": "25.000000000000000001",
+          "marketValue": "0",
+          "benchmarkEquity": "25.000000000000000001",
+          "contributions": ["0", "0"],
+          "drawdown": "0",
+          "weights": ["0", "0", "100"]
+        }
+      ],
+      "rebalances": [
+        {
+          "barIndex": 1,
+          "beforePercent": ["0", "0", "100"],
+          "afterPercent": ["0", "0", "100"],
+          "deviationPercent": ["-30", "-50", "80"]
+        },
+        {
+          "barIndex": 2,
+          "beforePercent": ["0", "0", "100"],
+          "afterPercent": ["0", "0", "100"],
+          "deviationPercent": ["-30", "-50", "80"]
+        },
+        {
+          "barIndex": 3,
+          "beforePercent": ["0", "0", "100"],
+          "afterPercent": ["0", "0", "100"],
+          "deviationPercent": ["-30", "-50", "80"]
+        }
+      ],
+      "netPnl": "0",
+      "fees": "0",
+      "maxDrawdown": "0",
+      "benchmarkReturn": "0",
+      "benchmarkRejects": ["AAA/USDT", "BBB/USDT"],
+      "assets": [
+        {
+          "symbol": "AAA/USDT",
+          "quantity": "0",
+          "fees": "0",
+          "buySpend": "0",
+          "sellProceeds": "0",
+          "netPnl": "0"
+        },
+        {
+          "symbol": "BBB/USDT",
+          "quantity": "0",
+          "fees": "0",
+          "buySpend": "0",
+          "sellProceeds": "0",
+          "netPnl": "0"
+        }
+      ]
+    }
+  },
+  {
+    "spec": {
+      "name": "five-atoms-fee-ceiling",
+      "initialCash": "0.000000000000000005",
+      "rebalanceEvery": 1,
+      "cashWeightPercent": "20",
+      "assets": [
+        {
+          "symbol": "AAA/USDT",
+          "weightPercent": "40",
+          "bars": [
+            [0.25, 0.25, 0.25, 0.25],
+            [0.75, 0.75, 0.75, 0.75],
+            [1, 1, 1, 1],
+            [0.25, 0.25, 0.25, 0.25]
+          ],
+          "costs": {
+            "feeBps": 1,
+            "buySlippageBps": 0,
+            "sellSlippageBps": 0,
+            "quantityDecimals": 18,
+            "minNotional": "0"
+          },
+          "risk": {}
+        },
+        {
+          "symbol": "BBB/USDT",
+          "weightPercent": "40",
+          "bars": [
+            [0.25, 0.25, 0.25, 0.25],
+            [0.5, 0.5, 0.5, 0.5],
+            [0.5, 0.5, 0.5, 0.5],
+            [0.75, 0.75, 0.75, 0.75]
+          ],
+          "costs": {
+            "feeBps": 9999,
+            "buySlippageBps": 0,
+            "sellSlippageBps": 0,
+            "quantityDecimals": 18,
+            "minNotional": "0"
+          },
+          "risk": {}
+        }
+      ]
+    },
+    "expected": {
+      "fills": [
+        {
+          "barIndex": 1,
+          "symbol": "AAA/USDT",
+          "phase": "buy",
+          "side": "buy",
+          "price": "0.75",
+          "quantity": "0.000000000000000001",
+          "notional": "0.000000000000000001",
+          "fee": "0.000000000000000001",
+          "cashBefore": "0.000000000000000005",
+          "cashAfter": "0.000000000000000003",
+          "quantityBefore": "0",
+          "quantityAfter": "0.000000000000000001"
+        },
+        {
+          "barIndex": 1,
+          "symbol": "BBB/USDT",
+          "phase": "buy",
+          "side": "buy",
+          "price": "0.5",
+          "quantity": "0.000000000000000002",
+          "notional": "0.000000000000000001",
+          "fee": "0.000000000000000001",
+          "cashBefore": "0.000000000000000003",
+          "cashAfter": "0.000000000000000001",
+          "quantityBefore": "0",
+          "quantityAfter": "0.000000000000000002"
+        }
+      ],
+      "rejects": [
+        {
+          "barIndex": 3,
+          "symbol": "BBB/USDT",
+          "phase": "sell",
+          "rejection": "zero-notional"
+        }
+      ],
+      "grants": [
+        {
+          "barIndex": 1,
+          "symbol": "AAA/USDT",
+          "requestedBudget": "0.000000000000000002",
+          "approvedBudget": "0.000000000000000002"
+        },
+        {
+          "barIndex": 1,
+          "symbol": "BBB/USDT",
+          "requestedBudget": "0.000000000000000002",
+          "approvedBudget": "0.000000000000000002"
+        }
+      ],
+      "curve": [
+        {
+          "cash": "0.000000000000000005",
+          "equity": "0.000000000000000005",
+          "marketValue": "0",
+          "benchmarkEquity": "0.000000000000000005",
+          "contributions": ["0", "0"],
+          "drawdown": "0",
+          "weights": ["0", "0", "100"]
+        },
+        {
+          "cash": "0.000000000000000005",
+          "equity": "0.000000000000000005",
+          "marketValue": "0",
+          "benchmarkEquity": "0.000000000000000003",
+          "contributions": ["0", "0"],
+          "drawdown": "0",
+          "weights": ["0", "0", "100"]
+        },
+        {
+          "cash": "0.000000000000000001",
+          "equity": "0.000000000000000002",
+          "marketValue": "0.000000000000000001",
+          "benchmarkEquity": "0.000000000000000006",
+          "contributions": ["-0.000000000000000002", "-0.000000000000000001"],
+          "drawdown": "0.6",
+          "weights": ["0", "50", "50"]
+        },
+        {
+          "cash": "0.000000000000000001",
+          "equity": "0.000000000000000003",
+          "marketValue": "0.000000000000000002",
+          "benchmarkEquity": "0.000000000000000007",
+          "contributions": ["-0.000000000000000001", "-0.000000000000000001"],
+          "drawdown": "0.4",
+          "weights": [
+            "33.333333333333333333",
+            "33.333333333333333333",
+            "33.333333333333333333"
+          ]
+        },
+        {
+          "cash": "0.000000000000000001",
+          "equity": "0.000000000000000002",
+          "marketValue": "0.000000000000000001",
+          "benchmarkEquity": "0.000000000000000005",
+          "contributions": ["-0.000000000000000002", "-0.000000000000000001"],
+          "drawdown": "0.6",
+          "weights": ["0", "50", "50"]
+        }
+      ],
+      "rebalances": [
+        {
+          "barIndex": 1,
+          "beforePercent": ["0", "0", "100"],
+          "afterPercent": ["0", "50", "50"],
+          "deviationPercent": ["-40", "10", "30"]
+        },
+        {
+          "barIndex": 2,
+          "beforePercent": [
+            "33.333333333333333333",
+            "33.333333333333333333",
+            "33.333333333333333333"
+          ],
+          "afterPercent": [
+            "33.333333333333333333",
+            "33.333333333333333333",
+            "33.333333333333333333"
+          ],
+          "deviationPercent": [
+            "-6.666666666666666667",
+            "-6.666666666666666667",
+            "13.333333333333333333"
+          ]
+        },
+        {
+          "barIndex": 3,
+          "beforePercent": ["0", "50", "50"],
+          "afterPercent": ["0", "50", "50"],
+          "deviationPercent": ["-40", "10", "30"]
+        }
+      ],
+      "netPnl": "-0.000000000000000003",
+      "fees": "0.000000000000000002",
+      "maxDrawdown": "0.6",
+      "benchmarkReturn": "0",
+      "benchmarkRejects": [],
+      "assets": [
+        {
+          "symbol": "AAA/USDT",
+          "quantity": "0.000000000000000001",
+          "fees": "0.000000000000000001",
+          "buySpend": "0.000000000000000002",
+          "sellProceeds": "0",
+          "netPnl": "-0.000000000000000002"
+        },
+        {
+          "symbol": "BBB/USDT",
+          "quantity": "0.000000000000000002",
+          "fees": "0.000000000000000001",
+          "buySpend": "0.000000000000000002",
+          "sellProceeds": "0",
+          "netPnl": "-0.000000000000000001"
+        }
+      ]
+    }
+  },
+  {
+    "spec": {
+      "name": "cash-reserve-exhausted",
+      "initialCash": "1000",
+      "rebalanceEvery": 0,
+      "cashWeightPercent": "0",
+      "assets": [
+        {
+          "symbol": "AAA/USDT",
+          "weightPercent": "55",
+          "bars": [
+            [90, 90, 90, 90],
+            [95, 95, 95, 95],
+            [100, 100, 100, 100],
+            [200, 200, 200, 200],
+            [400, 400, 400, 400],
+            [410, 410, 410, 410]
+          ],
+          "costs": {
+            "feeBps": 0,
+            "buySlippageBps": 0,
+            "sellSlippageBps": 0,
+            "quantityDecimals": 18,
+            "minNotional": "0"
+          },
+          "risk": {}
+        },
+        {
+          "symbol": "BBB/USDT",
+          "weightPercent": "5",
+          "bars": [
+            [9, 9, 9, 9],
+            [9, 9, 9, 9],
+            [9, 9, 9, 9],
+            [10, 10, 10, 10],
+            [12, 12, 12, 12],
+            [13, 13, 13, 13]
+          ],
+          "costs": {
+            "feeBps": 0,
+            "buySlippageBps": 0,
+            "sellSlippageBps": 0,
+            "quantityDecimals": 18,
+            "minNotional": "0"
+          },
+          "risk": {}
+        }
+      ]
+    },
+    "expected": {
+      "fills": [
+        {
+          "barIndex": 2,
+          "symbol": "AAA/USDT",
+          "phase": "buy",
+          "side": "buy",
+          "price": "100",
+          "quantity": "5.5",
+          "notional": "550",
+          "fee": "0",
+          "cashBefore": "1000",
+          "cashAfter": "450",
+          "quantityBefore": "0",
+          "quantityAfter": "5.5"
+        }
+      ],
+      "rejects": [
+        {
+          "barIndex": 4,
+          "symbol": "BBB/USDT",
+          "phase": "buy",
+          "rejection": "cash-reserve"
+        },
+        {
+          "barIndex": 5,
+          "symbol": "BBB/USDT",
+          "phase": "buy",
+          "rejection": "cash-reserve"
+        }
+      ],
+      "grants": [
+        {
+          "barIndex": 2,
+          "symbol": "AAA/USDT",
+          "requestedBudget": "550",
+          "approvedBudget": "550"
+        },
+        {
+          "barIndex": 4,
+          "symbol": "BBB/USDT",
+          "requestedBudget": "132.5",
+          "approvedBudget": "0"
+        },
+        {
+          "barIndex": 5,
+          "symbol": "BBB/USDT",
+          "requestedBudget": "135.25",
+          "approvedBudget": "0"
+        }
+      ],
+      "curve": [
+        {
+          "cash": "1000",
+          "equity": "1000",
+          "marketValue": "0",
+          "benchmarkEquity": "1000",
+          "contributions": ["0", "0"],
+          "drawdown": "0",
+          "weights": ["0", "0", "100"]
+        },
+        {
+          "cash": "1000",
+          "equity": "1000",
+          "marketValue": "0",
+          "benchmarkEquity": "1000",
+          "contributions": ["0", "0"],
+          "drawdown": "0",
+          "weights": ["0", "0", "100"]
+        },
+        {
+          "cash": "1000",
+          "equity": "1000",
+          "marketValue": "0",
+          "benchmarkEquity": "1030.555555555555555555",
+          "contributions": ["0", "0"],
+          "drawdown": "0",
+          "weights": ["0", "0", "100"]
+        },
+        {
+          "cash": "450",
+          "equity": "1000",
+          "marketValue": "550",
+          "benchmarkEquity": "1061.11111111111111111",
+          "contributions": ["0", "0"],
+          "drawdown": "0",
+          "weights": ["55", "0", "45"]
+        },
+        {
+          "cash": "450",
+          "equity": "1550",
+          "marketValue": "1100",
+          "benchmarkEquity": "1677.777777777777777765",
+          "contributions": ["550", "0"],
+          "drawdown": "0",
+          "weights": ["70.967741935483870967", "0", "29.032258064516129032"]
+        },
+        {
+          "cash": "450",
+          "equity": "2650",
+          "marketValue": "2200",
+          "benchmarkEquity": "2911.111111111111111075",
+          "contributions": ["1650", "0"],
+          "drawdown": "0",
+          "weights": ["83.018867924528301886", "0", "16.981132075471698113"]
+        },
+        {
+          "cash": "450",
+          "equity": "2705",
+          "marketValue": "2255",
+          "benchmarkEquity": "2977.77777777777777774",
+          "contributions": ["1705", "0"],
+          "drawdown": "0",
+          "weights": ["83.364140480591497227", "0", "16.635859519408502772"]
+        }
+      ],
+      "rebalances": [],
+      "netPnl": "1705",
+      "fees": "0",
+      "maxDrawdown": "0",
+      "benchmarkReturn": "1.977777777777",
+      "benchmarkRejects": [],
+      "assets": [
+        {
+          "symbol": "AAA/USDT",
+          "quantity": "5.5",
+          "fees": "0",
+          "buySpend": "550",
+          "sellProceeds": "0",
+          "netPnl": "1705"
+        },
+        {
+          "symbol": "BBB/USDT",
+          "quantity": "0",
+          "fees": "0",
+          "buySpend": "0",
+          "sellProceeds": "0",
+          "netPnl": "0"
+        }
+      ]
+    }
+  },
+  {
+    "spec": {
+      "name": "no-cash-left",
+      "initialCash": "1000",
+      "rebalanceEvery": 0,
+      "cashWeightPercent": "0",
+      "assets": [
+        {
+          "symbol": "AAA/USDT",
+          "weightPercent": "40",
+          "bars": [
+            [90, 90, 90, 90],
+            [95, 95, 95, 95],
+            [100, 100, 100, 100],
+            [200, 200, 200, 200],
+            [1000, 1000, 1000, 1000],
+            [1000, 1000, 1000, 1000]
+          ],
+          "costs": {
+            "feeBps": 0,
+            "buySlippageBps": 0,
+            "sellSlippageBps": 0,
+            "quantityDecimals": 18,
+            "minNotional": "0"
+          },
+          "risk": {}
+        },
+        {
+          "symbol": "BBB/USDT",
+          "weightPercent": "30",
+          "bars": [
+            [9, 9, 9, 9],
+            [9, 9, 9, 9],
+            [9, 9, 9, 9],
+            [11, 11, 11, 11],
+            [12, 12, 12, 12],
+            [12, 12, 12, 12]
+          ],
+          "costs": {
+            "feeBps": 0,
+            "buySlippageBps": 0,
+            "sellSlippageBps": 0,
+            "quantityDecimals": 18,
+            "minNotional": "0"
+          },
+          "risk": {}
+        },
+        {
+          "symbol": "CCC/USDT",
+          "weightPercent": "30",
+          "bars": [
+            [15, 15, 15, 15],
+            [15, 15, 15, 15],
+            [15, 15, 15, 15],
+            [15, 15, 15, 15],
+            [20, 20, 20, 20],
+            [18, 18, 18, 18]
+          ],
+          "costs": {
+            "feeBps": 0,
+            "buySlippageBps": 0,
+            "sellSlippageBps": 0,
+            "quantityDecimals": 18,
+            "minNotional": "0"
+          },
+          "risk": {}
+        }
+      ]
+    },
+    "expected": {
+      "fills": [
+        {
+          "barIndex": 2,
+          "symbol": "AAA/USDT",
+          "phase": "buy",
+          "side": "buy",
+          "price": "100",
+          "quantity": "4",
+          "notional": "400",
+          "fee": "0",
+          "cashBefore": "1000",
+          "cashAfter": "600",
+          "quantityBefore": "0",
+          "quantityAfter": "4"
+        },
+        {
+          "barIndex": 4,
+          "symbol": "BBB/USDT",
+          "phase": "buy",
+          "side": "buy",
+          "price": "12",
+          "quantity": "50",
+          "notional": "600",
+          "fee": "0",
+          "cashBefore": "600",
+          "cashAfter": "0",
+          "quantityBefore": "0",
+          "quantityAfter": "50"
+        }
+      ],
+      "rejects": [
+        {
+          "barIndex": 5,
+          "symbol": "CCC/USDT",
+          "phase": "buy",
+          "rejection": "insufficient-cash"
+        }
+      ],
+      "grants": [
+        {
+          "barIndex": 2,
+          "symbol": "AAA/USDT",
+          "requestedBudget": "400",
+          "approvedBudget": "400"
+        },
+        {
+          "barIndex": 4,
+          "symbol": "BBB/USDT",
+          "requestedBudget": "1380",
+          "approvedBudget": "600"
+        },
+        {
+          "barIndex": 5,
+          "symbol": "CCC/USDT",
+          "requestedBudget": "1380",
+          "approvedBudget": "0"
+        }
+      ],
+      "curve": [
+        {
+          "cash": "1000",
+          "equity": "1000",
+          "marketValue": "0",
+          "benchmarkEquity": "1000",
+          "contributions": ["0", "0", "0"],
+          "drawdown": "0",
+          "weights": ["0", "0", "0", "100"]
+        },
+        {
+          "cash": "1000",
+          "equity": "1000",
+          "marketValue": "0",
+          "benchmarkEquity": "1000",
+          "contributions": ["0", "0", "0"],
+          "drawdown": "0",
+          "weights": ["0", "0", "0", "100"]
+        },
+        {
+          "cash": "1000",
+          "equity": "1000",
+          "marketValue": "0",
+          "benchmarkEquity": "1022.22222222222222222",
+          "contributions": ["0", "0", "0"],
+          "drawdown": "0",
+          "weights": ["0", "0", "0", "100"]
+        },
+        {
+          "cash": "600",
+          "equity": "1000",
+          "marketValue": "400",
+          "benchmarkEquity": "1044.44444444444444444",
+          "contributions": ["0", "0", "0"],
+          "drawdown": "0",
+          "weights": ["40", "0", "0", "60"]
+        },
+        {
+          "cash": "600",
+          "equity": "1400",
+          "marketValue": "800",
+          "benchmarkEquity": "1555.555555555555555506",
+          "contributions": ["400", "0", "0"],
+          "drawdown": "0",
+          "weights": [
+            "57.142857142857142857",
+            "0",
+            "0",
+            "42.857142857142857142"
+          ]
+        },
+        {
+          "cash": "0",
+          "equity": "4600",
+          "marketValue": "4600",
+          "benchmarkEquity": "5244.444444444444444039",
+          "contributions": ["3600", "0", "0"],
+          "drawdown": "0",
+          "weights": [
+            "86.956521739130434782",
+            "13.043478260869565217",
+            "0",
+            "0"
+          ]
+        },
+        {
+          "cash": "0",
+          "equity": "4600",
+          "marketValue": "4600",
+          "benchmarkEquity": "5204.444444444444444039",
+          "contributions": ["3600", "0", "0"],
+          "drawdown": "0",
+          "weights": [
+            "86.956521739130434782",
+            "13.043478260869565217",
+            "0",
+            "0"
+          ]
+        }
+      ],
+      "rebalances": [],
+      "netPnl": "3600",
+      "fees": "0",
+      "maxDrawdown": "0",
+      "benchmarkReturn": "4.204444444444",
+      "benchmarkRejects": [],
+      "assets": [
+        {
+          "symbol": "AAA/USDT",
+          "quantity": "4",
+          "fees": "0",
+          "buySpend": "400",
+          "sellProceeds": "0",
+          "netPnl": "3600"
+        },
+        {
+          "symbol": "BBB/USDT",
+          "quantity": "50",
+          "fees": "0",
+          "buySpend": "600",
+          "sellProceeds": "0",
+          "netPnl": "0"
+        },
+        {
+          "symbol": "CCC/USDT",
+          "quantity": "0",
+          "fees": "0",
+          "buySpend": "0",
+          "sellProceeds": "0",
+          "netPnl": "0"
+        }
+      ]
+    }
+  }
+]

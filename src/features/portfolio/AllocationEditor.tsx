@@ -1,9 +1,11 @@
 import type { DatasetSummary } from '../../core/data/dataset';
 import type { RuleRecord } from '../../core/rule-library';
 import type { AllocationDraft } from './allocation';
+import type { RunMode } from './modes';
 export function AllocationEditor({
   row,
   index,
+  mode,
   datasets,
   rules,
   update,
@@ -11,12 +13,14 @@ export function AllocationEditor({
 }: {
   row: AllocationDraft;
   index: number;
+  mode: RunMode;
   datasets: DatasetSummary[];
   rules: RuleRecord[];
   update: (patch: Partial<AllocationDraft>) => void;
   remove?: () => void;
 }) {
   const selected = datasets.find((dataset) => dataset.id === row.datasetId);
+  const account = mode === 'independent' ? '子账户' : '资产';
   const fields = (
     entries: readonly (readonly [keyof AllocationDraft, string])[],
   ) =>
@@ -32,7 +36,9 @@ export function AllocationEditor({
     ));
   return (
     <fieldset className="portfolio-account">
-      <legend>子账户 {index + 1}</legend>
+      <legend>
+        {account} {index + 1}
+      </legend>
       <div className="portfolio-grid">
         <label>
           历史数据集
@@ -49,53 +55,66 @@ export function AllocationEditor({
             ))}
           </select>
         </label>
-        {fields([['weightPercent', '初始分配比例 %']])}
-        <label>
-          策略类型
-          <select
-            aria-label="策略类型"
-            value={row.kind}
-            onChange={(e) =>
-              update({ kind: e.target.value as AllocationDraft['kind'] })
-            }
-          >
-            <option value="ma">MA 交叉</option>
-            <option value="rsi">RSI 阈值</option>
-            <option value="breakout">价格突破</option>
-            <option value="rules">已保存的自定义规则版本</option>
-          </select>
-        </label>
-        {row.kind === 'rules' ? (
-          <label>
-            规则版本
-            <select
-              aria-label="规则版本"
-              value={row.ruleId}
-              onChange={(e) => update({ ruleId: e.target.value })}
-            >
-              <option value="">选择已保存版本</option>
-              {rules.map((r) => (
-                <option key={r.id} value={r.id}>
-                  {r.name} · v{r.rule.revision} · {r.familyId}
-                </option>
-              ))}
-            </select>
-          </label>
-        ) : (
-          fields(
-            row.kind === 'ma'
-              ? [
-                  ['fastPeriod', 'MA 快线周期'],
-                  ['slowPeriod', 'MA 慢线周期'],
-                ]
-              : row.kind === 'rsi'
-                ? [
-                    ['period', 'RSI 周期'],
-                    ['lower', 'RSI 下阈值'],
-                    ['upper', 'RSI 上阈值'],
-                  ]
-                : [['lookback', '突破回看周期']],
-          )
+        {fields([
+          [
+            'weightPercent',
+            mode === 'independent'
+              ? '初始分配比例 %'
+              : mode === 'shared-strategy'
+                ? '目标预算比例 %'
+                : '目标权重 %',
+          ],
+        ])}
+        {mode !== 'rebalance' && (
+          <>
+            <label>
+              策略类型
+              <select
+                aria-label="策略类型"
+                value={row.kind}
+                onChange={(e) =>
+                  update({ kind: e.target.value as AllocationDraft['kind'] })
+                }
+              >
+                <option value="ma">MA 交叉</option>
+                <option value="rsi">RSI 阈值</option>
+                <option value="breakout">价格突破</option>
+                <option value="rules">已保存的自定义规则版本</option>
+              </select>
+            </label>
+            {row.kind === 'rules' ? (
+              <label>
+                规则版本
+                <select
+                  aria-label="规则版本"
+                  value={row.ruleId}
+                  onChange={(e) => update({ ruleId: e.target.value })}
+                >
+                  <option value="">选择已保存版本</option>
+                  {rules.map((r) => (
+                    <option key={r.id} value={r.id}>
+                      {r.name} · v{r.rule.revision} · {r.familyId}
+                    </option>
+                  ))}
+                </select>
+              </label>
+            ) : (
+              fields(
+                row.kind === 'ma'
+                  ? [
+                      ['fastPeriod', 'MA 快线周期'],
+                      ['slowPeriod', 'MA 慢线周期'],
+                    ]
+                  : row.kind === 'rsi'
+                    ? [
+                        ['period', 'RSI 周期'],
+                        ['lower', 'RSI 下阈值'],
+                        ['upper', 'RSI 上阈值'],
+                      ]
+                    : [['lookback', '突破回看周期']],
+              )
+            )}
+          </>
         )}
       </div>
       {selected && (
@@ -117,7 +136,7 @@ export function AllocationEditor({
           ))}
         </details>
       )}
-      {row.kind === 'rules' && !rules.length && (
+      {mode !== 'rebalance' && row.kind === 'rules' && !rules.length && (
         <p>
           <a className="text-link" href="#/strategies">
             前往策略中心保存规则版本
@@ -125,7 +144,11 @@ export function AllocationEditor({
         </p>
       )}
       <details>
-        <summary>手续费、滑点与保护规则</summary>
+        <summary>
+          {mode === 'rebalance'
+            ? '手续费、滑点与成交限制'
+            : '手续费、滑点与保护规则'}
+        </summary>
         <div className="portfolio-grid">
           {fields([
             ['feeBps', '双边手续费 bps'],
@@ -133,14 +156,17 @@ export function AllocationEditor({
             ['sellSlippageBps', '卖出滑点 bps'],
             ['quantityDecimals', '数量小数位'],
             ['minNotional', '最小成交额（报价币）'],
-            ['stopLossBps', '止损 bps（留空关闭）'],
-            ['takeProfitBps', '止盈 bps（留空关闭）'],
           ])}
+          {mode !== 'rebalance' &&
+            fields([
+              ['stopLossBps', '止损 bps（留空关闭）'],
+              ['takeProfitBps', '止盈 bps（留空关闭）'],
+            ])}
         </div>
       </details>
       {remove && (
         <button type="button" onClick={remove}>
-          移除子账户 {index + 1}
+          移除{account} {index + 1}
         </button>
       )}
     </fieldset>

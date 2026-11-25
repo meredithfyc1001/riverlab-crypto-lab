@@ -5,20 +5,25 @@ import {
 } from '../core/portfolio/report';
 import type { PortfolioExperiment } from '../core/portfolio/report';
 
+export async function parsePortfolioFile(file: Blob): Promise<unknown> {
+  if (!file.size || file.size > MAX_PORTFOLIO_REPORT_BYTES)
+    throw new Error('组合文件为空或超过 32 MiB。');
+  try {
+    const bytes = await file.arrayBuffer();
+    return JSON.parse(new TextDecoder('utf-8', { fatal: true }).decode(bytes));
+  } catch {
+    throw new Error('组合文件无法读取为有效的 UTF-8 JSON。');
+  }
+}
+
 export async function readPortfolioFile(
   file: Blob,
   observedUtcMs: number,
 ): Promise<PortfolioExperiment> {
-  if (!file.size || file.size > MAX_PORTFOLIO_REPORT_BYTES)
-    throw new Error('组合文件为空或超过 32 MiB。');
-  let value: unknown;
-  try {
-    const bytes = await file.arrayBuffer();
-    value = JSON.parse(new TextDecoder('utf-8', { fatal: true }).decode(bytes));
-  } catch {
-    throw new Error('组合文件无法读取为有效的 UTF-8 JSON。');
-  }
-  return verifyPortfolioExperiment(value, observedUtcMs);
+  return verifyPortfolioExperiment(
+    await parsePortfolioFile(file),
+    observedUtcMs,
+  );
 }
 
 export function exportPortfolioFile(

@@ -27,12 +27,27 @@ export function newAllocation(key: number, weightPercent: string) {
 }
 export type AllocationDraft = ReturnType<typeof newAllocation>;
 
+const number = (value: string) => (value.trim() === '' ? NaN : Number(value));
+
+export function buildTarget(row: AllocationDraft, dataset: DatasetSummary) {
+  return {
+    dataset,
+    weightPercent: row.weightPercent,
+    costs: {
+      feeBps: number(row.feeBps),
+      buySlippageBps: number(row.buySlippageBps),
+      sellSlippageBps: number(row.sellSlippageBps),
+      quantityDecimals: number(row.quantityDecimals),
+      minNotional: row.minNotional,
+    },
+  };
+}
+
 export function buildAllocation(
   row: AllocationDraft,
   dataset: DatasetSummary,
   rules: RuleRecord[],
 ) {
-  const number = (value: string) => (value.trim() === '' ? NaN : Number(value));
   const ruleRecord =
     row.kind === 'rules' ? rules.find((r) => r.id === row.ruleId) : undefined;
   let strategy: StrategyInput;
@@ -61,17 +76,9 @@ export function buildAllocation(
       break;
   }
   return {
-    dataset,
+    ...buildTarget(row, dataset),
     strategy,
     ...(ruleRecord ? { ruleRecord } : {}),
-    weightPercent: row.weightPercent,
-    costs: {
-      feeBps: number(row.feeBps),
-      buySlippageBps: number(row.buySlippageBps),
-      sellSlippageBps: number(row.sellSlippageBps),
-      quantityDecimals: number(row.quantityDecimals),
-      minNotional: row.minNotional,
-    },
     risk: {
       ...(row.stopLossBps ? { stopLossBps: number(row.stopLossBps) } : {}),
       ...(row.takeProfitBps

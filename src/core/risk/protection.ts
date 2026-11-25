@@ -39,7 +39,11 @@ export function normalizeRisk(input: RiskConfig = {}): RiskConfig {
   }
   return result;
 }
-export function protectionFor(entry: bigint, config: RiskConfig): Protection {
+/** Null means this entry cannot have a positive stop on the 18-place price grid. */
+export function entryProtection(
+  entry: bigint,
+  config: RiskConfig,
+): Protection | null {
   config = normalizeRisk(config);
   if (entry <= 0n) throw new Error('Positive entry price required.');
   const stop =
@@ -50,12 +54,17 @@ export function protectionFor(entry: bigint, config: RiskConfig): Protection {
     config.takeProfitBps === undefined
       ? null
       : ceilDiv(entry * (BPS + BigInt(config.takeProfitBps)), BPS);
-  if (stop === 0n) throw new Error('Stop price underflow; run blocked.');
+  if (stop === 0n) return null;
   return {
     entryPrice: decimal(entry),
     stopPrice: stop === null ? null : decimal(stop),
     takePrice: take === null ? null : decimal(take),
   };
+}
+export function protectionFor(entry: bigint, config: RiskConfig): Protection {
+  const protection = entryProtection(entry, config);
+  if (!protection) throw new Error('Stop price underflow; run blocked.');
+  return protection;
 }
 /** Open phase intentionally accepts no HLC/volume. Intrabar order is never inferred. */
 export function triggerAtOpen(

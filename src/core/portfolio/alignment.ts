@@ -70,7 +70,7 @@ export interface PreparedAsset {
   risk: RiskConfig;
 }
 
-function requireFields(
+export function requireFields(
   value: unknown,
   required: readonly string[],
   optional: readonly string[] = [],
@@ -86,7 +86,7 @@ function requireFields(
     throw new Error('组合快照字段缺失或含有未知字段。');
 }
 
-function canonicalSymbol(symbol: string, quote: string) {
+export function canonicalSymbol(symbol: string, quote: string) {
   const text = symbol.trim().toUpperCase();
   // A compact pair uses the explicitly supplied quote. No lookup or inferred quote.
   const separated = /^([A-Z0-9]{1,32})[/-]([A-Z0-9]{1,32})$/.exec(text);
@@ -241,19 +241,11 @@ function allocate(input: PortfolioInput, coverage: AssetCoverage[]) {
   return cash.map(decimal);
 }
 
-export function preparePortfolio(input: PortfolioInput): {
-  alignment: AlignmentPreview;
-  assets: PreparedAsset[];
-} {
-  requireFields(input, [
-    'initialCash',
-    'quoteCurrency',
-    'startUtcMs',
-    'endUtcMs',
-    'completedThroughUtcMs',
-    'rangeConfirmed',
-    'assets',
-  ]);
+export function alignPortfolioSources(
+  input: Omit<PortfolioInput, 'assets'> & {
+    assets: readonly Pick<PortfolioAsset, 'dataset'>[];
+  },
+): AlignmentPreview {
   if (input.rangeConfirmed !== true)
     throw new Error('请明确确认共同区间，确认后才能运行。');
   if (
@@ -264,11 +256,6 @@ export function preparePortfolio(input: PortfolioInput): {
     throw new Error('组合必须包含 2–5 个不同交易对。');
   let bars = 0;
   for (const a of input.assets) {
-    requireFields(
-      a,
-      ['dataset', 'weightPercent', 'strategy', 'costs', 'risk'],
-      ['ruleRecord'],
-    );
     if (!Array.isArray(a.dataset?.candles))
       throw new Error('缺少完整数据快照。');
     bars += a.dataset.candles.length;
@@ -292,25 +279,61 @@ export function preparePortfolio(input: PortfolioInput): {
     input.endUtcMs + alignment.intervalMs > input.completedThroughUtcMs
   )
     throw new Error('所选区间包含未完成收盘的 K 线。');
+  return alignment;
+}
+
+export function executionConfig(
+  costs: PortfolioAsset['costs'],
+  initialCash: string,
+) {
+  requireFields(costs, [
+    'feeBps',
+    'buySlippageBps',
+    'sellSlippageBps',
+    'quantityDecimals',
+    'minNotional',
+  ]);
+  return normalizeConfig({ ...costs, initialCash });
+}
+
+export function assetStrategy(asset: PortfolioAsset, symbol: string) {
+  const strategy = normalizeStrategy(asset.strategy);
+  if (strategy.kind === 'rules') {
+    const record = verifyRuleRecord(asset.ruleRecord);
+    if (canonicalJson(strategy.rule) !== canonicalJson(record.rule))
+      throw new Error(`${symbol} 策略与保存的规则版本不一致。`);
+  } else if (Object.hasOwn(asset, 'ruleRecord'))
+    throw new Error('内置策略不能附加规则版本。');
+  return strategy;
+}
+
+export function preparePortfolio(input: PortfolioInput): {
+  alignment: AlignmentPreview;
+  assets: PreparedAsset[];
+} {
+  requireFields(input, [
+    'initialCash',
+    'quoteCurrency',
+    'startUtcMs',
+    'endUtcMs',
+    'completedThroughUtcMs',
+    'rangeConfirmed',
+    'assets',
+  ]);
+  const alignment = alignPortfolioSources(input);
+  for (const a of input.assets) {
+    requireFields(
+      a,
+      ['dataset', 'weightPercent', 'strategy', 'costs', 'risk'],
+      ['ruleRecord'],
+    );
+  }
   const allocations = allocate(input, alignment.assets);
   const assets = input.assets.map((asset, i) => {
     const cover = alignment.assets[i];
     const initialCash = allocations[i];
-    requireFields(asset.costs, [
-      'feeBps',
-      'buySlippageBps',
-      'sellSlippageBps',
-      'quantityDecimals',
-      'minNotional',
-    ]);
-    const config = normalizeConfig({ ...asset.costs, initialCash });
-    const strategy = normalizeStrategy(asset.strategy);
-    if (strategy.kind === 'rules') {
-      const record = verifyRuleRecord(asset.ruleRecord);
-      if (canonicalJson(strategy.rule) !== canonicalJson(record.rule))
-        throw new Error(`${cover.symbol} 策略与保存的规则版本不一致。`);
-    } else if (Object.hasOwn(asset, 'ruleRecord'))
-      throw new Error('内置策略不能附加规则版本。');
+    const config = executionConfig(asset.costs, initialCash);
+    const strategy = assetStrategy(asset, cover.symbol);
     return {
       symbol: cover.symbol,
       weightPercent: decimal(parseDecimal(asset.weightPercent)),

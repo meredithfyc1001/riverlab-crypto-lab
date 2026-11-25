@@ -6,6 +6,8 @@
 
 用户提供的 5C-A 实机报告覆盖 12 组，11 PASS、0 FAIL、0 BLOCKED、1 NOT TESTED。物理断网暂缓。证据清单的 337 项 SHA-256 均匹配。[逐组实机结果与性能波动](docs/phase-5c-b-windows-baseline.md)
 
+开发快照上，本机 Node 24.19.0 安装 260 个锁定依赖，全依赖及生产依赖审计均 0 条公告。八组既有参考和新增的十场景整数参考通过。首轮完整 check 通过 568 项 Vitest 及 54 项 Linux Chromium E2E；随后复核补入极小止损价及乱序重签报告两个回归。浏览器专项首次因运行模式控件选择器超时，改用无歧义的 combobox 可访问名称后 2/2 通过。满载的四种 Worker 场景均从空配置恢复。关键数值、修复、实测与旧版兼容性见[实现复核](docs/phase-5c-b-review.md)。最终提交对应的本机结果、三平台运行、Windows 双浏览器日志和 ZIP 身份见 [Draft PR #13](https://github.com/meredithfyc1001/riverlab-crypto-lab/pull/13)。5C-B 用户实机待测，物理断网 NOT TESTED。
+
 ## Phase 5C-A 多币种组合回测（2026-11-25）
 
 已同步 main，核实 PR #11 实际合并 SHA 为 `c8ded9304785a06c713f5a830caf292bacbc918f`。从该提交创建 `feat/phase-5c-portfolio-backtest`，技术设计先行。读取用户提供的 RC Windows 实机报告并归档零 FAIL、零 BLOCKED、物理断网 NOT TESTED，以及 8.498 秒首次恢复和重复句号两项观察。[RC 实机复测](docs/phase-5c-rc-baseline.md)
