@@ -20,12 +20,29 @@ const target = resolve(
 await rm(target, { force: true, recursive: true });
 await mkdir(target, { recursive: true });
 if (process.platform === 'win32') {
-  // Use the OS-provided bsdtar. Passing Unicode paths as arguments avoids legacy
-  // PowerShell cmdlet error handling; any extraction failure now fails this step.
+  // Windows tar can narrow Unicode argv to ANSI. Pass paths through the
+  // Unicode environment block and extract with .NET's Unicode file APIs.
   execFileSync(
-    join(process.env.SystemRoot, 'System32', 'tar.exe'),
-    ['-xf', zip, '-C', target],
-    { stdio: 'inherit' },
+    'pwsh.exe',
+    [
+      '-NoProfile',
+      '-NonInteractive',
+      '-Command',
+      [
+        "$ErrorActionPreference = 'Stop'",
+        '[System.IO.Compression.ZipFile]::ExtractToDirectory($env:RIVERLAB_TEST_ZIP, $env:RIVERLAB_TEST_DEST)',
+        "$manifest = [System.IO.Path]::Combine($env:RIVERLAB_TEST_DEST, 'RiverLab-Crypto-Lab-Local-Test', 'SHA256SUMS.txt')",
+        'if (-not [System.IO.File]::Exists($manifest)) { throw "Missing extracted manifest: $manifest" }',
+      ].join('\n'),
+    ],
+    {
+      env: {
+        ...process.env,
+        RIVERLAB_TEST_ZIP: zip,
+        RIVERLAB_TEST_DEST: target,
+      },
+      stdio: 'inherit',
+    },
   );
   const roots = await readdir(target);
   assert.deepEqual(

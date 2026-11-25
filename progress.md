@@ -13,6 +13,8 @@
 | `829d16d` | 三平台各 462 项 Vitest 和 45 项 E2E 成功                     | Windows ZIP 的 Chrome 作业解压后找不到 SHA256SUMS，尚未启动 BAT，Edge 包测试和上传跳过。改用 Windows 自带 tar.exe 传递路径参数、保留退出信息并明确核对解压目录。[Windows 作业](https://github.com/meredithfyc1001/riverlab-crypto-lab/actions/runs/45547167241/job/138981961007) |
 | `d55ca92` | 三平台各 468 项 Vitest 成功、48/49 项 E2E 成功，实验恢复通过 | 配额测试读到原始 `full`，五秒内无法获得“空间不足”提示，三组质量失败，ZIP 跳过。修正错误传递；原配额与拒绝存储用例本机复测 2/2。[失败运行](https://github.com/meredithfyc1001/riverlab-crypto-lab/actions/runs/45547503972)                                                       |
 
+Windows 中文路径的下一次验证给出了明确原因。功能提交 `333d9da` 上三平台检查全过，Windows 的 tar.exe 却把中文目的路径转成问号并报告 could not chdir，Chrome 包启动前即终止，Edge 和上传跳过。改由 PowerShell 7 通过环境变量向 .NET ZipFile 提供 Unicode 路径，解压过程以异常中止，并在同一进程及 Node 验证清单。BAT 启动、浏览器流程及中文空格路径保持原检查。[Windows 解压失败日志](https://github.com/meredithfyc1001/riverlab-crypto-lab/actions/runs/45548374961/job/138985525161)
+
 50,000 根压力抽样曾出现主线程间隔 1052ms。改用兼容的规范字节编码，保留全账本和全部点；同程序 3+3 次测得完整报告 Hash 中位数 1259→928ms，RC 全流程中位 3696ms、最大 4437ms、主线程最大 410ms。初次完整检查发现控制字符正则不符合 lint，改为匹配允许的可打印 ASCII；新增性能脚本的格式问题随后修正。[分段实测、异常与内存](docs/rc-performance.md)
 
 本轮 Linux 实装 260 个依赖包，完整 check 通过 472 项 Vitest、49 项 Playwright；独立数值参考全通过。功能提交 `333d9da` 的 clean Linux ZIP 通过 17 项检查，Linux 直接启动 Node，首访 JS 294.67 kB（gzip 94.90 kB）。[本机验收明细](docs/rc-acceptance.md)
