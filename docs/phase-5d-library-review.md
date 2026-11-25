@@ -36,3 +36,7 @@
 摘要通过字段校验后才进入列表。正文按使用时机在 Worker 内验证；有效摘要对应的损坏正文在重开、研究或导出时仍会被拒绝。库级错误与记录级诊断分别保留。测试涵盖单库及所有源库拒绝打开、5D 库打不开，以及 getAll 请求已成功但事务随后中止，界面分别显示受影响库的错误。报告生成、盈亏归因、版本、数据布局和历史 Hash 算法沿用原实现。其他功能页的列表策略见上表。
 
 生产浏览器与 Windows 解压验包均使用临时空配置，先经正常界面保存报告，再定向注入摘要和正文故障。操作后比较各库原始记录。单元回归另锁定修复前实测的两份完整报告 Hash、JSON 字节数和全部八份正文的联合摘要。[单元回归](../tests/unit/market-regime-library.test.ts) · [浏览器回归](../tests/e2e/market-regime-library.spec.ts) · [最终提交 CI 与验包记录](https://github.com/meredithfyc1001/riverlab-crypto-lab/pull/14)
+
+## 候选提交的 CI 记录
+
+`de8c4fc` 的首轮 Windows Chrome 通过 629 项 Vitest 及 59/60 项 E2E，新增的混合损坏库和事务失败用例均通过。既有共享资金池用例在选择第二项数据集时超过 30 秒；最终快照里两个选择器只有 ALPHA/USDT。trace 显示脚本在约 2.8 秒时已开始等待 BETA/USDT，当时尚未启动组合回测。该夹具先后两次使用相同的保存成功文案。已补充以本次交易对匹配已保存摘要的等待条件，保留原成功文案断言及 30 秒时限。Ubuntu Chromium、Windows Edge 在该轮均为 629/60 通过。最终提交在三平台重新验证。[首轮 Chrome 日志与 trace](https://github.com/meredithfyc1001/riverlab-crypto-lab/actions/runs/45590906468/job/139124542910)
