@@ -1,5 +1,5 @@
 import type { CloseSnapshot } from '../backtests';
-import { readUnits } from '../math';
+import { integerSqrt, readUnits } from '../math';
 import { fraction } from '../statistics';
 import type { Metric } from '../statistics';
 
@@ -26,16 +26,6 @@ function moments(closes: CloseSnapshot[]) {
     sum,
     variance: BigInt(returns.length) * sumSquares - sum * sum,
   };
-}
-
-function integerSqrt(value: bigint) {
-  if (value < 2n) return value;
-  let root = 1n << BigInt(Math.ceil(value.toString(2).length / 2));
-  for (;;) {
-    const next = (root + value / root) / 2n;
-    if (next >= root) return root;
-    root = next;
-  }
 }
 
 /** Rows and columns follow the prepared asset order. The caller has verified

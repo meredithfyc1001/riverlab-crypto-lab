@@ -1,0 +1,861 @@
+{
+  "classification": [
+    {
+      "name": "positive and negative equalities",
+      "closes": ["100", "110", "99"],
+      "lookback": 1,
+      "thresholdBps": 1000,
+      "expected": ["UNKNOWN", "SIDEWAYS", "SIDEWAYS"]
+    },
+    {
+      "name": "positive sub-tick crossing",
+      "closes": ["100", "110.000000000001"],
+      "lookback": 1,
+      "thresholdBps": 1000,
+      "expected": ["UNKNOWN", "BULL"]
+    },
+    {
+      "name": "negative sub-tick crossing",
+      "closes": ["100", "89.999999999999"],
+      "lookback": 1,
+      "thresholdBps": 1000,
+      "expected": ["UNKNOWN", "BEAR"]
+    },
+    {
+      "name": "history shorter than lookback",
+      "closes": ["10", "20", "30"],
+      "lookback": 3,
+      "thresholdBps": 1,
+      "expected": ["UNKNOWN", "UNKNOWN", "UNKNOWN"]
+    },
+    {
+      "name": "frequent transitions",
+      "closes": ["10", "11", "9", "11", "9", "11", "9"],
+      "lookback": 1,
+      "thresholdBps": 100,
+      "expected": ["UNKNOWN", "BULL", "BEAR", "BULL", "BEAR", "BULL", "BEAR"]
+    },
+    {
+      "name": "two-bar window",
+      "closes": ["100", "110", "101", "125", "90", "128"],
+      "lookback": 2,
+      "thresholdBps": 500,
+      "expected": ["UNKNOWN", "UNKNOWN", "SIDEWAYS", "BULL", "BEAR", "SIDEWAYS"]
+    }
+  ],
+  "single": {
+    "prices": [100, 110, 99, 100, 130, 130, 89, 120, 90, 135, 90, 110],
+    "opens": [80, 110, 99, 100, 130, 130, 89, 120, 90, 135, 90, 110],
+    "costs": {
+      "feeBps": 25,
+      "buySlippageBps": 12,
+      "sellSlippageBps": 19,
+      "quantityDecimals": 4,
+      "minNotional": "0"
+    },
+    "initialCash": "1000.000000000000000003",
+    "bars": [
+      {
+        "closeUtcMs": 1735689660000,
+        "equity": "1000.000000000000000003",
+        "realizedDelta": "0",
+        "unrealizedDelta": "0",
+        "fills": 0,
+        "fees": "0",
+        "exposed": false
+      },
+      {
+        "closeUtcMs": 1735689720000,
+        "equity": "1000.000000000000000003",
+        "realizedDelta": "0",
+        "unrealizedDelta": "0",
+        "fills": 0,
+        "fees": "0",
+        "exposed": false
+      },
+      {
+        "closeUtcMs": 1735689780000,
+        "equity": "996.310677771100000003",
+        "realizedDelta": "0",
+        "unrealizedDelta": "-3.6893222289",
+        "fills": 1,
+        "fees": "2.4937546689",
+        "exposed": true
+      },
+      {
+        "closeUtcMs": 1735689840000,
+        "equity": "1001.951130028600000003",
+        "realizedDelta": "1.9511300286",
+        "unrealizedDelta": "3.6893222289",
+        "fills": 1,
+        "fees": "2.5111447425",
+        "exposed": false
+      },
+      {
+        "closeUtcMs": 1735689900000,
+        "equity": "998.254632496600000003",
+        "realizedDelta": "0",
+        "unrealizedDelta": "-3.696497532",
+        "fills": 1,
+        "fees": "2.498604732",
+        "exposed": true
+      },
+      {
+        "closeUtcMs": 1735689960000,
+        "equity": "998.254632496600000003",
+        "realizedDelta": "0",
+        "unrealizedDelta": "0",
+        "fills": 0,
+        "fees": "0",
+        "exposed": true
+      },
+      {
+        "closeUtcMs": 1735690020000,
+        "equity": "683.423832496600000003",
+        "realizedDelta": "0",
+        "unrealizedDelta": "-314.8308",
+        "fills": 0,
+        "fees": "0",
+        "exposed": true
+      },
+      {
+        "closeUtcMs": 1735690080000,
+        "equity": "917.416603012600000003",
+        "realizedDelta": "-84.534527016",
+        "unrealizedDelta": "318.527297532",
+        "fills": 1,
+        "fees": "2.299263084",
+        "exposed": false
+      },
+      {
+        "closeUtcMs": 1735690140000,
+        "equity": "914.031946219600000003",
+        "realizedDelta": "0",
+        "unrealizedDelta": "-3.384656793",
+        "fills": 1,
+        "fees": "2.287819593",
+        "exposed": true
+      },
+      {
+        "closeUtcMs": 1735690200000,
+        "equity": "1365.021354090475000003",
+        "realizedDelta": "447.604751077875",
+        "unrealizedDelta": "3.384656793",
+        "fills": 1,
+        "fees": "3.421103779125",
+        "exposed": false
+      },
+      {
+        "closeUtcMs": 1735690260000,
+        "equity": "1359.985344447475000003",
+        "realizedDelta": "0",
+        "unrealizedDelta": "-5.036009643",
+        "fills": 1,
+        "fees": "3.404032443",
+        "exposed": true
+      },
+      {
+        "closeUtcMs": 1735690320000,
+        "equity": "1654.897564292725000003",
+        "realizedDelta": "289.87621020225",
+        "unrealizedDelta": "5.036009643",
+        "fills": 1,
+        "fees": "4.14760205475",
+        "exposed": false
+      }
+    ],
+    "params": {
+      "lookback": 1,
+      "thresholdBps": 1000
+    },
+    "result": {
+      "labels": [
+        "UNKNOWN",
+        "SIDEWAYS",
+        "SIDEWAYS",
+        "SIDEWAYS",
+        "BULL",
+        "SIDEWAYS",
+        "BEAR",
+        "BULL",
+        "BEAR",
+        "BULL",
+        "BEAR",
+        "BULL"
+      ],
+      "runs": [
+        {
+          "state": "UNKNOWN",
+          "startUtcMs": 1735689600000,
+          "endUtcMs": 1735689720000,
+          "bars": 2,
+          "startEquity": "1000.000000000000000003",
+          "endEquity": "1000.000000000000000003",
+          "netPnl": "0",
+          "returnFraction": "0"
+        },
+        {
+          "state": "SIDEWAYS",
+          "startUtcMs": 1735689720000,
+          "endUtcMs": 1735689900000,
+          "bars": 3,
+          "startEquity": "1000.000000000000000003",
+          "endEquity": "998.254632496600000003",
+          "netPnl": "-1.7453675034",
+          "returnFraction": "-0.001745367503"
+        },
+        {
+          "state": "BULL",
+          "startUtcMs": 1735689900000,
+          "endUtcMs": 1735689960000,
+          "bars": 1,
+          "startEquity": "998.254632496600000003",
+          "endEquity": "998.254632496600000003",
+          "netPnl": "0",
+          "returnFraction": "0"
+        },
+        {
+          "state": "SIDEWAYS",
+          "startUtcMs": 1735689960000,
+          "endUtcMs": 1735690020000,
+          "bars": 1,
+          "startEquity": "998.254632496600000003",
+          "endEquity": "683.423832496600000003",
+          "netPnl": "-314.8308",
+          "returnFraction": "-0.315381256195"
+        },
+        {
+          "state": "BEAR",
+          "startUtcMs": 1735690020000,
+          "endUtcMs": 1735690080000,
+          "bars": 1,
+          "startEquity": "683.423832496600000003",
+          "endEquity": "917.416603012600000003",
+          "netPnl": "233.992770516",
+          "returnFraction": "0.342383100193"
+        },
+        {
+          "state": "BULL",
+          "startUtcMs": 1735690080000,
+          "endUtcMs": 1735690140000,
+          "bars": 1,
+          "startEquity": "917.416603012600000003",
+          "endEquity": "914.031946219600000003",
+          "netPnl": "-3.384656793",
+          "returnFraction": "-0.003689334574"
+        },
+        {
+          "state": "BEAR",
+          "startUtcMs": 1735690140000,
+          "endUtcMs": 1735690200000,
+          "bars": 1,
+          "startEquity": "914.031946219600000003",
+          "endEquity": "1365.021354090475000003",
+          "netPnl": "450.989407870875",
+          "returnFraction": "0.493406614217"
+        },
+        {
+          "state": "BULL",
+          "startUtcMs": 1735690200000,
+          "endUtcMs": 1735690260000,
+          "bars": 1,
+          "startEquity": "1365.021354090475000003",
+          "endEquity": "1359.985344447475000003",
+          "netPnl": "-5.036009643",
+          "returnFraction": "-0.003689326637"
+        },
+        {
+          "state": "BEAR",
+          "startUtcMs": 1735690260000,
+          "endUtcMs": 1735690320000,
+          "bars": 1,
+          "startEquity": "1359.985344447475000003",
+          "endEquity": "1654.897564292725000003",
+          "netPnl": "294.91221984525",
+          "returnFraction": "0.216849557275"
+        }
+      ],
+      "summaries": [
+        {
+          "state": "BULL",
+          "bars": 3,
+          "durationMs": 180000,
+          "timeFraction": "0.25",
+          "occurrences": 3,
+          "netPnl": "-8.420666436",
+          "realizedDelta": "0",
+          "unrealizedDelta": "-8.420666436",
+          "fills": 2,
+          "fees": "5.691852036",
+          "exposedMs": 180000,
+          "exposureFraction": "1",
+          "periodReturns": {
+            "count": 3,
+            "min": "-0.003689334574",
+            "max": "0",
+            "median": "-0.003689326637",
+            "mean": "-0.002459553737",
+            "volatility": "0.001739167126"
+          },
+          "assetReturns": {
+            "count": 3,
+            "min": "-0.333333333333",
+            "max": "0",
+            "median": "-0.25",
+            "mean": "-0.194444444444",
+            "volatility": "0.141639430933"
+          }
+        },
+        {
+          "state": "BEAR",
+          "bars": 3,
+          "durationMs": 180000,
+          "timeFraction": "0.25",
+          "occurrences": 3,
+          "netPnl": "979.894398232125",
+          "realizedDelta": "652.946434264125",
+          "unrealizedDelta": "326.947963968",
+          "fills": 3,
+          "fees": "9.867968917875",
+          "exposedMs": 0,
+          "exposureFraction": "0",
+          "periodReturns": {
+            "count": 3,
+            "min": "0.216849557275",
+            "max": "0.493406614217",
+            "median": "0.342383100193",
+            "mean": "0.350879757228",
+            "volatility": "0.113063688016"
+          },
+          "assetReturns": {
+            "count": 3,
+            "min": "0.222222222222",
+            "max": "0.5",
+            "median": "0.348314606741",
+            "mean": "0.356845609654",
+            "volatility": "0.113562631661"
+          }
+        },
+        {
+          "state": "SIDEWAYS",
+          "bars": 4,
+          "durationMs": 240000,
+          "timeFraction": "0.333333333333",
+          "occurrences": 2,
+          "netPnl": "-316.5761675034",
+          "realizedDelta": "1.9511300286",
+          "unrealizedDelta": "-318.527297532",
+          "fills": 3,
+          "fees": "7.5035041434",
+          "exposedMs": 180000,
+          "exposureFraction": "0.75",
+          "periodReturns": {
+            "count": 4,
+            "min": "-0.315381256195",
+            "max": "0.00566133876",
+            "median": "-0.003689310728",
+            "mean": "-0.079274634723",
+            "volatility": "0.136369661858"
+          },
+          "assetReturns": {
+            "count": 4,
+            "min": "-0.315384615384",
+            "max": "0.3",
+            "median": "-0.044949494949",
+            "mean": "-0.02632090132",
+            "volatility": "0.221809787115"
+          }
+        },
+        {
+          "state": "UNKNOWN",
+          "bars": 2,
+          "durationMs": 120000,
+          "timeFraction": "0.166666666666",
+          "occurrences": 1,
+          "netPnl": "0",
+          "realizedDelta": "0",
+          "unrealizedDelta": "0",
+          "fills": 0,
+          "fees": "0",
+          "exposedMs": 0,
+          "exposureFraction": "0",
+          "periodReturns": {
+            "count": 2,
+            "min": "0",
+            "max": "0",
+            "median": "0",
+            "mean": "0",
+            "volatility": "0"
+          },
+          "assetReturns": {
+            "count": 2,
+            "min": "0.1",
+            "max": "0.25",
+            "median": "0.175",
+            "mean": "0.175",
+            "volatility": "0.075"
+          }
+        }
+      ],
+      "switches": 8,
+      "netPnl": "654.897564292725"
+    }
+  },
+  "shared": {
+    "scenario": "partial-rebalance",
+    "bars": [
+      {
+        "closeUtcMs": 1735689660000,
+        "equity": "1234.567890123456789023",
+        "realizedDelta": "0",
+        "unrealizedDelta": "0",
+        "fills": 0,
+        "fees": "0",
+        "exposed": false
+      },
+      {
+        "closeUtcMs": 1735689720000,
+        "equity": "1234.567890123456789023",
+        "realizedDelta": "0",
+        "unrealizedDelta": "0",
+        "fills": 0,
+        "fees": "0",
+        "exposed": false
+      },
+      {
+        "closeUtcMs": 1735689780000,
+        "equity": "1230.144196953352789023",
+        "realizedDelta": "0",
+        "unrealizedDelta": "-4.423693170104",
+        "fills": 2,
+        "fees": "2.528362075104",
+        "exposed": true
+      },
+      {
+        "closeUtcMs": 1735689840000,
+        "equity": "1542.873376953352789023",
+        "realizedDelta": "0",
+        "unrealizedDelta": "312.72918",
+        "fills": 0,
+        "fees": "0",
+        "exposed": true
+      },
+      {
+        "closeUtcMs": 1735689900000,
+        "equity": "1686.355448942674389023",
+        "realizedDelta": "157.116508305264",
+        "unrealizedDelta": "-13.6344363159424",
+        "fills": 2,
+        "fees": "1.5156948986784",
+        "exposed": true
+      },
+      {
+        "closeUtcMs": 1735689960000,
+        "equity": "1460.690448942674389023",
+        "realizedDelta": "0",
+        "unrealizedDelta": "-225.665",
+        "fills": 0,
+        "fees": "0",
+        "exposed": true
+      },
+      {
+        "closeUtcMs": 1735690020000,
+        "equity": "1831.326466745921189023",
+        "realizedDelta": "394.291461815441319741",
+        "unrealizedDelta": "-23.655444012194519741",
+        "fills": 2,
+        "fees": "3.8850252577532",
+        "exposed": true
+      },
+      {
+        "closeUtcMs": 1735690080000,
+        "equity": "1980.011866745921189023",
+        "realizedDelta": "0",
+        "unrealizedDelta": "148.6854",
+        "fills": 0,
+        "fees": "0",
+        "exposed": true
+      },
+      {
+        "closeUtcMs": 1735690140000,
+        "equity": "3325.860008067076589023",
+        "realizedDelta": "677.417262504278681013",
+        "unrealizedDelta": "668.430878816876718987",
+        "fills": 2,
+        "fees": "5.2895865208446",
+        "exposed": true
+      }
+    ],
+    "params": {
+      "lookback": 2,
+      "thresholdBps": 500
+    },
+    "references": [
+      {
+        "symbol": "AAA/USDT",
+        "result": {
+          "labels": [
+            "UNKNOWN",
+            "UNKNOWN",
+            "BULL",
+            "BULL",
+            "BULL",
+            "BULL",
+            "BEAR",
+            "BEAR",
+            "BULL"
+          ],
+          "runs": [
+            {
+              "state": "UNKNOWN",
+              "startUtcMs": 1735689600000,
+              "endUtcMs": 1735689780000,
+              "bars": 3,
+              "startEquity": "1234.567890123456789023",
+              "endEquity": "1230.144196953352789023",
+              "netPnl": "-4.423693170104",
+              "returnFraction": "-0.0035831915"
+            },
+            {
+              "state": "BULL",
+              "startUtcMs": 1735689780000,
+              "endUtcMs": 1735690020000,
+              "bars": 4,
+              "startEquity": "1230.144196953352789023",
+              "endEquity": "1831.326466745921189023",
+              "netPnl": "601.1822697925684",
+              "returnFraction": "0.488708780061"
+            },
+            {
+              "state": "BEAR",
+              "startUtcMs": 1735690020000,
+              "endUtcMs": 1735690140000,
+              "bars": 2,
+              "startEquity": "1831.326466745921189023",
+              "endEquity": "3325.860008067076589023",
+              "netPnl": "1494.5335413211554",
+              "returnFraction": "0.816093453821"
+            }
+          ],
+          "summaries": [
+            {
+              "state": "BULL",
+              "bars": 4,
+              "durationMs": 240000,
+              "timeFraction": "0.444444444444",
+              "occurrences": 1,
+              "netPnl": "601.1822697925684",
+              "realizedDelta": "551.407970120705319741",
+              "unrealizedDelta": "49.774299671863080259",
+              "fills": 4,
+              "fees": "5.4007201564316",
+              "exposedMs": 240000,
+              "exposureFraction": "1",
+              "periodReturns": {
+                "count": 4,
+                "min": "-0.133818169912",
+                "max": "0.254221562622",
+                "median": "0.173368475259",
+                "mean": "0.116785085807",
+                "volatility": "0.158913021808"
+              },
+              "assetReturns": {
+                "count": 4,
+                "min": "-0.725",
+                "max": "0.551724137931",
+                "median": "0.048611111111",
+                "mean": "-0.019013409961",
+                "volatility": "0.470193295925"
+              }
+            },
+            {
+              "state": "BEAR",
+              "bars": 2,
+              "durationMs": 120000,
+              "timeFraction": "0.222222222222",
+              "occurrences": 1,
+              "netPnl": "1494.5335413211554",
+              "realizedDelta": "677.417262504278681013",
+              "unrealizedDelta": "817.116278816876718987",
+              "fills": 2,
+              "fees": "5.2895865208446",
+              "exposedMs": 120000,
+              "exposureFraction": "1",
+              "periodReturns": {
+                "count": 2,
+                "min": "0.081190002274",
+                "max": "0.679717209742",
+                "median": "0.380453606008",
+                "mean": "0.380453606008",
+                "volatility": "0.299263603734"
+              },
+              "assetReturns": {
+                "count": 2,
+                "min": "0.363636363636",
+                "max": "1.2",
+                "median": "0.781818181818",
+                "mean": "0.781818181818",
+                "volatility": "0.418181818182"
+              }
+            },
+            {
+              "state": "SIDEWAYS",
+              "bars": 0,
+              "durationMs": 0,
+              "timeFraction": "0",
+              "occurrences": 0,
+              "netPnl": "0",
+              "realizedDelta": "0",
+              "unrealizedDelta": "0",
+              "fills": 0,
+              "fees": "0",
+              "exposedMs": 0,
+              "exposureFraction": null,
+              "periodReturns": {
+                "count": 0,
+                "min": null,
+                "median": null,
+                "max": null,
+                "mean": null,
+                "volatility": null
+              },
+              "assetReturns": {
+                "count": 0,
+                "min": null,
+                "median": null,
+                "max": null,
+                "mean": null,
+                "volatility": null
+              }
+            },
+            {
+              "state": "UNKNOWN",
+              "bars": 3,
+              "durationMs": 180000,
+              "timeFraction": "0.333333333333",
+              "occurrences": 1,
+              "netPnl": "-4.423693170104",
+              "realizedDelta": "0",
+              "unrealizedDelta": "-4.423693170104",
+              "fills": 2,
+              "fees": "2.528362075104",
+              "exposedMs": 60000,
+              "exposureFraction": "0.333333333333",
+              "periodReturns": {
+                "count": 3,
+                "min": "-0.0035831915",
+                "max": "0",
+                "median": "0",
+                "mean": "-0.001194397166",
+                "volatility": "0.001689132671"
+              },
+              "assetReturns": {
+                "count": 3,
+                "min": "0",
+                "max": "0.2",
+                "median": "0.052631578947",
+                "mean": "0.084210526315",
+                "volatility": "0.084647986539"
+              }
+            }
+          ],
+          "switches": 2,
+          "netPnl": "2091.2921179436198"
+        }
+      },
+      {
+        "symbol": "BBB/USDT",
+        "result": {
+          "labels": [
+            "UNKNOWN",
+            "UNKNOWN",
+            "BEAR",
+            "BULL",
+            "BEAR",
+            "BEAR",
+            "BULL",
+            "BULL",
+            "BEAR"
+          ],
+          "runs": [
+            {
+              "state": "UNKNOWN",
+              "startUtcMs": 1735689600000,
+              "endUtcMs": 1735689780000,
+              "bars": 3,
+              "startEquity": "1234.567890123456789023",
+              "endEquity": "1230.144196953352789023",
+              "netPnl": "-4.423693170104",
+              "returnFraction": "-0.0035831915"
+            },
+            {
+              "state": "BEAR",
+              "startUtcMs": 1735689780000,
+              "endUtcMs": 1735689840000,
+              "bars": 1,
+              "startEquity": "1230.144196953352789023",
+              "endEquity": "1542.873376953352789023",
+              "netPnl": "312.72918",
+              "returnFraction": "0.254221562622"
+            },
+            {
+              "state": "BULL",
+              "startUtcMs": 1735689840000,
+              "endUtcMs": 1735689900000,
+              "bars": 1,
+              "startEquity": "1542.873376953352789023",
+              "endEquity": "1686.355448942674389023",
+              "netPnl": "143.4820719893216",
+              "returnFraction": "0.092996660732"
+            },
+            {
+              "state": "BEAR",
+              "startUtcMs": 1735689900000,
+              "endUtcMs": 1735690020000,
+              "bars": 2,
+              "startEquity": "1686.355448942674389023",
+              "endEquity": "1831.326466745921189023",
+              "netPnl": "144.9710178032468",
+              "returnFraction": "0.085967058661"
+            },
+            {
+              "state": "BULL",
+              "startUtcMs": 1735690020000,
+              "endUtcMs": 1735690140000,
+              "bars": 2,
+              "startEquity": "1831.326466745921189023",
+              "endEquity": "3325.860008067076589023",
+              "netPnl": "1494.5335413211554",
+              "returnFraction": "0.816093453821"
+            }
+          ],
+          "summaries": [
+            {
+              "state": "BULL",
+              "bars": 3,
+              "durationMs": 180000,
+              "timeFraction": "0.333333333333",
+              "occurrences": 2,
+              "netPnl": "1638.015613310477",
+              "realizedDelta": "834.533770809542681013",
+              "unrealizedDelta": "803.481842500934318987",
+              "fills": 4,
+              "fees": "6.805281419523",
+              "exposedMs": 180000,
+              "exposureFraction": "1",
+              "periodReturns": {
+                "count": 3,
+                "min": "0.081190002274",
+                "max": "0.679717209742",
+                "median": "0.092996660732",
+                "mean": "0.284634624249",
+                "volatility": "0.279407153709"
+              },
+              "assetReturns": {
+                "count": 3,
+                "min": "-0.692307692307",
+                "max": "-0.338983050847",
+                "median": "-0.510204081632",
+                "mean": "-0.513831608262",
+                "volatility": "0.144266985777"
+              }
+            },
+            {
+              "state": "BEAR",
+              "bars": 3,
+              "durationMs": 180000,
+              "timeFraction": "0.333333333333",
+              "occurrences": 2,
+              "netPnl": "457.7001978032468",
+              "realizedDelta": "394.291461815441319741",
+              "unrealizedDelta": "63.408735987805480259",
+              "fills": 2,
+              "fees": "3.8850252577532",
+              "exposedMs": 180000,
+              "exposureFraction": "1",
+              "periodReturns": {
+                "count": 3,
+                "min": "-0.133818169912",
+                "max": "0.254221562622",
+                "median": "0.253740289786",
+                "mean": "0.124714560832",
+                "volatility": "0.182810352652"
+              },
+              "assetReturns": {
+                "count": 3,
+                "min": "-0.208333333333",
+                "max": "2.105263157894",
+                "median": "0.4",
+                "mean": "0.765643274853",
+                "volatility": "0.979269603459"
+              }
+            },
+            {
+              "state": "SIDEWAYS",
+              "bars": 0,
+              "durationMs": 0,
+              "timeFraction": "0",
+              "occurrences": 0,
+              "netPnl": "0",
+              "realizedDelta": "0",
+              "unrealizedDelta": "0",
+              "fills": 0,
+              "fees": "0",
+              "exposedMs": 0,
+              "exposureFraction": null,
+              "periodReturns": {
+                "count": 0,
+                "min": null,
+                "median": null,
+                "max": null,
+                "mean": null,
+                "volatility": null
+              },
+              "assetReturns": {
+                "count": 0,
+                "min": null,
+                "median": null,
+                "max": null,
+                "mean": null,
+                "volatility": null
+              }
+            },
+            {
+              "state": "UNKNOWN",
+              "bars": 3,
+              "durationMs": 180000,
+              "timeFraction": "0.333333333333",
+              "occurrences": 1,
+              "netPnl": "-4.423693170104",
+              "realizedDelta": "0",
+              "unrealizedDelta": "-4.423693170104",
+              "fills": 2,
+              "fees": "2.528362075104",
+              "exposedMs": 60000,
+              "exposureFraction": "0.333333333333",
+              "periodReturns": {
+                "count": 3,
+                "min": "-0.0035831915",
+                "max": "0",
+                "median": "0",
+                "mean": "-0.001194397166",
+                "volatility": "0.001689132671"
+              },
+              "assetReturns": {
+                "count": 3,
+                "min": "-0.175",
+                "max": "0.060606060606",
+                "median": "0",
+                "mean": "-0.038131313131",
+                "volatility": "0.099893448999"
+              }
+            }
+          ],
+          "switches": 4,
+          "netPnl": "2091.2921179436198"
+        }
+      }
+    ]
+  },
+  "invalidAxis": [1735689600000, 1735689660000, 1735689780000]
+}

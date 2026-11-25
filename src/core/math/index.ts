@@ -53,3 +53,14 @@ export function decimal(units: bigint): string {
   }
   return text;
 }
+
+/** Integer floor of the square root of a nonnegative value. */
+export function integerSqrt(value: bigint) {
+  if (value < 2n) return value;
+  let root = 1n << BigInt(Math.ceil(value.toString(2).length / 2));
+  for (;;) {
+    const next = (root + value / root) / 2n;
+    if (next >= root) return root;
+    root = next;
+  }
+}

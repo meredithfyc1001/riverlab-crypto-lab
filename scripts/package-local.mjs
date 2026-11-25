@@ -23,7 +23,7 @@ const dirty = Boolean(
 if (process.env.CI && dirty)
   throw new Error('CI package must be built from a clean commit.');
 const pkg = JSON.parse(await readFile('package.json', 'utf8'));
-const phase = 'Phase 5C-B';
+const phase = 'Phase 5D';
 await writeFile(
   join(folder, 'build-info.json'),
   JSON.stringify(

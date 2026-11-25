@@ -14,6 +14,7 @@ import { createServer } from 'node:net';
 import { request } from 'node:http';
 import assert from 'node:assert/strict';
 import { chromium } from '@playwright/test';
+import { exerciseMarketRegime } from './market-regime-browser.mjs';
 import { exerciseSharedModes } from './shared-pool-browser.mjs';
 const zip = resolve('work/local-package/RiverLab-Crypto-Lab-Local-Test.zip');
 const target = resolve(
@@ -90,7 +91,7 @@ for (const row of manifest.trim().split('\n')) {
 const build = JSON.parse(
   await readFile(join(folder, 'build-info.json'), 'utf8'),
 );
-assert.equal(build.phase, 'Phase 5C-B');
+assert.equal(build.phase, 'Phase 5D');
 assert.equal(
   build.version,
   JSON.parse(await readFile('package.json', 'utf8')).version,
@@ -698,6 +699,19 @@ try {
     'BTC/USDT',
     'DEMO/USDT',
   ]);
+  const regimeHashes = {};
+  for (const [kind, source, reference] of [
+    ['single', ruleExperiment.name, null],
+    ['portfolio', 'Windows ZIP 双资产', 'DEMO/USDT'],
+    ['shared', '验包 shared-strategy', 'BTC/USDT'],
+    ['shared', '验包 rebalance', 'DEMO/USDT'],
+  ]) {
+    regimeHashes[source] = await exerciseMarketRegime(page, freshPage, {
+      kind,
+      source,
+      reference,
+    });
+  }
   assert.deepEqual(external, []);
   assert.deepEqual(errors, []);
   assert(
@@ -727,6 +741,7 @@ try {
     historicalRunHashes,
     portfolioHash,
     sharedPortfolioHashes,
+    regimeHashes,
     externalRequests: external,
     errors,
     resources: responses,
@@ -752,6 +767,7 @@ try {
       'frozen 5C-A baseline portfolio imported into a blank profile, replayed and re-exported byte-identical',
       'shared strategy pool with cash reserve, order ledger, JSON/CSV, save, fresh-profile restore and full replay',
       'periodic target-weight rebalancing, partial trades, JSON/CSV, save, fresh-profile restore and full replay',
+      'market regimes on a single experiment and all three portfolio modes, explicit reference selection, net P&L conservation, JSON/CSV, fresh-profile restore and reopen',
       'Enter exits and frees port',
       'missing dist fails',
     ],

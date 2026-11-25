@@ -1,0 +1,184 @@
+.regime-workbench {
+  display: grid;
+  gap: 18px;
+  min-width: 0;
+}
+.regime-workbench .panel {
+  padding: 24px;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.regime-workbench h3 {
+  font-size: 16px;
+  margin: 16px 0 8px;
+}
+.regime-workbench p {
+  font-size: 14px;
+  line-height: 1.7;
+  margin: 10px 0;
+  color: var(--muted);
+}
+.regime-workbench .regime-notice {
+  border-left: 3px solid var(--amber);
+  padding-left: 12px;
+  color: var(--text);
+}
+.regime-workbench label {
+  display: grid;
+  gap: 7px;
+  min-width: 0;
+  color: var(--text);
+  font-size: 14px;
+}
+.regime-form,
+.regime-facts {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 190px), 1fr));
+  gap: 14px;
+  margin: 18px 0;
+  min-width: 0;
+}
+.regime-form {
+  border: 0;
+  padding: 0;
+}
+.regime-workbench input,
+.regime-workbench select,
+.regime-workbench button {
+  font: inherit;
+  font-size: 14px;
+  min-width: 0;
+  max-width: 100%;
+  padding: 8px 10px;
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  color: var(--text);
+  background: var(--bg);
+}
+.regime-workbench button {
+  background: var(--panel-hover);
+}
+.regime-workbench button:enabled:hover {
+  border-color: var(--accent);
+}
+.regime-workbench button:disabled {
+  cursor: default;
+  opacity: 0.5;
+}
+.regime-workbench .regime-run {
+  background: var(--accent-bg);
+  color: var(--accent);
+  border-color: var(--accent);
+}
+.regime-workbench [role='alert'] {
+  color: var(--amber);
+}
+.regime-cancel,
+.regime-import {
+  justify-self: start;
+}
+.regime-import {
+  margin: 16px 0;
+  max-width: 380px;
+}
+.regime-facts div {
+  border-left: 2px solid var(--border);
+  padding: 6px 12px;
+}
+.regime-facts span,
+.regime-facts b,
+.regime-records small {
+  display: block;
+}
+.regime-facts b {
+  margin-top: 6px;
+  font-size: 18px;
+}
+.regime-workbench small,
+.regime-facts span {
+  color: var(--muted);
+}
+.regime-scroll {
+  overflow: auto;
+  max-width: 100%;
+  margin: 12px 0;
+}
+.regime-scroll table {
+  width: 100%;
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.regime-scroll caption {
+  text-align: left;
+  padding: 6px 0;
+  color: var(--text);
+  font-weight: 600;
+}
+.regime-scroll th,
+.regime-scroll td {
+  text-align: right;
+}
+.regime-scroll th:first-child {
+  text-align: left;
+}
+.regime-actions,
+.regime-records li,
+.regime-legend,
+.regime-legend span {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
+.regime-records {
+  padding: 0;
+  list-style: none;
+}
+.regime-records li {
+  justify-content: space-between;
+  border-top: 1px solid var(--border);
+  padding: 14px 0;
+}
+.regime-records small {
+  margin-top: 4px;
+}
+.regime-chart {
+  height: 320px;
+  max-width: 100%;
+  min-width: 0;
+  overflow: hidden;
+  margin: 8px 0;
+}
+.regime-legend {
+  font-size: 12px;
+}
+.regime-legend i {
+  width: 12px;
+  height: 12px;
+  border-radius: 2px;
+}
+.regime-bar {
+  display: grid;
+  grid-template-columns: minmax(120px, 150px) 1fr;
+  gap: 16px;
+  align-items: start;
+  margin-top: 14px;
+}
+.regime-bar p {
+  margin: 0 0 4px;
+}
+.regime-workbench code {
+  overflow-wrap: anywhere;
+}
+@media (max-width: 600px) {
+  .regime-workbench .panel {
+    padding: 14px;
+  }
+  .regime-bar {
+    grid-template-columns: 1fr;
+  }
+  .regime-chart {
+    height: 260px;
+  }
+}

@@ -68,6 +68,17 @@ export const METRIC_DEFINITIONS = Object.freeze([
   '金额18位BigInt规范字符串；无量纲比例向零截断12位。年化CAGR仅>=365天且>=252根、首末权益>0，用365天年及Number近似幂；否则NA与原因。',
 ]);
 
+/** Allocate fee-inclusive cost in fixed18 units, including the remainder on the final sale. */
+export function allocateSaleCost(
+  cost: bigint,
+  quantity: bigint,
+  sold: bigint,
+): bigint {
+  if (sold > quantity || quantity === 0n)
+    throw new Error('Invalid cost basis quantity.');
+  return sold === quantity ? cost : (cost * sold) / quantity;
+}
+
 export function calculateStatistics(
   r: BacktestResult,
   firstOpen: string,
@@ -102,9 +113,7 @@ export function calculateStatistics(
       quantity += qty;
       buyBars.add(f.candleIndex);
     } else {
-      if (qty > quantity || quantity === 0n)
-        throw new Error('Invalid cost basis quantity.');
-      const allocated = qty === quantity ? cost : (cost * qty) / quantity;
+      const allocated = allocateSaleCost(cost, quantity, qty);
       const pnl = notional - fee - allocated;
       realized += pnl;
       episode += pnl;

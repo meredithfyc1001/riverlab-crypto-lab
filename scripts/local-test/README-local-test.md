@@ -1,12 +1,12 @@
-# RiverLab Crypto Lab Phase 5C-B · Windows 本地验收清单
+# RiverLab Crypto Lab Phase 5D · Windows 本地验收清单
 
 仅供学习研究。所有交易、费用和权益均为本地模拟结果。历史表现不代表未来表现，本工具不提供投资建议。
 
 ## 核对测试包并启动
 
-1. 使用有仓库访问权的 GitHub 账号，打开 Phase 5C-B Draft PR 最终提交对应的 Project quality 运行。Windows local test ZIP 作业摘要提供下载链接、完整提交 SHA、内层 ZIP 和 Actions 外层制品各自的 SHA-256。制品自上传起保留 14 天，过期时间以 GitHub 制品记录为准。
+1. 使用有仓库访问权的 GitHub 账号，打开 Phase 5D Draft PR 最终提交对应的 Project quality 运行。Windows local test ZIP 作业摘要提供下载链接、完整提交 SHA、内层 ZIP 和 Actions 外层制品各自的 SHA-256。制品自上传起保留 14 天，过期时间以 GitHub 制品记录为准。
 2. 下载并解开 Actions 外层 ZIP。用 PowerShell 对内层 ZIP 执行 `Get-FileHash .\RiverLab-Crypto-Lab-Local-Test.zip -Algorithm SHA256`，与同名 `.sha256` 文件及作业摘要比对。在含中文和空格的目录“全部解压”内层 ZIP。
-3. 在内层解压目录确认 `build-info.json` 中 `version=1.1.0-test.2`、`phase=Phase 5C-B`、`dirty=false` 及完整提交 SHA 与 PR 最终提交一致。使用以下 PowerShell 命令检查包内文件。
+3. 在内层解压目录确认 `build-info.json` 中 `version=1.2.0-test.1`、`phase=Phase 5D`、`dirty=false` 及完整提交 SHA 与 PR 最终提交一致。使用以下 PowerShell 命令检查包内文件。
 
 ```powershell
 Get-Content -Encoding utf8 .\SHA256SUMS.txt | ForEach-Object {
@@ -76,3 +76,9 @@ Get-Content -Encoding utf8 .\SHA256SUMS.txt | ForEach-Object {
 - 端口被占用时，关闭上一个 RiverLab 窗口。也可运行 `node server.mjs --port=4174`，新端口使用独立浏览器存储。返回原端口可以查看以前的记录。
 - 缺少资源时完整解压内层 ZIP，保留 dist、server.mjs 和 BAT 的相对位置。须通过本机 HTTP 访问。
 - 浏览器未自动打开时，手动打开启动窗口中的回环 URL。浏览器配额不足或组织策略限制写入时，保留当前页面并导出 JSON，以便在允许存储的配置中恢复。
+
+## 市场状态研究
+
+1. 在“市场状态研究”选择一个已保存的单币实验，填写观察周期与趋势阈值，运行归因。按上一根收盘已知状态核对下一期间的权益变化。首段计入 UNKNOWN，四类净盈亏贡献之和应等于原实验最终权益减去初始本金。
+2. 分别选择固定子账户、共享资金池、定期再平衡实验，显式选择参考资产后运行。查看共同时间轴、区间 UTC 边界、成交、费用、暴露和图例，记录参数及报告 Hash。
+3. 保存并导出 JSON 与 CSV，刷新重开。在第二个空白浏览器配置只导入市场状态 JSON，显式保存、刷新重开并核对完整报告、Hash 及汇总。使用专用测试报告检查删除确认。在窄屏下分别查看深浅主题。
