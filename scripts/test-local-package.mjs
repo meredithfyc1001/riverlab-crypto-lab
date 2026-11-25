@@ -204,7 +204,8 @@ try {
   assert.equal((await raw('/', 'HEAD')).body, '');
   const second = launch();
   await waitFor(() => second.logs().includes('START FAILED'), 'port conflict');
-  second.child.stdin.write('\r\n');
+  // Only the Windows BAT pauses after the server has reported startup failure.
+  if (process.platform === 'win32') second.child.stdin.write('\r\n');
   assert.equal(await second.exit, 1);
   browser = await chromium.launch({
     channel:
@@ -584,7 +585,7 @@ try {
   await rm(join(folder, 'dist'), { recursive: true });
   const missing = launch();
   await waitFor(() => missing.logs().includes('START FAILED'), 'missing dist');
-  missing.child.stdin.write('\r\n');
+  if (process.platform === 'win32') missing.child.stdin.write('\r\n');
   assert.equal(await missing.exit, 1);
   await writeFile(
     resolve(
@@ -595,7 +596,7 @@ try {
   console.log('PACKAGE_VERIFIED ' + JSON.stringify(evidence));
 } finally {
   await browser?.close();
-  if (running) {
+  if (running && running.child.exitCode === null && !running.child.signalCode) {
     running.child.stdin.write('\r\n');
     await Promise.race([running.exit, new Promise((r) => setTimeout(r, 1000))]);
     running.child.kill();

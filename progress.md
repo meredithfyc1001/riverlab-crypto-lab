@@ -25,6 +25,8 @@ Windows 中文路径的下一次验证给出了明确原因。功能提交 `333d
 
 修复后功能提交 `333d9da` 已在三平台各通过 472/49、八组参考和三次分段测量。六项用户旧版实机通过记录保持原边界。[三平台日志](https://github.com/meredithfyc1001/riverlab-crypto-lab/actions/runs/45548374961)
 
+整合后的本地全量 check 已通过 473 项 Vitest、50 项 E2E，包括结果分包延迟用例与定点输出缓存淘汰。真实 50k 十条件专项连续五次通过。本地 ZIP 的额外复测中，端口占用反例已按预期退出，但 Linux 测试脚本随后向已退出子进程写 Enter，引起 EPIPE。已把失败窗口的 Enter 限于需要 pause 的 Windows BAT，继续校验两平台的失败退出码、正常服务的 Enter 停止与端口释放。
+
 最终提交的三平台作业、Windows ZIP 下载、内层 SHA-256 和到期时间在 [Draft PR #11](https://github.com/meredithfyc1001/riverlab-crypto-lab/pull/11) 的交付说明维护；逐次检查按对应提交登记。用户 RC 实机及物理断网待实测。[设计](docs/rc-design.md) · [复核](docs/rc-review.md) · [用户清单](docs/rc-acceptance.md)
 
 ## Phase 5B 当时的恢复入口（2026-11-11）
