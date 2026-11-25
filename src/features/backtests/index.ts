@@ -15,8 +15,14 @@ export const BacktestCenter = lazy(() =>
     default: module.BacktestCenter,
   })),
 );
+const loadResults = () => import('./BacktestResults');
+
+export function preloadBacktestResults() {
+  void loadResults().catch(() => {
+    // A failed import is reported by PageBoundary when the results are opened.
+  });
+}
+
 export const BacktestResults = lazy(() =>
-  import('./BacktestResults').then((module) => ({
-    default: module.BacktestResults,
-  })),
+  loadResults().then((module) => ({ default: module.BacktestResults })),
 );

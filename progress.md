@@ -17,6 +17,10 @@ Windows 中文路径的下一次验证给出了明确原因。功能提交 `333d
 
 50,000 根压力抽样曾出现主线程间隔 1052ms。改用兼容的规范字节编码，保留全账本和全部点；同程序 3+3 次测得完整报告 Hash 中位数 1259→928ms，RC 全流程中位 3696ms、最大 4437ms、主线程最大 410ms。初次完整检查发现控制字符正则不符合 lint，改为匹配允许的可打印 ASCII；新增性能脚本的格式问题随后修正。[分段实测、异常与内存](docs/rc-performance.md)
 
+本机前两次完整 check 各 472/49 通过。提交 `684c5ce` 在第三次完整运行中再次捕获原 5B 的五秒等待失败，472 项 Vitest 成功，E2E 48/49。浏览器 trace 显示断言开始约 4567ms 后 Worker 已交付结果，结果页和图表的首次分包请求分别耗时约 8/31ms。失败快照显示整页回退到“正在载入回测中心”。页面改为在选择数据后并行预载结果及图表，已完成的表单和状态继续显示，只有待载入的结果区显示等待提示。另复用 18 位定点值的规范字符串，保持原 5 秒成功提示和原全点曲线断言。分段证据见[性能记录](docs/rc-performance.md)。
+
+同一提交 `684c5ce` 的三平台 CI 各通过 472/49 及全部独立参考；Unicode 修复后的 Windows ZIP 已在 Chrome 157.0.8103.79、Edge 157.0.4341.60 实际解压、启动、恢复原件、校验全 JSON 和停止服务，两浏览器各 17 项成功、零外部请求/页面错误。它是定位问题期间的快照。最新候选的 ZIP 按新 head 重新验证后才交付。[Windows 包作业](https://github.com/meredithfyc1001/riverlab-crypto-lab/actions/runs/45549334210/job/138988366674)
+
 本轮 Linux 实装 260 个依赖包，完整 check 通过 472 项 Vitest、49 项 Playwright；独立数值参考全通过。功能提交 `333d9da` 的 clean Linux ZIP 通过 17 项检查，Linux 直接启动 Node，首访 JS 294.67 kB（gzip 94.90 kB）。[本机验收明细](docs/rc-acceptance.md)
 
 修复后功能提交 `333d9da` 已在三平台各通过 472/49、八组参考和三次分段测量。六项用户旧版实机通过记录保持原边界。[三平台日志](https://github.com/meredithfyc1001/riverlab-crypto-lab/actions/runs/45548374961)

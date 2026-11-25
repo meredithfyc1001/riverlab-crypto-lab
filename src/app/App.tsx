@@ -7,7 +7,11 @@ import { ReplayCenter } from '../features/replay';
 import { useResearchWorkbench } from './useResearchWorkbench';
 import { ResearchCenter, ResearchResults } from '../features/strategies';
 import { useBacktestWorkbench } from './useBacktestWorkbench';
-import { BacktestCenter, BacktestResults } from '../features/backtests';
+import {
+  BacktestCenter,
+  BacktestResults,
+  preloadBacktestResults,
+} from '../features/backtests';
 import { ExperimentCenter } from '../features/experiments';
 import { Suspense, useEffect, useState } from 'react';
 import { PageBoundary } from './PageBoundary';
@@ -35,6 +39,15 @@ export function App() {
     pageFromHash(window.location.hash),
   );
   const [theme, setTheme] = useState<'dark' | 'light'>('dark');
+  const prepareResultView =
+    (activeId === 'backtests' && backtest.dataset !== null) ||
+    (activeId === 'experiments' &&
+      (backtest.experiments.length > 0 || backtest.preview !== null));
+
+  useEffect(() => {
+    if (prepareResultView) preloadBacktestResults();
+  }, [prepareResultView]);
+
   const activePage = pages.find((page) => page.id === activeId) ?? pages[0];
 
   useEffect(() => {
@@ -395,16 +408,20 @@ export function App() {
                   )}
                   {backtest.record &&
                     (activeId !== 'experiments' || !backtest.preview) && (
-                      <BacktestResults
-                        key={backtest.record.id}
-                        record={backtest.record}
-                        theme={theme}
-                        busy={backtest.busy}
-                        saved={backtest.saved}
-                        onSave={backtest.save}
-                        onExport={backtest.exportRecord}
-                        onReproduce={backtest.reproduce}
-                      />
+                      <Suspense
+                        fallback={<p role="status">正在载入回测结果…</p>}
+                      >
+                        <BacktestResults
+                          key={backtest.record.id}
+                          record={backtest.record}
+                          theme={theme}
+                          busy={backtest.busy}
+                          saved={backtest.saved}
+                          onSave={backtest.save}
+                          onExport={backtest.exportRecord}
+                          onReproduce={backtest.reproduce}
+                        />
+                      </Suspense>
                     )}
                 </>
               ) : (

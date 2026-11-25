@@ -3,6 +3,14 @@ import { createChart, ColorType, LineSeries } from 'lightweight-charts';
 import type { IChartApi, UTCTimestamp, Time } from 'lightweight-charts';
 import type { Statistics } from '../../core/statistics';
 
+const chartNumber = new Intl.NumberFormat('en-US', {
+  maximumSignificantDigits: 10,
+});
+const formatChartPrice = (value: number) =>
+  value !== 0 && (Math.abs(value) < 1e-6 || Math.abs(value) >= 1e12)
+    ? value.toExponential(6)
+    : chartNumber.format(value);
+
 export function ResultCurves({
   statistics,
   theme,
@@ -48,22 +56,21 @@ export function ResultCurves({
             title: '策略权益 USDT',
             color: '#28ad85',
             pane: 0,
-            value: (p: (typeof points)[number]) => p.equity,
+            value: (p: (typeof points)[number]) => Number(p.equity),
           },
           {
             title: '买入持有 USDT',
             color: '#6d9eff',
             pane: 0,
-            value: (p: (typeof points)[number]) => p.benchmarkEquity,
+            value: (p: (typeof points)[number]) =>
+              p.benchmarkEquity === null ? null : Number(p.benchmarkEquity),
           },
           {
             title: '收盘回撤 %',
             color: '#e3656f',
             pane: 1,
             value: (p: (typeof points)[number]) =>
-              p.drawdown.value === null
-                ? null
-                : String(Number(p.drawdown.value) * 100),
+              p.drawdown.value === null ? null : Number(p.drawdown.value) * 100,
           },
         ];
         for (const s of series) {
@@ -77,12 +84,7 @@ export function ResultCurves({
                 priceFormat: {
                   type: 'custom',
                   minMove: 1e-8,
-                  formatter: (v: number) =>
-                    v !== 0 && (Math.abs(v) < 1e-6 || Math.abs(v) >= 1e12)
-                      ? v.toExponential(6)
-                      : v.toLocaleString('en-US', {
-                          maximumSignificantDigits: 10,
-                        }),
+                  formatter: formatChartPrice,
                 },
               },
               s.pane,
@@ -94,7 +96,7 @@ export function ResultCurves({
                   ? { time: (p.timestampUtcMs / 1000) as UTCTimestamp }
                   : {
                       time: (p.timestampUtcMs / 1000) as UTCTimestamp,
-                      value: Number(value),
+                      value,
                     };
               }),
             );
