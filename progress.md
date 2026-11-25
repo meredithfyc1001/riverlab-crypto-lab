@@ -1,5 +1,17 @@
 # RiverLab Crypto Lab 进度
 
+## Phase 5D 报告库可用性补丁
+
+原 Draft PR #14 的 `e580125d8adf15d1aca947ec8b500ad6a8e77952` 已复现两处故障。只损坏一个共享摘要时，旧联合列表无法返回其他四条来源；只损坏一个 5D 摘要时，另两份报告能按 ID 重算并逐字节导出，列表却报错。已在同一分支修正 5D 的逐条摘要校验与各库错误呈现。测试使用隔离数据库，修复后八份正文与修复前联合 Hash 一致。依赖树及生产依赖审计各零公告，全部独立 Python 参考通过。补丁提交绑定的三平台检查、Windows 双浏览器验证、新包摘要及下载有效期在 PR 正文更新；新版用户实机待验收，物理断网 NOT TESTED。[故障复核](docs/phase-5d-library-review.md) · [新版 Windows 验收单](docs/phase-5d-acceptance.md) · [Draft PR #14](https://github.com/meredithfyc1001/riverlab-crypto-lab/pull/14)
+
+## Phase 5D 市场状态研究与策略表现归因
+
+PR #13 于北京时间 2026-11-25 16:53:06 合并至 `06635d3dc385b4645b21cfbda1edd68f23e3de89`。合并后 main 的 Ubuntu Chromium、Windows Chrome、Windows Edge 和 Windows 双浏览器 ZIP 作业全部通过。已从该提交建立独立分支，当前交付版本为 `1.2.0-test.1`。[合并后 CI](https://github.com/meredithfyc1001/riverlab-crypto-lab/actions/runs/45580223667) · [设计](docs/phase-5d-design.md)
+
+5C-B 的 Chrome 与 Edge 用户实机各七组 PASS，最终产品项零 FAIL、零 BLOCKED。Chrome 首次 10,001 根用例准备失败，新配置重测正确触发原始根数上限。实机基线分别归档数值、历史兼容、保存与冷恢复。物理断网为 **NOT TESTED**。[用户证据核查范围及结果](docs/phase-5d-windows-baseline.md)
+
+本机 npm ci 和完整/生产审计通过，各为零公告。已执行所有独立 Python 参考及 5D Decimal 参考。Linux Chromium 完成四组满载研究、取消、导出和空配置恢复。首次全量 check 在新增 E2E 文件格式处停止，格式化后的全量检查通过 41 个文件 / 624 项 Vitest、58 项 Linux Chromium E2E。[工程复核与实测数据](docs/phase-5d-review.md) · [Windows 实机验收单](docs/phase-5d-acceptance.md)
+
 ## Phase 5C-B 共享资金池与动态调仓
 
 已 fetch 最新 main，核实 PR #12 于北京时间 2026-11-25 15:04:32 合并为 `fd4de40c32623eab3eb16555fc0df723d6e22357`，版本 `1.1.0-test.1`。合并后四项 CI 均成功。独立分支 `feat/phase-5c-b-shared-pool` 从该提交开始，先固定技术设计。[基线 CI](https://github.com/meredithfyc1001/riverlab-crypto-lab/actions/runs/45565316180) · [资金与时钟设计](docs/phase-5c-b-design.md)

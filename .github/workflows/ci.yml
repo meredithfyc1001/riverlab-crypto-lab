@@ -54,6 +54,7 @@ jobs:
           python tests/reference/rules_reference.py --check
           python tests/reference/portfolio_reference.py --check
           python tests/reference/shared_pool_reference.py --check
+          python tests/reference/market_regime_reference.py --check
       - run: npm run check
       - name: Profile 50,000 candles in the platform browser
         run: node scripts/profile-backtest.mjs
@@ -61,6 +62,8 @@ jobs:
         run: node scripts/profile-portfolio.mjs
       - name: Profile shared strategies and periodic rebalancing
         run: node scripts/profile-portfolio.mjs --shared
+      - name: Profile market regimes for single and portfolio experiments
+        run: node scripts/profile-market-regime.mjs
       - name: Read-only formatting diagnostics
         if: failure()
         run: node scripts/format-diagnostics.mjs

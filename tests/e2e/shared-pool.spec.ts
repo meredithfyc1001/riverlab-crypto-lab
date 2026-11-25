@@ -33,6 +33,14 @@ async function saveMarket(page: Page, symbol: string, phase: number) {
   await expect(
     page.getByText('已保存数据集（IndexedDB 事务已完成）。请另行备份。'),
   ).toBeVisible();
+  // Both saves have the same status text. Wait for this dataset's committed
+  // summary before leaving the page that owns the preparation Worker.
+  await expect(
+    page
+      .getByRole('combobox', { name: '已保存的数据集' })
+      .locator('option')
+      .filter({ hasText: symbol + '/USDT' }),
+  ).toHaveCount(1);
 }
 
 test('共享和调仓模式导出、刷新重开、空配置恢复、版本拒绝及原件保留', async ({

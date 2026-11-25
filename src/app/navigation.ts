@@ -6,6 +6,7 @@ import { riskPage } from '../features/risk';
 import { experimentsPage } from '../features/experiments';
 import { replayPage } from '../features/replay';
 
+import { marketRegimePage } from '../features/market-regime';
 import { portfolioPage } from '../features/portfolio';
 
 export const pages = [
@@ -26,7 +27,7 @@ export const pages = [
   replayPage,
 ] as const;
 
-export const routes = [...pages, portfolioPage] as const;
+export const routes = [...pages, portfolioPage, marketRegimePage] as const;
 export type PageId = (typeof routes)[number]['id'];
 
 export function pageFromHash(hash: string): PageId {

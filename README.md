@@ -1,6 +1,6 @@
 # RiverLab Crypto Lab
 
-RiverLab 是中文、Windows 优先的本地现货历史研究工具。Phase 5C-B 测试版为 **1.1.0-test.2**，支持单币种研究、多币种固定子账户、策略共享现金及定期调仓。开发基线为 PR #12 的实际合并提交 `fd4de40c32623eab3eb16555fc0df723d6e22357`。
+RiverLab 是中文、Windows 优先的本地现货历史研究工具。Phase 5D 测试版为 **1.2.0-test.1**。支持单币种和组合历史实验的市场状态识别、表现归因及独立恢复。开发基线为 PR #13 的实际合并提交 `06635d3dc385b4645b21cfbda1edd68f23e3de89`。
 
 **仅供学习研究 · 不提供投资建议 · 历史表现不代表未来表现。** 不连接真实账户、不接收密钥、不处理真实资金。
 
@@ -13,7 +13,7 @@ RiverLab 是中文、Windows 优先的本地现货历史研究工具。Phase 5C-
 ```powershell
 git clone https://github.com/meredithfyc1001/riverlab-crypto-lab.git
 cd riverlab-crypto-lab
-git switch feat/phase-5c-b-shared-pool
+git switch feat/phase-5d-market-regime
 npm ci
 npm run dev
 ```
@@ -27,6 +27,12 @@ Edge/Chrome 打开终端提示的本机地址，默认 http://127.0.0.1:5173。�
 文件仅在浏览器内通过 Worker 解码/解析/校验，不上传，支持 UTF-8 CSV（含 BOM），最多 10 MiB / 50,000 行。报告只在当前数据中心页面会话保留；通过检查后，填写币种并确认警告，可选择“用于行情中心”或“保存已检查数据集”。有错误或待确认的数据不能截取好行用于研究。详见 [导入格式与质量口径](docs/data-import-format.md)。
 
 历史样本为固定来源存档的 BTCUSDT 2024-10-28 小时线；毫秒/微秒合成样本与错误样本均明确标记。历史追溯范围、哈希及取样方式见 [样本说明](src/features/datasets/samples/README.md)。
+
+## 历史市场状态研究
+
+从回测中心进入市场状态研究，选择已保存的实验。组合还需显式选择参考资产。设定观察周期和趋势阈值后运行；默认 20 根和 5%。对照参考资产 K 线、UTC 连续区间和四种状态的权益贡献。开盘时可用的标签取自上一根收盘，首段与预热期归为 UNKNOWN。
+
+保存后的研究使用独立 JSON 从空配置完整恢复。CSV 包含汇总与区间表现。原实验、策略及资金账本仍可在各自入口打开。[设计与数值口径](docs/phase-5d-design.md) · [Windows 验收单](docs/phase-5d-acceptance.md)
 
 ## 多币种组合回测
 
@@ -99,7 +105,7 @@ Edge/Chrome 打开 http://127.0.0.1:4173。可断开外部网络后刷新和操�
 
 ## 下载 Windows 本地测试包
 
-在 [Phase 5C-B Draft PR](https://github.com/meredithfyc1001/riverlab-crypto-lab/pull/13) 的交付说明中核对完整 head SHA、Windows 内层 ZIP 的 SHA-256、下载链接及到期时间。GitHub Actions 仅在三平台检查和 Windows ZIP 双浏览器验证成功后上传 `RiverLab-Crypto-Lab-Local-Test-<完整head SHA>`，保留 14 天。下载私库制品需要具有访问权的 GitHub 账号。
+在 [Phase 5D 独立分支的 Draft PR](https://github.com/meredithfyc1001/riverlab-crypto-lab/pulls?q=is%3Apr+head%3Afeat%2Fphase-5d-market-regime) 的交付说明中核对完整 head SHA、Windows 内层 ZIP 的 SHA-256、下载链接及到期时间。GitHub Actions 仅在三平台检查和 Windows ZIP 双浏览器验证成功后上传 `RiverLab-Crypto-Lab-Local-Test-<完整head SHA>`，保留 14 天。下载私库制品需要具有访问权的 GitHub 账号。
 
 取出内层ZIP并全部解压到含中文/空格路径，系统先装Node.js24 LTS，双击 `start-local.bat`。无需npm ci/开发服务器，浏览器打开 `http://127.0.0.1:4173`，默认只监听回环。保持前台窗口，Enter、q再Enter或Ctrl+C停止，不留后台服务。端口占用明确退出，不自动切换存储来源；如手动使用其他端口，浏览器数据隔离。首次下载及安装Node需联网，包启动与核心功能无需外网。详见[包内说明](scripts/local-test/README-local-test.md)和[共享资金池 Windows 验收清单](docs/phase-5c-b-acceptance.md)。
 

@@ -16,6 +16,7 @@ import { ExperimentCenter } from '../features/experiments';
 import { Suspense, useEffect, useState } from 'react';
 import { PageBoundary } from './PageBoundary';
 import { version } from '../../package.json';
+import { MarketRegimeCenter } from '../features/market-regime';
 import { PortfolioCenter } from '../features/portfolio';
 import { useSharedPoolWorkbench } from './useSharedPoolWorkbench';
 import { usePortfolioWorkbench } from './usePortfolioWorkbench';
@@ -44,7 +45,12 @@ export function App() {
   const [theme, setTheme] = useState<'dark' | 'light'>('dark');
   const portfolio = usePortfolioWorkbench(activeId === 'portfolio');
   const sharedPool = useSharedPoolWorkbench(activeId === 'portfolio');
-  const navId = activeId === 'portfolio' ? 'backtests' : activeId;
+  const navId =
+    activeId === 'market-regime'
+      ? 'risk'
+      : activeId === 'portfolio'
+        ? 'backtests'
+        : activeId;
   const prepareResultView =
     (activeId === 'backtests' && backtest.dataset !== null) ||
     (activeId === 'experiments' &&
@@ -116,7 +122,7 @@ export function App() {
         </nav>
         <div className="sidebar-bottom">
           <span className="status-dot" /> 离线优先 · 本地研究
-          <small>v{version} / Phase 5C-B</small>
+          <small>v{version} / Phase 5D</small>
         </div>
       </aside>
 
@@ -148,7 +154,7 @@ export function App() {
               <h1>{activePage.label}</h1>
               <p className="page-description">{activePage.description}</p>
             </div>
-            <span className="badge">Phase 5C-B</span>
+            <span className="badge">Phase 5D</span>
           </div>
 
           <PageBoundary key={activeId}>
@@ -212,9 +218,9 @@ export function App() {
                     <section className="stat-card">
                       <span>项目阶段</span>
                       <strong>
-                        组合回测 <small>v{version}</small>
+                        市场状态研究 <small>v{version}</small>
                       </strong>
-                      <p>固定子账户、共享资金池与定期目标权重再平衡</p>
+                      <p>按历史状态归因单币种和组合实验的权益变化</p>
                     </section>
                     <section className="stat-card">
                       <span>研究数据</span>
@@ -296,6 +302,9 @@ export function App() {
                 </>
               ) : activeId === 'risk' ? (
                 <>
+                  <a className="text-link" href="#/market-regime">
+                    市场状态研究
+                  </a>
                   <RiskCenter
                     experiments={backtest.experiments}
                     preview={riskStudy.preview}
@@ -379,6 +388,8 @@ export function App() {
                     />
                   )}
                 </>
+              ) : activeId === 'market-regime' ? (
+                <MarketRegimeCenter theme={theme} />
               ) : activeId === 'portfolio' ? (
                 <PortfolioCenter
                   datasets={library.datasets}
@@ -392,6 +403,9 @@ export function App() {
                 <>
                   <a className="text-link" href="#/portfolio">
                     进入组合回测 →
+                  </a>
+                  <a className="text-link regime-entry" href="#/market-regime">
+                    市场状态研究
                   </a>
                   {activeId === 'backtests' ? (
                     <BacktestCenter

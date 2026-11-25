@@ -70,24 +70,33 @@ export function summarizeExperiment(e: Experiment): ExperimentSummary {
     strategy: e.payload.result.manifest.strategy!.config.kind,
   };
 }
+/** Retain the original single-experiment metadata contract on dependent reports. */
+export function assertExperimentMetadata(
+  e: Pick<Experiment, 'id' | 'name' | 'createdUtcMs' | 'elapsedMs'>,
+) {
+  if (
+    !e ||
+    typeof e.id !== 'string' ||
+    !e.id.length ||
+    e.id.length > 100 ||
+    typeof e.name !== 'string' ||
+    !e.name.trim() ||
+    e.name.length > 160 ||
+    !Number.isSafeInteger(e.createdUtcMs) ||
+    e.createdUtcMs < 0 ||
+    e.createdUtcMs > 4_102_444_800_000 ||
+    !Number.isFinite(e.elapsedMs) ||
+    e.elapsedMs < 0
+  )
+    throw new Error('身份、格式或校验和不符');
+}
 /** Run in Worker at storage trust boundaries; verifies supported versions and recomputes. */
 export function verifyExperiment(value: unknown): Experiment {
   const e = value as Experiment;
   try {
+    assertExperimentMetadata(e);
     if (
-      !e ||
       e.schemaVersion !== 1 ||
-      typeof e.id !== 'string' ||
-      !e.id.length ||
-      e.id.length > 100 ||
-      typeof e.name !== 'string' ||
-      !e.name.trim() ||
-      e.name.length > 160 ||
-      !Number.isSafeInteger(e.createdUtcMs) ||
-      e.createdUtcMs < 0 ||
-      e.createdUtcMs > 4_102_444_800_000 ||
-      !Number.isFinite(e.elapsedMs) ||
-      e.elapsedMs < 0 ||
       !e.payload ||
       contentHash(e.payload) !== e.payloadHash
     )

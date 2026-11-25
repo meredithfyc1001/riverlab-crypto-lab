@@ -13,7 +13,7 @@ export type WorkerResult<Q, R> = Q extends { kind: 'export' }
 export function requestReportWorker<
   Q extends ReportRequest<unknown, unknown>,
   R,
->(worker: Worker, request: Q) {
+>(worker: Worker, request: Q, label = '组合') {
   let rejectTask: (error: Error) => void = () => {};
   const promise = new Promise<WorkerResult<Q, R>>((resolve, reject) => {
     rejectTask = reject;
@@ -25,11 +25,11 @@ export function requestReportWorker<
         (request.kind === 'export' ? 'file' in data : 'record' in data)
       )
         resolve(data as WorkerResult<Q, R>);
-      else reject(new Error('无法读取组合 Worker 结果。'));
+      else reject(new Error(`无法读取${label} Worker 结果。`));
     };
     const fail = () => {
       worker.terminate();
-      reject(new Error('组合 Worker 启动或通信失败。'));
+      reject(new Error(`${label} Worker 启动或通信失败。`));
     };
     worker.onerror = fail;
     worker.onmessageerror = fail;
@@ -44,7 +44,7 @@ export function requestReportWorker<
     promise,
     cancel: () => {
       worker.terminate();
-      rejectTask(new Error('组合任务已取消。'));
+      rejectTask(new Error(`${label}任务已取消。`));
     },
   };
 }

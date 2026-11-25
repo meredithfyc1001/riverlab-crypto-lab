@@ -5,6 +5,7 @@ describe('离线静态导航', () => {
   it.each([
     ['#/datasets', 'datasets'],
     ['#/risk', 'risk'],
+    ['#/market-regime', 'market-regime'],
     ['', 'overview'],
     ['#/missing-page', 'overview'],
     ['#/%E0%A4%A', 'overview'],

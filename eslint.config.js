@@ -15,6 +15,7 @@ const featureNames = [
   'experiments',
   'replay',
   'portfolio',
+  'market-regime',
 ];
 
 export default tseslint.config(

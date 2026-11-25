@@ -784,3 +784,7 @@ tbody tr:last-child > * {
   text-decoration: underline;
   text-underline-offset: 3px;
 }
+
+.regime-entry {
+  margin-inline-start: 16px;
+}
