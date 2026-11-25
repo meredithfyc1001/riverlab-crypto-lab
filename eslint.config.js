@@ -16,6 +16,7 @@ const featureNames = [
   'replay',
   'portfolio',
   'market-regime',
+  'advanced-research',
 ];
 
 export default tseslint.config(

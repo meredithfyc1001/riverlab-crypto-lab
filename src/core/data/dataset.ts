@@ -106,12 +106,14 @@ const boundedText = (v: unknown, max: number) =>
 const integer = (v: unknown, max = Number.MAX_SAFE_INTEGER): v is number =>
   Number.isSafeInteger(v) && Number(v) >= 0 && Number(v) <= max;
 const hash = (v: unknown) => typeof v === 'string' && /^[a-f0-9]{64}$/.test(v);
-/** Validate at every trust boundary: worker handoff, IndexedDB read/write, backup restore. */
-export function assertDataset(value: unknown): asserts value is Dataset {
-  const d = value as Dataset | null;
-  function fail(message: string): never {
-    throw new Error(`数据集损坏或版本不支持：${message}；未修复。`);
-  }
+function fail(message: string): never {
+  throw new Error(`数据集损坏或版本不支持：${message}；未修复。`);
+}
+
+export function assertDatasetSummary(
+  value: unknown,
+): asserts value is DatasetSummary {
+  const d = value as DatasetSummary | null;
   if (
     !d ||
     d.schemaVersion !== 1 ||
@@ -150,10 +152,12 @@ export function assertDataset(value: unknown): asserts value is Dataset {
     !integer(q.intervalMs, 31_536_000_000) ||
     !q.intervalMs ||
     !['ms', 'us', 'iso'].includes(q.timeUnit!) ||
-    !Array.isArray(d.candles) ||
-    d.candles.length < 1 ||
-    d.candles.length > MAX_DATA_ROWS ||
-    q.validRows !== d.candles.length ||
+    !integer(q.validRows, MAX_DATA_ROWS) ||
+    q.validRows < 1 ||
+    !q.range ||
+    !integer(q.range.startUtcMs, 4_102_444_800_000) ||
+    !integer(q.range.endUtcMs, 4_102_444_800_000) ||
+    q.range.endUtcMs < q.range.startUtcMs ||
     q.totalRows !== q.validRows ||
     !integer(q.blankLines) ||
     !integer(q.gapCount) ||
@@ -207,6 +211,15 @@ export function assertDataset(value: unknown): asserts value is Dataset {
       !q.issueCounts[issue.code]
     )
       fail('警告明细无效');
+}
+
+/** Validate the candle series as well as its metadata at each full-data boundary. */
+export function assertDataset(value: unknown): asserts value is Dataset {
+  assertDatasetSummary(value);
+  const d = value as Dataset;
+  const q = d.quality;
+  if (!Array.isArray(d.candles) || q.validRows !== d.candles.length)
+    fail('质量信息无效');
   let gapCount = 0,
     missing = 0;
   for (let i = 0; i < d.candles.length; i++) {

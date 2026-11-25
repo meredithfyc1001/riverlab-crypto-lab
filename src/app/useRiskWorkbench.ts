@@ -1,7 +1,7 @@
+import { useLibraryList } from './useLibraryList';
 import { useEffect, useRef, useState } from 'react';
 import type {
   RiskStudy,
-  RiskSummary,
   RiskSettings,
   SourcePreview,
 } from '../core/risk-analysis';
@@ -12,7 +12,6 @@ import { storageMessage } from '../infrastructure/dataset-store';
 export function useRiskWorkbench() {
   const [preview, setPreview] = useState<SourcePreview | null>(null),
     [record, setRecord] = useState<RiskStudy | null>(null),
-    [records, setRecords] = useState<RiskSummary[]>([]),
     [busy, setBusy] = useState(false),
     [canCancel, setCanCancel] = useState(false),
     [saved, setSaved] = useState(false),
@@ -21,19 +20,10 @@ export function useRiskWorkbench() {
   const task = useRef<ReturnType<typeof riskTask> | null>(null),
     generation = useRef({ value: 0 }),
     store = useRef(new RiskStore());
+  const list = useLibraryList(store, '风险报告库');
   useEffect(() => {
-    let active = true;
     const lifetime = generation.current;
-    store.current
-      .list()
-      .then((rows) => {
-        if (active) setRecords(rows);
-      })
-      .catch((e) => {
-        if (active) setError(storageMessage(e));
-      });
     return () => {
-      active = false;
       lifetime.value++;
       task.current?.cancel();
     };
@@ -173,7 +163,7 @@ export function useRiskWorkbench() {
       await store.current.save(next);
       if (current()) {
         setRecord(next);
-        setRecords(await store.current.list());
+        await list.refresh();
         setSaved(true);
         setMessage('风险报告已保存（事务已完成）。请导出JSON备份。');
       }
@@ -185,7 +175,7 @@ export function useRiskWorkbench() {
     await perform(async (_request, current) => {
       await store.current.delete(id);
       if (current()) {
-        setRecords(await store.current.list());
+        await list.refresh();
         if (record?.id === id) setSaved(false);
         setMessage('已删除保存的风险报告。');
       }
@@ -221,7 +211,9 @@ export function useRiskWorkbench() {
   return {
     preview,
     record,
-    records,
+    records: list.items,
+    libraryDiagnostic: list.diagnostic,
+    libraryEmpty: list.empty,
     busy,
     canCancel,
     saved,

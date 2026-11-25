@@ -15,6 +15,8 @@ type Model = {
   curve: ReplayView['curve'];
 };
 interface Props {
+  libraryEmpty: boolean;
+  libraryDiagnostic: string;
   datasets: DatasetSummary[];
   model: Model | null;
   records: ReplaySummary[];
@@ -275,7 +277,10 @@ export function ReplayCenter(props: Props) {
             }}
           />
         </label>
-        {!records.length && <p>尚无保存快照。</p>}
+        {props.libraryDiagnostic && (
+          <p role="alert">{props.libraryDiagnostic}</p>
+        )}
+        {props.libraryEmpty && <p>尚无保存快照。</p>}
         {records.map((r) => (
           <div className="replay-snapshot" key={r.id}>
             <strong>

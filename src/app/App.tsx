@@ -16,6 +16,7 @@ import { ExperimentCenter } from '../features/experiments';
 import { Suspense, useEffect, useState } from 'react';
 import { PageBoundary } from './PageBoundary';
 import { version } from '../../package.json';
+import { AdvancedResearchCenter } from '../features/advanced-research';
 import { MarketRegimeCenter } from '../features/market-regime';
 import { PortfolioCenter } from '../features/portfolio';
 import { useSharedPoolWorkbench } from './useSharedPoolWorkbench';
@@ -37,8 +38,7 @@ export function App() {
   const replay = useReplayWorkbench();
   const riskStudy = useRiskWorkbench();
   const pauseReplay = replay.pause;
-  const emptyLibrary =
-    library.libraryState === 'ready' && library.datasets.length === 0;
+  const emptyLibrary = library.libraryEmpty;
   const [activeId, setActiveId] = useState(() =>
     pageFromHash(window.location.hash),
   );
@@ -46,11 +46,13 @@ export function App() {
   const portfolio = usePortfolioWorkbench(activeId === 'portfolio');
   const sharedPool = useSharedPoolWorkbench(activeId === 'portfolio');
   const navId =
-    activeId === 'market-regime'
-      ? 'risk'
-      : activeId === 'portfolio'
-        ? 'backtests'
-        : activeId;
+    activeId === 'advanced-research'
+      ? 'strategies'
+      : activeId === 'market-regime'
+        ? 'risk'
+        : activeId === 'portfolio'
+          ? 'backtests'
+          : activeId;
   const prepareResultView =
     (activeId === 'backtests' && backtest.dataset !== null) ||
     (activeId === 'experiments' &&
@@ -122,7 +124,7 @@ export function App() {
         </nav>
         <div className="sidebar-bottom">
           <span className="status-dot" /> 离线优先 · 本地研究
-          <small>v{version} / Phase 5D</small>
+          <small>v{version} / Phase 5E</small>
         </div>
       </aside>
 
@@ -154,7 +156,7 @@ export function App() {
               <h1>{activePage.label}</h1>
               <p className="page-description">{activePage.description}</p>
             </div>
-            <span className="badge">Phase 5D</span>
+            <span className="badge">Phase 5E</span>
           </div>
 
           <PageBoundary key={activeId}>
@@ -164,6 +166,28 @@ export function App() {
               {library.libraryState === 'loading' &&
                 activeId !== 'overview' && (
                   <p role="status">正在读取本地数据集列表…</p>
+                )}
+              {library.libraryDiagnostic &&
+                [
+                  'datasets',
+                  'charts',
+                  'strategies',
+                  'replay',
+                  'backtests',
+                  'portfolio',
+                  'advanced-research',
+                  'risk',
+                ].includes(activeId) && (
+                  <p role="alert">{library.libraryDiagnostic}</p>
+                )}
+              {rules.libraryDiagnostic &&
+                [
+                  'strategies',
+                  'backtests',
+                  'portfolio',
+                  'advanced-research',
+                ].includes(activeId) && (
+                  <p role="alert">{rules.libraryDiagnostic}</p>
                 )}
               {library.error &&
                 ['strategies', 'risk', 'replay', 'portfolio'].includes(
@@ -218,9 +242,11 @@ export function App() {
                     <section className="stat-card">
                       <span>项目阶段</span>
                       <strong>
-                        市场状态研究 <small>v{version}</small>
+                        高级策略研究 <small>v{version}</small>
                       </strong>
-                      <p>按历史状态归因单币种和组合实验的权益变化</p>
+                      <p>
+                        比较自定义规则参数，按训练窗口选定候选并检验样本外表现
+                      </p>
                     </section>
                     <section className="stat-card">
                       <span>研究数据</span>
@@ -310,6 +336,8 @@ export function App() {
                     preview={riskStudy.preview}
                     record={riskStudy.record}
                     records={riskStudy.records}
+                    libraryEmpty={riskStudy.libraryEmpty}
+                    libraryDiagnostic={riskStudy.libraryDiagnostic}
                     busy={riskStudy.busy}
                     saved={riskStudy.saved}
                     onSelect={riskStudy.select}
@@ -334,6 +362,8 @@ export function App() {
                     datasets={library.datasets}
                     model={replay.model}
                     records={replay.records}
+                    libraryEmpty={replay.libraryEmpty}
+                    libraryDiagnostic={replay.libraryDiagnostic}
                     busy={replay.busy}
                     playing={replay.playing}
                     speed={replay.speed}
@@ -358,6 +388,9 @@ export function App() {
                 </>
               ) : activeId === 'strategies' ? (
                 <>
+                  <a className="text-link" href="#/advanced-research">
+                    高级策略研究 →
+                  </a>
                   <RuleEditor
                     records={rules.records}
                     busy={rules.busy}
@@ -388,6 +421,12 @@ export function App() {
                     />
                   )}
                 </>
+              ) : activeId === 'advanced-research' ? (
+                <AdvancedResearchCenter
+                  datasets={library.datasets}
+                  rules={rules.records}
+                  onSaveRule={rules.save}
+                />
               ) : activeId === 'market-regime' ? (
                 <MarketRegimeCenter theme={theme} />
               ) : activeId === 'portfolio' ? (

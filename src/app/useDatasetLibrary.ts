@@ -1,6 +1,7 @@
-import { useEffect, useRef, useState } from 'react';
-import { assertDataset, summarizeDataset } from '../core/data/dataset';
-import type { Dataset, DatasetSummary } from '../core/data/dataset';
+import { useLibraryList } from './useLibraryList';
+import { useRef, useState } from 'react';
+import { assertDataset } from '../core/data/dataset';
+import type { Dataset } from '../core/data/dataset';
 import {
   DatasetStore,
   storageMessage,
@@ -11,41 +12,12 @@ import {
 
 export function useDatasetLibrary() {
   const store = useRef(new DatasetStore());
-  const [libraryState, setLibraryState] = useState<
-    'loading' | 'ready' | 'error'
-  >('loading');
-  const [datasets, setDatasets] = useState<DatasetSummary[]>([]);
+  const list = useLibraryList(store, '数据集库');
   const [dataset, setDataset] = useState<Dataset | null>(null);
   const [pendingRestore, setPendingRestore] = useState<Dataset | null>(null);
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
-  function remember(next: Dataset) {
-    setDatasets((list) => [
-      ...list.filter((item) => item.id !== next.id),
-      summarizeDataset(next),
-    ]);
-  }
-  useEffect(() => {
-    let active = true;
-    store.current
-      .list()
-      .then((list) => {
-        if (active) {
-          setDatasets(list);
-          setLibraryState('ready');
-        }
-      })
-      .catch((failure) => {
-        if (active) {
-          setError(storageMessage(failure));
-          setLibraryState('error');
-        }
-      });
-    return () => {
-      active = false;
-    };
-  }, []);
   async function run(action: () => Promise<void>) {
     setBusy(true);
     setError('');
@@ -68,7 +40,7 @@ export function useDatasetLibrary() {
       if (save) {
         await store.current.save(next);
         setMessage('已保存数据集（IndexedDB 事务已完成）。请另行备份。');
-        remember(next);
+        await list.refresh();
       } else {
         setMessage('已载入行情中心，仅在当前网页内存；尚未保存。');
         window.location.hash = '/charts';
@@ -86,7 +58,7 @@ export function useDatasetLibrary() {
   async function remove(id: string) {
     await run(async () => {
       await store.current.delete(id);
-      setDatasets((list) => list.filter((item) => item.id !== id));
+      await list.refresh();
       if (dataset?.id === id) setDataset(null);
       setMessage('已删除本地数据集（事务已完成）。');
     });
@@ -137,12 +109,14 @@ export function useDatasetLibrary() {
       setDataset(next);
       setPendingRestore(null);
       setMessage('备份已恢复为新副本（事务已完成），未覆盖已有数据。');
-      remember(next);
+      await list.refresh();
     });
   }
   return {
-    libraryState,
-    datasets,
+    libraryState: list.state,
+    libraryDiagnostic: list.diagnostic,
+    libraryEmpty: list.empty,
+    datasets: list.items,
     dataset,
     pendingRestore,
     busy,

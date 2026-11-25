@@ -15,16 +15,24 @@ export async function readSummaryList<T>(
   });
   // A failed transaction has no usable snapshot. Only a committed read
   // reaches the row-level validation below.
-  const items: T[] = [];
+  return isolateRecords(rows, (row) => {
+    validate(row);
+    return row;
+  });
+}
+
+export function isolateRecords<Input, Output>(
+  rows: Input[],
+  verify: (row: Input) => Output,
+): SummaryList<Output> {
+  const items: Output[] = [];
   let damagedCount = 0;
   for (const row of rows) {
     try {
-      validate(row);
+      items.push(verify(row));
     } catch {
       damagedCount++;
-      continue;
     }
-    items.push(row);
   }
   return { items, damagedCount };
 }
