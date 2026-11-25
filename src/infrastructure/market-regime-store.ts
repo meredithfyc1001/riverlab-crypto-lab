@@ -1,4 +1,6 @@
 import type { RegimeReport } from '../core/market-regime/report';
+import { storageMessage } from './dataset-store';
+import { readSummaryList, type SummaryList } from './summary-list';
 import { ExperimentStore } from './experiment-store';
 import { PortfolioStore } from './portfolio-store';
 import { SharedPoolStore } from './shared-pool-store';
@@ -12,35 +14,51 @@ export interface RegimeSourceSummary {
   symbols: string[];
   payloadHash: string;
 }
-export async function listRegimeSources(): Promise<RegimeSourceSummary[]> {
-  const [singles, portfolios, shared] = await Promise.all([
-    new ExperimentStore().list(),
-    new PortfolioStore().list(),
-    new SharedPoolStore().list(),
+export type RegimeSourceLibrary =
+  SummaryList<RegimeSourceSummary> | { error: string };
+
+async function sourceLibrary<
+  T extends Pick<RegimeSourceSummary, 'id' | 'name' | 'payloadHash'>,
+>(
+  kind: RegimeSourceKind,
+  load: Promise<SummaryList<T>>,
+  getSymbols: (row: T) => string[],
+): Promise<RegimeSourceLibrary> {
+  try {
+    const { items, damagedCount } = await load;
+    return {
+      items: items.map((row) => ({
+        kind,
+        id: row.id,
+        name: row.name,
+        payloadHash: row.payloadHash,
+        symbols: getSymbols(row),
+      })),
+      damagedCount,
+    };
+  } catch (error) {
+    return { error: storageMessage(error) };
+  }
+}
+export async function listRegimeSources(): Promise<
+  Record<RegimeSourceKind, RegimeSourceLibrary>
+> {
+  const [single, portfolio, shared] = await Promise.all([
+    sourceLibrary('single', new ExperimentStore().listAvailable(), (row) => [
+      row.symbol,
+    ]),
+    sourceLibrary(
+      'portfolio',
+      new PortfolioStore().listAvailable(),
+      (row) => row.symbols,
+    ),
+    sourceLibrary(
+      'shared',
+      new SharedPoolStore().listAvailable(),
+      (row) => row.symbols,
+    ),
   ]);
-  return [
-    ...singles.map(({ id, name, symbol, payloadHash }) => ({
-      kind: 'single' as const,
-      id,
-      name,
-      symbols: [symbol],
-      payloadHash,
-    })),
-    ...portfolios.map(({ id, name, symbols, payloadHash }) => ({
-      kind: 'portfolio' as const,
-      id,
-      name,
-      symbols,
-      payloadHash,
-    })),
-    ...shared.map(({ id, name, symbols, payloadHash }) => ({
-      kind: 'shared' as const,
-      id,
-      name,
-      symbols,
-      payloadHash,
-    })),
-  ];
+  return { single, portfolio, shared };
 }
 
 export type RegimeSummary = Pick<
@@ -91,16 +109,8 @@ export class MarketRegimeStore extends LocalDatabase {
       throw e;
     }
   }
-  async list(): Promise<RegimeSummary[]> {
-    const rows = await this.transaction<RegimeSummary[]>(
-      'readonly',
-      (tx, done) => {
-        const request = tx.objectStore('summaries').getAll();
-        request.onsuccess = () => done(request.result);
-      },
-    );
-    rows.forEach(checkSummary);
-    return rows;
+  list() {
+    return readSummaryList(this, checkSummary);
   }
   async load(id: string): Promise<unknown> {
     const row = await this.transaction<unknown>('readonly', (tx, done) => {

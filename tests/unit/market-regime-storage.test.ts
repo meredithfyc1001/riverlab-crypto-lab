@@ -54,29 +54,39 @@ describe('市场状态报告存储与 Worker 边界', () => {
       r = report(),
       e = source();
     await s.save(e);
-    expect(await listRegimeSources()).toEqual([
-      {
-        kind: 'single',
-        id: e.id,
-        name: e.name,
-        payloadHash: e.payloadHash,
-        symbols: [e.payload.dataset.symbol],
+    expect(await listRegimeSources()).toEqual({
+      single: {
+        damagedCount: 0,
+        items: [
+          {
+            kind: 'single',
+            id: e.id,
+            name: e.name,
+            payloadHash: e.payloadHash,
+            symbols: [e.payload.dataset.symbol],
+          },
+        ],
       },
-    ]);
+      portfolio: { items: [], damagedCount: 0 },
+      shared: { items: [], damagedCount: 0 },
+    });
     const store = new MarketRegimeStore();
     await store.save(r);
     await expect(store.save(r)).rejects.toThrow('拒绝覆盖');
     expect(await new MarketRegimeStore().load(r.id)).toEqual(r);
-    expect(await store.list()).toEqual([
-      {
-        id: r.id,
-        name: r.name,
-        createdUtcMs: r.createdUtcMs,
-        reportHash: r.reportHash,
-      },
-    ]);
+    expect(await store.list()).toEqual({
+      damagedCount: 0,
+      items: [
+        {
+          id: r.id,
+          name: r.name,
+          createdUtcMs: r.createdUtcMs,
+          reportHash: r.reportHash,
+        },
+      ],
+    });
     await store.delete(r.id);
-    expect(await store.list()).toEqual([]);
+    expect(await store.list()).toEqual({ items: [], damagedCount: 0 });
     await expect(store.load(r.id)).rejects.toThrow('不存在');
     expect(await s.load(e.id)).toEqual(e);
   });
@@ -95,7 +105,7 @@ describe('市场状态报告存储与 Worker 边界', () => {
     await expect(store.save(r)).rejects.toMatchObject({
       name: 'QuotaExceededError',
     });
-    expect(await store.list()).toEqual([]);
+    expect(await store.list()).toEqual({ items: [], damagedCount: 0 });
     await expect(store.load(r.id)).rejects.toThrow('不存在');
   });
   it('损坏摘要阻止展示记录', async () => {
@@ -104,7 +114,7 @@ describe('市场状态报告存储与 Worker 边界', () => {
       tx.objectStore('summaries').add({ id: 'damaged' });
       done(undefined);
     });
-    await expect(store.list()).rejects.toThrow('摘要损坏');
+    expect(await store.list()).toEqual({ items: [], damagedCount: 1 });
   });
   it('先校验文件字节上限、UTF-8 和 JSON，再重算报告', async () => {
     const tooLarge = new Blob();
@@ -165,7 +175,10 @@ describe('市场状态报告存储与 Worker 边界', () => {
     expect(postMessage).toHaveBeenLastCalledWith({
       error: expect.stringContaining('找不到实验'),
     });
-    expect(await new MarketRegimeStore().list()).toEqual([]);
+    expect(await new MarketRegimeStore().list()).toEqual({
+      items: [],
+      damagedCount: 0,
+    });
   });
   it('取消终止 Worker；即使旧结果延迟到达，也没有可用报告', async () => {
     const stop = vi.fn(),

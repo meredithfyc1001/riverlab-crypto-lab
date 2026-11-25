@@ -155,11 +155,12 @@ export function summarizePortfolio(
 export function assertPortfolioSummary(s: PortfolioSummary) {
   assertMetadata(s);
   if (
+    typeof s.payloadHash !== 'string' ||
     !digestPattern.test(s.payloadHash) ||
     !Array.isArray(s.symbols) ||
     s.symbols.length < 2 ||
     s.symbols.length > 5 ||
-    s.symbols.some(
+    Array.from(s.symbols).some(
       (v) => typeof v !== 'string' || !v.trim() || v.length > 80,
     ) ||
     new Set(s.symbols).size !== s.symbols.length

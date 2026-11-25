@@ -14,7 +14,10 @@ import { createServer } from 'node:net';
 import { request } from 'node:http';
 import assert from 'node:assert/strict';
 import { chromium } from '@playwright/test';
-import { exerciseMarketRegime } from './market-regime-browser.mjs';
+import {
+  exerciseMarketRegime,
+  exerciseRegimeLibrary,
+} from './market-regime-browser.mjs';
 import { exerciseSharedModes } from './shared-pool-browser.mjs';
 const zip = resolve('work/local-package/RiverLab-Crypto-Lab-Local-Test.zip');
 const target = resolve(
@@ -712,6 +715,9 @@ try {
       reference,
     });
   }
+  const mixedPage = await freshPage();
+  const libraryIsolation = await exerciseRegimeLibrary(mixedPage, url);
+  await mixedPage.context().close();
   assert.deepEqual(external, []);
   assert.deepEqual(errors, []);
   assert(
@@ -742,6 +748,7 @@ try {
     portfolioHash,
     sharedPortfolioHashes,
     regimeHashes,
+    libraryIsolation,
     externalRequests: external,
     errors,
     resources: responses,
@@ -768,6 +775,7 @@ try {
       'shared strategy pool with cash reserve, order ledger, JSON/CSV, save, fresh-profile restore and full replay',
       'periodic target-weight rebalancing, partial trades, JSON/CSV, save, fresh-profile restore and full replay',
       'market regimes on a single experiment and all three portfolio modes, explicit reference selection, net P&L conservation, JSON/CSV, fresh-profile restore and reopen',
+      'mixed report libraries isolate bad summaries, reject corrupt bodies, reopen and export intact reports, and preserve raw IndexedDB rows',
       'Enter exits and frees port',
       'missing dist fails',
     ],

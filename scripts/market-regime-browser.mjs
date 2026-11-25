@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
+import { gunzipSync } from 'node:zlib';
 
 const button = (page, name) => page.getByRole('button', { name, exact: true });
 async function download(page, format) {
@@ -116,4 +117,181 @@ export async function exerciseMarketRegime(
     await clean.context().close();
   }
   return hash;
+}
+
+// Run only in a fresh, disposable browser profile. Each damaged entry starts
+// as a genuine saved record. Compare every row after all UI reads/exports.
+async function libraryRows(page, database, stores, changes = []) {
+  return page.evaluate(
+    async ({ database, stores, changes }) => {
+      const db = await new Promise((resolve, reject) => {
+        const req = globalThis.indexedDB.open(
+          'riverlab-crypto-lab-' + database,
+        );
+        req.onsuccess = () => resolve(req.result);
+        req.onerror = () => reject(req.error);
+      });
+      try {
+        return await new Promise((resolve, reject) => {
+          const tx = db.transaction(
+            stores,
+            changes.length ? 'readwrite' : 'readonly',
+          );
+          const rows = {};
+          tx.oncomplete = () => resolve(rows);
+          tx.onabort = () => reject(tx.error);
+          for (const { store, id, field, value } of changes) {
+            const table = tx.objectStore(store);
+            const get = table.get(id);
+            get.onsuccess = () => table.put({ ...get.result, [field]: value });
+          }
+          if (!changes.length)
+            for (const store of stores) {
+              const get = tx.objectStore(store).getAll();
+              get.onsuccess = () => {
+                rows[store] = get.result;
+              };
+            }
+        });
+      } finally {
+        db.close();
+      }
+    },
+    { database, stores, changes },
+  );
+}
+
+export async function exerciseRegimeLibrary(page, origin) {
+  const singlePath = 'tests/fixtures/windows-20261125/ma-2-4.json';
+  const single = JSON.parse(await readFile(singlePath, 'utf8'));
+  await page.goto(origin + '/#/experiments');
+  await page
+    .getByLabel('导入回测实验 JSON（最多 256 MiB）')
+    .setInputFiles(singlePath);
+  await button(page, '确认保存导入的实验').click();
+  await page.getByText('导入的实验已保存，可以刷新后重新打开。').waitFor();
+  const shared = [];
+  await page.goto(origin + '/#/portfolio');
+  for (const mode of ['shared-strategy', 'rebalance']) {
+    const bytes = gunzipSync(
+      await readFile('tests/fixtures/phase-5c-b-' + mode + '.json.gz'),
+    );
+    const original = JSON.parse(bytes);
+    await page.getByLabel('运行模式').selectOption(mode);
+    await page.getByLabel('导入组合 JSON').setInputFiles({
+      name: 'fixture.json',
+      mimeType: 'application/json',
+      buffer: bytes,
+    });
+    await button(page, '保存组合实验').click();
+    await button(page, '重新打开 ' + original.name).waitFor();
+    shared.push(original);
+  }
+  await page.goto(origin + '/#/market-regime');
+  const kind = page.getByLabel('原实验类型');
+  const sources = page.getByLabel('已保存的原实验');
+  await sources.selectOption(single.id);
+  const makeStudy = async (name) => {
+    await page.getByLabel('报告名称').fill(name);
+    await button(page, '运行市场状态研究').click();
+    await page.getByRole('heading', { name, exact: true }).waitFor();
+  };
+  const reportRow = (name) =>
+    page
+      .getByRole('listitem')
+      .filter({ has: page.getByText(name, { exact: true }) });
+  const names = ['健康报告一', '健康报告二', '摘要损坏案例', '正文损坏案例'];
+  const reports = [];
+  for (const name of names) {
+    await makeStudy(name);
+    const bytes = await readFile(await download(page, 'JSON'));
+    const record = JSON.parse(bytes);
+    await button(page, '保存市场状态报告').click();
+    await reportRow(name).waitFor();
+    reports.push({ id: record.id, hash: record.reportHash, bytes });
+  }
+  const sourceStores = ['experiments', 'summaries'];
+  const reportStores = ['reports', 'summaries'];
+  await libraryRows(page, 'shared-pool', sourceStores, [
+    {
+      store: 'summaries',
+      id: shared[1].id,
+      field: 'payloadHash',
+      value: 'bad',
+    },
+  ]);
+  await libraryRows(page, 'market-regime', reportStores, [
+    {
+      store: 'summaries',
+      id: reports[2].id,
+      field: 'reportHash',
+      value: 'bad',
+    },
+    {
+      store: 'reports',
+      id: reports[3].id,
+      field: 'params',
+      value: { lookback: 3, thresholdBps: 10 },
+    },
+  ]);
+  const snapshot = () =>
+    Promise.all([
+      libraryRows(page, 'shared-pool', sourceStores),
+      libraryRows(page, 'market-regime', reportStores),
+      libraryRows(page, 'experiments', sourceStores),
+    ]);
+  const before = await snapshot();
+  await page.reload();
+  await kind.selectOption('shared');
+  await sources
+    .locator('option')
+    .filter({ hasText: shared[0].name })
+    .waitFor({ state: 'attached' });
+  assert.equal(
+    await sources.locator('option').filter({ hasText: shared[1].name }).count(),
+    0,
+  );
+  await page
+    .getByText(/共享资金池.*可用摘要\s*1\s*条.*隔离\s*1\s*条/)
+    .waitFor();
+  await page
+    .getByText(/市场状态报告库.*可用摘要\s*3\s*条.*隔离\s*1\s*条/)
+    .waitFor();
+  assert.equal(await reportRow(names[2]).count(), 0);
+  await reportRow(names[3]).getByRole('button', { name: '重开' }).click();
+  await page
+    .getByRole('alert')
+    .filter({ hasText: /Hash 不符/ })
+    .waitFor();
+  assert.equal(await page.getByTestId('regime-report-hash').count(), 0);
+  assert.equal(await button(page, '导出市场状态 JSON').count(), 0);
+  await kind.selectOption('single');
+  await sources.selectOption(single.id);
+  await makeStudy('跨来源可用');
+  assert.equal(
+    JSON.parse(await readFile(await download(page, 'JSON'))).source.payloadHash,
+    single.payloadHash,
+  );
+  for (const i of [0, 1]) {
+    await reportRow(names[i]).getByRole('button', { name: '重开' }).click();
+    await page.getByRole('heading', { name: names[i], exact: true }).waitFor();
+    assert.equal(
+      (await page.getByTestId('regime-report-hash').textContent()).trim(),
+      reports[i].hash,
+    );
+    assert.deepEqual(
+      await readFile(await download(page, 'JSON')),
+      reports[i].bytes,
+    );
+    assert(
+      (await readFile(await download(page, 'CSV'), 'utf8')).includes(
+        reports[i].hash,
+      ),
+    );
+  }
+  assert.deepEqual(await snapshot(), before);
+  return {
+    sourcePayloadHash: single.payloadHash,
+    reopenedReportHashes: reports.slice(0, 2).map((r) => r.hash),
+  };
 }

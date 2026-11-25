@@ -8,6 +8,7 @@ import type {
   PortfolioSummary,
 } from '../core/portfolio/report';
 import { LocalDatabase } from './local-database';
+import { readSummaryList } from './summary-list';
 
 /** Separate database. Worker generation or verification precedes every UI save. */
 export class PortfolioStore<
@@ -36,16 +37,13 @@ export class PortfolioStore<
       throw error;
     }
   }
+  listAvailable() {
+    return readSummaryList(this, assertPortfolioSummary);
+  }
   async list(): Promise<PortfolioSummary[]> {
-    const rows = await this.transaction<PortfolioSummary[]>(
-      'readonly',
-      (tx, done) => {
-        const request = tx.objectStore('summaries').getAll();
-        request.onsuccess = () => done(request.result);
-      },
-    );
-    rows.forEach(assertPortfolioSummary);
-    return rows;
+    const { items, damagedCount } = await this.listAvailable();
+    if (damagedCount) throw new Error('组合摘要损坏。');
+    return items;
   }
   async load(id: string): Promise<unknown> {
     const row = await this.transaction<unknown>('readonly', (tx, done) => {

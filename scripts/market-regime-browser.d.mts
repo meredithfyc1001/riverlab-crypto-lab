@@ -9,3 +9,7 @@ export function exerciseMarketRegime(
     expectedNetPnl?: string;
   },
 ): Promise<string>;
+export function exerciseRegimeLibrary(
+  page: Page,
+  origin: string,
+): Promise<{ sourcePayloadHash: string; reopenedReportHashes: string[] }>;

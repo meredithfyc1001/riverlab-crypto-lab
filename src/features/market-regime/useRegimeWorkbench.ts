@@ -5,18 +5,20 @@ import { storageMessage } from '../../infrastructure/dataset-store';
 import {
   listRegimeSources,
   MarketRegimeStore,
+  type RegimeSourceSummary,
+  type RegimeSummary,
 } from '../../infrastructure/market-regime-store';
 import { marketRegimeTask } from '../../infrastructure/market-regime-worker';
 
-type Source = Awaited<ReturnType<typeof listRegimeSources>>[number];
-type Summary = Awaited<ReturnType<MarketRegimeStore['list']>>[number];
+type Sources = Awaited<ReturnType<typeof listRegimeSources>>;
+type ReportList =
+  Awaited<ReturnType<MarketRegimeStore['list']>> | { error: string };
 type ReportTask<T> = { promise: Promise<T>; cancel: () => void };
 
 export function useRegimeWorkbench() {
   const [store] = useState(() => new MarketRegimeStore());
-  const [sources, setSources] = useState<Source[]>([]);
-  const [records, setRecords] = useState<Summary[]>([]);
-  const [loadingRecords, setLoadingRecords] = useState(true);
+  const [sources, setSources] = useState<Sources | null>(null);
+  const [records, setRecords] = useState<ReportList | null>(null);
   const [report, setReport] = useState<RegimeReport | null>(null);
   const [saved, setSaved] = useState(false);
   const [busy, setBusy] = useState(false);
@@ -27,20 +29,17 @@ export function useRegimeWorkbench() {
   const cancelWorker = useRef<(() => void) | null>(null);
   useEffect(() => {
     let mounted = true;
-    const fail = (e: unknown) => {
-      if (mounted) setError(storageMessage(e));
-    };
-    void listRegimeSources().then((items) => {
-      if (mounted) setSources(items);
-    }, fail);
-    void store
-      .list()
-      .then((items) => {
-        if (mounted) setRecords(items);
-      }, fail)
-      .finally(() => {
-        if (mounted) setLoadingRecords(false);
-      });
+    void listRegimeSources().then((libraries) => {
+      if (mounted) setSources(libraries);
+    });
+    void store.list().then(
+      (list) => {
+        if (mounted) setRecords(list);
+      },
+      (error: unknown) => {
+        if (mounted) setRecords({ error: storageMessage(error) });
+      },
+    );
     return () => {
       mounted = false;
       generation.current += 1;
@@ -98,7 +97,7 @@ export function useRegimeWorkbench() {
     });
   }
   function run(
-    source: Source,
+    source: RegimeSourceSummary,
     reference: string | null,
     params: RegimeParams,
     name: string,
@@ -119,7 +118,7 @@ export function useRegimeWorkbench() {
       '市场状态研究已完成。',
     );
   }
-  function open(summary: Summary) {
+  function open(summary: RegimeSummary) {
     operate('正在重开并复现市场状态报告…', async (current) => {
       const raw = await store.load(summary.id);
       if (!current()) return;
@@ -153,7 +152,14 @@ export function useRegimeWorkbench() {
       if (!current()) return;
       setSaved(true);
       const { id, name, createdUtcMs, reportHash } = report;
-      setRecords((rows) => [...rows, { id, name, createdUtcMs, reportHash }]);
+      setRecords((list) =>
+        list && 'items' in list
+          ? {
+              ...list,
+              items: [...list.items, { id, name, createdUtcMs, reportHash }],
+            }
+          : list,
+      );
       setMessage('市场状态报告已保存。');
     });
   }
@@ -161,7 +167,11 @@ export function useRegimeWorkbench() {
     operate('正在删除选定报告…', async (current) => {
       await store.delete(id);
       if (!current()) return;
-      setRecords((rows) => rows.filter((row) => row.id !== id));
+      setRecords((list) =>
+        list && 'items' in list
+          ? { ...list, items: list.items.filter((row) => row.id !== id) }
+          : list,
+      );
       if (report?.id === id && saved) {
         setReport(null);
         setSaved(false);
@@ -203,7 +213,6 @@ export function useRegimeWorkbench() {
     saved,
     busy,
     cancellable,
-    loadingRecords,
     message,
     error,
     run,
