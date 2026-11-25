@@ -1,6 +1,6 @@
 # RiverLab Crypto Lab
 
-RiverLab 是中文、Windows 优先的单币种现货历史研究工具。本分支版本为 **1.0.0-rc.1**，用于本地候选验收。基线为 PR #10 合并后的 `0.5.1-test`（`e27a728`）。2026-11-25 用户 Windows Chrome 实机已测六项 PASS，已测产品项 FAIL 为 0，物理断网暂缓。详见[实机记录与历史回归](docs/v1-rc-windows-baseline.md)。
+RiverLab 是中文、Windows 优先的本地现货历史研究工具。Phase 5C-A 测试版为 **1.1.0-test.1**，支持单币种研究和多币种独立子账户组合。稳定基线为 PR #11 的实际合并提交 `c8ded9304785a06c713f5a830caf292bacbc918f`。
 
 **仅供学习研究 · 不提供投资建议 · 历史表现不代表未来表现。** 不连接真实账户、不接收密钥、不处理真实资金。
 
@@ -13,7 +13,7 @@ RiverLab 是中文、Windows 优先的单币种现货历史研究工具。本分
 ```powershell
 git clone https://github.com/meredithfyc1001/riverlab-crypto-lab.git
 cd riverlab-crypto-lab
-git switch feat/v1-rc-hardening
+git switch feat/phase-5c-portfolio-backtest
 npm ci
 npm run dev
 ```
@@ -27,6 +27,14 @@ Edge/Chrome 打开终端提示的本机地址，默认 http://127.0.0.1:5173。�
 文件仅在浏览器内通过 Worker 解码/解析/校验，不上传，支持 UTF-8 CSV（含 BOM），最多 10 MiB / 50,000 行。报告只在当前数据中心页面会话保留；通过检查后，填写币种并确认警告，可选择“用于行情中心”或“保存已检查数据集”。有错误或待确认的数据不能截取好行用于研究。详见 [导入格式与质量口径](docs/data-import-format.md)。
 
 历史样本为固定来源存档的 BTCUSDT 2024-10-28 小时线；毫秒/微秒合成样本与错误样本均明确标记。历史追溯范围、哈希及取样方式见 [样本说明](src/features/datasets/samples/README.md)。
+
+## 多币种组合回测
+
+在数据中心分别检查并保存 2～5 个不同交易对的数据集。从「回测中心」进入「组合回测」，填写统一报价货币、初始本金及各子账户权重。权重精确合计 100%；每个账户可选择自己的内置策略或已保存规则修订，并设置费用、滑点、止盈止损。交易对支持 BTC/USDT、BTC-USDT 或与明确报价币匹配的紧凑符号。
+
+核对每项数据的原始范围、两端截取和所选 UTC 开盘区间，确认后运行。各子账户从共同区间独立冷启动。组合结果展示含现金的实际账户权重、按持仓市值计算的资产权重、组合与子账户权益曲线、买入持有基准、相关性及独立成交明细。
+
+组合源快照合计最多 10,000 根，含截去部分；报告上限 32 MiB。保存后可重开或完整复现。换到新浏览器时，在组合页导入完整 JSON，核对重算结果后保存。CSV 用于汇总分析。JSON 备份包含用到的规则与原始行情，不依赖原配置中的其他本地库。[技术设计](docs/phase-5c-design.md) · [实现复核](docs/phase-5c-review.md)
 
 ## 图表、保存与备份
 
@@ -85,9 +93,9 @@ Edge/Chrome 打开 http://127.0.0.1:4173。可断开外部网络后刷新和操�
 
 ## 下载 Windows 本地测试包
 
-在 [Draft PR #11](https://github.com/meredithfyc1001/riverlab-crypto-lab/pull/11) 的交付说明中核对完整 head SHA、Windows 内层 ZIP 的 SHA-256、下载链接及到期时间。GitHub Actions 仅在三平台检查和 Windows ZIP 双浏览器验证成功后上传 `RiverLab-Crypto-Lab-Local-Test-<完整head SHA>`，保留 14 天。下载私库制品需要具有访问权的 GitHub 账号。
+在 [Phase 5C-A Draft PR](https://github.com/meredithfyc1001/riverlab-crypto-lab/pulls?q=is%3Apr+head%3Afeat%2Fphase-5c-portfolio-backtest) 的交付说明中核对完整 head SHA、Windows 内层 ZIP 的 SHA-256、下载链接及到期时间。GitHub Actions 仅在三平台检查和 Windows ZIP 双浏览器验证成功后上传 `RiverLab-Crypto-Lab-Local-Test-<完整head SHA>`，保留 14 天。下载私库制品需要具有访问权的 GitHub 账号。
 
-取出内层ZIP并全部解压到含中文/空格路径，系统先装Node.js24 LTS，双击 `start-local.bat`。无需npm ci/开发服务器，浏览器打开 `http://127.0.0.1:4173`，默认只监听回环。保持前台窗口，Enter、q再Enter或Ctrl+C停止，不留后台服务。端口占用明确退出，不自动切换存储来源；如手动使用其他端口，浏览器数据隔离。首次下载及安装Node需联网，包启动与核心功能无需外网。详见[包内说明](scripts/local-test/README-local-test.md)和[RC 验收清单](docs/rc-acceptance.md)。
+取出内层ZIP并全部解压到含中文/空格路径，系统先装Node.js24 LTS，双击 `start-local.bat`。无需npm ci/开发服务器，浏览器打开 `http://127.0.0.1:4173`，默认只监听回环。保持前台窗口，Enter、q再Enter或Ctrl+C停止，不留后台服务。端口占用明确退出，不自动切换存储来源；如手动使用其他端口，浏览器数据隔离。首次下载及安装Node需联网，包启动与核心功能无需外网。详见[包内说明](scripts/local-test/README-local-test.md)和[组合 Windows 验收清单](docs/phase-5c-acceptance.md)。
 
 开发者构建测试包：`npm run build` → `npm run package:local` → `npm run test:package`（本机Chromium可设置PLAYWRIGHT_CHROMIUM_EXECUTABLE）。产物在work/local-package，含dist、服务/BAT/说明、版本/提交SHA/dirty标记、逐文件SHA256，ZIP外另有SHA256。CI只打包clean head提交，三组check成功后Windows实际解压/启动Chrome与Edge验证全部成功才上传；不创建Release、不部署。本机dirty包仅供开发验证，不能冒充最终PR artifact。
 
@@ -146,6 +154,6 @@ Phase4功能提交1edb8f1已通过三平台各338项Vitest/35项E2E与WindowsZIP
 2. 保存具体版本后在回测中心选择“自定义规则 V1”及版本，再选择已保存数据/成本/保护并确认收盘。结果、逐笔账本、实验保存/JSON/CSV/刷新重开/复现仍走原Worker和18位资金引擎。旧三策略与报告不改版本/hash。
 3. 未预热为不可判定，OR也不绕过未知项；双侧同根满足hold/conflict。条件持续满足只触发一次，须先false再true；与旧RSI/突破重复信号语义不同。保护退出或拒单后不自动重试，已持仓买/空仓卖由原执行器拒绝。收盘信号下一开盘，末根不成交。
 4. 保存后的修改生成同一家族新版本，复制为新策略从v1开始。旧版本不可覆盖，删除前确认；旧实验内嵌完整规则，删除规则不影响复现。JSON128KiB内、严格字段/版本/hash，导入仅内存，需明确保存；同家族同版本冲突拒绝。每库最多100版本，IndexedDB不是永久备份。
-5. EMA/RSI仍为IEEE754指标标量，极近阈值受舍入影响；MA比较用18位整数，资金全程BigInt。Phase3网格/样本外研究暂不支持规则，UI提示且核心拒绝。只做单币种现货多头历史模拟，没有用户脚本、真实下单或联网行情。
+5. EMA/RSI仍为IEEE754指标标量，极近阈值受舍入影响；MA比较用18位整数，资金全程BigInt。Phase3网格/样本外研究暂不支持规则，UI提示且核心拒绝。规则按子账户执行现货多头历史模拟，没有用户脚本、真实下单或联网行情。
 
 [设计](docs/phase-5b-design.md) · [验收清单](docs/phase-5b-acceptance.md) · [实施与测试](docs/phase-5b-review.md)。

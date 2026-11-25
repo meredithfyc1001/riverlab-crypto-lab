@@ -88,7 +88,7 @@ for (const row of manifest.trim().split('\n')) {
 const build = JSON.parse(
   await readFile(join(folder, 'build-info.json'), 'utf8'),
 );
-assert.equal(build.phase, 'V1.0 RC');
+assert.equal(build.phase, 'Phase 5C-A');
 assert.equal(
   build.version,
   JSON.parse(await readFile('package.json', 'utf8')).version,
@@ -167,6 +167,128 @@ async function exportExperiment(page) {
     .click();
   const path = await (await download).path();
   return { path, record: JSON.parse(await readFile(path, 'utf8')) };
+}
+async function downloadPortfolio(page, button) {
+  const pending = page.waitForEvent('download');
+  await page.getByRole('button', { name: button, exact: true }).click();
+  return (await pending).path();
+}
+async function checkPortfolio(page, freshPage, expectedRule) {
+  // An independently generated 20-hour series shares the middle of the
+  // historical BTC sample's 24-hour interval. Both must survive import.
+  await page.goto(url + '/#/datasets');
+  const prices = [
+    8, 6, 5, 7, 8, 10, 12, 11, 9, 7, 6, 5, 9, 10, 11, 8, 6, 7, 9, 12,
+  ];
+  const start = Date.UTC(2024, 9, 28, 2);
+  const csvRows = prices.map((p, i) =>
+    [start + i * 3600000, p, p + 1, p - 1, p, 20].join(','),
+  );
+  await page.getByLabel('选择本地 CSV').setInputFiles({
+    name: 'synthetic-portfolio-hourly.csv',
+    mimeType: 'text/csv',
+    buffer: Buffer.from(
+      ['timestamp,open,high,low,close,volume', ...csvRows].join('\n'),
+    ),
+  });
+  await page.getByText('读到 20 条数据记录。', { exact: false }).waitFor();
+  await page
+    .getByLabel('来源说明（自述，不认证真实性）')
+    .fill('ZIP 测试人工合成行情');
+  await page.getByLabel('预期固定周期（秒）').fill('3600');
+  await page.getByRole('button', { name: '检查并生成导入报告' }).click();
+  await page.getByLabel('币种 / 交易对（自述，不认证来源）').fill('DEMO/USDT');
+  await page.getByRole('checkbox', { name: /我已阅读 .* 项警告/ }).check();
+  await page
+    .getByRole('button', { name: '保存已检查数据集', exact: true })
+    .click();
+  await page
+    .getByText('已保存数据集（IndexedDB 事务已完成）。请另行备份。')
+    .waitFor();
+
+  await page.goto(url + '/#/portfolio');
+  const btc = page.getByRole('group', { name: '子账户 1', exact: true });
+  const demo = page.getByRole('group', { name: '子账户 2', exact: true });
+  for (const [account, symbol] of [
+    [btc, 'BTC/USDT'],
+    [demo, 'DEMO/USDT'],
+  ]) {
+    const select = account.getByLabel('历史数据集');
+    const id = await select
+      .getByRole('option', { name: new RegExp(symbol) })
+      .getAttribute('value');
+    await select.selectOption(id);
+  }
+  await btc.getByLabel('初始分配比例 %').fill('60');
+  await demo.getByLabel('初始分配比例 %').fill('40');
+  await btc.getByLabel('MA 快线周期').fill('2');
+  await btc.getByLabel('MA 慢线周期').fill('4');
+  await demo.getByLabel('策略类型').selectOption('rules');
+  await demo
+    .getByRole('combobox', { name: /^规则版本/ })
+    .selectOption({ index: 1 });
+  await page.getByLabel('实验名称', { exact: true }).fill('Windows ZIP 双资产');
+  await page.getByRole('checkbox', { name: /我确认共同区间/ }).check();
+  await page.getByRole('button', { name: '运行组合回测', exact: true }).click();
+  await page.getByRole('button', { name: '保存组合实验', exact: true }).click();
+  const reopen = page.getByRole('button', {
+    name: '重新打开 Windows ZIP 双资产',
+    exact: true,
+  });
+  await reopen.waitFor();
+  const backupPath = await downloadPortfolio(page, '导出组合 JSON');
+  const record = JSON.parse(await readFile(backupPath, 'utf8'));
+  assert.equal(record.input.startUtcMs, start);
+  assert.equal(record.result.curve.length, prices.length + 1);
+  assert.deepEqual(
+    record.result.assets.map((child) => child.initialCash).sort(),
+    ['400', '600'],
+  );
+  assert.deepEqual(
+    record.input.assets.find((asset) => asset.strategy.kind === 'rules')
+      .strategy.rule,
+    expectedRule,
+  );
+  assert(record.result.fillCount > 0);
+  const csv = await readFile(
+    await downloadPortfolio(page, '导出汇总 CSV'),
+    'utf8',
+  );
+  for (const expected of [record.payloadHash, 'BTC/USDT', 'DEMO/USDT'])
+    assert(csv.includes(expected));
+  await page.reload();
+  await reopen.click();
+  assert.deepEqual(
+    JSON.parse(
+      await readFile(await downloadPortfolio(page, '导出组合 JSON'), 'utf8'),
+    ),
+    record,
+  );
+
+  const clean = await freshPage();
+  await clean.goto(url + '/#/portfolio');
+  const openRestored = clean.getByRole('button', {
+    name: '重新打开 Windows ZIP 双资产',
+    exact: true,
+  });
+  await clean.getByLabel('导入组合 JSON').setInputFiles(backupPath);
+  await clean
+    .getByRole('button', { name: '保存组合实验', exact: true })
+    .waitFor();
+  assert.equal(await openRestored.count(), 0);
+  await clean
+    .getByRole('button', { name: '保存组合实验', exact: true })
+    .click();
+  await openRestored.waitFor();
+  await clean.reload();
+  await openRestored.click();
+  await clean.getByRole('button', { name: '完整复现', exact: true }).click();
+  await clean.getByText(/完整复现通过/).waitFor();
+  const restored = JSON.parse(
+    await readFile(await downloadPortfolio(clean, '导出组合 JSON'), 'utf8'),
+  );
+  assert.deepEqual(restored, record);
+  return record.payloadHash;
 }
 let running, browser;
 try {
@@ -519,6 +641,7 @@ try {
     .click();
   await restorePage.getByText('实验校验与重算一致，已重新打开结果。').waitFor();
   assert.deepEqual((await exportExperiment(restorePage)).record, historical);
+  const portfolioHash = await checkPortfolio(page, freshPage, ruleRecord.rule);
   assert.deepEqual(external, []);
   assert.deepEqual(errors, []);
   assert(
@@ -545,6 +668,7 @@ try {
     extractionDirectory: `Windows 中文 空格测试 ${process.env.E2E_BROWSER ?? 'chromium'}`,
     restoredRunHash: restored.payload.result.manifest.runHash,
     historicalRunHash: historical.payload.result.manifest.runHash,
+    portfolioHash,
     externalRequests: external,
     errors,
     resources: responses,
@@ -566,6 +690,7 @@ try {
       'declarative rule creation, version save, Worker backtest, experiment reload/recompute and rule JSON import/export',
       'fresh profile experiment JSON preview, discard on refresh, confirmed restore, reload, full export equality and reproduced payload',
       'Windows 0.5.1-test historical rule V2 export restored and compared in full',
+      'two-asset portfolio, confirmed 20-hour overlap, stored rule, real trades, save, JSON/CSV, reopen and fresh-profile full report equality',
       'Enter exits and frees port',
       'missing dist fails',
     ],

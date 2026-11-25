@@ -14,6 +14,7 @@ const featureNames = [
   'risk',
   'experiments',
   'replay',
+  'portfolio',
 ];
 
 export default tseslint.config(

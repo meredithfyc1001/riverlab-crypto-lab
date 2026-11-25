@@ -1,0 +1,136 @@
+.portfolio,
+.portfolio-form {
+  display: grid;
+  gap: 18px;
+  min-width: 0;
+}
+.portfolio .panel {
+  min-width: 0;
+  padding: 24px;
+  overflow-wrap: anywhere;
+}
+.portfolio p {
+  line-height: 1.65;
+  margin: 10px 0;
+}
+.portfolio h3 {
+  margin: 14px 0 6px;
+}
+.portfolio-form {
+  border: 0;
+  margin: 18px 0 0;
+  padding: 0;
+}
+.portfolio-account {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 14px;
+  min-width: 0;
+  margin: 0;
+}
+.portfolio-account legend {
+  color: var(--accent);
+  padding: 0 6px;
+  font-weight: 600;
+}
+.portfolio-grid,
+.portfolio-metrics {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 180px), 1fr));
+  gap: 12px;
+}
+.portfolio label {
+  display: grid;
+  gap: 7px;
+  min-width: 0;
+}
+.portfolio input:not([type='checkbox']),
+.portfolio select,
+.portfolio button {
+  min-width: 0;
+  max-width: 100%;
+  padding: 9px 11px;
+  font: inherit;
+  font-size: 14px;
+  color: var(--text);
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: var(--bg);
+}
+.portfolio button {
+  background: var(--panel-hover);
+}
+.portfolio button:enabled:hover,
+.portfolio .portfolio-run {
+  border-color: var(--accent);
+}
+.portfolio .portfolio-run {
+  background: var(--accent-bg);
+  color: var(--accent);
+  justify-self: start;
+}
+.portfolio button:disabled {
+  opacity: 0.48;
+  cursor: default;
+}
+.portfolio details {
+  padding: 11px 0;
+  border-top: 1px solid var(--border);
+  margin-top: 12px;
+}
+.portfolio details summary {
+  cursor: pointer;
+}
+.portfolio details[open] summary {
+  margin-bottom: 12px;
+}
+.portfolio label.portfolio-check,
+.portfolio-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.portfolio-actions {
+  flex-wrap: wrap;
+}
+.portfolio-check input {
+  flex-shrink: 0;
+}
+.portfolio table caption {
+  text-align: left;
+  padding-bottom: 8px;
+  font-weight: 600;
+}
+.portfolio .table-scroll {
+  max-width: 100%;
+  overflow-x: auto;
+}
+.portfolio-metrics div {
+  padding: 10px 12px;
+  border-left: 2px solid var(--border);
+  overflow-wrap: anywhere;
+}
+.portfolio-metrics dt,
+.portfolio small {
+  color: var(--muted);
+}
+.portfolio-metrics dd {
+  margin: 5px 0 0;
+  font-variant-numeric: tabular-nums;
+}
+.portfolio-saved {
+  border-top: 1px solid var(--border);
+  margin-top: 14px;
+}
+.portfolio-chart {
+  height: 490px;
+  max-width: 100%;
+}
+.portfolio [role='alert'] {
+  color: var(--amber);
+}
+@media (max-width: 600px) {
+  .portfolio .panel {
+    padding: 16px;
+  }
+}

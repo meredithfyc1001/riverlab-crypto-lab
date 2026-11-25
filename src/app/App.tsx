@@ -16,7 +16,9 @@ import { ExperimentCenter } from '../features/experiments';
 import { Suspense, useEffect, useState } from 'react';
 import { PageBoundary } from './PageBoundary';
 import { version } from '../../package.json';
-import { pages, pageFromHash } from './navigation';
+import { PortfolioCenter } from '../features/portfolio';
+import { usePortfolioWorkbench } from './usePortfolioWorkbench';
+import { pages, routes, pageFromHash } from './navigation';
 import { syntheticExample } from './synthetic-example';
 import { SyntheticPreview } from '../components/SyntheticPreview';
 import { RiskNotice } from '../components/RiskNotice';
@@ -39,6 +41,8 @@ export function App() {
     pageFromHash(window.location.hash),
   );
   const [theme, setTheme] = useState<'dark' | 'light'>('dark');
+  const portfolio = usePortfolioWorkbench(activeId === 'portfolio');
+  const navId = activeId === 'portfolio' ? 'backtests' : activeId;
   const prepareResultView =
     (activeId === 'backtests' && backtest.dataset !== null) ||
     (activeId === 'experiments' &&
@@ -48,7 +52,7 @@ export function App() {
     if (prepareResultView) preloadBacktestResults();
   }, [prepareResultView]);
 
-  const activePage = pages.find((page) => page.id === activeId) ?? pages[0];
+  const activePage = routes.find((page) => page.id === activeId) ?? pages[0];
 
   useEffect(() => {
     const onHashChange = () => {
@@ -96,13 +100,13 @@ export function App() {
               key={page.id}
               className="nav-item"
               href={`#/${page.id}`}
-              aria-current={activeId === page.id ? 'page' : undefined}
+              aria-current={navId === page.id ? 'page' : undefined}
             >
               <span className="nav-code" aria-hidden="true">
                 {page.code}
               </span>
               <span>{page.label}</span>
-              {activeId === page.id && (
+              {navId === page.id && (
                 <span className="nav-dot" aria-hidden="true" />
               )}
             </a>
@@ -110,7 +114,7 @@ export function App() {
         </nav>
         <div className="sidebar-bottom">
           <span className="status-dot" /> 离线优先 · 本地研究
-          <small>v{version} / V1.0 RC</small>
+          <small>v{version} / Phase 5C-A</small>
         </div>
       </aside>
 
@@ -142,7 +146,7 @@ export function App() {
               <h1>{activePage.label}</h1>
               <p className="page-description">{activePage.description}</p>
             </div>
-            <span className="badge">V1.0 RC</span>
+            <span className="badge">Phase 5C-A</span>
           </div>
 
           <PageBoundary key={activeId}>
@@ -154,9 +158,9 @@ export function App() {
                   <p role="status">正在读取本地数据集列表…</p>
                 )}
               {library.error &&
-                ['strategies', 'risk', 'replay'].includes(activeId) && (
-                  <p role="alert">{library.error}</p>
-                )}
+                ['strategies', 'risk', 'replay', 'portfolio'].includes(
+                  activeId,
+                ) && <p role="alert">{library.error}</p>}
               {emptyLibrary &&
                 (['backtests', 'strategies', 'replay'].includes(activeId) ||
                   (activeId === 'risk' && !backtest.experiments.length)) && (
@@ -206,9 +210,9 @@ export function App() {
                     <section className="stat-card">
                       <span>项目阶段</span>
                       <strong>
-                        发布候选 <small>v{version}</small>
+                        组合回测 <small>v{version}</small>
                       </strong>
-                      <p>稳定性、实验恢复与本地验收</p>
+                      <p>多币种独立子账户与组合实验复现</p>
                     </section>
                     <section className="stat-card">
                       <span>研究数据</span>
@@ -373,8 +377,19 @@ export function App() {
                     />
                   )}
                 </>
+              ) : activeId === 'portfolio' ? (
+                <PortfolioCenter
+                  datasets={library.datasets}
+                  rules={rules.records}
+                  ruleError={rules.error}
+                  workbench={portfolio}
+                  theme={theme}
+                />
               ) : activeId === 'backtests' || activeId === 'experiments' ? (
                 <>
+                  <a className="text-link" href="#/portfolio">
+                    进入组合回测 →
+                  </a>
                   {activeId === 'backtests' ? (
                     <BacktestCenter
                       rules={rules.records}
