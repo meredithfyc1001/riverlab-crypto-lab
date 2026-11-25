@@ -1,5 +1,9 @@
 # RiverLab Crypto Lab 执行计划
 
+## Phase 5E 高级策略研究
+
+从 PR #14 合并提交开展四库故障隔离、可复现的自定义规则参数搜索和训练选参的滚动验证。容量提高取决于全流程实测。Windows 最终 clean head 测试包承担 5D / 5E 联合实机验收。[技术设计与拆分](docs/phase-5e-design.md)
+
 ## Phase 5D 市场状态识别与表现归因
 
 从 PR #13 实际合并提交开发。运行前锁定 N 根历史滚动收益及严格阈值，收盘标签延后一根归因于原实验。保留原回归、定点守恒与独立恢复；以完整三平台检查和最终 head 的 Windows 验包交付。[设计与边界](docs/phase-5d-design.md) · [验收单](docs/phase-5d-acceptance.md)

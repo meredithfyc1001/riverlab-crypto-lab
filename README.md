@@ -1,8 +1,14 @@
 # RiverLab Crypto Lab
 
-RiverLab 是中文、Windows 优先的本地现货历史研究工具。Phase 5D 测试版为 **1.2.0-test.1**。支持单币种和组合历史实验的市场状态识别、表现归因及独立恢复。开发基线为 PR #13 的实际合并提交 `06635d3dc385b4645b21cfbda1edd68f23e3de89`。
+RiverLab 是中文、Windows 优先的本地现货历史研究工具。Phase 5E 测试版为 **1.3.0-test.1**。在策略中心进入高级研究，选择已保存的规则版本与行情，设置候选和训练窗口；每个窗口独立显示训练选参、样本外验证和市场状态贡献。开发基线为 PR #14 合并提交 `10a5d88847b043e4705eca5a3b0716e218804040`。[5E 设计](docs/phase-5e-design.md) · [联合验收](docs/phase-5e-acceptance.md)
 
 **仅供学习研究 · 不提供投资建议 · 历史表现不代表未来表现。** 不连接真实账户、不接收密钥、不处理真实资金。
+
+## 高级策略研究
+
+先在数据中心保存已检查行情，再到策略中心保存具体规则版本。打开“高级策略研究”，选择数据与版本，勾选参数轴并填范围和步长。预览会给出候选数、预计根次和实际并发数。可选网格或固定种子随机搜索；每批最多 4 个参数轴、1,024 个枚举组合、64 个实际候选、20 折、200 次子运行和 100 万根求值。
+
+训练窗口按指定的筛选条件和指标优先级选参，测试窗口只验证已锁定的参数。每窗从空仓、独立本金和冷启动指标开始。查看逐折差异、收益/回撤散点、拒绝原因及四类市场状态贡献。结果中的“另存”会在显式确认后生成规则版本。保存研究报告或导出 JSON 可在空配置重算；CSV 可查看每折的候选与指标。历史样本外仍可能过拟合。[数值参考及操作步骤](docs/phase-5e-acceptance.md)
 
 ## Windows 快速开始
 
@@ -13,7 +19,7 @@ RiverLab 是中文、Windows 优先的本地现货历史研究工具。Phase 5D 
 ```powershell
 git clone https://github.com/meredithfyc1001/riverlab-crypto-lab.git
 cd riverlab-crypto-lab
-git switch feat/phase-5d-market-regime
+git switch feat/phase-5e-advanced-research
 npm ci
 npm run dev
 ```
@@ -105,9 +111,9 @@ Edge/Chrome 打开 http://127.0.0.1:4173。可断开外部网络后刷新和操�
 
 ## 下载 Windows 本地测试包
 
-在 [Phase 5D 独立分支的 Draft PR](https://github.com/meredithfyc1001/riverlab-crypto-lab/pulls?q=is%3Apr+head%3Afeat%2Fphase-5d-market-regime) 的交付说明中核对完整 head SHA、Windows 内层 ZIP 的 SHA-256、下载链接及到期时间。GitHub Actions 仅在三平台检查和 Windows ZIP 双浏览器验证成功后上传 `RiverLab-Crypto-Lab-Local-Test-<完整head SHA>`，保留 14 天。下载私库制品需要具有访问权的 GitHub 账号。
+在 [Phase 5E 独立分支的 Draft PR](https://github.com/meredithfyc1001/riverlab-crypto-lab/pulls?q=is%3Apr+head%3Afeat%2Fphase-5e-advanced-research) 的交付说明中核对完整 head SHA、Windows 内层 ZIP 的 SHA-256、下载链接及到期时间。GitHub Actions 仅在三平台检查和 Windows ZIP 双浏览器验证成功后上传 `RiverLab-Crypto-Lab-Local-Test-<完整head SHA>`，保留 14 天。下载私库制品需要具有访问权的 GitHub 账号。
 
-取出内层ZIP并全部解压到含中文/空格路径，系统先装Node.js24 LTS，双击 `start-local.bat`。无需npm ci/开发服务器，浏览器打开 `http://127.0.0.1:4173`，默认只监听回环。保持前台窗口，Enter、q再Enter或Ctrl+C停止，不留后台服务。端口占用明确退出，不自动切换存储来源；如手动使用其他端口，浏览器数据隔离。首次下载及安装Node需联网，包启动与核心功能无需外网。详见[包内说明](scripts/local-test/README-local-test.md)和[共享资金池 Windows 验收清单](docs/phase-5c-b-acceptance.md)。
+取出内层ZIP并全部解压到含中文/空格路径，系统先装Node.js24 LTS，双击 `start-local.bat`。无需npm ci/开发服务器，浏览器打开 `http://127.0.0.1:4173`，默认只监听回环。保持前台窗口，Enter、q再Enter或Ctrl+C停止，不留后台服务。端口占用明确退出，不自动切换存储来源；如手动使用其他端口，浏览器数据隔离。首次下载及安装Node需联网，包启动与核心功能无需外网。详见[包内说明](scripts/local-test/README-local-test.md)和[5D 与 5E 联合 Windows 验收清单](docs/phase-5e-acceptance.md)。
 
 开发者构建测试包：`npm run build` → `npm run package:local` → `npm run test:package`（本机Chromium可设置PLAYWRIGHT_CHROMIUM_EXECUTABLE）。产物在work/local-package，含dist、服务/BAT/说明、版本/提交SHA/dirty标记、逐文件SHA256，ZIP外另有SHA256。CI只打包clean head提交，三组check成功后Windows实际解压/启动Chrome与Edge验证全部成功才上传；不创建Release、不部署。本机dirty包仅供开发验证，不能冒充最终PR artifact。
 

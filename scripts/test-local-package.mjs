@@ -18,6 +18,8 @@ import {
   exerciseMarketRegime,
   exerciseRegimeLibrary,
 } from './market-regime-browser.mjs';
+import { exerciseAdvancedResearch } from './advanced-research-browser.mjs';
+import { exerciseLegacyLibrary } from './legacy-library-browser.mjs';
 import { exerciseSharedModes } from './shared-pool-browser.mjs';
 const zip = resolve('work/local-package/RiverLab-Crypto-Lab-Local-Test.zip');
 const target = resolve(
@@ -94,7 +96,7 @@ for (const row of manifest.trim().split('\n')) {
 const build = JSON.parse(
   await readFile(join(folder, 'build-info.json'), 'utf8'),
 );
-assert.equal(build.phase, 'Phase 5D');
+assert.equal(build.phase, 'Phase 5E');
 assert.equal(
   build.version,
   JSON.parse(await readFile('package.json', 'utf8')).version,
@@ -632,8 +634,11 @@ try {
   assert.deepEqual(reproduced.payload, ruleExperiment.payload);
   const historicalRunHashes = {};
   for (const filename of ['ma-2-4', 'rules-v1', 'rules-v2']) {
-    const historicalPath = resolve(
-      `tests/fixtures/windows-20261125/${filename}.json`,
+    const historicalPath = join(
+      folder,
+      'acceptance',
+      'fixtures',
+      filename + '.json',
     );
     const historical = JSON.parse(await readFile(historicalPath, 'utf8'));
     const historicalPage = await freshPage();
@@ -718,6 +723,21 @@ try {
   const mixedPage = await freshPage();
   const libraryIsolation = await exerciseRegimeLibrary(mixedPage, url);
   await mixedPage.context().close();
+  const fixturesDir = join(folder, 'acceptance', 'fixtures');
+  const advancedPage = await freshPage();
+  const advancedResearch = await exerciseAdvancedResearch(
+    advancedPage,
+    url,
+    fixturesDir,
+  );
+  await advancedPage.context().close();
+  const legacyPage = await freshPage();
+  const legacyLibraryIsolation = await exerciseLegacyLibrary(
+    legacyPage,
+    url,
+    join(folder, 'acceptance', 'acceptance-library-fixture.js'),
+  );
+  await legacyPage.context().close();
   assert.deepEqual(external, []);
   assert.deepEqual(errors, []);
   assert(
@@ -749,6 +769,8 @@ try {
     sharedPortfolioHashes,
     regimeHashes,
     libraryIsolation,
+    advancedResearch,
+    legacyLibraryIsolation,
     externalRequests: external,
     errors,
     resources: responses,
@@ -776,6 +798,8 @@ try {
       'periodic target-weight rebalancing, partial trades, JSON/CSV, save, fresh-profile restore and full replay',
       'market regimes on a single experiment and all three portfolio modes, explicit reference selection, net P&L conservation, JSON/CSV, fresh-profile restore and reopen',
       'mixed report libraries isolate bad summaries, reject corrupt bodies, reopen and export intact reports, and preserve raw IndexedDB rows',
+      '5E search, training selections, held-out returns and report replay in a fresh profile',
+      '5E four historical libraries isolate individual records and preserve healthy records',
       'Enter exits and frees port',
       'missing dist fails',
     ],

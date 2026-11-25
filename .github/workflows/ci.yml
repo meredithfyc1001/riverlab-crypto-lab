@@ -38,7 +38,9 @@ jobs:
       - run: npm ci
       - name: Audit locked dependencies
         if: runner.os == 'Linux'
-        run: npm audit
+        run: |
+          npm audit
+          npm audit --omit=dev
       - name: Install Chromium on Linux
         if: runner.os == 'Linux'
         run: npx playwright install --with-deps chromium
@@ -55,6 +57,7 @@ jobs:
           python tests/reference/portfolio_reference.py --check
           python tests/reference/shared_pool_reference.py --check
           python tests/reference/market_regime_reference.py --check
+          python tests/reference/advanced_research_reference.py --check
       - run: npm run check
       - name: Profile 50,000 candles in the platform browser
         run: node scripts/profile-backtest.mjs
@@ -64,6 +67,8 @@ jobs:
         run: node scripts/profile-portfolio.mjs --shared
       - name: Profile market regimes for single and portfolio experiments
         run: node scripts/profile-market-regime.mjs
+      - name: Profile CSV, storage and transfer capacity in the platform browser
+        run: node scripts/profile-capacity.mjs
       - name: Read-only formatting diagnostics
         if: failure()
         run: node scripts/format-diagnostics.mjs

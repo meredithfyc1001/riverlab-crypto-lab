@@ -1,6 +1,8 @@
 # RiverLab Crypto Lab 工作指令
 
-当前阶段为 Phase 5D，基线为 PR #13 实际合并提交 `06635d3dc385b4645b21cfbda1edd68f23e3de89`，独立分支 `feat/phase-5d-market-regime`。历史状态仅用于事后研究归因。每根只据已完成的历史收盘生成标签，下一根才可生效。复用原校验、时序、账本及版本契约。保留 570 项单元及集成测试、54 项 E2E 和全部独立参考。详见[设计](docs/phase-5d-design.md)。
+当前阶段为 Phase 5E。PR #14 已合并，开发基线为 `10a5d88847b043e4705eca5a3b0716e218804040`。优化按时间隔离，训练选参后方可计算相应测试窗口。保留原 629 / 60 及十组参考。5D 实机与 5E 联合验收，5D 实机及物理断网均为 NOT TESTED。[5E 设计](docs/phase-5e-design.md)
+
+历史阶段 Phase 5D 的基线为 PR #13 实际合并提交 `06635d3dc385b4645b21cfbda1edd68f23e3de89`，独立分支 `feat/phase-5d-market-regime`。历史状态仅用于事后研究归因。每根只据已完成的历史收盘生成标签，下一根才可生效。复用原校验、时序、账本及版本契约。保留 570 项单元及集成测试、54 项 E2E 和全部独立参考。详见[设计](docs/phase-5d-design.md)。
 
 ## Phase 5C-B 历史基线
 

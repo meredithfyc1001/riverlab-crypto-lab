@@ -1,5 +1,13 @@
 # RiverLab Crypto Lab 进度
 
+## Phase 5E 高级策略研究
+
+PR #14 于 2026-11-25 11:45:05 UTC 合并，最终 5D 功能提交为 `b37094a91614916a35e13bd15c99d9d5270a9081`。合并后 main 的四项作业全部通过。已据此新建分支 `feat/phase-5e-advanced-research`。用户决定 5D 和 5E 共用最终 Windows 测试包，5D 实机和物理断网继续为 **NOT TESTED**。[合并后 CI](https://github.com/meredithfyc1001/riverlab-crypto-lab/actions/runs/45607331060) · [技术设计](docs/phase-5e-design.md) · [联合验收清单](docs/phase-5e-acceptance.md)
+
+独立 Python 的 48 根滚动样本在第 1 折选周期 1，样本外 −4.2%；第 2 折选周期 2，样本外 +9.6%。对两折分别替换测试价格后，原折训练排名和参数选择不变。旧十组参考和新增第十一组在 Node 24 / Linux 开发环境逐一核验通过。完整依赖及生产依赖审计均为零公告。
+
+首轮本机完整检查通过 667 项 Vitest，在 E2E 源码的 ES2022 类型检查发现 DOM NodeList 展开问题。已改用 Array.from，补入规则库容量边界用例，保留原计时与测试门槛。三项高级研究专项 E2E 已用 Linux Chromium 生产构建验证，四个旧库也完成真实浏览器故障注入与原数据对照。满载 5E 使用 50,000 根行情、100,000 根次求值时，串行 8.09 秒、两 Worker 5.46 秒，同一输入结果一致；对应报告空配置恢复 4.00 秒。单币与组合生产上限维持 50,000 / 10,000 根。最终提交的全量检查、三平台作业、Windows 两份证据、ZIP 和有效期随 Draft PR 更新。[测量与独立扩容方案](docs/phase-5e-capacity.md) · [Phase 5E PR](https://github.com/meredithfyc1001/riverlab-crypto-lab/pulls?q=is%3Apr+head%3Afeat%2Fphase-5e-advanced-research)
+
 ## Phase 5D 报告库可用性补丁
 
 原 Draft PR #14 的 `e580125d8adf15d1aca947ec8b500ad6a8e77952` 已复现两处故障。只损坏一个共享摘要时，旧联合列表无法返回其他四条来源；只损坏一个 5D 摘要时，另两份报告能按 ID 重算并逐字节导出，列表却报错。已在同一分支修正 5D 的逐条摘要校验与各库错误呈现。测试使用隔离数据库，修复后八份正文与修复前联合 Hash 一致。依赖树及生产依赖审计各零公告，全部独立 Python 参考通过。补丁提交绑定的三平台检查、Windows 双浏览器验证、新包摘要及下载有效期在 PR 正文更新；新版用户实机待验收，物理断网 NOT TESTED。[故障复核](docs/phase-5d-library-review.md) · [新版 Windows 验收单](docs/phase-5d-acceptance.md) · [Draft PR #14](https://github.com/meredithfyc1001/riverlab-crypto-lab/pull/14)
