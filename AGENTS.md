@@ -1,8 +1,8 @@
 # RiverLab Crypto Lab 工作指令
 
-作用于整个仓库。本期为 V1.0 RC 稳定性与发布准备，分支 `feat/v1-rc-hardening`。PR #10 已合并，基线为 `e27a728ac53dc7a3f6ad73fbcbd298f4527ccb54`（0.5.1-test）。先读 [RC 设计](docs/rc-design.md)、[progress.md](progress.md)、[plan.md](plan.md)、[实机记录](docs/v1-rc-windows-baseline.md)和[原始规划](docs/product-plan-v0.1.md)。
+作用于整个仓库。当前阶段为 Phase 5C-A，分支 `feat/phase-5c-portfolio-backtest`，稳定基线为 PR #11 实际合并提交 `c8ded9304785a06c713f5a830caf292bacbc918f`。先读[组合设计](docs/phase-5c-design.md)、[RC 实机复测](docs/phase-5c-rc-baseline.md)、[计划](plan.md)及[进度](progress.md)。保留单币种版本、Hash 和原 RC 全部 473/50 回归。组合实验单独版本与存储。
 
-2026-11-25 的用户 Windows Chrome 实机报告涵盖六项 PASS、已测产品项零 FAIL。物理断网由用户暂缓，记 NOT TESTED。历史 Edge CI、各版用户实测与当前候选 CI 分列。不得提交主机名、私人路径、现场截图或原始现场档案。
+Windows RC 已测项目零 FAIL、零 BLOCKED，物理断网暂缓。保留实机两项观察。不得提交主机名、私人路径、现场截图或原始现场档案。
 
 ## 范围与研发节奏
 

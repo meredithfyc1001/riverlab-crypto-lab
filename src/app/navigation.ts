@@ -6,6 +6,8 @@ import { riskPage } from '../features/risk';
 import { experimentsPage } from '../features/experiments';
 import { replayPage } from '../features/replay';
 
+import { portfolioPage } from '../features/portfolio';
+
 export const pages = [
   {
     id: 'overview',
@@ -24,9 +26,10 @@ export const pages = [
   replayPage,
 ] as const;
 
-export type PageId = (typeof pages)[number]['id'];
+export const routes = [...pages, portfolioPage] as const;
+export type PageId = (typeof routes)[number]['id'];
 
 export function pageFromHash(hash: string): PageId {
   const id = hash.replace(/^#\/?/, '');
-  return pages.find((page) => page.id === id)?.id ?? 'overview';
+  return routes.find((page) => page.id === id)?.id ?? 'overview';
 }

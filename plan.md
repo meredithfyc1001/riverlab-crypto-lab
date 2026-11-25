@@ -1,6 +1,10 @@
 # RiverLab Crypto Lab 执行计划
 
-## V1.0 RC 本轮范围
+## Phase 5C-A 授权与验收
+
+从 PR #11 已验收合并 SHA 建独立分支和 Draft PR。按[设计与风险分析](docs/phase-5c-design.md)实现多数据集对齐、18 位子账户分配、复用原成交内核、组合统计以及独立保存和完整恢复。保留 RC 的 473 项 Vitest、50 项 E2E 和独立参考，再追加组合测试、边界测量与 Windows 包验收。用户实机验收后决定合并。本轮仅涵盖虚拟子账户的历史回测。
+
+## V1.0 RC 历史范围
 
 PR #10 已合并到 `e27a728ac53dc7a3f6ad73fbcbd298f4527ccb54`（0.5.1-test）。按用户 2026-11-25 授权，从该 main 建立 `feat/v1-rc-hardening`，交付 `1.0.0-rc.1` 的独立 Draft PR。保留[原始规划](docs/product-plan-v0.1.md)及以下历史阶段记录。
 
