@@ -41,6 +41,11 @@ export async function exerciseMarketRegime(
   await page.getByLabel('趋势阈值（基点）').fill('5');
   await page.getByLabel('报告名称').fill('验收 ' + source);
   await run.click();
+  // A repeated run can leave the previous validated report visible while its
+  // replacement is being computed. Read the hash of the requested report.
+  await page
+    .getByRole('heading', { name: '验收 ' + source, exact: true })
+    .waitFor();
   const hashView = page.getByTestId('regime-report-hash');
   await hashView.waitFor();
   const hash = (await hashView.textContent()).trim();
@@ -58,7 +63,12 @@ export async function exerciseMarketRegime(
   const path = await download(page, 'JSON');
   const originalBytes = await readFile(path);
   const report = JSON.parse(originalBytes);
-  assert.equal(report.reportHash, hash);
+  assert.equal(
+    report.reportHash,
+    hash,
+    'displayed and exported report: ' + source,
+  );
+  assert.equal(report.name, '验收 ' + source);
   if (expectedNetPnl !== undefined)
     assert.equal(report.result.netPnl, expectedNetPnl);
   assert.equal(report.reference, reference);
