@@ -1,5 +1,9 @@
 # RiverLab Crypto Lab 执行计划
 
+## Phase 5D 市场状态识别与表现归因
+
+从 PR #13 实际合并提交开发。运行前锁定 N 根历史滚动收益及严格阈值，收盘标签延后一根归因于原实验。保留原回归、定点守恒与独立恢复；以完整三平台检查和最终 head 的 Windows 验包交付。[设计与边界](docs/phase-5d-design.md) · [验收单](docs/phase-5d-acceptance.md)
+
 ## Phase 5C-B 共享资金池与动态调仓
 
 从已核实的 PR #12 合并提交启动。三个组合入口模式共享严格时间对齐，固定子账户与两种新账本可各自重现。先固定现金储备、九阶段事件、费用和精度、买入竞争、调仓偏差与无后继开盘规则，再开发纯 TypeScript 执行、Worker、报告与 UI。以独立整数参考、旧账本回归、生产浏览器边界测量、三平台全量 CI 及最终 clean head 的 Windows 双浏览器验包验收。[设计与验收标准](docs/phase-5c-b-design.md)

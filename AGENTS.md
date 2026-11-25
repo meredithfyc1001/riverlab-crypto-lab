@@ -1,5 +1,9 @@
 # RiverLab Crypto Lab 工作指令
 
+当前阶段为 Phase 5D，基线为 PR #13 实际合并提交 `06635d3dc385b4645b21cfbda1edd68f23e3de89`，独立分支 `feat/phase-5d-market-regime`。历史状态仅用于事后研究归因。每根只据已完成的历史收盘生成标签，下一根才可生效。复用原校验、时序、账本及版本契约。保留 570 项单元及集成测试、54 项 E2E 和全部独立参考。详见[设计](docs/phase-5d-design.md)。
+
+## Phase 5C-B 历史基线
+
 作用于整个仓库。当前阶段 Phase 5C-B 从 PR #12 的实际合并提交 `fd4de40c32623eab3eb16555fc0df723d6e22357` 开发，独立分支 `feat/phase-5c-b-shared-pool`。先读[共享资金池设计](docs/phase-5c-b-design.md)、[5C-A 实机验收记录](docs/phase-5c-b-windows-baseline.md)、[计划](plan.md)和[进度](progress.md)。原固定子账户、单资产和 RC 历史报告按其保存格式与算法重算。保留 518 项单元及集成测试、52 项 E2E 和全部既有独立参考。
 
 新模式按统一时钟先保护退出、后卖、再统一分配买入，最后处理根内保护并收盘估值。所有金额用 18 位 BigInt 计，逐笔核对共享账本，按真实现金执行。数据上限包含全部原始快照 10,000 根，报告最多 32 MiB。CI 验证和用户物理断网分别登记。最终 PR 保持 Draft。
