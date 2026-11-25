@@ -1,0 +1,1512 @@
+{
+  "format": "riverlab-experiment",
+  "schemaVersion": 1,
+  "id": "edce2acd-562e-4e1f-882a-3a1a09a1552d",
+  "name": "BTCUSDT · rules",
+  "createdUtcMs": 1795579074823,
+  "elapsedMs": 29.90000009536743,
+  "payloadHash": "fcd14c3d59192291df5047df0ef93c06d1a070562df39f36cad5927f8764c26e",
+  "payload": {
+    "dataset": {
+      "id": "cb8c45fc-59f7-48db-98ce-b3bb873c30bd",
+      "name": "real-btcusdt-2024-10-28.csv",
+      "symbol": "BTCUSDT",
+      "createdUtcMs": 1795578971598,
+      "source": {
+        "kind": "historical",
+        "label": "真实历史样本 · BTCUSDT · 1 小时",
+        "note": "解压上游保存的 Binance 公共历史现货归档；保留全部 24 行和 12 列，去 BOM 并统一 LF 结尾，不修改任何行情数值。 追溯至固定 Git 提交中的历史存档；未另行访问 Binance 域名或独立认证数据真实性/官方校验文件。不是实时行情，不是交易建议。",
+        "url": "https://github.com/freqtrade/freqtrade/blob/3ce38b587d6c7a1ea479fb3e59d724dee5195561/tests/testdata/binance/binance_public_data/spot-klines-BTCUSDT-1h-2024-10-28.zip",
+        "expectedSha256": "0cf21b6f475479a8b8918ed983e924cfce2057dde6ccd864aaa0d97fd14f9727"
+      },
+      "file": {
+        "name": "real-btcusdt-2024-10-28.csv",
+        "bytes": 3831,
+        "sha256": "0cf21b6f475479a8b8918ed983e924cfce2057dde6ccd864aaa0d97fd14f9727",
+        "parserVersion": "csv-v1"
+      },
+      "parsing": {
+        "delimiter": ",",
+        "hasHeader": false,
+        "mapping": {
+          "timestamp": 0,
+          "open": 1,
+          "high": 2,
+          "low": 3,
+          "close": 4,
+          "volume": 5
+        },
+        "timeUnit": "auto",
+        "intervalMs": 3600000
+      },
+      "warningsAcknowledged": true,
+      "schemaVersion": 1,
+      "quality": {
+        "totalRows": 24,
+        "validRows": 24,
+        "blankLines": 0,
+        "timeUnit": "ms",
+        "intervalMs": 3600000,
+        "range": {
+          "startUtcMs": 1730073600000,
+          "endUtcMs": 1730156400000
+        },
+        "gapCount": 0,
+        "missingCandles": 0,
+        "warningCount": 2,
+        "issues": [
+          {
+            "severity": "warning",
+            "code": "TIME_UNIT_DETECTED",
+            "message": "自动识别为 ms，依据固定 2009–2100 范围或显式 ISO 时区；请核对原始格式。"
+          },
+          {
+            "severity": "warning",
+            "code": "COVERAGE_UNVERIFIED",
+            "message": "仅检查文件内首末有效时间点之间；未提供预期起止范围，无法证明首尾完整、市场连续性或来源真实性。无效行不会充当有效行情覆盖。"
+          }
+        ],
+        "issueCounts": {
+          "TIME_UNIT_DETECTED": 1,
+          "COVERAGE_UNVERIFIED": 1
+        },
+        "issueDetailsTruncated": false
+      },
+      "candles": [
+        {
+          "timestampUtcMs": 1730073600000,
+          "open": 68021.69,
+          "high": 68116.78,
+          "low": 67839.9,
+          "close": 67859.91,
+          "volume": 555.35912
+        },
+        {
+          "timestampUtcMs": 1730077200000,
+          "open": 67859.9,
+          "high": 67907.2,
+          "low": 67740.11,
+          "close": 67751.89,
+          "volume": 304.90747
+        },
+        {
+          "timestampUtcMs": 1730080800000,
+          "open": 67751.89,
+          "high": 67860,
+          "low": 67677.77,
+          "close": 67803.99,
+          "volume": 438.3259
+        },
+        {
+          "timestampUtcMs": 1730084400000,
+          "open": 67804,
+          "high": 67991.28,
+          "low": 67700.51,
+          "close": 67727.59,
+          "volume": 449.9157
+        },
+        {
+          "timestampUtcMs": 1730088000000,
+          "open": 67727.59,
+          "high": 67800,
+          "low": 67636.44,
+          "close": 67744.29,
+          "volume": 490.56951
+        },
+        {
+          "timestampUtcMs": 1730091600000,
+          "open": 67744.3,
+          "high": 67964.1,
+          "low": 67618,
+          "close": 67909.85,
+          "volume": 354.11541
+        },
+        {
+          "timestampUtcMs": 1730095200000,
+          "open": 67909.85,
+          "high": 67959.15,
+          "low": 67800,
+          "close": 67959.15,
+          "volume": 467.50971
+        },
+        {
+          "timestampUtcMs": 1730098800000,
+          "open": 67959.15,
+          "high": 68680,
+          "low": 67959.15,
+          "close": 68415.52,
+          "volume": 1916.25094
+        },
+        {
+          "timestampUtcMs": 1730102400000,
+          "open": 68415.52,
+          "high": 68596,
+          "low": 68328,
+          "close": 68328,
+          "volume": 660.792
+        },
+        {
+          "timestampUtcMs": 1730106000000,
+          "open": 68328,
+          "high": 68614.09,
+          "low": 68238.81,
+          "close": 68574,
+          "volume": 636.96149
+        },
+        {
+          "timestampUtcMs": 1730109600000,
+          "open": 68573.99,
+          "high": 68833.57,
+          "low": 68548,
+          "close": 68625.87,
+          "volume": 785.04653
+        },
+        {
+          "timestampUtcMs": 1730113200000,
+          "open": 68625.86,
+          "high": 68768.57,
+          "low": 68490,
+          "close": 68753.78,
+          "volume": 586.05532
+        },
+        {
+          "timestampUtcMs": 1730116800000,
+          "open": 68753.78,
+          "high": 69063.62,
+          "low": 68590,
+          "close": 68908.01,
+          "volume": 1872.43757
+        },
+        {
+          "timestampUtcMs": 1730120400000,
+          "open": 68908,
+          "high": 69280,
+          "low": 68777,
+          "close": 68819.99,
+          "volume": 2492.62084
+        },
+        {
+          "timestampUtcMs": 1730124000000,
+          "open": 68820,
+          "high": 69100,
+          "low": 68688,
+          "close": 68840,
+          "volume": 1777.84938
+        },
+        {
+          "timestampUtcMs": 1730127600000,
+          "open": 68840,
+          "high": 68853.27,
+          "low": 68426.67,
+          "close": 68494.2,
+          "volume": 1476.6185
+        },
+        {
+          "timestampUtcMs": 1730131200000,
+          "open": 68494.2,
+          "high": 68980,
+          "low": 68452.54,
+          "close": 68709.27,
+          "volume": 1074.24282
+        },
+        {
+          "timestampUtcMs": 1730134800000,
+          "open": 68709.27,
+          "high": 69208.43,
+          "low": 68513.1,
+          "close": 68984,
+          "volume": 1538.0386
+        },
+        {
+          "timestampUtcMs": 1730138400000,
+          "open": 68984,
+          "high": 69240,
+          "low": 68846,
+          "close": 69212.12,
+          "volume": 995.60134
+        },
+        {
+          "timestampUtcMs": 1730142000000,
+          "open": 69212.12,
+          "high": 69900,
+          "low": 69150.01,
+          "close": 69629.98,
+          "volume": 4352.02346
+        },
+        {
+          "timestampUtcMs": 1730145600000,
+          "open": 69629.99,
+          "high": 69719.59,
+          "low": 69427.79,
+          "close": 69644.56,
+          "volume": 838.75248
+        },
+        {
+          "timestampUtcMs": 1730149200000,
+          "open": 69644.57,
+          "high": 69797.99,
+          "low": 69518.35,
+          "close": 69791,
+          "volume": 637.09431
+        },
+        {
+          "timestampUtcMs": 1730152800000,
+          "open": 69791,
+          "high": 70270,
+          "low": 69791,
+          "close": 69961.65,
+          "volume": 3417.3618
+        },
+        {
+          "timestampUtcMs": 1730156400000,
+          "open": 69961.64,
+          "high": 70145.5,
+          "low": 69733.3,
+          "close": 69962.21,
+          "volume": 928.30439
+        }
+      ]
+    },
+    "result": {
+      "manifest": {
+        "algorithmVersion": "spot-long-protected-next-open-v2",
+        "conversionVersion": "number-shortest-decimal-fixed18-v1",
+        "dataHash": "a8e34fae08219bc4d810f2f3c282777786b4f142dbc08110ed7ba33ddc3f2265",
+        "signalHash": "34a4c01194246410732a2636eb5d3797c2188391afaf01370c3e58f5af7e5ad3",
+        "runHash": "e71336aa5f2d076ca0eaf12f1f75e4e78e9049cb2f682e25f60d6d9767dfa28b",
+        "sourceFileSha256": "0cf21b6f475479a8b8918ed983e924cfce2057dde6ccd864aaa0d97fd14f9727",
+        "source": {
+          "kind": "historical",
+          "label": "真实历史样本 · BTCUSDT · 1 小时",
+          "note": "解压上游保存的 Binance 公共历史现货归档；保留全部 24 行和 12 列，去 BOM 并统一 LF 结尾，不修改任何行情数值。 追溯至固定 Git 提交中的历史存档；未另行访问 Binance 域名或独立认证数据真实性/官方校验文件。不是实时行情，不是交易建议。",
+          "url": "https://github.com/freqtrade/freqtrade/blob/3ce38b587d6c7a1ea479fb3e59d724dee5195561/tests/testdata/binance/binance_public_data/spot-klines-BTCUSDT-1h-2024-10-28.zip",
+          "expectedSha256": "0cf21b6f475479a8b8918ed983e924cfce2057dde6ccd864aaa0d97fd14f9727"
+        },
+        "quality": {
+          "totalRows": 24,
+          "validRows": 24,
+          "blankLines": 0,
+          "timeUnit": "ms",
+          "intervalMs": 3600000,
+          "range": {
+            "startUtcMs": 1730073600000,
+            "endUtcMs": 1730156400000
+          },
+          "gapCount": 0,
+          "missingCandles": 0,
+          "warningCount": 2,
+          "issues": [
+            {
+              "severity": "warning",
+              "code": "TIME_UNIT_DETECTED",
+              "message": "自动识别为 ms，依据固定 2009–2100 范围或显式 ISO 时区；请核对原始格式。"
+            },
+            {
+              "severity": "warning",
+              "code": "COVERAGE_UNVERIFIED",
+              "message": "仅检查文件内首末有效时间点之间；未提供预期起止范围，无法证明首尾完整、市场连续性或来源真实性。无效行不会充当有效行情覆盖。"
+            }
+          ],
+          "issueCounts": {
+            "TIME_UNIT_DETECTED": 1,
+            "COVERAGE_UNVERIFIED": 1
+          },
+          "issueDetailsTruncated": false
+        },
+        "symbol": "BTCUSDT",
+        "intervalMs": 3600000,
+        "completedThroughUtcMs": 1730160000000,
+        "config": {
+          "initialCash": "1000",
+          "feeBps": 10,
+          "buySlippageBps": 10,
+          "sellSlippageBps": 10,
+          "quantityDecimals": 8,
+          "minNotional": "0"
+        },
+        "signals": [
+          {
+            "candleIndex": 0,
+            "action": "hold",
+            "reason": "rules-warmup"
+          },
+          {
+            "candleIndex": 1,
+            "action": "hold",
+            "reason": "rules-warmup"
+          },
+          {
+            "candleIndex": 2,
+            "action": "hold",
+            "reason": "rules-warmup"
+          },
+          {
+            "candleIndex": 3,
+            "action": "hold",
+            "reason": "rules-warmup"
+          },
+          {
+            "candleIndex": 4,
+            "action": "hold",
+            "reason": "rules-warmup"
+          },
+          {
+            "candleIndex": 5,
+            "action": "buy",
+            "reason": "rules-buy",
+            "quantity": "all"
+          },
+          {
+            "candleIndex": 6,
+            "action": "hold",
+            "reason": "rules-repeat"
+          },
+          {
+            "candleIndex": 7,
+            "action": "hold",
+            "reason": "rules-repeat"
+          },
+          {
+            "candleIndex": 8,
+            "action": "hold",
+            "reason": "rules-repeat"
+          },
+          {
+            "candleIndex": 9,
+            "action": "hold",
+            "reason": "rules-repeat"
+          },
+          {
+            "candleIndex": 10,
+            "action": "hold",
+            "reason": "rules-repeat"
+          },
+          {
+            "candleIndex": 11,
+            "action": "hold",
+            "reason": "rules-repeat"
+          },
+          {
+            "candleIndex": 12,
+            "action": "hold",
+            "reason": "rules-repeat"
+          },
+          {
+            "candleIndex": 13,
+            "action": "hold",
+            "reason": "rules-no-match"
+          },
+          {
+            "candleIndex": 14,
+            "action": "hold",
+            "reason": "rules-no-match"
+          },
+          {
+            "candleIndex": 15,
+            "action": "sell",
+            "reason": "rules-sell",
+            "quantity": "all"
+          },
+          {
+            "candleIndex": 16,
+            "action": "buy",
+            "reason": "rules-buy",
+            "quantity": "all"
+          },
+          {
+            "candleIndex": 17,
+            "action": "hold",
+            "reason": "rules-repeat"
+          },
+          {
+            "candleIndex": 18,
+            "action": "hold",
+            "reason": "rules-repeat"
+          },
+          {
+            "candleIndex": 19,
+            "action": "hold",
+            "reason": "rules-repeat"
+          },
+          {
+            "candleIndex": 20,
+            "action": "hold",
+            "reason": "rules-repeat"
+          },
+          {
+            "candleIndex": 21,
+            "action": "hold",
+            "reason": "rules-repeat"
+          },
+          {
+            "candleIndex": 22,
+            "action": "hold",
+            "reason": "rules-repeat"
+          },
+          {
+            "candleIndex": 23,
+            "action": "hold",
+            "reason": "rules-repeat"
+          }
+        ],
+        "strategy": {
+          "config": {
+            "kind": "rules",
+            "rule": {
+              "schemaVersion": 1,
+              "revision": 2,
+              "buy": {
+                "enabled": true,
+                "operator": "OR",
+                "conditions": [
+                  {
+                    "kind": "cross",
+                    "enabled": true,
+                    "average": "MA",
+                    "fastPeriod": 2,
+                    "slowPeriod": 5,
+                    "direction": "above"
+                  },
+                  {
+                    "kind": "price-ma",
+                    "enabled": true,
+                    "average": "MA",
+                    "period": 3,
+                    "operator": "gt"
+                  }
+                ]
+              },
+              "sell": {
+                "enabled": true,
+                "operator": "AND",
+                "conditions": [
+                  {
+                    "kind": "cross",
+                    "enabled": true,
+                    "average": "MA",
+                    "fastPeriod": 2,
+                    "slowPeriod": 5,
+                    "direction": "below"
+                  }
+                ]
+              }
+            }
+          },
+          "version": "causal-declarative-rules-v1"
+        },
+        "risk": {},
+        "assumptions": [
+          "virtual-USDT-single-symbol-spot-long-only-no-leverage",
+          "caller-declares-all-candles-completed",
+          "strategy-stream-completed-candle-only-or-unverified-scripted-signals",
+          "existing-risk-open-before-signal-intrabar-after-open-orders",
+          "new-protection-marketable-at-open-exits-at-open",
+          "ambiguous-intrabar-stop-first-time-unknown",
+          "gap-stop-at-open-gap-take-at-threshold-no-improvement",
+          "protective-trigger-market-sell-with-adverse-slippage",
+          "protection-from-actual-entry-price-no-fee-basis-no-pyramiding",
+          "completed-close-signal-next-open-fill",
+          "strict-no-gaps-no-sorting-no-repair",
+          "unlimited-liquidity-no-order-book-volume-ignored",
+          "no-partial-fills",
+          "adverse-two-sided-slippage-not-clamped-to-high-low",
+          "quote-currency-fees-ceil-after-notional-rounding",
+          "fixed18-buy-ceil-sell-floor-quantity-floor-mark-floor",
+          "no-final-liquidation-close-mark-excludes-liquidation-costs",
+          "source-number-precision-not-original-csv-decimal-precision",
+          "coverage-and-source-authenticity-unverified"
+        ]
+      },
+      "signals": [
+        {
+          "signal": {
+            "candleIndex": 0,
+            "action": "hold",
+            "reason": "rules-warmup"
+          },
+          "generatedUtcMs": 1730077200000
+        },
+        {
+          "signal": {
+            "candleIndex": 1,
+            "action": "hold",
+            "reason": "rules-warmup"
+          },
+          "generatedUtcMs": 1730080800000
+        },
+        {
+          "signal": {
+            "candleIndex": 2,
+            "action": "hold",
+            "reason": "rules-warmup"
+          },
+          "generatedUtcMs": 1730084400000
+        },
+        {
+          "signal": {
+            "candleIndex": 3,
+            "action": "hold",
+            "reason": "rules-warmup"
+          },
+          "generatedUtcMs": 1730088000000
+        },
+        {
+          "signal": {
+            "candleIndex": 4,
+            "action": "hold",
+            "reason": "rules-warmup"
+          },
+          "generatedUtcMs": 1730091600000
+        },
+        {
+          "signal": {
+            "candleIndex": 5,
+            "action": "buy",
+            "reason": "rules-buy",
+            "quantity": "all"
+          },
+          "generatedUtcMs": 1730095200000
+        },
+        {
+          "signal": {
+            "candleIndex": 6,
+            "action": "hold",
+            "reason": "rules-repeat"
+          },
+          "generatedUtcMs": 1730098800000
+        },
+        {
+          "signal": {
+            "candleIndex": 7,
+            "action": "hold",
+            "reason": "rules-repeat"
+          },
+          "generatedUtcMs": 1730102400000
+        },
+        {
+          "signal": {
+            "candleIndex": 8,
+            "action": "hold",
+            "reason": "rules-repeat"
+          },
+          "generatedUtcMs": 1730106000000
+        },
+        {
+          "signal": {
+            "candleIndex": 9,
+            "action": "hold",
+            "reason": "rules-repeat"
+          },
+          "generatedUtcMs": 1730109600000
+        },
+        {
+          "signal": {
+            "candleIndex": 10,
+            "action": "hold",
+            "reason": "rules-repeat"
+          },
+          "generatedUtcMs": 1730113200000
+        },
+        {
+          "signal": {
+            "candleIndex": 11,
+            "action": "hold",
+            "reason": "rules-repeat"
+          },
+          "generatedUtcMs": 1730116800000
+        },
+        {
+          "signal": {
+            "candleIndex": 12,
+            "action": "hold",
+            "reason": "rules-repeat"
+          },
+          "generatedUtcMs": 1730120400000
+        },
+        {
+          "signal": {
+            "candleIndex": 13,
+            "action": "hold",
+            "reason": "rules-no-match"
+          },
+          "generatedUtcMs": 1730124000000
+        },
+        {
+          "signal": {
+            "candleIndex": 14,
+            "action": "hold",
+            "reason": "rules-no-match"
+          },
+          "generatedUtcMs": 1730127600000
+        },
+        {
+          "signal": {
+            "candleIndex": 15,
+            "action": "sell",
+            "reason": "rules-sell",
+            "quantity": "all"
+          },
+          "generatedUtcMs": 1730131200000
+        },
+        {
+          "signal": {
+            "candleIndex": 16,
+            "action": "buy",
+            "reason": "rules-buy",
+            "quantity": "all"
+          },
+          "generatedUtcMs": 1730134800000
+        },
+        {
+          "signal": {
+            "candleIndex": 17,
+            "action": "hold",
+            "reason": "rules-repeat"
+          },
+          "generatedUtcMs": 1730138400000
+        },
+        {
+          "signal": {
+            "candleIndex": 18,
+            "action": "hold",
+            "reason": "rules-repeat"
+          },
+          "generatedUtcMs": 1730142000000
+        },
+        {
+          "signal": {
+            "candleIndex": 19,
+            "action": "hold",
+            "reason": "rules-repeat"
+          },
+          "generatedUtcMs": 1730145600000
+        },
+        {
+          "signal": {
+            "candleIndex": 20,
+            "action": "hold",
+            "reason": "rules-repeat"
+          },
+          "generatedUtcMs": 1730149200000
+        },
+        {
+          "signal": {
+            "candleIndex": 21,
+            "action": "hold",
+            "reason": "rules-repeat"
+          },
+          "generatedUtcMs": 1730152800000
+        },
+        {
+          "signal": {
+            "candleIndex": 22,
+            "action": "hold",
+            "reason": "rules-repeat"
+          },
+          "generatedUtcMs": 1730156400000
+        },
+        {
+          "signal": {
+            "candleIndex": 23,
+            "action": "hold",
+            "reason": "rules-repeat"
+          },
+          "generatedUtcMs": 1730160000000
+        }
+      ],
+      "orders": [
+        {
+          "intent": {
+            "id": "order-5",
+            "side": "buy",
+            "quantity": "all",
+            "reason": "rules-buy",
+            "signalCandleIndex": 5,
+            "generatedUtcMs": 1730095200000,
+            "targetCandleIndex": 6
+          },
+          "status": "filled",
+          "resolvedUtcMs": 1730095200000
+        },
+        {
+          "intent": {
+            "id": "order-15",
+            "side": "sell",
+            "quantity": "all",
+            "reason": "rules-sell",
+            "signalCandleIndex": 15,
+            "generatedUtcMs": 1730131200000,
+            "targetCandleIndex": 16
+          },
+          "status": "filled",
+          "resolvedUtcMs": 1730131200000
+        },
+        {
+          "intent": {
+            "id": "order-16",
+            "side": "buy",
+            "quantity": "all",
+            "reason": "rules-buy",
+            "signalCandleIndex": 16,
+            "generatedUtcMs": 1730134800000,
+            "targetCandleIndex": 17
+          },
+          "status": "filled",
+          "resolvedUtcMs": 1730134800000
+        }
+      ],
+      "fills": [
+        {
+          "sequence": 1,
+          "orderId": "order-5",
+          "side": "buy",
+          "reason": "rules-buy",
+          "signalCandleIndex": 5,
+          "candleIndex": 6,
+          "timestampUtcMs": 1730095200000,
+          "referencePrice": "67909.85",
+          "price": "67977.75985",
+          "quantity": "0.01469599",
+          "notional": "999.0004789780015",
+          "fee": "0.9990004789780015",
+          "before": {
+            "cash": "1000",
+            "position": {
+              "quantity": "0"
+            },
+            "markPrice": "67909.85",
+            "marketValue": "0",
+            "equity": "1000"
+          },
+          "after": {
+            "cash": "0.0005205430204985",
+            "position": {
+              "quantity": "0.01469599"
+            },
+            "markPrice": "67909.85",
+            "marketValue": "998.0024765015",
+            "equity": "998.0029970445204985"
+          },
+          "delta": {
+            "cash": "-999.9994794569795015",
+            "quantity": "0.01469599",
+            "equity": "-1.9970029554795015"
+          },
+          "totals": {
+            "buyNotional": "999.0004789780015",
+            "sellNotional": "0",
+            "fees": "0.9990004789780015",
+            "buyQuantity": "0.01469599",
+            "sellQuantity": "0"
+          }
+        },
+        {
+          "sequence": 2,
+          "orderId": "order-15",
+          "side": "sell",
+          "reason": "rules-sell",
+          "signalCandleIndex": 15,
+          "candleIndex": 16,
+          "timestampUtcMs": 1730131200000,
+          "referencePrice": "68494.2",
+          "price": "68425.7058",
+          "quantity": "0.01469599",
+          "notional": "1005.583488179742",
+          "fee": "1.005583488179742",
+          "before": {
+            "cash": "0.0005205430204985",
+            "position": {
+              "quantity": "0.01469599"
+            },
+            "markPrice": "68494.2",
+            "marketValue": "1006.590078258",
+            "equity": "1006.5905988010204985"
+          },
+          "after": {
+            "cash": "1004.5784252345827565",
+            "position": {
+              "quantity": "0"
+            },
+            "markPrice": "68494.2",
+            "marketValue": "0",
+            "equity": "1004.5784252345827565"
+          },
+          "delta": {
+            "cash": "1004.577904691562258",
+            "quantity": "-0.01469599",
+            "equity": "-2.012173566437742"
+          },
+          "totals": {
+            "buyNotional": "999.0004789780015",
+            "sellNotional": "1005.583488179742",
+            "fees": "2.0045839671577435",
+            "buyQuantity": "0.01469599",
+            "sellQuantity": "0.01469599"
+          }
+        },
+        {
+          "sequence": 3,
+          "orderId": "order-16",
+          "side": "buy",
+          "reason": "rules-buy",
+          "signalCandleIndex": 16,
+          "candleIndex": 17,
+          "timestampUtcMs": 1730134800000,
+          "referencePrice": "68709.27",
+          "price": "68777.97927",
+          "quantity": "0.01459151",
+          "notional": "1003.5745722979977",
+          "fee": "1.0035745722979977",
+          "before": {
+            "cash": "1004.5784252345827565",
+            "position": {
+              "quantity": "0"
+            },
+            "markPrice": "68709.27",
+            "marketValue": "0",
+            "equity": "1004.5784252345827565"
+          },
+          "after": {
+            "cash": "0.0002783642870588",
+            "position": {
+              "quantity": "0.01459151"
+            },
+            "markPrice": "68709.27",
+            "marketValue": "1002.5720002977",
+            "equity": "1002.5722786619870588"
+          },
+          "delta": {
+            "cash": "-1004.5781468702956977",
+            "quantity": "0.01459151",
+            "equity": "-2.0061465725956977"
+          },
+          "totals": {
+            "buyNotional": "2002.5750512759992",
+            "sellNotional": "1005.583488179742",
+            "fees": "3.0081585394557412",
+            "buyQuantity": "0.0292875",
+            "sellQuantity": "0.01469599"
+          }
+        }
+      ],
+      "closes": [
+        {
+          "candleIndex": 0,
+          "timestampUtcMs": 1730077200000,
+          "account": {
+            "cash": "1000",
+            "position": {
+              "quantity": "0"
+            },
+            "markPrice": "67859.91",
+            "marketValue": "0",
+            "equity": "1000"
+          }
+        },
+        {
+          "candleIndex": 1,
+          "timestampUtcMs": 1730080800000,
+          "account": {
+            "cash": "1000",
+            "position": {
+              "quantity": "0"
+            },
+            "markPrice": "67751.89",
+            "marketValue": "0",
+            "equity": "1000"
+          }
+        },
+        {
+          "candleIndex": 2,
+          "timestampUtcMs": 1730084400000,
+          "account": {
+            "cash": "1000",
+            "position": {
+              "quantity": "0"
+            },
+            "markPrice": "67803.99",
+            "marketValue": "0",
+            "equity": "1000"
+          }
+        },
+        {
+          "candleIndex": 3,
+          "timestampUtcMs": 1730088000000,
+          "account": {
+            "cash": "1000",
+            "position": {
+              "quantity": "0"
+            },
+            "markPrice": "67727.59",
+            "marketValue": "0",
+            "equity": "1000"
+          }
+        },
+        {
+          "candleIndex": 4,
+          "timestampUtcMs": 1730091600000,
+          "account": {
+            "cash": "1000",
+            "position": {
+              "quantity": "0"
+            },
+            "markPrice": "67744.29",
+            "marketValue": "0",
+            "equity": "1000"
+          }
+        },
+        {
+          "candleIndex": 5,
+          "timestampUtcMs": 1730095200000,
+          "account": {
+            "cash": "1000",
+            "position": {
+              "quantity": "0"
+            },
+            "markPrice": "67909.85",
+            "marketValue": "0",
+            "equity": "1000"
+          }
+        },
+        {
+          "candleIndex": 6,
+          "timestampUtcMs": 1730098800000,
+          "account": {
+            "cash": "0.0005205430204985",
+            "position": {
+              "quantity": "0.01469599"
+            },
+            "markPrice": "67959.15",
+            "marketValue": "998.7269888085",
+            "equity": "998.7275093515204985"
+          }
+        },
+        {
+          "candleIndex": 7,
+          "timestampUtcMs": 1730102400000,
+          "account": {
+            "cash": "0.0005205430204985",
+            "position": {
+              "quantity": "0.01469599"
+            },
+            "markPrice": "68415.52",
+            "marketValue": "1005.4337977648",
+            "equity": "1005.4343183078204985"
+          }
+        },
+        {
+          "candleIndex": 8,
+          "timestampUtcMs": 1730106000000,
+          "account": {
+            "cash": "0.0005205430204985",
+            "position": {
+              "quantity": "0.01469599"
+            },
+            "markPrice": "68328",
+            "marketValue": "1004.14760472",
+            "equity": "1004.1481252630204985"
+          }
+        },
+        {
+          "candleIndex": 9,
+          "timestampUtcMs": 1730109600000,
+          "account": {
+            "cash": "0.0005205430204985",
+            "position": {
+              "quantity": "0.01469599"
+            },
+            "markPrice": "68574",
+            "marketValue": "1007.76281826",
+            "equity": "1007.7633388030204985"
+          }
+        },
+        {
+          "candleIndex": 10,
+          "timestampUtcMs": 1730113200000,
+          "account": {
+            "cash": "0.0005205430204985",
+            "position": {
+              "quantity": "0.01469599"
+            },
+            "markPrice": "68625.87",
+            "marketValue": "1008.5250992613",
+            "equity": "1008.5256198043204985"
+          }
+        },
+        {
+          "candleIndex": 11,
+          "timestampUtcMs": 1730116800000,
+          "account": {
+            "cash": "0.0005205430204985",
+            "position": {
+              "quantity": "0.01469599"
+            },
+            "markPrice": "68753.78",
+            "marketValue": "1010.4048633422",
+            "equity": "1010.4053838852204985"
+          }
+        },
+        {
+          "candleIndex": 12,
+          "timestampUtcMs": 1730120400000,
+          "account": {
+            "cash": "0.0005205430204985",
+            "position": {
+              "quantity": "0.01469599"
+            },
+            "markPrice": "68908.01",
+            "marketValue": "1012.6714258799",
+            "equity": "1012.6719464229204985"
+          }
+        },
+        {
+          "candleIndex": 13,
+          "timestampUtcMs": 1730124000000,
+          "account": {
+            "cash": "0.0005205430204985",
+            "position": {
+              "quantity": "0.01469599"
+            },
+            "markPrice": "68819.99",
+            "marketValue": "1011.3778848401",
+            "equity": "1011.3784053831204985"
+          }
+        },
+        {
+          "candleIndex": 14,
+          "timestampUtcMs": 1730127600000,
+          "account": {
+            "cash": "0.0005205430204985",
+            "position": {
+              "quantity": "0.01469599"
+            },
+            "markPrice": "68840",
+            "marketValue": "1011.6719516",
+            "equity": "1011.6724721430204985"
+          }
+        },
+        {
+          "candleIndex": 15,
+          "timestampUtcMs": 1730131200000,
+          "account": {
+            "cash": "0.0005205430204985",
+            "position": {
+              "quantity": "0.01469599"
+            },
+            "markPrice": "68494.2",
+            "marketValue": "1006.590078258",
+            "equity": "1006.5905988010204985"
+          }
+        },
+        {
+          "candleIndex": 16,
+          "timestampUtcMs": 1730134800000,
+          "account": {
+            "cash": "1004.5784252345827565",
+            "position": {
+              "quantity": "0"
+            },
+            "markPrice": "68709.27",
+            "marketValue": "0",
+            "equity": "1004.5784252345827565"
+          }
+        },
+        {
+          "candleIndex": 17,
+          "timestampUtcMs": 1730138400000,
+          "account": {
+            "cash": "0.0002783642870588",
+            "position": {
+              "quantity": "0.01459151"
+            },
+            "markPrice": "68984",
+            "marketValue": "1006.58072584",
+            "equity": "1006.5810042042870588"
+          }
+        },
+        {
+          "candleIndex": 18,
+          "timestampUtcMs": 1730142000000,
+          "account": {
+            "cash": "0.0002783642870588",
+            "position": {
+              "quantity": "0.01459151"
+            },
+            "markPrice": "69212.12",
+            "marketValue": "1009.9093411012",
+            "equity": "1009.9096194654870588"
+          }
+        },
+        {
+          "candleIndex": 19,
+          "timestampUtcMs": 1730145600000,
+          "account": {
+            "cash": "0.0002783642870588",
+            "position": {
+              "quantity": "0.01459151"
+            },
+            "markPrice": "69629.98",
+            "marketValue": "1016.0065494698",
+            "equity": "1016.0068278340870588"
+          }
+        },
+        {
+          "candleIndex": 20,
+          "timestampUtcMs": 1730149200000,
+          "account": {
+            "cash": "0.0002783642870588",
+            "position": {
+              "quantity": "0.01459151"
+            },
+            "markPrice": "69644.56",
+            "marketValue": "1016.2192936856",
+            "equity": "1016.2195720498870588"
+          }
+        },
+        {
+          "candleIndex": 21,
+          "timestampUtcMs": 1730152800000,
+          "account": {
+            "cash": "0.0002783642870588",
+            "position": {
+              "quantity": "0.01459151"
+            },
+            "markPrice": "69791",
+            "marketValue": "1018.35607441",
+            "equity": "1018.3563527742870588"
+          }
+        },
+        {
+          "candleIndex": 22,
+          "timestampUtcMs": 1730156400000,
+          "account": {
+            "cash": "0.0002783642870588",
+            "position": {
+              "quantity": "0.01459151"
+            },
+            "markPrice": "69961.65",
+            "marketValue": "1020.8461155915",
+            "equity": "1020.8463939557870588"
+          }
+        },
+        {
+          "candleIndex": 23,
+          "timestampUtcMs": 1730160000000,
+          "account": {
+            "cash": "0.0002783642870588",
+            "position": {
+              "quantity": "0.01459151"
+            },
+            "markPrice": "69962.21",
+            "marketValue": "1020.8542868371",
+            "equity": "1020.8545652013870588"
+          }
+        }
+      ],
+      "final": {
+        "cash": "0.0002783642870588",
+        "position": {
+          "quantity": "0.01459151"
+        },
+        "markPrice": "69962.21",
+        "marketValue": "1020.8542868371",
+        "equity": "1020.8545652013870588"
+      }
+    },
+    "statistics": {
+      "version": "statistics-v1",
+      "netPnl": "20.8545652013870588",
+      "totalReturn": {
+        "value": "0.020854565201",
+        "reason": null
+      },
+      "realizedPnl": "4.5784252345827565",
+      "unrealizedPnl": "16.2761399668043023",
+      "remainingCostBasis": "1004.5781468702956977",
+      "fees": "3.0081585394557412",
+      "completedTrades": [
+        {
+          "entryCandleIndex": 6,
+          "exitCandleIndex": 16,
+          "netPnl": "4.5784252345827565"
+        }
+      ],
+      "winRate": {
+        "value": "1",
+        "reason": null
+      },
+      "profitFactor": {
+        "value": null,
+        "reason": "已完成交易没有净亏损，分母为0"
+      },
+      "maxDrawdown": {
+        "value": "0.007992243901",
+        "reason": null
+      },
+      "maxDrawdownAmount": "8.093521188337742",
+      "maxDrawdownDurationMs": 25200000,
+      "ongoingDrawdownMs": 0,
+      "exposedMs": 61200000,
+      "exposureFraction": "0.708333333333",
+      "annualizedReturn": {
+        "value": null,
+        "reason": "需要至少365天且252根有效收盘样本"
+      },
+      "benchmark": {
+        "return": {
+          "value": "0.026473976204",
+          "reason": null
+        },
+        "netPnl": {
+          "value": "26.4739762049426073",
+          "reason": null
+        },
+        "fee": "0.9990006746646927",
+        "quantity": "0.01467183",
+        "cash": "0.0003246606426073",
+        "finalEquity": {
+          "value": "1026.4739762049426073",
+          "reason": null
+        },
+        "assumption": "同区间/本金；首开盘买入，沿用买滑点/费/精度/最小额；无保护；末收盘市值计量、不强制平仓、不扣卖成本。"
+      },
+      "curve": [
+        {
+          "timestampUtcMs": 1730073600000,
+          "equity": "1000",
+          "drawdown": {
+            "value": "0",
+            "reason": null
+          },
+          "benchmarkEquity": "1000"
+        },
+        {
+          "timestampUtcMs": 1730077200000,
+          "equity": "1000",
+          "drawdown": {
+            "value": "0",
+            "reason": null
+          },
+          "benchmarkEquity": "995.6293879959426073"
+        },
+        {
+          "timestampUtcMs": 1730080800000,
+          "equity": "1000",
+          "drawdown": {
+            "value": "0",
+            "reason": null
+          },
+          "benchmarkEquity": "994.0445369193426073"
+        },
+        {
+          "timestampUtcMs": 1730084400000,
+          "equity": "1000",
+          "drawdown": {
+            "value": "0",
+            "reason": null
+          },
+          "benchmarkEquity": "994.8089392623426073"
+        },
+        {
+          "timestampUtcMs": 1730088000000,
+          "equity": "1000",
+          "drawdown": {
+            "value": "0",
+            "reason": null
+          },
+          "benchmarkEquity": "993.6880114503426073"
+        },
+        {
+          "timestampUtcMs": 1730091600000,
+          "equity": "1000",
+          "drawdown": {
+            "value": "0",
+            "reason": null
+          },
+          "benchmarkEquity": "993.9330310113426073"
+        },
+        {
+          "timestampUtcMs": 1730095200000,
+          "equity": "1000",
+          "drawdown": {
+            "value": "0",
+            "reason": null
+          },
+          "benchmarkEquity": "996.3620991861426073"
+        },
+        {
+          "timestampUtcMs": 1730098800000,
+          "equity": "998.7275093515204985",
+          "drawdown": {
+            "value": "0.001272490648",
+            "reason": null
+          },
+          "benchmarkEquity": "997.0854204051426073"
+        },
+        {
+          "timestampUtcMs": 1730102400000,
+          "equity": "1005.4343183078204985",
+          "drawdown": {
+            "value": "0",
+            "reason": null
+          },
+          "benchmarkEquity": "1003.7812034622426073"
+        },
+        {
+          "timestampUtcMs": 1730106000000,
+          "equity": "1004.1481252630204985",
+          "drawdown": {
+            "value": "0.00127924124",
+            "reason": null
+          },
+          "benchmarkEquity": "1002.4971249006426073"
+        },
+        {
+          "timestampUtcMs": 1730109600000,
+          "equity": "1007.7633388030204985",
+          "drawdown": {
+            "value": "0",
+            "reason": null
+          },
+          "benchmarkEquity": "1006.1063950806426073"
+        },
+        {
+          "timestampUtcMs": 1730113200000,
+          "equity": "1008.5256198043204985",
+          "drawdown": {
+            "value": "0",
+            "reason": null
+          },
+          "benchmarkEquity": "1006.8674229027426073"
+        },
+        {
+          "timestampUtcMs": 1730116800000,
+          "equity": "1010.4053838852204985",
+          "drawdown": {
+            "value": "0",
+            "reason": null
+          },
+          "benchmarkEquity": "1008.7440966780426073"
+        },
+        {
+          "timestampUtcMs": 1730120400000,
+          "equity": "1012.6719464229204985",
+          "drawdown": {
+            "value": "0",
+            "reason": null
+          },
+          "benchmarkEquity": "1011.0069330189426073"
+        },
+        {
+          "timestampUtcMs": 1730124000000,
+          "equity": "1011.3784053831204985",
+          "drawdown": {
+            "value": "0.001277354472",
+            "reason": null
+          },
+          "benchmarkEquity": "1009.7155185423426073"
+        },
+        {
+          "timestampUtcMs": 1730127600000,
+          "equity": "1011.6724721430204985",
+          "drawdown": {
+            "value": "0.00098696748",
+            "reason": null
+          },
+          "benchmarkEquity": "1010.0091018606426073"
+        },
+        {
+          "timestampUtcMs": 1730131200000,
+          "equity": "1006.5905988010204985",
+          "drawdown": {
+            "value": "0.006005249422",
+            "reason": null
+          },
+          "benchmarkEquity": "1004.9355830466426073"
+        },
+        {
+          "timestampUtcMs": 1730134800000,
+          "equity": "1004.5784252345827565",
+          "drawdown": {
+            "value": "0.007992243901",
+            "reason": null
+          },
+          "benchmarkEquity": "1008.0910535247426073"
+        },
+        {
+          "timestampUtcMs": 1730138400000,
+          "equity": "1006.5810042042870588",
+          "drawdown": {
+            "value": "0.006014723958",
+            "reason": null
+          },
+          "benchmarkEquity": "1012.1218453806426073"
+        },
+        {
+          "timestampUtcMs": 1730142000000,
+          "equity": "1009.9096194654870588",
+          "drawdown": {
+            "value": "0.002727760917",
+            "reason": null
+          },
+          "benchmarkEquity": "1015.4687832402426073"
+        },
+        {
+          "timestampUtcMs": 1730145600000,
+          "equity": "1016.0068278340870588",
+          "drawdown": {
+            "value": "0",
+            "reason": null
+          },
+          "benchmarkEquity": "1021.5995541240426073"
+        },
+        {
+          "timestampUtcMs": 1730149200000,
+          "equity": "1016.2195720498870588",
+          "drawdown": {
+            "value": "0",
+            "reason": null
+          },
+          "benchmarkEquity": "1021.8134694054426073"
+        },
+        {
+          "timestampUtcMs": 1730152800000,
+          "equity": "1018.3563527742870588",
+          "drawdown": {
+            "value": "0",
+            "reason": null
+          },
+          "benchmarkEquity": "1023.9620121906426073"
+        },
+        {
+          "timestampUtcMs": 1730156400000,
+          "equity": "1020.8463939557870588",
+          "drawdown": {
+            "value": "0",
+            "reason": null
+          },
+          "benchmarkEquity": "1026.4657599801426073"
+        },
+        {
+          "timestampUtcMs": 1730160000000,
+          "equity": "1020.8545652013870588",
+          "drawdown": {
+            "value": "0",
+            "reason": null
+          },
+          "benchmarkEquity": "1026.4739762049426073"
+        }
+      ]
+    },
+    "definitions": [
+      "净盈亏=末收盘权益−初始本金；权益=现金+按收盘价向下估值的持仓市值；不强制末尾平仓。",
+      "成本基础含买手续费；部分退出按数量比例向下分配成本，最后平仓分配余数；已实现+浮动=净盈亏。滑点已含在成交名义额，不重复扣除。",
+      "完成交易=空仓至再次空仓的完整周期；胜率仅净盈利周期/完成周期（含平手）；利润因子仅完成周期盈利总和/亏损绝对总和；无交易或无亏损为NA。",
+      "回撤按每根收盘权益与含初始锚点的历史峰值计算；最长持续时间包括末尾未恢复区间；不代表根内最大风险。",
+      "暴露为持仓覆盖K线区间上界，根内退出计整根，开盘清仓且未重新买入的根不计；未知根内时间不伪造精确暴露。",
+      "买入持有首根开盘买入，初始本金、买滑点、手续费、精度和最小名义额相同，无保护，末收盘估值不清仓，不扣卖成本；拒单NA。",
+      "金额18位BigInt规范字符串；无量纲比例向零截断12位。年化CAGR仅>=365天且>=252根、首末权益>0，用365天年及Number近似幂；否则NA与原因。"
+    ],
+    "disclaimer": "仅供学习研究，历史表现不代表未来表现"
+  }
+}
