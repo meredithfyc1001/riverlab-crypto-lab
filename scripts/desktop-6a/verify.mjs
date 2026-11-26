@@ -40,7 +40,7 @@ const installFolder = process.env.RIVERLAB_6A_INSTALL_DIR;
 const numberOfStarts = Number(process.env.RIVERLAB_6A_STARTS ?? 3);
 assert(
   Number.isInteger(numberOfStarts) &&
-    numberOfStarts >= 1 &&
+    numberOfStarts >= (windows ? 3 : 1) &&
     numberOfStarts <= 20,
 );
 const scratch = await mkdtemp(join(os.tmpdir(), 'riverlab-6a-'));
@@ -64,6 +64,7 @@ const evidence = {
   scope: browserOnly ? 'browser-only' : 'Windows packaged application and Edge',
   runDirectory: basename(runDir),
   runs: [],
+  parityRuns: [],
   startupMethod:
     'Milliseconds from process spawn to observed visible Chinese workbench, then to first real CSV Worker result, using receipt arrival from the packaged window or Playwright observation of standalone Edge. New empty profile each time, OS cache uncontrolled. Browser and native observation overhead can differ.',
   memoryMethod:
@@ -167,7 +168,7 @@ function startMemory(pid, record) {
     { stdio: ['ignore', 'pipe', 'pipe'], windowsHide: true },
   );
   const readings = (record.memorySamples = []);
-  const state = { phase: 'idle', error: null };
+  const state = { phase: 'startup', error: null };
   const lines = createInterface({ input: sampler.stdout });
   lines.on('line', (line) => {
     try {
@@ -194,6 +195,8 @@ async function runBrowser(iteration, origin) {
     workersObserved: [],
   };
   evidence.runs.push(record);
+  const folder = join(runDir, 'browser-' + iteration);
+  await mkdir(folder);
   const port = await freePort();
   const profile = 'ci-' + randomUUID();
   const flags = [
@@ -225,6 +228,7 @@ async function runBrowser(iteration, origin) {
   child.on('error', (error) => errors.push(error));
   let browser, page, memory;
   try {
+    if (child.pid) memory = startMemory(child.pid, record);
     browser = await attachBrowser(port, child, errors);
     page = await currentPage(browser, origin);
     page.setDefaultTimeout(12000);
@@ -248,61 +252,50 @@ async function runBrowser(iteration, origin) {
     record.engineVersion = browser.version();
     await firstWorker(page, origin);
     record.firstCsvWorkerMs = Math.round(performance.now() - started);
-    // Only the first launch executes the complete workload. The other
-    // launches independently repeat startup and a genuine Worker response.
-    if (iteration === 1) {
-      const folder = join(runDir, 'browser');
-      await mkdir(folder);
-      await page.goto(origin + '/');
-      await heading.waitFor();
-      memory = startMemory(child.pid, record);
-      if (memory) {
-        const deadline = Date.now() + 15000;
-        while (
-          record.memorySamples.length < 3 &&
-          Date.now() < deadline &&
-          !memory.state.error
-        )
-          await pause(200);
-        assert(!memory.state.error, memory.state.error);
-        assert(
-          record.memorySamples.length >= 3,
-          'No stable idle process-tree samples.',
-        );
-        memory.state.phase = 'workload';
-      }
-      await exercise(page, origin, folder, record);
-      if (memory) {
-        assert(!memory.state.error, memory.state.error);
-        const active = record.memorySamples.filter(
-          (sample) => sample.phase === 'workload',
-        );
-        assert(
-          active.length > 0 && active.some((s) => s.processCount >= 2),
-          'Missing browser/render process tree samples.',
-        );
-        record.sampledPeakWorkingSetBytes = Math.max(
-          ...active.map((s) => s.workingSetBytes),
-        );
-        record.sampledPeakPrivateBytes = Math.max(
-          ...active.map((s) => s.privateBytes),
-        );
-        const research = active.filter(
-          (s) =>
-            s.utcMs >= record.researchWindow.startedUtcMs &&
-            s.utcMs <= record.researchWindow.endedUtcMs,
-        );
-        assert(
-          research.length > 0,
-          'No process-tree readings during the 50,000-candle probe.',
-        );
-        record.researchWindowPeakPrivateBytes = Math.max(
-          ...research.map((s) => s.privateBytes),
-        );
-        record.researchWindowPeakWorkingSetBytes = Math.max(
-          ...research.map((s) => s.workingSetBytes),
-        );
-      }
+
+    if (memory) {
+      memory.state.phase = 'idle';
+      await pause(4000);
+      assert(!memory.state.error, memory.state.error);
+      assert(
+        record.memorySamples.some(
+          (s) => s.phase === 'idle' && s.processCount >= 2,
+        ),
+        'Missing idle Edge process-tree samples.',
+      );
+      memory.state.phase = 'workload';
+    }
+    await exercise(page, origin, folder, record);
+    if (memory) {
+      assert(!memory.state.error, memory.state.error);
+      const active = record.memorySamples.filter(
+        (sample) => sample.phase === 'workload',
+      );
+      assert(
+        active.length > 0 && active.some((s) => s.processCount >= 2),
+        'Missing browser/render process tree samples.',
+      );
+      record.sampledPeakWorkingSetBytes = Math.max(
+        ...active.map((s) => s.workingSetBytes),
+      );
+      record.sampledPeakPrivateBytes = Math.max(
+        ...active.map((s) => s.privateBytes),
+      );
+      const research = active.filter(
+        (s) =>
+          s.utcMs >= record.researchWindow.startedUtcMs &&
+          s.utcMs <= record.researchWindow.endedUtcMs,
+      );
+      assert(
+        research.length > 0,
+        'No process-tree readings during the 50,000-candle probe.',
+      );
+      record.researchWindowPeakPrivateBytes = Math.max(
+        ...research.map((s) => s.privateBytes),
+      );
+      record.researchWindowPeakWorkingSetBytes = Math.max(
+        ...research.map((s) => s.workingSetBytes),
+      );
     }
     assert.deepEqual(record.pageErrors, []);
     assert.deepEqual(record.externalOrigins, []);
@@ -314,7 +307,7 @@ async function runBrowser(iteration, origin) {
       record.lastPage = page.url();
       await page
         .screenshot({
-          path: join(runDir, 'browser-' + iteration + '-failure.png'),
+          path: join(folder, 'failure.png'),
           timeout: 3000,
         })
         .catch(() => {});
@@ -328,7 +321,47 @@ async function runBrowser(iteration, origin) {
       child.kill();
       await Promise.race([exited, pause(3000)]);
     }
+    await writeFile(
+      join(folder, 'browser-run.json'),
+      JSON.stringify(record, null, 2) + '\n',
+    );
   }
+}
+
+function comparePair(native, browser) {
+  const app = native.probe;
+  const edge = browser.probe;
+  for (const receipt of [native, browser]) {
+    assert.equal(receipt.replay.restoredReplayCursor, 2);
+    assert.equal(receipt.download.sha256, receipt.probe.downloadSha256);
+    assert.equal(receipt.download.bytes, receipt.probe.downloadBytes);
+    assert.equal(receipt.probe.resultHash, receipt.probe.phase5eResultHash);
+  }
+  assert.equal(app.candles, edge.candles);
+  assert.equal(app.evaluations, edge.evaluations);
+  assert.equal(app.completedTrades, edge.completedTrades);
+  assert.equal(app.workers, edge.workers);
+  assert.deepEqual(
+    [...native.navigation.headings].sort(),
+    [...browser.navigation.headings].sort(),
+  );
+  assert.deepEqual(
+    [...native.navigation.sections].sort(),
+    [...browser.navigation.sections].sort(),
+  );
+  assert.equal(
+    app.resultHash,
+    edge.resultHash,
+    '50,000-candle result differs between the packaged WebView2 app and Edge.',
+  );
+  return {
+    iteration: native.iteration,
+    status: 'PASS',
+    bars: app.candles,
+    evaluations: app.evaluations,
+    completedTrades: app.completedTrades,
+    sha256: app.resultHash,
+  };
 }
 
 let host;
@@ -382,37 +415,44 @@ try {
         failures.push(kind + ' #' + pass + ': ' + error.message);
       }
     }
+    if (!browserOnly) {
+      const pair = evidence.runs.filter((run) => run.iteration === pass);
+      const native = pair.find((run) => run.kind === 'webview2');
+      const browser = pair.find((run) => run.kind === 'browser');
+      if (native?.status === 'PASS' && browser?.status === 'PASS') {
+        try {
+          evidence.parityRuns.push(comparePair(native, browser));
+        } catch (error) {
+          evidence.parityRuns.push({
+            iteration: pass,
+            status: 'FAIL',
+            error: error.message,
+          });
+          failures.push(
+            'Cross-engine comparison #' + pass + ': ' + error.message,
+          );
+        }
+      } else {
+        evidence.parityRuns.push({ iteration: pass, status: 'INCOMPLETE' });
+      }
+    }
   }
   if (failures.length) throw new Error(failures.join('\n'));
   if (!browserOnly) {
-    const native = evidence.runs.find((r) => r.kind === 'webview2');
-    const browser = evidence.runs.find((r) => r.kind === 'browser');
-    const app = native.probe;
-    const edge = browser.probe;
-    for (const receipt of [native, browser]) {
-      assert.equal(receipt.replay.restoredReplayCursor, 2);
-      assert.equal(receipt.download.sha256, receipt.probe.downloadSha256);
-      assert.equal(receipt.probe.resultHash, receipt.probe.phase5eResultHash);
-    }
-    assert.deepEqual(
-      [...native.navigation.headings].sort(),
-      [...browser.navigation.headings].sort(),
-    );
-    assert.deepEqual(
-      [...native.navigation.sections].sort(),
-      [...browser.navigation.sections].sort(),
-    );
-    assert.equal(
-      app.resultHash,
-      edge.resultHash,
-      '50,000-candle result differs between the packaged WebView2 app and Edge.',
+    assert.equal(evidence.parityRuns.length, numberOfStarts);
+    const first = evidence.parityRuns[0];
+    assert(
+      evidence.parityRuns.every(
+        (pair) => pair.status === 'PASS' && pair.sha256 === first.sha256,
+      ),
     );
     evidence.parity = {
-      bars: 50000,
-      evaluations: 100000,
+      bars: first.bars,
+      evaluations: first.evaluations,
       engines: kinds,
-      sha256: app.resultHash,
-      completedTrades: app.completedTrades,
+      sha256: first.sha256,
+      completedTrades: first.completedTrades,
+      pairedRuns: evidence.parityRuns.length,
     };
   }
   evidence.status = 'PASS';

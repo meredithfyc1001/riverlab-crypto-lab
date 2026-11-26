@@ -1,6 +1,7 @@
 // Loaded only by the Windows build when the host has allocated a fresh test profile.
 // The two full document navigations exercise recovery from disk and real download handling.
 import sections from './sections.json';
+import { verifyPrototypeStoreSchema } from './store-schema';
 
 type ReceiptName =
   | 'ready'
@@ -319,9 +320,14 @@ export async function runNativeAcceptance(host: Host) {
       probe.candles !== 50000 ||
       probe.completedTrades !== 2082 ||
       probe.evaluations !== 100000 ||
-      probe.workers !== 2
+      probe.workers !== 2 ||
+      probe.candidateWorkers?.owner !== 'document' ||
+      probe.candidateWorkers.observed?.serial !== 0 ||
+      probe.candidateWorkers.observed?.parallel !== 2
     )
-      throw new Error('研究结果与 5E 基准不符');
+      throw new Error('研究结果或实测候选 Worker 数与 6A 门槛不符');
+    step = '专用验收 profile 对象存储';
+    const storeSchema = await verifyPrototypeStoreSchema('fresh-automation');
     step = '下载';
     await click('下载合成研究报告');
     const engine = await engineIdentity();
@@ -331,6 +337,7 @@ export async function runNativeAcceptance(host: Host) {
       chart: state.chart,
       replay: { dataset: symbol, candles: 8, restoredReplayCursor: 2 },
       probe,
+      storeSchema,
       sqlite,
       download: {
         filename: probe.downloadName,

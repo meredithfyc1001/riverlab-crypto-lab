@@ -8,6 +8,8 @@ Windows 首轮在 `06ce35e` 构建出 EXE 和 NSIS，并通过 2 项原生 SQLit
 
 第二轮 `7ee85b6` 验证独立 EXE 与安装目录字节一致，PATH 中没有 Node 的松散 EXE 产生可响应窗口、加载 WebView2 后正常退出。系统 Edge 完成页面及 50,000 根计算；WebView2 远程调试连接三次超时，该轮桌面页面和数值比对未通过。后续在同一 EXE 的新建测试配置内运行固定验收流程，用原生回执、磁盘下载 SHA 与外部进程树采样验证。普通启动不启用自动验收。[第二轮作业](https://github.com/meredithfyc1001/riverlab-crypto-lab/actions/runs/45748146765/job/139669126545)
 
+第三轮 `9bc294c` 的原生验收走通中文工作台、SQLite 及已保存回放；50,000 根在 WebView2 157.0.4341.46 的候选子 Worker 报通信错误，同机 Edge 完成。现有错误信息无法确定底层原因。桌面改由页面按调度预算创建同源模块候选，使用 MessagePort 直连两个 Worker。浏览器保留既有嵌套方式，TS 策略和数值内核保持 5E 原版。后续以实际候选通信、同一完整结果 SHA 和落盘下载复验。[第三轮作业](https://github.com/meredithfyc1001/riverlab-crypto-lab/actions/runs/45749871344/job/139674791014)
+
 ## Phase 5E 高级策略研究
 
 PR #14 于 2026-11-25 11:45:05 UTC 合并，最终 5D 功能提交为 `b37094a91614916a35e13bd15c99d9d5270a9081`。合并后 main 的四项作业全部通过。已据此新建分支 `feat/phase-5e-advanced-research`。用户决定 5D 和 5E 共用最终 Windows 测试包，5D 实机和物理断网继续为 **NOT TESTED**。[合并后 CI](https://github.com/meredithfyc1001/riverlab-crypto-lab/actions/runs/45607331060) · [技术设计](docs/phase-5e-design.md) · [联合验收清单](docs/phase-5e-acceptance.md)

@@ -171,6 +171,10 @@ export async function exercise(page, origin, folder, record) {
   assert.equal(probe.serialHash, probe.resultHash);
   assert.equal(probe.poolHash, probe.resultHash);
   assert.equal(probe.workers, 2);
+  assert.deepEqual(probe.candidateWorkers, {
+    owner: 'coordinator',
+    observed: null,
+  });
   assert.equal(probe.completedTrades, 2082);
   assert.equal(probe.evaluations, 100000);
   record.probe = probe;

@@ -1,4 +1,5 @@
 import { contentHash } from '../../src/core/backtests/identity';
+import type { AdvancedInput } from '../../src/core/advanced-research';
 import { advancedTask } from '../../src/infrastructure/advanced-worker';
 import { prepareBacktest } from '../performance/backtest-input';
 import { advancedCapacityInput } from '../performance/capacity/advanced-input';
@@ -17,6 +18,51 @@ const phase5eResultHash =
 let downloadUrl: string | null = null;
 let inFlight: Promise<Awaited<ReturnType<typeof measure>>> | undefined;
 
+async function measureResearch(
+  input: AdvancedInput,
+  mode: 'serial' | 'parallel',
+  documentOwnsCandidates: boolean,
+) {
+  const OriginalWorker = window.Worker;
+  let created = 0;
+  // Observe successful construction in this test document only. A browser's
+  // nested workers belong to its coordinator and cannot be counted here.
+  if (documentOwnsCandidates) {
+    window.Worker = class extends OriginalWorker {
+      constructor(url: URL | string, options?: WorkerOptions) {
+        super(url, options);
+        if (options?.name === 'riverlab-advanced-candidate') {
+          if (
+            options.type !== 'module' ||
+            new URL(url, location.href).origin !== location.origin
+          ) {
+            this.terminate();
+            throw new Error('候选 Worker 不是同源模块。');
+          }
+          created++;
+        }
+      }
+    };
+  }
+  try {
+    const { record } = await advancedTask({
+      kind: 'run',
+      name: '6A 合成压力验证',
+      input,
+      concurrency: mode === 'serial' ? 1 : 4,
+    }).promise;
+    if (documentOwnsCandidates && created !== (mode === 'serial' ? 0 : 2)) {
+      throw new Error(`页面实际创建了 ${created} 个候选 Worker。`);
+    }
+    return { record, created };
+  } catch (error) {
+    const phase = mode === 'serial' ? '串行研究' : '并行研究';
+    throw new Error(phase + '失败：' + String(error));
+  } finally {
+    if (documentOwnsCandidates) window.Worker = OriginalWorker;
+  }
+}
+
 async function measure() {
   const began = performance.now();
   const idb = await probeDisposableIdb();
@@ -31,13 +77,22 @@ async function measure() {
     preview.plan.bars !== 100_000
   )
     throw new Error('50,000 根研究输入或并发预算发生变化');
-  const req = { kind: 'run', name: '6A 合成压力验证', input } as const;
+  const documentOwnsCandidates =
+    import.meta.env.MODE === 'desktop-6a' && '__TAURI__' in window;
   const stopSampling = responsiveness();
   try {
     const start = performance.now();
-    const serial = await advancedTask({ ...req, concurrency: 1 }).promise;
+    const serial = await measureResearch(
+      input,
+      'serial',
+      documentOwnsCandidates,
+    );
     const joined = performance.now();
-    const pool = await advancedTask({ ...req, concurrency: 4 }).promise;
+    const pool = await measureResearch(
+      input,
+      'parallel',
+      documentOwnsCandidates,
+    );
     const ran = performance.now();
     const sample = stopSampling();
     const serialHash = contentHash(serial.record.result);
@@ -65,6 +120,12 @@ async function measure() {
       serialHash,
       poolHash,
       workers: preview.workers,
+      candidateWorkers: documentOwnsCandidates
+        ? {
+            owner: 'document',
+            observed: { serial: serial.created, parallel: pool.created },
+          }
+        : { owner: 'coordinator', observed: null },
       candles: input.dataset.candles.length,
       completedTrades,
       evaluations: preview.plan.bars,

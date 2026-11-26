@@ -47,23 +47,50 @@ export type CandidateJob =
   | { kind: 'evaluate'; candidate: Candidate; window: WindowSpec };
 export type CandidateReply = { row: CandidateRow } | { error: string };
 
-function workerLane(input: AdvancedInput): EvaluationLane {
-  const worker = new Worker(
-    new URL('./advanced-candidate.worker.ts', import.meta.url),
-    { type: 'module' },
-  );
+// The desktop parent creates peer Workers. Only the endpoint crosses the window;
+// the original input and all candidate rows travel directly between Workers.
+export function workerLane(
+  input: AdvancedInput,
+  owner?: MessagePort,
+): EvaluationLane {
+  let worker: Worker | MessagePort;
+  if (owner) {
+    const { port1, port2 } = new MessageChannel();
+    try {
+      owner.postMessage('create-candidate', [port2]);
+    } catch (error) {
+      port1.close();
+      port2.close();
+      throw error;
+    }
+    worker = port1;
+  } else {
+    worker = new Worker(
+      new URL('./advanced-candidate.worker.ts', import.meta.url),
+      { type: 'module' },
+    );
+  }
+  function stop() {
+    if ('terminate' in worker) worker.terminate();
+    else worker.close();
+  }
   let rejectActive: ((reason: Error) => void) | null = null;
   let failure: Error | null = null;
-  function fail() {
-    failure = new Error('候选计算 Worker 通信失败，研究未完成。');
+  function fail(message: string) {
+    failure = new Error(message);
     rejectActive?.(failure);
   }
-  worker.onerror = fail;
-  worker.onmessageerror = fail;
+  if ('onerror' in worker)
+    worker.onerror = (event) =>
+      fail(
+        '候选 Worker 脚本加载或执行失败：' +
+          (event.message || '运行时未提供原因'),
+      );
+  worker.onmessageerror = () => fail('候选 Worker 消息无法反序列化。');
   try {
     worker.postMessage({ kind: 'init', input } satisfies CandidateJob);
   } catch (error) {
-    worker.terminate();
+    stop();
     throw error;
   }
   return {
@@ -94,7 +121,7 @@ function workerLane(input: AdvancedInput): EvaluationLane {
       });
     },
     close() {
-      worker.terminate();
+      stop();
       rejectActive?.(new Error('高级研究任务已停止。'));
       rejectActive = null;
     },

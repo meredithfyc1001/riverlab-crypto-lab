@@ -6,7 +6,11 @@ import {
 } from '../core/advanced-research/report';
 import { assertMetadata } from '../core/portfolio/report-common';
 import { readAdvancedFile, exportAdvancedFile } from './advanced-file';
-import { advancedWorkerCount, scheduleAdvanced } from './advanced-pool';
+import {
+  advancedWorkerCount,
+  scheduleAdvanced,
+  workerLane,
+} from './advanced-pool';
 import { AdvancedStore } from './advanced-store';
 import type { AdvancedRequest, AdvancedReply } from './advanced-worker';
 
@@ -15,7 +19,7 @@ const scope = globalThis as unknown as {
   postMessage: (r: AdvancedReply) => void;
 };
 
-scope.onmessage = async ({ data }) => {
+scope.onmessage = async ({ data, ports }) => {
   try {
     const now = Date.now();
     switch (data.kind) {
@@ -40,6 +44,7 @@ scope.onmessage = async ({ data }) => {
             plan,
             data.concurrency,
             (progress, total) => scope.postMessage({ progress, total }),
+            ports[0] ? (captured) => workerLane(captured, ports[0]) : undefined,
           );
           scope.postMessage({
             record: sealAdvancedReport(input, result, metadata),

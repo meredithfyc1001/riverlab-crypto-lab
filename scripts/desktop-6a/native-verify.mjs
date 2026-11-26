@@ -111,7 +111,7 @@ async function verifiedDownload(directory, evidenceDir, probe) {
   );
 }
 
-function checkWorkload({ navigation, replay, probe, sqlite }) {
+function checkWorkload({ navigation, replay, probe, sqlite, storeSchema }) {
   assert.equal(navigation.lang, 'zh-CN');
   assert.equal(new Set(navigation.headings).size, 11);
   assert.equal(new Set(navigation.sections).size, 11);
@@ -120,6 +120,12 @@ function checkWorkload({ navigation, replay, probe, sqlite }) {
   assert.equal(probe.candles, 50000);
   assert.equal(probe.evaluations, 100000);
   assert.equal(probe.workers, 2);
+  assert.equal(probe.candidateWorkers.owner, 'document');
+  assert.equal(probe.candidateWorkers.observed.serial, 0);
+  assert.equal(probe.candidateWorkers.observed.parallel, 2);
+  assert.equal(storeSchema.databases, 9);
+  assert.equal(storeSchema.stores, 17);
+  assert.equal(storeSchema.abortAtomic, true);
   assert.equal(probe.completedTrades, 2082);
   assert.equal(probe.idb, true);
   assert(probe.chart.upPixels > 0 && probe.chart.downPixels > 0);
@@ -202,7 +208,7 @@ export async function runNative({ exe, iteration, runDir, startMemory }) {
     throw new Error('Timed out waiting for packaged UI receipt ' + name);
   }
   try {
-    if (iteration === 1 && app.pid) memory = startMemory(app.pid, record);
+    if (app.pid) memory = startMemory(app.pid, record);
     const ready = await waitFor('ready', 60000);
     record.workbenchMs = Math.round(ready.mtimeMs - startUtc);
     assert.equal(ready.data.lang, 'zh-CN');
@@ -215,52 +221,60 @@ export async function runNative({ exe, iteration, runDir, startMemory }) {
     assert(
       record.workbenchMs >= 0 && record.firstCsvWorkerMs >= record.workbenchMs,
     );
-    if (iteration === 1) {
-      const researchStart = await waitFor('research-start', 120000);
-      const researchEnd = await waitFor('research-end', 180000);
-      const { data, mtimeMs: completed } = await waitFor('result', 60000);
-      assert.equal(data.download.requested, true);
-      assert.equal(data.engineVersion, record.engineVersion);
-      checkWorkload(data);
-      const { navigation, replay, probe, sqlite, chart } = data;
-      Object.assign(record, { navigation, replay, probe, sqlite, chart });
-      record.download = await verifiedDownload(directory, evidenceDir, probe);
-      for (const sample of record.memorySamples) {
-        const t = sample.utcMs;
-        if (t >= worker.mtimeMs && t < worker.mtimeMs + 4000)
-          sample.phase = 'idle';
-        else if (t >= worker.mtimeMs + 4000 && t <= completed)
-          sample.phase = 'workload';
-        else sample.phase = t < worker.mtimeMs ? 'startup' : 'complete';
-      }
-      const active = record.memorySamples.filter((s) => s.phase === 'workload');
-      const research = active.filter(
-        (s) =>
-          s.utcMs >= researchStart.mtimeMs && s.utcMs <= researchEnd.mtimeMs,
-      );
-      assert(
-        research.some((s) => s.processCount >= 2),
-        'Missing installed runtime process-tree samples during research',
-      );
-      record.researchWindowPeakWorkingSetBytes = Math.max(
-        ...research.map((s) => s.workingSetBytes),
-      );
-      record.researchWindowPeakPrivateBytes = Math.max(
-        ...research.map((s) => s.privateBytes),
-      );
-      assert(
-        record.memorySamples.some(
-          (s) => s.phase === 'idle' && s.processCount >= 2,
-        ),
-        'Missing installed runtime idle samples',
-      );
-      record.sampledPeakWorkingSetBytes = Math.max(
-        ...active.map((s) => s.workingSetBytes),
-      );
-      record.sampledPeakPrivateBytes = Math.max(
-        ...active.map((s) => s.privateBytes),
-      );
+    const researchStart = await waitFor('research-start', 120000);
+    const researchEnd = await waitFor('research-end', 180000);
+    record.researchWindow = {
+      startedUtcMs: researchStart.mtimeMs,
+      endedUtcMs: researchEnd.mtimeMs,
+    };
+    const { data, mtimeMs: completed } = await waitFor('result', 60000);
+    assert.equal(data.download.requested, true);
+    assert.equal(data.engineVersion, record.engineVersion);
+    checkWorkload(data);
+    const { navigation, replay, probe, sqlite, chart, storeSchema } = data;
+    Object.assign(record, {
+      navigation,
+      replay,
+      probe,
+      sqlite,
+      chart,
+      storeSchema,
+    });
+    record.download = await verifiedDownload(directory, evidenceDir, probe);
+    for (const sample of record.memorySamples) {
+      const t = sample.utcMs;
+      if (t >= worker.mtimeMs && t < worker.mtimeMs + 4000)
+        sample.phase = 'idle';
+      else if (t >= worker.mtimeMs + 4000 && t <= completed)
+        sample.phase = 'workload';
+      else sample.phase = t < worker.mtimeMs ? 'startup' : 'complete';
     }
+    const active = record.memorySamples.filter((s) => s.phase === 'workload');
+    const research = active.filter(
+      (s) => s.utcMs >= researchStart.mtimeMs && s.utcMs <= researchEnd.mtimeMs,
+    );
+    assert(
+      research.some((s) => s.processCount >= 2),
+      'Missing installed runtime process-tree samples during research',
+    );
+    record.researchWindowPeakWorkingSetBytes = Math.max(
+      ...research.map((s) => s.workingSetBytes),
+    );
+    record.researchWindowPeakPrivateBytes = Math.max(
+      ...research.map((s) => s.privateBytes),
+    );
+    assert(
+      record.memorySamples.some(
+        (s) => s.phase === 'idle' && s.processCount >= 2,
+      ),
+      'Missing installed runtime idle samples',
+    );
+    record.sampledPeakWorkingSetBytes = Math.max(
+      ...active.map((s) => s.workingSetBytes),
+    );
+    record.sampledPeakPrivateBytes = Math.max(
+      ...active.map((s) => s.privateBytes),
+    );
     delete record.awaiting;
     record.status = 'PASS';
     return record;

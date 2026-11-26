@@ -67,19 +67,19 @@ if (verification) {
     }
     lines.push(
       '',
-      '每次启动使用独立空配置，操作系统文件缓存未控制，计时包含连接自动化驱动。¹ 空闲期最后一次进程树采样。² 首轮运行完整工作负载，峰值取进程树采样最大值，共享页面可计入多个进程工作集。',
+      '每次启动使用独立空配置并运行完整负载，操作系统文件缓存未控制。计时含各自观察程序的开销。¹ 空闲期最后一次进程树采样。² 完整负载期采样最大值，共享页面可计入多个进程工作集。',
     );
   }
   const workloads = verification.runs.filter((run) => run.probe?.timings);
   if (workloads.length) {
     lines.push(
       '',
-      '| 50,000 根负载 | 串行 ms | 双 Worker ms | JSON 导出字节 |',
-      '| --- | ---: | ---: | ---: |',
+      '| 50,000 根负载 | 次序 | 串行 ms | 双 Worker ms | JSON 导出字节 |',
+      '| --- | ---: | ---: | ---: | ---: |',
     );
-    for (const { kind, probe } of workloads) {
+    for (const { kind, iteration, probe } of workloads) {
       lines.push(
-        `| ${kind} | ${probe.timings.serialMs.toFixed(1)} | ${probe.timings.poolMs.toFixed(1)} | ${probe.downloadBytes} |`,
+        `| ${kind} | ${iteration} | ${probe.timings.serialMs.toFixed(1)} | ${probe.timings.poolMs.toFixed(1)} | ${probe.downloadBytes} |`,
       );
     }
   }
