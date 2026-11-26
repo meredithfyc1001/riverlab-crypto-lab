@@ -57,7 +57,7 @@ async function measureResearch(
     return { record, created };
   } catch (error) {
     const phase = mode === 'serial' ? '串行研究' : '并行研究';
-    throw new Error(phase + '失败：' + String(error));
+    throw new Error(phase + '失败：' + String(error), { cause: error });
   } finally {
     if (documentOwnsCandidates) window.Worker = OriginalWorker;
   }
