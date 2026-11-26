@@ -8,6 +8,10 @@ Linux 开发验证覆盖了真实 SQLite 写满后的事务回滚、两个并发
 
 在隔离 Chromium 154 中，保存并重开的人工合成行情得到 9 笔成交，费用为 `9.28719551797935`，最终权益为 `1209.64074296063065`。6A 的 50,000 根固定研究仍得到完整结果摘要 `e3fb4410dc0bac12ca6dc1d108d4a6ae2f56107a47fc20bbda789469cbaf5d6b`。工作树并行开发时，首轮本机 E2E 有三个桌面构建在容量夹具落盘前启动而失败；最终提交以 clean checkout 重跑。候选 `dfe3f95` 在四个浏览器作业均发现回测 Worker 取消测试仍在注销之后读取事件回调。现改为先捕获已排队的回调，再断言注销及迟到消息无法覆盖新任务。各平台运行、下载及逐文件 SHA-256 以 [Draft PR #17](https://github.com/meredithfyc1001/riverlab-crypto-lab/pull/17) 对应提交的记录为准。
 
+首版 macOS Chromium 的 trace 显示高级研究表单在分包切换前选中了策略中心的同名控件；组合测试在第二份行情仍由 Worker 准备时看到了第一份的成功提示。用例现限定到目标表单，并在导航前等待指定币种出现于库中。Windows Chrome 的旧研究用例实测运行 3342 ms，最大主线程间隔 46.1 ms；第二次运行的启动点击直到约 2.3 秒后才交还驱动，届时取消按钮已消失。改为同时等待本次运行的取消控件及启动点击。性能门槛、取消后的结果断言均保留。
+
+精确 256 MiB 的合成合法 JSON 在 Linux Chromium 经临时 stdio 适配器进入实际 Rust 服务与 SQLite，8 MiB 确认后取消、同 ID 重试和完整重开均通过。含测试转发耗时 171.49 秒，Rust RSS 峰值 792,876 KiB，结束时 7,488 KiB。Windows Tauri 传输的测量见同提交 CI。[本机容量原始记录](docs/phase-6b-linux-capacity.json)
+
 ## Phase 6A Windows 验证原型
 
 ### PR #16 · Windows 11 首轮实机反馈

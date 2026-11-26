@@ -35,16 +35,22 @@ fn is_link(metadata: &fs::Metadata) -> bool {
     }
 }
 
-// Each caller passes one fixed child of a trusted, existing parent. Never follow
-// directory links (including Windows junctions) out of the service's namespace.
-pub fn private_directory(path: &Path) -> io::Result<()> {
-    let mut builder = fs::DirBuilder::new();
+fn create_private_directory(path: &Path) -> io::Result<()> {
     #[cfg(unix)]
     {
         use std::os::unix::fs::DirBuilderExt;
-        builder.mode(0o700);
+        fs::DirBuilder::new().mode(0o700).create(path)
     }
-    match builder.create(path) {
+    #[cfg(windows)]
+    {
+        fs::create_dir(path)
+    }
+}
+
+// Each caller passes one fixed child of a trusted, existing parent. Never follow
+// directory links (including Windows junctions) out of the service's namespace.
+pub fn private_directory(path: &Path) -> io::Result<()> {
+    match create_private_directory(path) {
         Ok(()) => Ok(()),
         Err(error) if error.kind() == io::ErrorKind::AlreadyExists => {
             let meta = fs::symlink_metadata(path)?;
@@ -435,13 +441,7 @@ mod tests {
         const KEY: &str = "RIVERLAB_TEST_CHILD_SERVICE_LOCK_ROOT";
         if let Some(root) = std::env::var_os(KEY) {
             // Even an accidentally inherited test variable cannot reopen a real service.
-            let mut directory = fs::DirBuilder::new();
-            #[cfg(unix)]
-            {
-                use std::os::unix::fs::DirBuilderExt;
-                directory.mode(0o700);
-            }
-            directory.create(&root).unwrap();
+            create_private_directory(Path::new(&root)).unwrap();
             let _service = LocalService::start(Path::new(&root)).unwrap();
             std::process::exit(54);
         }

@@ -1,0 +1,101 @@
+{
+  "environment": "Linux Chromium / isolated test stdio adapter to actual Rust Protocol, LocalService and SQLite Repository",
+  "chromium": "154.0.8037.57",
+  "elapsedMs": 171490,
+  "bytes": 268435456,
+  "startedUtcMs": 1795683587938,
+  "endedUtcMs": 1795683759428,
+  "heapSamples": [
+    {
+      "stage": "start",
+      "utcMs": 1795683587941,
+      "usedJSHeapBytes": 2087962
+    },
+    {
+      "stage": "file-verified",
+      "utcMs": 1795683598532,
+      "usedJSHeapBytes": 3373121
+    },
+    {
+      "stage": "upload-cancelled",
+      "utcMs": 1795683606875,
+      "usedJSHeapBytes": 270423924
+    },
+    {
+      "stage": "upload-64-MiB",
+      "utcMs": 1795683644357,
+      "usedJSHeapBytes": 270496923
+    },
+    {
+      "stage": "upload-128-MiB",
+      "utcMs": 1795683671285,
+      "usedJSHeapBytes": 270835248
+    },
+    {
+      "stage": "upload-192-MiB",
+      "utcMs": 1795683686364,
+      "usedJSHeapBytes": 271174424
+    },
+    {
+      "stage": "upload-256-MiB",
+      "utcMs": 1795683700817,
+      "usedJSHeapBytes": 270813352
+    },
+    {
+      "stage": "committed",
+      "utcMs": 1795683711161,
+      "usedJSHeapBytes": 270824598
+    },
+    {
+      "stage": "reopened",
+      "utcMs": 1795683759428,
+      "usedJSHeapBytes": 370340227
+    }
+  ],
+  "cancelledAfterBytes": 8388608,
+  "runHash": "ca766173589c9a4a1a15a30ed11012f0e4d7c194b9908530ecf96ffbeac1052a",
+  "payloadHash": "ba0ad45d4edcb16b46ba07d17a3e1dce146cd8fa9c926a8047ecc554710a11cb",
+  "rustRssKiB": {
+    "baseline": 3872,
+    "peak": 792876,
+    "end": 7488,
+    "stages": [
+      {
+        "stage": "start",
+        "rssKiB": 3872
+      },
+      {
+        "stage": "file-verified",
+        "rssKiB": 3872
+      },
+      {
+        "stage": "upload-cancelled",
+        "rssKiB": 4988
+      },
+      {
+        "stage": "upload-64-MiB",
+        "rssKiB": 69528
+      },
+      {
+        "stage": "upload-128-MiB",
+        "rssKiB": 136088
+      },
+      {
+        "stage": "upload-192-MiB",
+        "rssKiB": 201624
+      },
+      {
+        "stage": "upload-256-MiB",
+        "rssKiB": 267160
+      },
+      {
+        "stage": "committed",
+        "rssKiB": 6724
+      },
+      {
+        "stage": "reopened",
+        "rssKiB": 7488
+      }
+    ]
+  }
+}
