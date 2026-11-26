@@ -67,21 +67,30 @@ if ($setup.ExitCode -ne 0) { throw "NSIS returned $($setup.ExitCode)." }
 
 $installed = Get-Item -LiteralPath (Join-Path $installDir 'riverlab-6a.exe')
 $installedHash = (Get-FileHash -LiteralPath $installed.FullName -Algorithm SHA256).Hash.ToLowerInvariant()
-$standalone = $payload | Where-Object name -eq 'riverlab-6a.exe'
-if ($standalone.sha256 -cne $installedHash) { throw "Installed EXE differs from the shipped standalone EXE." }
+$standalone = Get-Item -LiteralPath (Join-Path $extracted 'riverlab-6a.exe')
+$standaloneHash = (Get-FileHash -LiteralPath $standalone.FullName -Algorithm SHA256).Hash.ToLowerInvariant()
+$identical = $standaloneHash -ceq $installedHash
 [ordered]@{
     sourceSha = $sha
     installerExitCode = $setup.ExitCode
     extractedAndInstalledUnderUnicodeAndSpacePaths = $true
     installedExeSha256 = $installedHash
-    installedExeEqualsStandalone = $true
+    installedExeBytes = $installed.Length
+    installedExeFileVersion = $installed.VersionInfo.FileVersion
+    standaloneExeSha256 = $standaloneHash
+    standaloneExeBytes = $standalone.Length
+    standaloneExeFileVersion = $standalone.VersionInfo.FileVersion
+    installedExeEqualsStandalone = $identical
     installedDirectoryBytes = (Get-ChildItem -LiteralPath $installDir -File -Recurse | Measure-Object Length -Sum).Sum
     archiveSha256 = $digest
     archiveBytes = (Get-Item -LiteralPath $archive).Length
     system = [Environment]::OSVersion.Version.ToString()
     runnerImage = $env:ImageVersion
 } | ConvertTo-Json | Set-Content -LiteralPath "$evidence/windows-install.json" -Encoding utf8NoBOM
+if (-not $identical) {
+    throw "EXE identity mismatch. Installed SHA-256 $installedHash ($($installed.Length) bytes), standalone SHA-256 $standaloneHash ($($standalone.Length) bytes)."
+}
 "RIVERLAB_6A_INSTALL_DIR=$installDir" >> $env:GITHUB_ENV
 "RIVERLAB_6A_INSTALLER=$extractedInstaller" >> $env:GITHUB_ENV
 "RIVERLAB_6A_EXE=$($installed.FullName)" >> $env:GITHUB_ENV
-"RIVERLAB_6A_STANDALONE=$(Join-Path $extracted 'riverlab-6a.exe')" >> $env:GITHUB_ENV
+"RIVERLAB_6A_STANDALONE=$($standalone.FullName)" >> $env:GITHUB_ENV

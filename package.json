@@ -16,7 +16,7 @@
     "test:watch": "vitest",
     "build": "npm run typecheck && vite build",
     "build:desktop-6a": "npm run typecheck && vite build --mode desktop-6a",
-    "desktop:build": "tauri build --bundles nsis -- --locked",
+    "desktop:build": "tauri build --bundles nsis --no-binary-patching -- --locked",
     "preview": "vite preview --host 127.0.0.1",
     "test:e2e": "playwright test",
     "package:local": "node scripts/package-local.mjs",
