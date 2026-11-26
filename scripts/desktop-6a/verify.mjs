@@ -65,7 +65,7 @@ const evidence = {
   runDirectory: basename(runDir),
   runs: [],
   startupMethod:
-    'Milliseconds from process spawn to observed visible Chinese workbench, then to first real CSV Worker result, including local automation attach and UI. New empty profile each time, OS cache uncontrolled.',
+    'Milliseconds from process spawn to observed visible Chinese workbench, then to first real CSV Worker result, using receipt arrival from the packaged window or Playwright observation of standalone Edge. New empty profile each time, OS cache uncontrolled. Browser and native observation overhead can differ.',
   memoryMethod:
     'Windows Win32_Process descendants of the actual EXE/browser PID. WorkingSetSize includes shared pages; PrivatePageCount measures private committed bytes. Peaks are maxima of samples, not OS high-water marks. Vite/driver excluded.',
 };
@@ -113,70 +113,43 @@ function browserExecutable() {
   );
   return target;
 }
-function desktopEnvironment(profileId, debugArgs) {
-  // The test process has no Node/npm in PATH. The installed EXE receives
-  // the debugging feature only for this disposable profile and invocation.
-  const env = Object.fromEntries(
-    Object.entries(process.env).filter(
-      ([name]) =>
-        ![
-          'path',
-          'node_path',
-          'node_options',
-          'webview2_user_data_folder',
-          'webview2_additional_browser_arguments',
-          'webview2_browser_executable_folder',
-        ].includes(name.toLowerCase()),
-    ),
-  );
-  const system = process.env.SystemRoot;
-  return {
-    ...env,
-    Path: join(system, 'System32') + ';' + system,
-    RIVERLAB_6A_TEST_PROFILE: profileId,
-    WEBVIEW2_ADDITIONAL_BROWSER_ARGUMENTS: debugArgs.join(' '),
-  };
-}
-async function attach(port, child, errors) {
+async function attachBrowser(port, child, errors) {
   const url = 'http://127.0.0.1:' + port;
   const until = Date.now() + 60000;
   do {
     if (errors.length) throw errors[0];
     if (child.exitCode !== null || child.signalCode)
       throw new Error(
-        'Test process exited before its WebView was accessible: ' +
+        'Comparator browser exited before automation was ready: ' +
           child.exitCode,
       );
+    let response;
     try {
-      const response = await fetch(url + '/json/version', {
+      response = await fetch(url + '/json/version', {
         signal: AbortSignal.timeout(700),
       });
-      if (response.ok) {
-        const info = await response.json();
-        return await chromium.connectOverCDP(info.webSocketDebuggerUrl, {
-          timeout: 5000,
-        });
-      }
     } catch {
-      /* During startup the port is initially unavailable. */
+      /* The test-owned browser is still starting. */
+    }
+    if (response?.ok) {
+      const info = await response.json();
+      return await chromium.connectOverCDP(info.webSocketDebuggerUrl, {
+        timeout: 5000,
+      });
     }
     await pause(60);
   } while (Date.now() < until);
-  throw new Error('Timed out attaching to the test-owned WebView/browser.');
+  throw new Error('Comparator browser did not publish its DevTools endpoint.');
 }
-async function currentPage(browser, desktop) {
+async function currentPage(browser, origin) {
   const until = Date.now() + 30000;
   do {
     const pages = browser.contexts().flatMap((context) => context.pages());
-    const page = pages.find((p) =>
-      desktop
-        ? p.url().startsWith('https://tauri.localhost/')
-        : !p.url().startsWith('devtools:'),
-    );
+    const page = pages.find((p) => p.url().startsWith(origin + '/'));
     if (page) return page;
     await pause(50);
   } while (Date.now() < until);
-  throw new Error('Did not find the packaged window or comparator tab.');
+  throw new Error('Did not find the comparator tab for the test origin.');
 }
 function startMemory(pid, record) {
   if (!windows) return null;
@@ -211,10 +184,9 @@ function startMemory(pid, record) {
   });
   return { state, sampler };
 }
-async function run(kind, iteration, baselineOrigin) {
-  const desktop = kind === 'webview2';
+async function runBrowser(iteration, origin) {
   const record = {
-    kind,
+    kind: 'browser',
     iteration,
     startupProfile: 'fresh',
     pageErrors: [],
@@ -228,46 +200,37 @@ async function run(kind, iteration, baselineOrigin) {
     '--remote-debugging-address=127.0.0.1',
     '--remote-debugging-port=' + port,
   ];
-  const command = desktop ? exe : browserExecutable();
-  const args = desktop
-    ? []
-    : [
-        ...flags,
-        '--user-data-dir=' + join(scratch, profile),
-        '--no-first-run',
-        '--no-default-browser-check',
-        '--disable-background-networking',
-        ...(windows
-          ? []
-          : [
-              '--headless=new',
-              ...(process.getuid?.() === 0 ? ['--no-sandbox'] : []),
-            ]),
-        baselineOrigin,
-      ];
-  const origin = desktop ? 'https://tauri.localhost' : baselineOrigin;
+  const command = browserExecutable();
+  const args = [
+    ...flags,
+    '--user-data-dir=' + join(scratch, profile),
+    '--no-first-run',
+    '--no-default-browser-check',
+    '--disable-background-networking',
+    ...(windows
+      ? []
+      : [
+          '--headless=new',
+          ...(process.getuid?.() === 0 ? ['--no-sandbox'] : []),
+        ]),
+    origin,
+  ];
   // A separate browser process is launched for each sample; never attach to
   // an existing user browser or pass a user-supplied browser profile.
   const started = performance.now();
   const child = spawn(command, args, {
-    env: desktop ? desktopEnvironment(profile, flags) : process.env,
     stdio: 'ignore',
   });
   const errors = [];
   child.on('error', (error) => errors.push(error));
   let browser, page, memory;
   try {
-    browser = await attach(port, child, errors);
-    page = await currentPage(browser, desktop);
+    browser = await attachBrowser(port, child, errors);
+    page = await currentPage(browser, origin);
     page.setDefaultTimeout(12000);
     page.context().on('request', (request) => {
       const u = new URL(request.url());
-      if (
-        ['http:', 'https:'].includes(u.protocol) &&
-        u.origin !== origin &&
-        !(desktop && u.origin === 'http://ipc.localhost') &&
-        !(desktop && u.origin === 'https://ipc.localhost')
-      )
+      if (['http:', 'https:'].includes(u.protocol) && u.origin !== origin)
         record.externalOrigins.push(u.origin);
     });
     page.on('worker', (w) =>
@@ -288,7 +251,7 @@ async function run(kind, iteration, baselineOrigin) {
     // Only the first launch executes the complete workload. The other
     // launches independently repeat startup and a genuine Worker response.
     if (iteration === 1) {
-      const folder = join(runDir, kind);
+      const folder = join(runDir, 'browser');
       await mkdir(folder);
       await page.goto(origin + '/');
       await heading.waitFor();
@@ -308,7 +271,7 @@ async function run(kind, iteration, baselineOrigin) {
         );
         memory.state.phase = 'workload';
       }
-      await exercise(page, origin, folder, desktop, record);
+      await exercise(page, origin, folder, record);
       if (memory) {
         assert(!memory.state.error, memory.state.error);
         const active = record.memorySamples.filter(
@@ -324,6 +287,21 @@ async function run(kind, iteration, baselineOrigin) {
         record.sampledPeakPrivateBytes = Math.max(
           ...active.map((s) => s.privateBytes),
         );
+        const research = active.filter(
+          (s) =>
+            s.utcMs >= record.researchWindow.startedUtcMs &&
+            s.utcMs <= record.researchWindow.endedUtcMs,
+        );
+        assert(
+          research.length > 0,
+          'No process-tree readings during the 50,000-candle probe.',
+        );
+        record.researchWindowPeakPrivateBytes = Math.max(
+          ...research.map((s) => s.privateBytes),
+        );
+        record.researchWindowPeakWorkingSetBytes = Math.max(
+          ...research.map((s) => s.workingSetBytes),
+        );
       }
     }
     assert.deepEqual(record.pageErrors, []);
@@ -336,7 +314,7 @@ async function run(kind, iteration, baselineOrigin) {
       record.lastPage = page.url();
       await page
         .screenshot({
-          path: join(runDir, kind + '-' + iteration + '-failure.png'),
+          path: join(runDir, 'browser-' + iteration + '-failure.png'),
           timeout: 3000,
         })
         .catch(() => {});
@@ -374,21 +352,56 @@ try {
     preview: { host: '127.0.0.1', port: 0 },
   });
   const origin = 'http://127.0.0.1:' + host.httpServer.address().port;
+  const nativeDriver = browserOnly ? null : await import('./native-verify.mjs');
   const kinds = browserOnly ? ['browser'] : ['webview2', 'browser'];
   const failures = [];
   for (let pass = 1; pass <= numberOfStarts; pass++) {
     for (const kind of pass % 2 ? kinds : [...kinds].reverse()) {
       try {
-        await run(kind, pass, origin);
+        if (kind === 'webview2') {
+          const native = await nativeDriver.runNative({
+            exe,
+            iteration: pass,
+            runDir,
+            startMemory,
+          });
+          evidence.runs.push(native);
+        } else {
+          await runBrowser(pass, origin);
+        }
       } catch (error) {
+        if (kind === 'webview2')
+          evidence.runs.push(
+            error.record ?? {
+              kind,
+              iteration: pass,
+              status: 'FAIL',
+              error: error.message,
+            },
+          );
         failures.push(kind + ' #' + pass + ': ' + error.message);
       }
     }
   }
   if (failures.length) throw new Error(failures.join('\n'));
   if (!browserOnly) {
-    const app = evidence.runs.find((r) => r.kind === 'webview2').probe;
-    const edge = evidence.runs.find((r) => r.kind === 'browser').probe;
+    const native = evidence.runs.find((r) => r.kind === 'webview2');
+    const browser = evidence.runs.find((r) => r.kind === 'browser');
+    const app = native.probe;
+    const edge = browser.probe;
+    for (const receipt of [native, browser]) {
+      assert.equal(receipt.replay.restoredReplayCursor, 2);
+      assert.equal(receipt.download.sha256, receipt.probe.downloadSha256);
+      assert.equal(receipt.probe.resultHash, receipt.probe.phase5eResultHash);
+    }
+    assert.deepEqual(
+      [...native.navigation.headings].sort(),
+      [...browser.navigation.headings].sort(),
+    );
+    assert.deepEqual(
+      [...native.navigation.sections].sort(),
+      [...browser.navigation.sections].sort(),
+    );
     assert.equal(
       app.resultHash,
       edge.resultHash,

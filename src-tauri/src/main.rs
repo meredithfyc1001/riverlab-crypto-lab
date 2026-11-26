@@ -2,12 +2,18 @@
 #![cfg_attr(all(windows, not(debug_assertions)), windows_subsystem = "windows")]
 
 #[cfg(any(windows, test))]
+mod acceptance;
+#[cfg(any(windows, test))]
 mod storage;
 
 #[cfg(windows)]
 mod desktop {
-    use std::{env, error::Error, fs, io};
-    use tauri::{webview::NewWindowResponse, Manager, WebviewWindowBuilder};
+    use super::acceptance::{Acceptance, DOWNLOAD_NAME};
+    use std::{env, error::Error, ffi::OsStr, fs, io, sync::Arc};
+    use tauri::{
+        webview::{DownloadEvent, NewWindowResponse, PageLoadEvent},
+        Manager, State, WebviewWindow, WebviewWindowBuilder,
+    };
     use windows_sys::Win32::UI::WindowsAndMessaging::{MessageBoxW, MB_ICONERROR, MB_OK};
 
     #[tauri::command]
@@ -47,6 +53,31 @@ mod desktop {
         }
     }
 
+    struct AcceptanceState(Option<Arc<Acceptance>>);
+
+    #[tauri::command]
+    async fn qa_record(
+        window: WebviewWindow,
+        state: State<'_, AcceptanceState>,
+        name: String,
+        json: String,
+    ) -> Result<(), String> {
+        let acceptance = state.0.clone().ok_or("当前窗口未运行原生验收。")?;
+        let url = window.url().map_err(|error| error.to_string())?;
+        if window.label() != "main"
+            || url.origin().ascii_serialization() != "https://tauri.localhost"
+            || !matches!(
+                url.path(),
+                "/" | "/index.html" | "/tests/desktop-6a/index.html"
+            )
+        {
+            return Err("验收回执仅允许来自内置工作台和固定验证页。".into());
+        }
+        tauri::async_runtime::spawn_blocking(move || acceptance.record(&name, &json))
+            .await
+            .map_err(|err| err.to_string())?
+    }
+
     fn startup_error(message: &str) -> ! {
         let message: Vec<u16> = message.encode_utf16().chain([0]).collect();
         let title: Vec<u16> = "RiverLab Crypto Lab · 6A"
@@ -65,18 +96,57 @@ mod desktop {
         std::process::exit(1);
     }
 
-    fn create_window(app: &tauri::App, profile_name: &str) -> Result<(), Box<dyn Error>> {
-        let profile = app
-            .path()
-            .app_local_data_dir()?
-            .join("Profiles")
-            .join(profile_name);
-        fs::create_dir_all(&profile)?;
-        WebviewWindowBuilder::from_config(app, &app.config().app.windows[0])?
-            .data_directory(profile)
+    fn create_window(
+        app: &tauri::App,
+        profile_name: &str,
+        runtime: &str,
+    ) -> Result<(), Box<dyn Error>> {
+        let profiles = app.path().app_local_data_dir()?.join("Profiles");
+        fs::create_dir_all(&profiles)?;
+        let profile = profiles.join(profile_name);
+        let mut builder = WebviewWindowBuilder::from_config(app, &app.config().app.windows[0])?
+            .data_directory(profile.clone())
             .on_navigation(|url| url.origin().ascii_serialization() == "https://tauri.localhost")
-            .on_new_window(|_, _| NewWindowResponse::Deny)
-            .build()?;
+            .on_new_window(|_, _| NewWindowResponse::Deny);
+        let acceptance = if env::var_os("RIVERLAB_6A_NATIVE_VERIFY").as_deref()
+            == Some(OsStr::new("1"))
+        {
+            let session = Arc::new(Acceptance::create(&profile, runtime)?);
+            let download = session.directory.join(DOWNLOAD_NAME);
+            let host_evidence = Arc::clone(&session);
+            builder = builder
+                .initialization_script(
+                    "Object.defineProperty(window,'__RIVERLAB_6A_NATIVE_VERIFY__',{value:true});",
+                )
+                .on_page_load(move |_, payload| {
+                    if matches!(payload.event(), PageLoadEvent::Finished) {
+                        let url = payload.url();
+                        host_evidence.record_page_load(
+                            url.origin().ascii_serialization() == "https://tauri.localhost",
+                            url.path(),
+                        );
+                    }
+                })
+                .on_download(move |_, event| match event {
+                    DownloadEvent::Requested { url, destination } => {
+                        let expected_report = url.scheme() == "blob"
+                            && url.origin().ascii_serialization() == "https://tauri.localhost"
+                            && destination.file_name() == Some(OsStr::new(DOWNLOAD_NAME));
+                        if !expected_report || download.exists() {
+                            return false;
+                        }
+                        *destination = download.clone();
+                        true
+                    }
+                    _ => true,
+                });
+            Some(session)
+        } else {
+            fs::create_dir_all(&profile)?;
+            None
+        };
+        app.manage(AcceptanceState(acceptance));
+        builder.build()?;
         Ok(())
     }
 
@@ -91,9 +161,9 @@ mod desktop {
         }
         let profile = profile_name().unwrap_or_else(|error| startup_error(&error.to_string()));
         tauri::Builder::default()
-            .invoke_handler(tauri::generate_handler![verify_sqlite])
+            .invoke_handler(tauri::generate_handler![verify_sqlite, qa_record])
             .setup(move |app| {
-                if let Err(error) = create_window(app, &profile) {
+                if let Err(error) = create_window(app, &profile, &runtime) {
                     startup_error(&format!(
                         "无法打开桌面工作台。请检查应用专用目录的写入权限及磁盘空间。\n{error}"
                     ));

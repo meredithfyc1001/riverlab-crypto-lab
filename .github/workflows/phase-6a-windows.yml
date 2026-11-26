@@ -74,9 +74,10 @@ jobs:
           retention-days: 14
       - name: Upload Windows acceptance kit
         id: kit
+        if: ${{ !cancelled() && steps.pack.outcome == 'success' }}
         uses: actions/upload-artifact@v4
         with:
-          name: Phase-6A-Windows-x64-${{ env.EXPECTED_SHA }}-${{ github.run_attempt }}
+          name: Phase-6A-Windows-x64-${{ steps.verification.outcome }}-${{ env.EXPECTED_SHA }}-${{ github.run_attempt }}
           path: |
             work/desktop-6a/package/*.zip
             work/desktop-6a/package/*.zip.sha256

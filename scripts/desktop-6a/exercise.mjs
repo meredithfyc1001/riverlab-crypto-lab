@@ -5,19 +5,8 @@ import { readFile, mkdir } from 'node:fs/promises';
 import { expect } from '@playwright/test';
 import { setTimeout as pause } from 'node:timers/promises';
 
-const routes = {
-  overview: ['工作台', '研究路径'],
-  datasets: ['数据中心', '导入历史 K 线 CSV'],
-  charts: ['行情中心', '历史行情与指标'],
-  strategies: ['策略中心', '策略研究配置'],
-  backtests: ['回测中心', '回测配置'],
-  risk: ['风险中心', 'Monte Carlo 风险分析'],
-  experiments: ['实验中心', '已保存回测实验'],
-  replay: ['历史回放', '历史逐根回放与模拟账户'],
-  portfolio: ['组合回测', '组合配置'],
-  'market-regime': ['市场状态研究', '选择实验与观察参数'],
-  'advanced-research': ['高级策略研究', '高级研究报告库'],
-};
+import routes from '../../tests/desktop-6a/sections.json' with { type: 'json' };
+
 const sha256 = (bytes) => createHash('sha256').update(bytes).digest('hex');
 
 export async function firstWorker(page, origin) {
@@ -162,40 +151,19 @@ async function diskDownload(page, probe, folder) {
   }
 }
 
-export async function exercise(page, origin, folder, desktop, record) {
+export async function exercise(page, origin, folder, record) {
   record.navigation = await navigation(page, origin);
   record.replay = await researchUI(page, origin, folder);
   await page.goto(origin + '/tests/desktop-6a/index.html');
   await page.locator('#status[data-state=ready]').waitFor();
-  if (desktop) {
-    await page.locator('#sqlite').click();
-    const status = page.locator('#sqlite-status');
-    await expect(status).toHaveAttribute('data-state', /^(passed|failed)$/);
-    assert.equal(
-      await status.getAttribute('data-state'),
-      'passed',
-      await status.innerText(),
-    );
-    const sqlite = JSON.parse(await page.locator('#sqlite-result').innerText());
-    assert.equal(sqlite.status, 'PASS');
-    assert.deepEqual(
-      [sqlite.committedRows, sqlite.rowsAfterRollback, sqlite.restoredRows],
-      [1, 1, 1],
-    );
-    assert.equal(sqlite.integrityCheck, 'ok');
-    assert.equal(
-      sqlite.fixtureSha256,
-      '34429675a4ac768482806ffe80475cb5e601bf1f2ffa8069cac2a0076f0c0f55',
-    );
-    assert.equal(sqlite.restoredPayloadSha256, sqlite.fixtureSha256);
-    record.sqlite = sqlite;
-  }
+  const startedUtcMs = Date.now();
   await page.locator('#run').click();
   await page
     .locator('#status:is([data-state=passed],[data-state=failed])')
     .waitFor({ timeout: 180000 });
   const status = await page.locator('#status').getAttribute('data-state');
   assert.equal(status, 'passed', await page.locator('#status').innerText());
+  record.researchWindow = { startedUtcMs, endedUtcMs: Date.now() };
   const probe = JSON.parse(await page.locator('#result').innerText());
   assert.match(probe.resultHash, /^[a-f0-9]{64}$/);
   assert.equal(probe.candles, 50000);

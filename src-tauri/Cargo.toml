@@ -9,8 +9,10 @@ publish = false
 [dependencies]
 rusqlite = { version = "=0.43.0", features = ["bundled", "backup"] }
 serde = { version = "=1.0.229", features = ["derive"] }
+serde_json = "=1.0.154"
 sha2 = "=0.10.9"
 tempfile = "=3.27.0"
+uuid = "=1.29.3"
 
 [target.'cfg(windows)'.dependencies]
 tauri = "=2.12.7"

@@ -27,10 +27,10 @@
       "csp": "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; worker-src 'self'; connect-src 'self' ipc: https://ipc.localhost; object-src 'none'; frame-src 'none'; base-uri 'none'; form-action 'none'",
       "capabilities": [
         {
-          "identifier": "prototype-sqlite",
-          "description": "Run the synthetic SQLite check in the local workbench.",
+          "identifier": "prototype-checks",
+          "description": "Run the synthetic SQLite check and submit evidence during an isolated native acceptance run.",
           "windows": ["main"],
-          "permissions": ["allow-verify-sqlite"]
+          "permissions": ["allow-verify-sqlite", "allow-qa-record"]
         }
       ]
     }

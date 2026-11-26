@@ -2721,10 +2721,12 @@ version = "0.6.0-alpha.1"
 dependencies = [
  "rusqlite",
  "serde",
+ "serde_json",
  "sha2 0.10.9",
  "tauri",
  "tauri-build",
  "tempfile",
+ "uuid",
  "windows-sys 0.61.2",
 ]
 

@@ -6,6 +6,8 @@
 
 Windows 首轮在 `06ce35e` 构建出 EXE 和 NSIS，并通过 2 项原生 SQLite 测试。安装后校验报告独立 EXE 与安装副本摘要不符，GUI 自动化尚未执行。此原型没有 updater；后续构建关闭 CLI 的 bundle 类型二进制修补，并直接读取实际交付文件和安装后文件计算摘要。保留字节一致的门槛。[首轮作业](https://github.com/meredithfyc1001/riverlab-crypto-lab/actions/runs/45747082913/job/139665641004)
 
+第二轮 `7ee85b6` 验证独立 EXE 与安装目录字节一致，PATH 中没有 Node 的松散 EXE 产生可响应窗口、加载 WebView2 后正常退出。系统 Edge 完成页面及 50,000 根计算；WebView2 远程调试连接三次超时，该轮桌面页面和数值比对未通过。后续在同一 EXE 的新建测试配置内运行固定验收流程，用原生回执、磁盘下载 SHA 与外部进程树采样验证。普通启动不启用自动验收。[第二轮作业](https://github.com/meredithfyc1001/riverlab-crypto-lab/actions/runs/45748146765/job/139669126545)
+
 ## Phase 5E 高级策略研究
 
 PR #14 于 2026-11-25 11:45:05 UTC 合并，最终 5D 功能提交为 `b37094a91614916a35e13bd15c99d9d5270a9081`。合并后 main 的四项作业全部通过。已据此新建分支 `feat/phase-5e-advanced-research`。用户决定 5D 和 5E 共用最终 Windows 测试包，5D 实机和物理断网继续为 **NOT TESTED**。[合并后 CI](https://github.com/meredithfyc1001/riverlab-crypto-lab/actions/runs/45607331060) · [技术设计](docs/phase-5e-design.md) · [联合验收清单](docs/phase-5e-acceptance.md)

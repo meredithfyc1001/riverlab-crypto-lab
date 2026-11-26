@@ -159,3 +159,15 @@ if (desktop) {
     }
   });
 }
+
+if (
+  import.meta.env.MODE === 'desktop-6a' &&
+  '__RIVERLAB_6A_NATIVE_VERIFY__' in window &&
+  window.__RIVERLAB_6A_NATIVE_VERIFY__ === true &&
+  '__TAURI__' in window
+) {
+  const host = window.__TAURI__;
+  void import('./native-acceptance').then(({ runNativeAcceptance }) =>
+    runNativeAcceptance(host as Parameters<typeof runNativeAcceptance>[0]),
+  );
+}
