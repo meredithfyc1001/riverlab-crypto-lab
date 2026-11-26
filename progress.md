@@ -1,5 +1,9 @@
 # RiverLab Crypto Lab 进度
 
+## Phase 6B 桌面本地服务
+
+Git fetch 与 GitHub PR 元数据已交叉核实。main 停在 `10a5d88`，PR #16 于北京时间 2026-11-26 16:34 合入 `feat/phase-5e-advanced-research`，实际提交 `5a75f34` 包含最新 main。在该合并点建立独立分支 `feat/phase-6b-local-service`。第三轮 Windows 11 用户实机复测仍为 **NOT TESTED**。[设计](docs/phase-6b-design.md) · [Windows 清单](docs/phase-6b-acceptance.md)
+
 ## Phase 6A Windows 验证原型
 
 ### PR #16 · Windows 11 首轮实机反馈

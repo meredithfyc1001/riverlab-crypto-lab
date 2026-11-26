@@ -8,6 +8,7 @@ import {
   assertRiskStudy,
 } from '../core/risk-analysis';
 import { ExperimentStore } from './experiment-store';
+import { readWorkerSource } from './worker-source';
 import type { RiskRequest, RiskResponse } from './risk-worker';
 const scope = globalThis as unknown as {
   onmessage: ((event: MessageEvent<RiskRequest>) => void) | null;
@@ -23,13 +24,15 @@ function historical(end: number, now: number) {
   )
     throw new Error('源完成声明晚于当前时间或无效，阻止分析。');
 }
-scope.onmessage = async ({ data: r }) => {
+scope.onmessage = async ({ data: r, ports }) => {
   const start = performance.now();
   const progress = (completed: number, total: number) =>
     scope.postMessage({ kind: 'progress', completed, total });
   try {
     if (r.kind === 'inspect' || r.kind === 'run') {
-      const value = await new ExperimentStore().load(r.sourceId);
+      const value = ports?.[0]
+        ? await readWorkerSource(ports[0], r.sourceId)
+        : await new ExperimentStore().load(r.sourceId);
       if (r.kind === 'inspect') {
         const e = verifyExperiment(value);
         historical(

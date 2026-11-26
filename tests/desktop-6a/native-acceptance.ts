@@ -1,7 +1,7 @@
 // Loaded only by the Windows build when the host has allocated a fresh test profile.
 // The two full document navigations exercise recovery from disk and real download handling.
 import sections from './sections.json';
-import { verifyPrototypeStoreSchema } from './store-schema';
+import { verifyRepositoryParity } from './repository-parity';
 
 type ReceiptName =
   | 'ready'
@@ -22,6 +22,7 @@ type State = {
   navigation: Navigation;
   chart: { readout: string; canvases: number };
   restored: boolean;
+  repositoryParity?: Awaited<ReturnType<typeof verifyRepositoryParity>>;
 };
 const stateKey = 'riverlab-6a-private-native-acceptance-v1';
 const symbol = 'SYNTHETIC/USDT';
@@ -124,7 +125,7 @@ async function saveSyntheticReplay() {
   await click('保存已检查数据集');
   await until('合成行情已提交', () =>
     document.body.textContent?.includes(
-      '已保存数据集（IndexedDB 事务已完成）。请另行备份。',
+      '已保存数据集（SQLite 事务已完成）。请另行备份。',
     ),
   );
   await click('用于行情中心');
@@ -276,9 +277,15 @@ export async function runNativeAcceptance(host: Host) {
         throw new Error('新页面不应有未打开的回放');
       await click('打开回放', true);
       await cursor(2);
+      const repositoryParity = await verifyRepositoryParity();
       sessionStorage.setItem(
         stateKey,
-        JSON.stringify({ ...state, phase: 'probe', restored: true }),
+        JSON.stringify({
+          ...state,
+          phase: 'probe',
+          restored: true,
+          repositoryParity,
+        }),
       );
       location.assign('/tests/desktop-6a/index.html');
       return;
@@ -326,8 +333,16 @@ export async function runNativeAcceptance(host: Host) {
       probe.candidateWorkers.observed?.parallel !== 2
     )
       throw new Error('研究结果或实测候选 Worker 数与 6A 门槛不符');
-    step = '专用验收 profile 对象存储';
-    const storeSchema = await verifyPrototypeStoreSchema('fresh-automation');
+    step = '桌面 SQLite 服务';
+    const health = await host.core.invoke('local_service_health');
+    const integrity = await host.core.invoke('local_service_integrity');
+    // This is a host-created, previously nonexistent test profile. Opening,
+    // saving and reopening the workbench must not create a browser-side library.
+    const productIdb = (await indexedDB.databases())
+      .map(({ name }) => name)
+      .filter((name) => name?.startsWith('riverlab-crypto-lab'));
+    if (productIdb.length || integrity !== 'ok')
+      throw new Error('桌面存储隔离或完整性检查失败');
     step = '下载';
     const downloads: string[] = [];
     for (let i = 0; i < 2; i++) {
@@ -355,7 +370,8 @@ export async function runNativeAcceptance(host: Host) {
       chart: state.chart,
       replay: { dataset: symbol, candles: 8, restoredReplayCursor: 2 },
       probe,
-      storeSchema,
+      service: { health, integrity, productIdb },
+      repositoryParity: state.repositoryParity,
       sqlite,
       download: {
         filename: probe.downloadName,

@@ -1,3 +1,4 @@
+import { isDesktopRepository } from '../infrastructure/desktop-repository';
 import { useLibraryList } from './useLibraryList';
 import { useMemo, useRef, useState } from 'react';
 import { assertDataset } from '../core/data/dataset';
@@ -15,7 +16,7 @@ export function useDatasetLibrary() {
   const list = useLibraryList(store, '数据集库');
   const [savedIds, setSavedIds] = useState<string[]>([]);
   const datasets = useMemo(() => {
-    // Keep the initial IndexedDB order, then append records in the order
+    // Keep the initial repository order, then append records in the order
     // their saves committed in this session, even across list refreshes.
     const order = new Map(savedIds.map((id, index) => [id, index]));
     return [...list.items].sort(
@@ -53,7 +54,9 @@ export function useDatasetLibrary() {
     await run(async () => {
       if (save) {
         await saveAndRefresh(next);
-        setMessage('已保存数据集（IndexedDB 事务已完成）。请另行备份。');
+        setMessage(
+          `已保存数据集（${isDesktopRepository() ? 'SQLite' : 'IndexedDB'} 事务已完成）。请另行备份。`,
+        );
       } else {
         setMessage('已载入行情中心，仅在当前网页内存；尚未保存。');
         window.location.hash = '/charts';

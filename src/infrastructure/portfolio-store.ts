@@ -7,28 +7,25 @@ import type {
   PortfolioExperiment,
   PortfolioSummary,
 } from '../core/portfolio/report';
-import { LocalDatabase } from './local-database';
+import { LibraryStore } from './repository';
 import { readSummaryList } from './summary-list';
 
 /** Separate database. Worker generation or verification precedes every UI save. */
 export class PortfolioStore<
   T extends PortfolioRecordMetadata = PortfolioExperiment,
-> extends LocalDatabase {
+> extends LibraryStore {
   constructor(
-    factory: () => IDBFactory = () => indexedDB,
-    name = 'riverlab-crypto-lab-portfolios',
+    factory?: () => IDBFactory,
+    name?: string,
+    kind: 'portfolio' | 'shared_pool' = 'portfolio',
   ) {
-    super(factory, name, ['experiments', 'summaries']);
+    super(kind, factory, name);
   }
   async save(record: T): Promise<void> {
     const summary = summarizePortfolio(record);
     assertPortfolioSummary(summary);
     try {
-      await this.transaction<void>('readwrite', (tx, done) => {
-        tx.objectStore('experiments').add(record);
-        tx.objectStore('summaries').add(summary);
-        done(undefined);
-      });
+      await this.repository.insert(record, summary);
     } catch (error) {
       if (error instanceof DOMException && error.name === 'ConstraintError')
         throw new Error('相同 ID 的组合实验已存在，已拒绝覆盖。', {
@@ -46,18 +43,8 @@ export class PortfolioStore<
     return items;
   }
   async load(id: string): Promise<unknown> {
-    const row = await this.transaction<unknown>('readonly', (tx, done) => {
-      const request = tx.objectStore('experiments').get(id);
-      request.onsuccess = () => done(request.result);
-    });
+    const row = await this.repository.get(id);
     if (!row) throw new Error('找不到组合实验，可能已被删除。');
     return row;
-  }
-  async delete(id: string): Promise<void> {
-    await this.transaction<void>('readwrite', (tx, done) => {
-      tx.objectStore('experiments').delete(id);
-      tx.objectStore('summaries').delete(id);
-      done(undefined);
-    });
   }
 }

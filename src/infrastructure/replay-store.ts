@@ -1,5 +1,5 @@
 import { readSummaryList } from './summary-list';
-import { LocalDatabase } from './local-database';
+import { LibraryStore } from './repository';
 import { assertReplayCheckpoint, summarizeReplay } from '../core/replay';
 import type { ReplayCheckpoint, ReplaySummary } from '../core/replay';
 
@@ -27,20 +27,13 @@ function checkSummary(r: ReplaySummary) {
     throw new Error('回放摘要损坏，未打开或修复。');
 }
 
-export class ReplayStore extends LocalDatabase {
-  constructor(
-    factory: () => IDBFactory = () => indexedDB,
-    name = 'riverlab-crypto-lab-replays',
-  ) {
-    super(factory, name, ['replays', 'summaries']);
+export class ReplayStore extends LibraryStore {
+  constructor(factory?: () => IDBFactory, name?: string) {
+    super('replay', factory, name);
   }
   async save(record: ReplayCheckpoint) {
     assertReplayCheckpoint(record);
-    await this.transaction<void>('readwrite', (tx, done) => {
-      tx.objectStore('replays').add(record);
-      tx.objectStore('summaries').add(summarizeReplay(record));
-      done(undefined);
-    });
+    await this.repository.insert(record, summarizeReplay(record));
   }
   listAvailable() {
     return readSummaryList(this, checkSummary);
@@ -51,18 +44,8 @@ export class ReplayStore extends LocalDatabase {
     return items;
   }
   async load(id: string): Promise<unknown> {
-    const record = await this.transaction<unknown>('readonly', (tx, done) => {
-      const request = tx.objectStore('replays').get(id);
-      request.onsuccess = () => done(request.result);
-    });
+    const record = await this.repository.get(id);
     if (!record) throw new Error('回放记录不存在，可能已删除。');
     return record;
-  }
-  async delete(id: string) {
-    await this.transaction<void>('readwrite', (tx, done) => {
-      tx.objectStore('replays').delete(id);
-      tx.objectStore('summaries').delete(id);
-      done(undefined);
-    });
   }
 }

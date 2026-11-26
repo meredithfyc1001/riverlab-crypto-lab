@@ -18,6 +18,8 @@ jobs:
         include:
           - os: ubuntu-latest
             browser: chromium
+          - os: macos-latest
+            browser: chromium
           - os: windows-latest
             browser: chrome
           - os: windows-latest
@@ -41,6 +43,13 @@ jobs:
         run: |
           npm audit
           npm audit --omit=dev
+      - uses: actions/setup-python@v5
+        if: runner.os == 'macOS'
+        with:
+          python-version: '3.13'
+      - name: Install Chromium on macOS
+        if: runner.os == 'macOS'
+        run: npx playwright install chromium
       - name: Install Chromium on Linux
         if: runner.os == 'Linux'
         run: npx playwright install --with-deps chromium
@@ -143,3 +152,26 @@ jobs:
             "- Actions artifact SHA-256: $env:ARTIFACT_DIGEST"
             "- Retention: 14 days from upload"
           ) >> $env:GITHUB_STEP_SUMMARY
+
+  storage:
+    name: Rust SQLite / ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Select the Rust toolchain
+        run: rustup toolchain install 1.100.0 --profile minimal
+      - name: Run native repository and service tests
+        run: cargo +1.100.0 test --locked --manifest-path src-tauri/Cargo.toml
+
+  desktop:
+    name: Verified Windows distribution
+    needs: [quality, storage, local-test-package]
+    uses: ./.github/workflows/desktop.yml

@@ -1,3 +1,4 @@
+import { isDesktopRepository } from '../../infrastructure/desktop-repository';
 import { useState } from 'react';
 import type { Dataset, DatasetSummary } from '../../core/data/dataset';
 
@@ -31,9 +32,9 @@ export function DatasetLibrary(props: LibraryProps) {
     <section className="panel dataset-library" aria-labelledby="library-title">
       <h2 id="library-title">本地数据集与备份</h2>
       <p className="muted">
-        IndexedDB 仅在当前浏览器、用户配置和 HTTP
-        来源（含端口）内可用；清除网站数据、隐私模式或空间回收可能导致丢失。不是永久可靠存储，请导出
-        JSON 到其他位置备份。重开网页后选择并打开数据集。
+        {isDesktopRepository()
+          ? '数据集保存在当前用户数据目录的 SQLite 数据库中。重开应用后可选择并打开，重要数据请导出 JSON 到其他位置备份。'
+          : 'IndexedDB 仅在当前浏览器、用户配置和 HTTP 来源（含端口）内可用；清除网站数据、隐私模式或空间回收可能导致丢失。不是永久可靠存储，请导出 JSON 到其他位置备份。重开网页后选择并打开数据集。'}
       </p>
       <fieldset disabled={props.busy}>
         <legend className="sr-only">本地数据集操作</legend>

@@ -1,5 +1,5 @@
-// The production adapters lazily initialize their own v1 layout. Only the native
-// acceptance runner may exercise this in its newly allocated, synthetic profile.
+// The production adapters lazily initialize their own v1 layout. Only the
+// browser acceptance runner may exercise this in its newly allocated, synthetic profile.
 import { AdvancedStore } from '../../src/infrastructure/advanced-store';
 import { DatasetStore } from '../../src/infrastructure/dataset-store';
 import { ExperimentStore } from '../../src/infrastructure/experiment-store';
@@ -46,16 +46,15 @@ async function verifyAbortedWrites(store: DatasetStore) {
     throw new Error('合成事务已中止，仍发现对应正文或摘要。');
 }
 
-export async function verifyPrototypeStoreSchema(
-  operatingProfile: 'fresh-automation',
-) {
+export async function verifyPrototypeStoreSchema() {
   if (
-    operatingProfile !== 'fresh-automation' ||
-    location.origin !== 'https://tauri.localhost' ||
-    !('__RIVERLAB_6A_NATIVE_VERIFY__' in window) ||
-    window.__RIVERLAB_6A_NATIVE_VERIFY__ !== true
+    location.protocol !== 'http:' ||
+    location.hostname !== '127.0.0.1' ||
+    '__TAURI__' in window ||
+    !('__RIVERLAB_FRESH_BROWSER_QA__' in window) ||
+    window.__RIVERLAB_FRESH_BROWSER_QA__ !== true
   )
-    throw new Error('数据库布局检查仅限原生验收的全新专用配置。');
+    throw new Error('数据库布局检查仅限浏览器验收的全新专用配置。');
 
   const dataset = new DatasetStore();
   const base = 'riverlab-crypto-lab';

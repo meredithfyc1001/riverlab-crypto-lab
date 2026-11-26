@@ -1,4 +1,4 @@
-import type { LocalDatabase } from './local-database';
+import type { LibraryStore } from './repository';
 
 export interface SummaryList<T> {
   items: T[];
@@ -6,33 +6,20 @@ export interface SummaryList<T> {
 }
 
 export async function readSummaryList<T>(
-  store: LocalDatabase,
+  store: LibraryStore,
   validate: (row: T) => void,
 ): Promise<SummaryList<T>> {
-  const rows = await store.transaction<T[]>('readonly', (tx, done) => {
-    const request = tx.objectStore('summaries').getAll();
-    request.onsuccess = () => done(request.result);
-  });
-  // A failed transaction has no usable snapshot. Only a committed read
-  // reaches the row-level validation below.
-  return isolateRecords(rows, (row) => {
-    validate(row);
-    return row;
-  });
-}
-
-export function isolateRecords<Input, Output>(
-  rows: Input[],
-  verify: (row: Input) => Output,
-): SummaryList<Output> {
-  const items: Output[] = [];
+  const items: T[] = [];
   let damagedCount = 0;
-  for (const row of rows) {
+  await store.repository.visitSummaries((value) => {
+    const row = value as T;
     try {
-      items.push(verify(row));
+      validate(row);
+      items.push(row);
     } catch {
       damagedCount++;
     }
-  }
+    return true;
+  });
   return { items, damagedCount };
 }

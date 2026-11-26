@@ -24,7 +24,7 @@ for (const commit of [install?.sourceSha, verification?.commit]) {
 }
 const steps = JSON.parse(process.env.STAGE_OUTCOMES);
 const lines = [
-  '# Phase 6A Windows x64 验收记录',
+  '# Phase 6B Windows x64 验收记录',
   '',
   `PR 提交 \`${sha}\`。`,
   '',

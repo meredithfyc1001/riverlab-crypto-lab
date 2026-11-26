@@ -15,6 +15,13 @@ export async function rssKiB(session) {
     ]);
     return Number(stdout.trim());
   }
+  if (process.platform === 'darwin') {
+    const { stdout } = await exec('ps', ['-o', 'rss=', '-p', ids.join(',')]);
+    return stdout
+      .trim()
+      .split(/\s+/)
+      .reduce((sum, kib) => sum + Number(kib), 0);
+  }
   if (process.platform !== 'linux') return null;
   const rows = await Promise.all(
     ids.map(async (id) => {

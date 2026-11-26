@@ -1,7 +1,7 @@
 [package]
-name = "riverlab-6a"
-description = "RiverLab Crypto Lab Windows feasibility prototype"
-version = "0.6.0-alpha.1"
+name = "riverlab-desktop"
+description = "RiverLab Crypto Lab desktop local service"
+version = "0.6.1"
 edition = "2021"
 rust-version = "1.90"
 publish = false
@@ -12,11 +12,14 @@ serde = { version = "=1.0.229", features = ["derive"] }
 serde_json = "=1.0.154"
 sha2 = "=0.10.9"
 tempfile = "=3.27.0"
-uuid = "=1.29.3"
+uuid = { version = "=1.29.3", features = ["v4"] }
+
+[target.'cfg(unix)'.dependencies]
+rustix = { version = "=1.1.6", features = ["fs"] }
 
 [target.'cfg(windows)'.dependencies]
 tauri = "=2.12.7"
-windows-sys = { version = "=0.61.2", features = ["Win32_UI_WindowsAndMessaging"] }
+windows-sys = { version = "=0.61.2", features = ["Win32_UI_WindowsAndMessaging", "Win32_Storage_FileSystem"] }
 
 [build-dependencies]
 tauri-build = "=2.7.6"

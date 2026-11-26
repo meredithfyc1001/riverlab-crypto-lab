@@ -2,6 +2,7 @@ import { ReplaySession, assertReplayCheckpoint } from '../core/replay';
 import type { Dataset } from '../core/data/dataset';
 import { assertDataset } from '../core/data/dataset';
 import { DatasetStore } from './dataset-store';
+import { readWorkerSource } from './worker-source';
 import type { ReplayRequest, ReplayResponse } from './replay-worker';
 const scope = globalThis as unknown as {
   onmessage:
@@ -11,7 +12,7 @@ const scope = globalThis as unknown as {
 };
 let session: ReplaySession | null = null;
 let running = false;
-function completed(dataset: Dataset, now: number) {
+function completed(dataset: unknown, now: number): asserts dataset is Dataset {
   assertDataset(dataset);
   if (
     !Number.isSafeInteger(now) ||
@@ -21,7 +22,7 @@ function completed(dataset: Dataset, now: number) {
   )
     throw new Error('数据包含未收盘K线，阻止回放。');
 }
-scope.onmessage = async ({ data: { id, request: r } }) => {
+scope.onmessage = async ({ data: { id, request: r }, ports }) => {
   if (running) {
     scope.postMessage({
       id,
@@ -34,7 +35,9 @@ scope.onmessage = async ({ data: { id, request: r } }) => {
   try {
     if (r.kind === 'start') {
       if (r.confirmed !== true) throw new Error('请确认已收盘数据和全部警告。');
-      const dataset = await new DatasetStore().load(r.datasetId);
+      const dataset = ports?.[0]
+        ? await readWorkerSource(ports[0], r.datasetId)
+        : await new DatasetStore().load(r.datasetId);
       completed(dataset, r.observedUtcMs);
       const next = new ReplaySession(dataset, r.config, r.risk);
       next.advance();
@@ -42,7 +45,9 @@ scope.onmessage = async ({ data: { id, request: r } }) => {
       scope.postMessage({ id, ok: true, view: next.view() });
     } else if (r.kind === 'restore') {
       assertReplayCheckpoint(r.record);
-      const dataset = await new DatasetStore().load(r.record.payload.datasetId);
+      const dataset = ports?.[0]
+        ? await readWorkerSource(ports[0], r.record.payload.datasetId)
+        : await new DatasetStore().load(r.record.payload.datasetId);
       completed(dataset, r.observedUtcMs);
       if (r.record.createdUtcMs > r.observedUtcMs)
         throw new Error('保存时间晚于当前时间，不能恢复。');

@@ -11,12 +11,12 @@ import {
   scheduleAdvanced,
   workerLane,
 } from './advanced-pool';
-import { AdvancedStore } from './advanced-store';
-import type { AdvancedRequest, AdvancedReply } from './advanced-worker';
+import { AdvancedStore, prepareAdvancedWrite } from './advanced-store';
+import type { AdvancedWorkerRequest, AdvancedReply } from './advanced-worker';
 
 const scope = globalThis as unknown as {
-  onmessage: ((e: MessageEvent<AdvancedRequest>) => void) | null;
-  postMessage: (r: AdvancedReply) => void;
+  onmessage: ((e: MessageEvent<AdvancedWorkerRequest>) => void) | null;
+  postMessage: (r: AdvancedReply, transfer?: Transferable[]) => void;
 };
 
 scope.onmessage = async ({ data, ports }) => {
@@ -50,6 +50,15 @@ scope.onmessage = async ({ data, ports }) => {
             record: sealAdvancedReport(input, result, metadata),
           });
         }
+        break;
+      }
+      case 'prepare-save': {
+        const { record, summary } = prepareAdvancedWrite(data.record, now);
+        const bytes = new TextEncoder().encode(JSON.stringify(record));
+        scope.postMessage(
+          { write: { id: record.id, bytes, summary: JSON.stringify(summary) } },
+          [bytes.buffer],
+        );
         break;
       }
       case 'save':

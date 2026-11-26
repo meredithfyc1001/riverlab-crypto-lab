@@ -1,30 +1,23 @@
-name: Phase 6A Windows prototype
+name: Windows desktop package
 
 on:
-  pull_request:
-    branches: [feat/phase-5e-advanced-research]
-    types: [opened, synchronize, reopened, ready_for_review]
+  workflow_call:
 
 permissions:
   contents: read
 
-concurrency:
-  group: phase-6a-windows-pr-${{ github.event.pull_request.number }}
-  cancel-in-progress: true
-
 jobs:
   windows:
-    if: github.head_ref == 'feat/phase-6a-windows-prototype'
-    name: Build and exercise installed desktop prototype
+    name: Build and exercise installed desktop
     runs-on: windows-latest
     timeout-minutes: 60
     defaults:
       run:
         shell: pwsh
     env:
-      EXPECTED_SHA: ${{ github.event.pull_request.head.sha }}
+      EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
       RIVERLAB_6A_DIST: ${{ github.workspace }}/work/desktop-6a/dist
-      RIVERLAB_6A_OUTPUT: ${{ github.workspace }}/work/desktop-6a/evidence
+      RIVERLAB_6A_OUTPUT: ${{ github.workspace }}/work/desktop-6b/evidence
     steps:
       - uses: actions/checkout@v4
         with:
@@ -49,10 +42,10 @@ jobs:
         run: cargo test --manifest-path src-tauri/Cargo.toml --locked --release --features custom-protocol
       - name: Pack and install the exact distributed bytes
         id: pack
-        run: ./scripts/6a-package/prepare.ps1
+        run: ./scripts/desktop-package/prepare.ps1
       - name: Open and close the standalone EXE with no Node on PATH
         id: standalone
-        run: ./scripts/6a-package/standalone.ps1
+        run: ./scripts/desktop-package/standalone.ps1
       - name: Exercise installed WebView2 and compare with Edge
         id: verification
         run: |
@@ -84,36 +77,40 @@ jobs:
             {"build":"${{ steps.build.outcome }}","native":"${{ steps.native.outcome }}",
             "packageAndInstall":"${{ steps.pack.outcome }}","standalone":"${{ steps.standalone.outcome }}",
             "installedAppAndEdge":"${{ steps.verification.outcome }}"}
-        run: node scripts/6a-package/summary.mjs
+        run: node scripts/desktop-package/summary.mjs
       - name: Upload Windows measurements and diagnostics
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: Phase-6A-Windows-evidence-${{ env.EXPECTED_SHA }}-${{ github.run_attempt }}
-          path: work/desktop-6a/evidence/
+          name: Phase-6B-Windows-evidence-${{ env.EXPECTED_SHA }}-${{ github.run_attempt }}
+          path: work/desktop-6b/evidence/
           if-no-files-found: warn
           retention-days: 14
       - name: Upload Windows acceptance kit
         id: kit
-        if: ${{ !cancelled() && steps.pack.outcome == 'success' }}
+        if: success()
         uses: actions/upload-artifact@v4
         with:
-          name: Phase-6A-Windows-x64-${{ steps.verification.outcome }}-${{ env.EXPECTED_SHA }}-${{ github.run_attempt }}
+          name: Phase-6B-Windows-x64-${{ steps.verification.outcome }}-${{ env.EXPECTED_SHA }}-${{ github.run_attempt }}
           path: |
-            work/desktop-6a/package/*.zip
-            work/desktop-6a/package/*.zip.sha256
+            work/desktop-6b/package/*.zip
+            work/desktop-6b/package/*.zip.sha256
           if-no-files-found: error
           retention-days: 14
       - name: Summarize the tested package
         env:
           PACKAGE_URL: ${{ steps.kit.outputs.artifact-url }}
           WRAPPER_DIGEST: ${{ steps.kit.outputs.artifact-digest }}
+          EXE_DIGEST: ${{ steps.pack.outputs.exe_sha256 }}
+          SETUP_DIGEST: ${{ steps.pack.outputs.setup_sha256 }}
           ZIP_DIGEST: ${{ steps.pack.outputs.archive_sha256 }}
         run: |
           @(
-            "[Download Phase 6A Windows acceptance kit]($env:PACKAGE_URL)"
+            "[Download Phase 6B Windows acceptance kit]($env:PACKAGE_URL)"
             ""
             "- Source SHA: $env:EXPECTED_SHA"
+            "- Standalone EXE SHA-256: $env:EXE_DIGEST"
+            "- NSIS installer SHA-256: $env:SETUP_DIGEST"
             "- Inner ZIP SHA-256: $env:ZIP_DIGEST"
             "- Actions artifact SHA-256: $env:WRAPPER_DIGEST"
             "- Windows x64 CI, existing WebView2 runtime, test build. Retained for 14 days."

@@ -1,8 +1,9 @@
 import assert from 'node:assert/strict';
 import { spawn } from 'node:child_process';
+import { DatabaseSync } from 'node:sqlite';
 import { createHash, randomUUID } from 'node:crypto';
 import { lstat, mkdir, readFile, rm, stat, writeFile } from 'node:fs/promises';
-import { join } from 'node:path';
+import { join, toNamespacedPath } from 'node:path';
 import { setTimeout as pause } from 'node:timers/promises';
 
 const resultHash =
@@ -91,7 +92,10 @@ async function verifiedDownload(directory, evidenceDir, probe, filename) {
   return { filename, bytes: bytes.length, sha256 };
 }
 
-function checkWorkload({ navigation, replay, probe, sqlite, storeSchema }) {
+function checkWorkload(
+  { navigation, replay, probe, sqlite, service },
+  dataDirectory,
+) {
   assert.equal(navigation.lang, 'zh-CN');
   assert.equal(new Set(navigation.headings).size, 11);
   assert.equal(new Set(navigation.sections).size, 11);
@@ -103,9 +107,17 @@ function checkWorkload({ navigation, replay, probe, sqlite, storeSchema }) {
   assert.equal(probe.candidateWorkers.owner, 'document');
   assert.equal(probe.candidateWorkers.observed.serial, 0);
   assert.equal(probe.candidateWorkers.observed.parallel, 2);
-  assert.equal(storeSchema.databases, 9);
-  assert.equal(storeSchema.stores, 17);
-  assert.equal(storeSchema.abortAtomic, true);
+  assert.equal(service.health.status, 'running');
+  assert.equal(service.health.protocolVersion, 1);
+  assert.equal(service.health.schemaVersion, 1);
+  assert.equal(service.health.serviceVersion, '0.6.1');
+  assert.equal(
+    toNamespacedPath(service.health.dataDirectory).toLowerCase(),
+    toNamespacedPath(dataDirectory).toLowerCase(),
+  );
+  assert(service.health.availableBytes > 0);
+  assert.equal(service.integrity, 'ok');
+  assert.deepEqual(service.productIdb, []);
   assert.equal(probe.completedTrades, 2082);
   assert.equal(probe.idb, true);
   assert(probe.chart.upPixels > 0 && probe.chart.downPixels > 0);
@@ -127,16 +139,82 @@ function checkWorkload({ navigation, replay, probe, sqlite, storeSchema }) {
   assert.equal(sqlite.restoredPayloadSha256, sqliteHash);
 }
 
+// Independently reopen the production database after the desktop process exits.
+// Inspect the synthetic records written through the installed application repositories.
+function inspectDatabase(directory) {
+  const database = new DatabaseSync(
+    join(directory, 'database', 'research.sqlite3'),
+    { readOnly: true },
+  );
+  try {
+    assert.equal(
+      database.prepare('PRAGMA journal_mode').get().journal_mode,
+      'wal',
+    );
+    assert.equal(database.prepare('PRAGMA user_version').get().user_version, 1);
+    assert.equal(
+      database.prepare('PRAGMA application_id').get().application_id,
+      0x52564c42,
+    );
+    assert.equal(
+      database.prepare('PRAGMA integrity_check').get().integrity_check,
+      'ok',
+    );
+    assert.deepEqual(database.prepare('PRAGMA foreign_key_check').all(), []);
+    const rows = database
+      .prepare(
+        `
+      SELECT kind, id, body, summary FROM records JOIN summaries USING (kind, id)
+      WHERE kind IN ('dataset', 'experiment', 'replay') ORDER BY kind, id
+    `,
+      )
+      .all();
+    assert.deepEqual(
+      rows.map(({ kind }) => kind),
+      ['dataset', 'dataset', 'experiment', 'replay'],
+    );
+    assert(rows.some(({ id }) => id === '6b-parity-dataset'));
+    assert(rows.some(({ id }) => id === '6b-parity-experiment'));
+    const digest = createHash('sha256')
+      .update(JSON.stringify(rows))
+      .digest('hex');
+    return { schemaVersion: 1, rows: rows.length, sha256: digest };
+  } finally {
+    database.close();
+  }
+}
+
+async function reinstall() {
+  const script = `
+    $setup = Start-Process -FilePath $env:RIVERLAB_6A_INSTALLER -ArgumentList "/S /D=$env:RIVERLAB_6A_INSTALL_DIR" -Wait -PassThru
+    exit $setup.ExitCode
+  `;
+  await new Promise((resolve, reject) => {
+    const child = spawn(
+      'pwsh.exe',
+      ['-NoProfile', '-NonInteractive', '-Command', script],
+      { stdio: 'inherit' },
+    );
+    child.once('error', reject);
+    child.once('exit', (code) =>
+      code === 0
+        ? resolve()
+        : reject(new Error('NSIS reinstall exited ' + code)),
+    );
+  });
+}
+
 export async function runNative({ exe, iteration, runDir, startMemory }) {
   assert.equal(process.platform, 'win32');
   const profileId = 'ci-' + randomUUID();
-  const profile = join(
+  const appRoot = join(
     process.env.LOCALAPPDATA,
-    'org.riverlab.cryptolab.prototype6a',
-    'Profiles',
-    'test-' + profileId,
+    'org.riverlab.crypto-lab.desktop',
   );
+  const profile = join(appRoot, 'Profiles', 'test-' + profileId);
+  const dataDirectory = join(appRoot, 'TestServices', 'test-' + profileId);
   await assert.rejects(lstat(profile), { code: 'ENOENT' });
+  await assert.rejects(lstat(dataDirectory), { code: 'ENOENT' });
   const directory = join(profile, 'acceptance');
   const evidenceDir = join(runDir, 'native-' + iteration);
   await mkdir(evidenceDir);
@@ -213,15 +291,16 @@ export async function runNative({ exe, iteration, runDir, startMemory }) {
     const { data, mtimeMs: completed } = await waitFor('result', 60000);
     assert.equal(data.download.requested, true);
     assert.equal(data.engineVersion, record.engineVersion);
-    checkWorkload(data);
-    const { navigation, replay, probe, sqlite, chart, storeSchema } = data;
+    checkWorkload(data, dataDirectory);
+    const { navigation, replay, probe, sqlite, chart, service } = data;
     Object.assign(record, {
       navigation,
       replay,
+      repositoryParity: data.repositoryParity,
       probe,
       sqlite,
       chart,
-      storeSchema,
+      service,
     });
     const expectedNames = (iteration === 1 ? [0, 1] : [1, 2]).map((n) =>
       n === 0 ? downloadName : downloadName.replace('.json', ` (${n}).json`),
@@ -271,6 +350,21 @@ export async function runNative({ exe, iteration, runDir, startMemory }) {
     record.sampledPeakPrivateBytes = Math.max(
       ...active.map((s) => s.privateBytes),
     );
+    memory?.sampler.kill();
+    await stopWindow(app);
+    assert.equal(
+      app.exitCode,
+      0,
+      'The window should release SQLite on normal exit.',
+    );
+    record.reopened = inspectDatabase(dataDirectory);
+    if (iteration === 1) {
+      // Simulate replacing the program with the exact distributed NSIS payload.
+      // The data should survive even if installation rewrites every program file.
+      await reinstall();
+      assert.deepEqual(inspectDatabase(dataDirectory), record.reopened);
+      record.reinstallPreservedData = true;
+    }
     delete record.awaiting;
     record.status = 'PASS';
     return record;
@@ -305,13 +399,15 @@ export async function runNative({ exe, iteration, runDir, startMemory }) {
     );
     // Only this newly allocated private CI profile can be removed. Receipts and
     // the verified synthetic download have already been copied into runDir.
-    await rm(profile, {
-      force: true,
-      recursive: true,
-      maxRetries: 3,
-      retryDelay: 250,
-    }).catch((error) =>
-      console.warn('Native test profile cleanup:', error.code),
-    );
+    for (const path of [profile, dataDirectory]) {
+      await rm(path, {
+        force: true,
+        recursive: true,
+        maxRetries: 3,
+        retryDelay: 250,
+      }).catch((error) =>
+        console.warn('Native test profile cleanup:', error.code),
+      );
+    }
   }
 }
