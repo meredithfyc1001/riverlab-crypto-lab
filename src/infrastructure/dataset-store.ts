@@ -1,5 +1,10 @@
 import { LocalDatabase } from './local-database';
-import { assertDataset, summarizeDataset } from '../core/data/dataset';
+import { readSummaryList } from './summary-list';
+import {
+  assertDataset,
+  assertDatasetSummary,
+  summarizeDataset,
+} from '../core/data/dataset';
 import type { Dataset, DatasetSummary } from '../core/data/dataset';
 
 const STORE = 'datasets';
@@ -20,50 +25,46 @@ export function storageMessage(error: unknown): string {
 export class DatasetStore extends LocalDatabase {
   async save(dataset: Dataset): Promise<void> {
     assertDataset(dataset);
-    await this.transaction<void>('readwrite', (tx, done) => {
-      // Atomic data + metadata. Abort cannot leave a phantom list entry.
-      tx.objectStore(STORE).put(dataset);
-      tx.objectStore('summaries').put(summarizeDataset(dataset));
-      done(undefined);
-    });
+    const summary = summarizeDataset(dataset);
+    let failure: unknown;
+    try {
+      await this.transaction<void>('readwrite', (tx, done) => {
+        const bodies = tx.objectStore(STORE),
+          summaries = tx.objectStore('summaries');
+        const body = bodies.get(dataset.id),
+          metadata = summaries.get(dataset.id);
+        // Both reads and writes share one transaction. Saving an identical current
+        // dataset is idempotent, including across tabs; conflicting rows stay intact.
+        metadata.onsuccess = () => {
+          try {
+            if (body.result === undefined && metadata.result === undefined) {
+              bodies.put(dataset);
+              summaries.put(summary);
+            } else if (
+              JSON.stringify(body.result) !== JSON.stringify(dataset) ||
+              JSON.stringify(metadata.result) !== JSON.stringify(summary)
+            ) {
+              throw new Error('相同 ID 的数据集或摘要内容冲突，已拒绝覆盖。');
+            }
+            done(undefined);
+          } catch (error) {
+            failure = error;
+            tx.abort();
+          }
+        };
+      });
+    } catch (error) {
+      throw failure ?? error;
+    }
+  }
+  listAvailable() {
+    return readSummaryList<DatasetSummary>(this, assertDatasetSummary);
   }
   async list(): Promise<DatasetSummary[]> {
-    const list = await this.transaction<DatasetSummary[]>(
-      'readonly',
-      (tx, done) => {
-        const request = tx.objectStore('summaries').getAll();
-        request.onsuccess = () => done(request.result as DatasetSummary[]);
-      },
-    );
-    for (const summary of list) {
-      const q = summary?.quality;
-      if (
-        !summary ||
-        summary.schemaVersion !== 1 ||
-        typeof summary.id !== 'string' ||
-        !summary.id ||
-        typeof summary.name !== 'string' ||
-        typeof summary.symbol !== 'string' ||
-        !summary.source ||
-        typeof summary.source.label !== 'string' ||
-        !q ||
-        !Number.isSafeInteger(q.validRows) ||
-        q.validRows < 1 ||
-        q.validRows > 50_000 ||
-        !Number.isSafeInteger(q.intervalMs) ||
-        !q.intervalMs ||
-        q.intervalMs < 0 ||
-        !Number.isSafeInteger(q.warningCount) ||
-        q.warningCount < 0 ||
-        !Number.isSafeInteger(q.missingCandles) ||
-        q.missingCandles < 0 ||
-        !['ms', 'us', 'iso'].includes(q.timeUnit!)
-      )
-        throw new Error(
-          '本地数据集摘要损坏或版本不支持；未打开或自动修复，请使用备份恢复。',
-        );
-    }
-    return list;
+    const { items, damagedCount } = await this.listAvailable();
+    if (damagedCount)
+      throw new Error('本地数据集摘要损坏或版本不支持，请使用备份恢复。');
+    return items;
   }
   async load(id: string): Promise<Dataset> {
     const dataset = await this.transaction<unknown>('readonly', (tx, done) => {

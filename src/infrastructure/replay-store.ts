@@ -1,6 +1,31 @@
+import { readSummaryList } from './summary-list';
 import { LocalDatabase } from './local-database';
 import { assertReplayCheckpoint, summarizeReplay } from '../core/replay';
 import type { ReplayCheckpoint, ReplaySummary } from '../core/replay';
+
+function checkSummary(r: ReplaySummary) {
+  if (
+    !r ||
+    typeof r.id !== 'string' ||
+    !r.id ||
+    r.id.length > 100 ||
+    typeof r.name !== 'string' ||
+    !r.name.trim() ||
+    r.name.length > 160 ||
+    typeof r.symbol !== 'string' ||
+    !r.symbol.length ||
+    r.symbol.length > 80 ||
+    !Number.isSafeInteger(r.cursor) ||
+    r.cursor < 1 ||
+    r.cursor > 50000 ||
+    !Number.isSafeInteger(r.createdUtcMs) ||
+    r.createdUtcMs < 0 ||
+    r.createdUtcMs > 4_102_444_800_000 ||
+    typeof r.payloadHash !== 'string' ||
+    !/^[a-f0-9]{64}$/.test(r.payloadHash)
+  )
+    throw new Error('回放摘要损坏，未打开或修复。');
+}
 
 export class ReplayStore extends LocalDatabase {
   constructor(
@@ -17,35 +42,13 @@ export class ReplayStore extends LocalDatabase {
       done(undefined);
     });
   }
+  listAvailable() {
+    return readSummaryList(this, checkSummary);
+  }
   async list(): Promise<ReplaySummary[]> {
-    const rows = await this.transaction<ReplaySummary[]>(
-      'readonly',
-      (tx, done) => {
-        const request = tx.objectStore('summaries').getAll();
-        request.onsuccess = () => done(request.result as ReplaySummary[]);
-      },
-    );
-    if (
-      rows.some(
-        (r) =>
-          !r ||
-          typeof r.id !== 'string' ||
-          !r.id ||
-          r.id.length > 100 ||
-          typeof r.name !== 'string' ||
-          !r.name.trim() ||
-          r.name.length > 160 ||
-          typeof r.symbol !== 'string' ||
-          !Number.isSafeInteger(r.cursor) ||
-          r.cursor < 1 ||
-          r.cursor > 50000 ||
-          !Number.isSafeInteger(r.createdUtcMs) ||
-          r.createdUtcMs < 0 ||
-          !/^[a-f0-9]{64}$/.test(r.payloadHash),
-      )
-    )
-      throw new Error('回放摘要损坏，未打开或修复。');
-    return rows;
+    const { items, damagedCount } = await this.listAvailable();
+    if (damagedCount) throw new Error('回放摘要损坏，未打开或修复。');
+    return items;
   }
   async load(id: string): Promise<unknown> {
     const record = await this.transaction<unknown>('readonly', (tx, done) => {

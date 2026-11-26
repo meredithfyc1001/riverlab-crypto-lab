@@ -11,6 +11,8 @@ import type {
 import { RiskPlots } from './RiskPlots';
 import './risk.css';
 interface Props {
+  libraryEmpty: boolean;
+  libraryDiagnostic: string;
   experiments: ExperimentSummary[];
   preview: SourcePreview | null;
   record: RiskStudy | null;
@@ -181,7 +183,10 @@ export function RiskCenter(props: Props) {
             }}
           />
         </label>
-        {!props.records.length && <p>尚无保存的风险报告。</p>}
+        {props.libraryDiagnostic && (
+          <p role="alert">{props.libraryDiagnostic}</p>
+        )}
+        {props.libraryEmpty && <p>尚无保存的风险报告。</p>}
         {props.records.map((r) => (
           <div className="risk-snapshot" key={r.id}>
             <strong>

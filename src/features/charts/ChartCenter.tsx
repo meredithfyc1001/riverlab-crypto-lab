@@ -1,3 +1,4 @@
+import { chartColors } from '../../shared/chart-colors';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import {
   createChart,
@@ -242,15 +243,16 @@ function ChartView({
       setError('');
       try {
         const dark = theme === 'dark';
+        const palette = chartColors[theme];
         chart = createChart(container.current, {
           autoSize: true,
           height: enabled.rsi ? 600 : 420,
           layout: {
             background: {
               type: ColorType.Solid,
-              color: dark ? '#171c1f' : '#ffffff',
+              color: palette.panel,
             },
-            textColor: dark ? '#c4d3ce' : '#294839',
+            textColor: palette.text,
             attributionLogo: true,
           },
           grid: {
@@ -290,11 +292,11 @@ function ChartView({
         };
         const candles = chart.addSeries(CandlestickSeries, {
           priceFormat,
-          upColor: '#28ad85',
-          downColor: '#e3656f',
+          upColor: palette.up,
+          downColor: palette.down,
           borderVisible: false,
-          wickUpColor: '#28ad85',
-          wickDownColor: '#e3656f',
+          wickUpColor: palette.up,
+          wickDownColor: palette.down,
         });
         candles.setData(
           dataset.candles.map((c) => ({
@@ -320,7 +322,7 @@ function ChartView({
           dataset.candles.map((c) => ({
             time: chartTime(c.timestampUtcMs),
             value: c.volume,
-            color: c.close >= c.open ? '#28ad8566' : '#e3656f66',
+            color: c.close >= c.open ? palette.volume.up : palette.volume.down,
           })),
         );
         await yieldToBrowser();
@@ -328,7 +330,7 @@ function ChartView({
         if (enabled.ma)
           chart
             .addSeries(LineSeries, {
-              color: '#e3b95d',
+              color: palette.gold,
               lineWidth: 2,
               title: 'MA',
               priceFormat,
@@ -340,7 +342,7 @@ function ChartView({
         if (enabled.ema)
           chart
             .addSeries(LineSeries, {
-              color: '#6d9eff',
+              color: palette.blue,
               lineWidth: 2,
               title: 'EMA',
               priceFormat,
@@ -355,7 +357,7 @@ function ChartView({
           const rsi = chart.addSeries(
             LineSeries,
             {
-              color: '#b08af7',
+              color: palette.purple,
               lineWidth: 2,
               title: 'RSI',
               priceFormat: {
@@ -374,13 +376,13 @@ function ChartView({
           );
           rsi.createPriceLine({
             price: 30,
-            color: '#7e8990',
+            color: palette.neutral,
             lineWidth: 1,
             title: '30',
           });
           rsi.createPriceLine({
             price: 70,
-            color: '#7e8990',
+            color: palette.neutral,
             lineWidth: 1,
             title: '70',
           });

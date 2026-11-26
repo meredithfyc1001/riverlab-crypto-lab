@@ -1,3 +1,4 @@
+import { useLibraryList } from './useLibraryList';
 import { useEffect, useRef, useState } from 'react';
 import { RuleStore } from '../infrastructure/rule-store';
 import type { RuleRecord } from '../core/rule-library';
@@ -5,27 +6,14 @@ import { storageMessage } from '../infrastructure/dataset-store';
 
 export function useRuleLibrary() {
   const store = useRef(new RuleStore());
-  const [records, setRecords] = useState<RuleRecord[]>([]);
-  const [busy, setBusy] = useState(true),
+  const list = useLibraryList(store, '自定义策略版本库');
+  const [busy, setBusy] = useState(false),
     [error, setError] = useState(''),
     [message, setMessage] = useState('');
   const generation = useRef({ value: 0 });
   useEffect(() => {
-    let active = true;
     const lifetime = generation.current;
-    store.current
-      .list()
-      .then((list) => {
-        if (active) setRecords(list);
-      })
-      .catch((e) => {
-        if (active) setError(storageMessage(e));
-      })
-      .finally(() => {
-        if (active) setBusy(false);
-      });
     return () => {
-      active = false;
       lifetime.value++;
     };
   }, []);
@@ -36,9 +24,8 @@ export function useRuleLibrary() {
     setMessage('');
     try {
       await action();
-      const list = await store.current.list();
+      await list.refresh();
       if (token !== generation.current.value) return false;
-      setRecords(list);
       setMessage(message);
       return true;
     } catch (e) {
@@ -52,8 +39,9 @@ export function useRuleLibrary() {
     }
   }
   return {
-    records,
-    busy,
+    records: list.items,
+    libraryDiagnostic: list.diagnostic,
+    busy: busy || list.state === 'loading',
     error,
     message,
     save: (r: RuleRecord) =>

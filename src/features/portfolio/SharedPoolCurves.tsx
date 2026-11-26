@@ -1,16 +1,9 @@
+import { chartColors } from '../../shared/chart-colors';
 import { useEffect, useRef, useState } from 'react';
 import { createChart, ColorType, LineSeries } from 'lightweight-charts';
 import type { IChartApi, Time, UTCTimestamp } from 'lightweight-charts';
 import type { PoolPoint, SharedPoolResult } from '../../core/shared-pool/types';
 
-const colors = [
-  '#38aa8b',
-  '#e4a248',
-  '#779fe9',
-  '#cf80d3',
-  '#cf7979',
-  '#8ba3ad',
-];
 const views = {
   equity: '组合净值与买入持有',
   drawdown: '组合回撤',
@@ -36,14 +29,15 @@ export function SharedPoolCurves({
     const frame = requestAnimationFrame(() => {
       try {
         setError('');
+        const palette = chartColors[theme];
         const next = createChart(container, {
           autoSize: true,
           layout: {
             background: {
               type: ColorType.Solid,
-              color: theme === 'dark' ? '#171c1f' : '#ffffff',
+              color: palette.panel,
             },
-            textColor: theme === 'dark' ? '#c4d3ce' : '#294839',
+            textColor: palette.text,
           },
           localization: {
             timeFormatter: (time: Time) =>
@@ -67,6 +61,14 @@ export function SharedPoolCurves({
             }),
           );
         }
+        const colors = [
+          palette.up,
+          palette.gold,
+          palette.blue,
+          palette.purple,
+          palette.down,
+          palette.neutral,
+        ];
         switch (view) {
           case 'equity':
             series('组合净值', colors[0], (p) => Number(p.equity));

@@ -1,6 +1,7 @@
+import { useLibraryList } from './useLibraryList';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import type { Candle } from '../core/data';
-import type { ReplaySummary, ReplayView } from '../core/replay';
+import type { ReplayView } from '../core/replay';
 import { ReplayStore } from '../infrastructure/replay-store';
 import { storageMessage } from '../infrastructure/dataset-store';
 import { replayWorker } from '../infrastructure/replay-worker';
@@ -13,7 +14,6 @@ export interface ReplayModel {
 }
 export function useReplayWorkbench() {
   const [model, setModel] = useState<ReplayModel | null>(null);
-  const [records, setRecords] = useState<ReplaySummary[]>([]);
   const [busy, setBusy] = useState(false);
   const [playing, setPlaying] = useState(false);
   const [speed, setSpeed] = useState(1000);
@@ -25,19 +25,10 @@ export function useReplayWorkbench() {
   const guard = useRef({ busy: false, generation: 0 });
   const currentModel = useRef<ReplayModel | null>(null);
   const pause = useCallback(() => setPlaying(false), []);
+  const list = useLibraryList(store, '历史回放库');
   useEffect(() => {
-    let active = true;
     const lifetime = guard.current;
-    store.current
-      .list()
-      .then((rows) => {
-        if (active) setRecords(rows);
-      })
-      .catch((e) => {
-        if (active) setError(storageMessage(e));
-      });
     return () => {
-      active = false;
       lifetime.generation++;
       client.current?.close();
     };
@@ -192,7 +183,7 @@ export function useReplayWorkbench() {
         setMessage('回放JSON已生成下载；不含行情，恢复仍需原保存数据集。');
       } else {
         await store.current.save(record);
-        setRecords(await store.current.list());
+        await list.refresh();
         setSavedHash(record.payload.stateHash);
         setMessage('回放状态已保存（事务已完成）。请另行导出JSON备份。');
       }
@@ -242,7 +233,7 @@ export function useReplayWorkbench() {
     setError('');
     try {
       await store.current.delete(id);
-      setRecords(await store.current.list());
+      await list.refresh();
       setMessage('已删除保存的回放快照。');
     } catch (e) {
       setError(storageMessage(e));
@@ -280,7 +271,9 @@ export function useReplayWorkbench() {
   }
   return {
     model,
-    records,
+    records: list.items,
+    libraryDiagnostic: list.diagnostic,
+    libraryEmpty: list.empty,
     busy,
     playing: playing && !!model && model.view.cursor < model.view.total,
     speed,

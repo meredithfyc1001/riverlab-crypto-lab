@@ -1,0 +1,234 @@
+{
+  "source": "Artificial flat OHLC; exact integer ledger and Fraction ratios in Python.",
+  "initialCash": "1000",
+  "feeBps": 0,
+  "buySlippageBps": 0,
+  "sellSlippageBps": 0,
+  "quantityDecimals": 0,
+  "regime": {
+    "lookback": 2,
+    "thresholdBps": 500
+  },
+  "rolling": [
+    {
+      "trainRange": [0, 24],
+      "testRange": [24, 36],
+      "train": [
+        {
+          "lookback": 1,
+          "metrics": {
+            "totalReturn": "0.12",
+            "maxDrawdown": "0.081",
+            "profitFactor": "1",
+            "completedTrades": 3,
+            "netPnl": "120",
+            "finalEquity": "1120"
+          }
+        },
+        {
+          "lookback": 2,
+          "metrics": {
+            "totalReturn": "0.018",
+            "maxDrawdown": "0.126",
+            "profitFactor": "0",
+            "completedTrades": 3,
+            "netPnl": "18",
+            "finalEquity": "1018"
+          }
+        },
+        {
+          "lookback": 3,
+          "metrics": {
+            "totalReturn": "-0.015",
+            "maxDrawdown": "0.126",
+            "profitFactor": "0",
+            "completedTrades": 3,
+            "netPnl": "-15",
+            "finalEquity": "985"
+          }
+        }
+      ],
+      "selectedLookback": 1,
+      "test": {
+        "totalReturn": "-0.042",
+        "maxDrawdown": "0.084",
+        "profitFactor": "0",
+        "completedTrades": 2,
+        "netPnl": "-42",
+        "finalEquity": "958"
+      },
+      "regimes": [
+        {
+          "state": "BULL",
+          "bars": 2,
+          "netPnl": "0"
+        },
+        {
+          "state": "BEAR",
+          "bars": 1,
+          "netPnl": "0"
+        },
+        {
+          "state": "SIDEWAYS",
+          "bars": 6,
+          "netPnl": "-42"
+        },
+        {
+          "state": "UNKNOWN",
+          "bars": 3,
+          "netPnl": "0"
+        }
+      ]
+    },
+    {
+      "trainRange": [12, 36],
+      "testRange": [36, 48],
+      "train": [
+        {
+          "lookback": 2,
+          "metrics": {
+            "totalReturn": "0.051",
+            "maxDrawdown": "0.072",
+            "profitFactor": "2.133333333333",
+            "completedTrades": 3,
+            "netPnl": "51",
+            "finalEquity": "1051"
+          }
+        },
+        {
+          "lookback": 1,
+          "metrics": {
+            "totalReturn": "0.048",
+            "maxDrawdown": "0.087591240875",
+            "profitFactor": "1",
+            "completedTrades": 4,
+            "netPnl": "48",
+            "finalEquity": "1048"
+          }
+        },
+        {
+          "lookback": 3,
+          "metrics": {
+            "totalReturn": "0.027",
+            "maxDrawdown": "0.072",
+            "profitFactor": "1.6",
+            "completedTrades": 3,
+            "netPnl": "27",
+            "finalEquity": "1027"
+          }
+        }
+      ],
+      "selectedLookback": 2,
+      "test": {
+        "totalReturn": "0.096",
+        "maxDrawdown": "0.043795620437",
+        "profitFactor": null,
+        "completedTrades": 1,
+        "netPnl": "96",
+        "finalEquity": "1096"
+      },
+      "regimes": [
+        {
+          "state": "BULL",
+          "bars": 3,
+          "netPnl": "-24"
+        },
+        {
+          "state": "BEAR",
+          "bars": 0,
+          "netPnl": "0"
+        },
+        {
+          "state": "SIDEWAYS",
+          "bars": 6,
+          "netPnl": "120"
+        },
+        {
+          "state": "UNKNOWN",
+          "bars": 3,
+          "netPnl": "0"
+        }
+      ]
+    }
+  ],
+  "split": {
+    "trainRange": [0, 24],
+    "testRange": [24, 48],
+    "train": [
+      {
+        "lookback": 1,
+        "metrics": {
+          "totalReturn": "0.12",
+          "maxDrawdown": "0.081",
+          "profitFactor": "1",
+          "completedTrades": 3,
+          "netPnl": "120",
+          "finalEquity": "1120"
+        }
+      },
+      {
+        "lookback": 2,
+        "metrics": {
+          "totalReturn": "0.018",
+          "maxDrawdown": "0.126",
+          "profitFactor": "0",
+          "completedTrades": 3,
+          "netPnl": "18",
+          "finalEquity": "1018"
+        }
+      },
+      {
+        "lookback": 3,
+        "metrics": {
+          "totalReturn": "-0.015",
+          "maxDrawdown": "0.126",
+          "profitFactor": "0",
+          "completedTrades": 3,
+          "netPnl": "-15",
+          "finalEquity": "985"
+        }
+      }
+    ],
+    "selectedLookback": 1,
+    "test": {
+      "totalReturn": "0.042",
+      "maxDrawdown": "0.084",
+      "profitFactor": "1.5",
+      "completedTrades": 3,
+      "netPnl": "42",
+      "finalEquity": "1042"
+    },
+    "regimes": [
+      {
+        "state": "BULL",
+        "bars": 5,
+        "netPnl": "-21"
+      },
+      {
+        "state": "BEAR",
+        "bars": 1,
+        "netPnl": "0"
+      },
+      {
+        "state": "SIDEWAYS",
+        "bars": 15,
+        "netPnl": "63"
+      },
+      {
+        "state": "UNKNOWN",
+        "bars": 3,
+        "netPnl": "0"
+      }
+    ]
+  },
+  "randomGrid": {
+    "seed": 42,
+    "count": 4,
+    "candidates": [
+      [1, 3],
+      [2, 2],
+      [3, 1],
+      [3, 3]
+    ]
+  }
+}

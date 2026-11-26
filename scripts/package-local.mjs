@@ -2,6 +2,7 @@ import { readFile, writeFile, mkdir, readdir, cp, rm } from 'node:fs/promises';
 import { join, resolve } from 'node:path';
 import { execFileSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
+import { gunzipSync } from 'node:zlib';
 const root = resolve('work/local-package'),
   folder = join(root, 'RiverLab-Crypto-Lab-Local-Test');
 await rm(root, { recursive: true, force: true });
@@ -14,6 +15,83 @@ for (const file of ['server.mjs', 'start-local.bat', 'README-local-test.md']) {
     file.endsWith('.bat') ? data.toString().replace(/\r?\n/g, '\r\n') : data,
   );
 }
+// The user can select all acceptance inputs directly from the extracted ZIP.
+const acceptance = join(folder, 'acceptance');
+const fixtures = join(acceptance, 'fixtures');
+const references = join(acceptance, 'reference');
+await mkdir(fixtures, { recursive: true });
+await mkdir(references);
+await cp(
+  'scripts/local-test/acceptance-library-fixture.js',
+  join(acceptance, 'acceptance-library-fixture.js'),
+);
+for (const phase of ['5d', '5e']) {
+  const name = `phase-${phase}-acceptance.md`;
+  await cp(join('docs', name), join(acceptance, name));
+}
+for (const name of [
+  'advanced_research_reference.py',
+  'market_regime_reference.py',
+  'portfolio_reference.py',
+  'shared_pool_reference.py',
+])
+  await cp(join('tests/reference', name), join(references, name));
+for (const name of [
+  'advanced-research-reference.json',
+  'market-regime-reference.json',
+  'phase-5e-rolling-synthetic.csv',
+  'phase-5e-breakout-rule.json',
+])
+  await cp(join('tests/fixtures', name), join(fixtures, name));
+for (const name of ['ma-2-4', 'rules-v1', 'rules-v2'])
+  await cp(
+    `tests/fixtures/windows-20261125/${name}.json`,
+    join(fixtures, name + '.json'),
+  );
+for (const name of [
+  'phase-5c-a-synthetic',
+  'phase-5c-b-shared-strategy',
+  'phase-5c-b-rebalance',
+]) {
+  await writeFile(
+    join(fixtures, name + '.json'),
+    gunzipSync(await readFile(`tests/fixtures/${name}.json.gz`)),
+  );
+}
+const regime = JSON.parse(
+  await readFile(join(fixtures, 'market-regime-reference.json'), 'utf8'),
+).single;
+const header = 'timestamp,open,high,low,close,volume';
+const candleRow = (i, open, close) =>
+  [
+    1735689600000 + i * 60000,
+    open,
+    Math.max(open, close),
+    Math.min(open, close),
+    close,
+    1,
+  ].join(',');
+await writeFile(
+  join(fixtures, 'phase-5d-regime-synthetic.csv'),
+  [
+    header,
+    ...regime.prices.map((close, i) => candleRow(i, regime.opens[i], close)),
+  ].join('\n') + '\n',
+);
+for (const [name, bars, shift] of [
+  ['single-50000', 50000, 0],
+  ['alpha-5000', 5000, 0],
+  ['beta-5000', 5000, 3],
+]) {
+  const rows = Array.from({ length: bars }, (_, i) => {
+    const price = 100 + Math.abs(((i + shift) % 12) - 6);
+    return candleRow(i, price, price);
+  });
+  await writeFile(
+    join(fixtures, 'synthetic-' + name + '.csv'),
+    [header, ...rows].join('\n') + '\n',
+  );
+}
 const sha = execFileSync('git', ['rev-parse', 'HEAD'], {
   encoding: 'utf8',
 }).trim();
@@ -23,7 +101,7 @@ const dirty = Boolean(
 if (process.env.CI && dirty)
   throw new Error('CI package must be built from a clean commit.');
 const pkg = JSON.parse(await readFile('package.json', 'utf8'));
-const phase = 'Phase 5D';
+const phase = 'Phase 5E';
 await writeFile(
   join(folder, 'build-info.json'),
   JSON.stringify(
