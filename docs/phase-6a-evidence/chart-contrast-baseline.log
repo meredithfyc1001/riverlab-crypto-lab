@@ -1,0 +1,39 @@
+Source: 121e2fb807be68d2f98018f382f4db2c999ed9b2
+Computed WCAG 2 relative luminance after 8-bit sRGB alpha compositing.
+Series label color from lightweight-charts 5.2.1 generateContrastColors.
+Last price label #28ad85                         #ffffff on #28ad85 = 2.835:1 (required 4.5:1) FAIL
+Last price label #30af88                         #ffffff on #30af88 = 2.758:1 (required 4.5:1) FAIL
+Last price label #31986e                         #ffffff on #31986e = 3.592:1 (required 4.5:1) FAIL
+Last price label #38aa8b                         #ffffff on #38aa8b = 2.880:1 (required 4.5:1) FAIL
+Last price label #638ee7                         #ffffff on #638ee7 = 3.204:1 (required 4.5:1) FAIL
+Last price label #6d9eff                         #ffffff on #6d9eff = 2.630:1 (required 4.5:1) FAIL
+Last price label #729bdd                         #ffffff on #729bdd = 2.820:1 (required 4.5:1) FAIL
+Last price label #779fe9                         #ffffff on #779fe9 = 2.651:1 (required 4.5:1) FAIL
+Last price label #7e8990                         #ffffff on #7e8990 = 3.579:1 (required 4.5:1) FAIL
+Last price label #8ba3ad                         #ffffff on #8ba3ad = 2.645:1 (required 4.5:1) FAIL
+Last price label #b08af7                         #ffffff on #b08af7 = 2.684:1 (required 4.5:1) FAIL
+Last price label #bf6052                         #ffffff on #bf6052 = 4.191:1 (required 4.5:1) FAIL
+Last price label #c484db                         #ffffff on #c484db = 2.738:1 (required 4.5:1) FAIL
+Last price label #cf7678                         #ffffff on #cf7678 = 3.223:1 (required 4.5:1) FAIL
+Last price label #cf7979                         #ffffff on #cf7979 = 3.151:1 (required 4.5:1) FAIL
+Last price label #cf80d3                         #ffffff on #cf80d3 = 2.734:1 (required 4.5:1) FAIL
+Last price label #dfa750                         #000000 on #dfa750 = 9.781:1 (required 4.5:1) PASS
+Last price label #e3656f                         #ffffff on #e3656f = 3.303:1 (required 4.5:1) FAIL
+Last price label #e3b95d                         #000000 on #e3b95d = 11.364:1 (required 4.5:1) PASS
+Last price label #e4a248                         #000000 on #e4a248 = 9.561:1 (required 4.5:1) PASS
+Volume #28ad8566                                 #1e5648 on #171c1f = 2.029:1 (required 3:1) FAIL
+Volume #e3656f66                                 #69393f on #171c1f = 1.847:1 (required 3:1) FAIL
+Regime candle up on BULL                         #31986e on #28453e = 2.907:1 (required 3:1) FAIL
+Regime candle down on BULL                       #bf6052 on #28453e = 2.491:1 (required 3:1) FAIL
+Regime candle up on BEAR                         #31986e on #463535 = 3.211:1 (required 3:1) PASS
+Regime candle down on BEAR                       #bf6052 on #463535 = 2.751:1 (required 3:1) FAIL
+Regime candle up on SIDEWAYS                     #31986e on #2f3b4d = 3.154:1 (required 3:1) PASS
+Regime candle down on SIDEWAYS                   #bf6052 on #2f3b4d = 2.703:1 (required 3:1) FAIL
+Regime candle up on UNKNOWN                      #31986e on #34393b = 3.258:1 (required 3:1) PASS
+Regime candle down on UNKNOWN                    #bf6052 on #34393b = 2.792:1 (required 3:1) FAIL
+Risk example trace inside quantile band          #6c7887 on #2a3950 = 2.597:1 (required 3:1) FAIL
+Scatter plot zero line and axes                  #293034 on #101416 = 1.382:1 (required 3:1) FAIL
+Probe up candle last-price label                 #ffffff on #168763 = 4.487:1 (required 4.5:1) FAIL
+Chromium 154.0.8037.57 Linux; 24-bar BTCUSDT fixture, rasterized bottom volume strip:
+rgb(29,85,71) on rgb(23,28,31) = 1.998:1 (3:1 required)
+rgb(104,56,62) on rgb(23,28,31) = 1.819:1 (3:1 required)
