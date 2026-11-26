@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>RiverLab · Windows 桌面验证</title>
+    <style>
+      body {
+        max-width: 66rem;
+        margin: 2rem auto;
+        padding: 0 1rem;
+        color: #19283f;
+        font:
+          16px/1.6 'Segoe UI',
+          'Microsoft YaHei',
+          sans-serif;
+      }
+      button {
+        font: inherit;
+        padding: 0.3rem 0.8rem;
+      }
+      #chart {
+        max-width: 640px;
+      }
+      #result {
+        overflow: auto;
+      }
+    </style>
+  </head>
+  <body>
+    <nav><a href="../../index.html">返回研究工作台</a></nav>
+    <h1>Windows 桌面技术验证</h1>
+    <p>使用内置合成行情验证五万根研究、图表与文件下载。</p>
+    <p>
+      <button id="run" type="button" disabled>运行验证</button>
+      <button id="download" type="button" disabled>下载合成研究报告</button>
+    </p>
+    <p id="status" role="status" data-state="loading">正在加载</p>
+    <figure>
+      <figcaption>人工合成行情 · 开盘、最高、最低、收盘</figcaption>
+      <div id="chart" aria-label="人工合成 K 线图"></div>
+      <small
+        >TradingView Lightweight Charts™ · Copyright © 2025 TradingView, Inc. ·
+        Apache-2.0</small
+      >
+    </figure>
+    <pre id="result"></pre>
+    <section id="sqlite-section" hidden>
+      <h2>SQLite 合成数据验证</h2>
+      <button type="button" id="sqlite">验证事务、备份与恢复</button>
+      <p id="sqlite-status" role="status" data-state="ready">
+        使用本次验证的临时目录
+      </p>
+      <pre id="sqlite-result"></pre>
+    </section>
+    <script type="module" src="./probe.ts"></script>
+  </body>
+</html>

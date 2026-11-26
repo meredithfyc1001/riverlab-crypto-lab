@@ -7,3 +7,5 @@ package-lock.json
 docs/product-plan-v0.1.md
 # Original Windows acceptance exports. Preserve their file checksums.
 tests/fixtures/windows-20261125/
+src-tauri/target/
+src-tauri/gen/schemas/

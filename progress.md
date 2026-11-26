@@ -1,5 +1,9 @@
 # RiverLab Crypto Lab 进度
 
+## Phase 6A Windows 验证原型
+
+已从 `feat/phase-5e-advanced-research` 的联合验收提交建立独立分支。桌面模式单独构建页面和真实 Worker 验证入口；浏览器的生产构建沿用原入口。原版 5E Linux Chromium 实测的完整计算结果指纹为 `e3fb4410dc0bac12ca6dc1d108d4a6ae2f56107a47fc20bbda789469cbaf5d6b`。SQLite 的锁定依赖测试在 Linux 通过 2 项。Windows runner 的发布包、计时和进程树内存以同次流水线制品为准，Windows 用户实机签收另列。[验证报告与交付说明](docs/phase-6a-verification.md)
+
 ## Phase 5E 高级策略研究
 
 PR #14 于 2026-11-25 11:45:05 UTC 合并，最终 5D 功能提交为 `b37094a91614916a35e13bd15c99d9d5270a9081`。合并后 main 的四项作业全部通过。已据此新建分支 `feat/phase-5e-advanced-research`。用户决定 5D 和 5E 共用最终 Windows 测试包，5D 实机和物理断网继续为 **NOT TESTED**。[合并后 CI](https://github.com/meredithfyc1001/riverlab-crypto-lab/actions/runs/45607331060) · [技术设计](docs/phase-5e-design.md) · [联合验收清单](docs/phase-5e-acceptance.md)

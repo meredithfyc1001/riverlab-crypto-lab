@@ -1,6 +1,6 @@
 # RiverLab Crypto Lab 工作指令
 
-当前阶段为 Phase 5E。PR #14 已合并，开发基线为 `10a5d88847b043e4705eca5a3b0716e218804040`。优化按时间隔离，训练选参后方可计算相应测试窗口。保留原 629 / 60 及十组参考。5D 实机与 5E 联合验收，5D 实机及物理断网均为 NOT TESTED。[5E 设计](docs/phase-5e-design.md)
+当前工作范围为 Phase 6A Windows 技术原型。以 5E 联合包提交 `18aefef26884e5a8a10fd36e4e985365ff223e5f` 为基线，用户已确认 5D/5E Chrome 与 Edge 联合实机验收完成。本阶段只使用独立 profile、合成数据和固定验收样本。保留浏览器 IndexedDB、原 TypeScript 数值内核及历史文件，禁止访问用户浏览器旧库或执行真实迁移。交付目标为 Draft PR 和 Windows 验收制品；后续开发、合并和分发另行决定。[6A 架构](docs/phase-6a-architecture.md) · [验证规程](docs/phase-6a-verification.md)
 
 历史阶段 Phase 5D 的基线为 PR #13 实际合并提交 `06635d3dc385b4645b21cfbda1edd68f23e3de89`，独立分支 `feat/phase-5d-market-regime`。历史状态仅用于事后研究归因。每根只据已完成的历史收盘生成标签，下一根才可生效。复用原校验、时序、账本及版本契约。保留 570 项单元及集成测试、54 项 E2E 和全部独立参考。详见[设计](docs/phase-5d-design.md)。
 

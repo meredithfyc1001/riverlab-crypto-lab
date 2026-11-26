@@ -1,0 +1,98 @@
+name: Phase 6A Windows prototype
+
+on:
+  pull_request:
+    branches: [feat/phase-5e-advanced-research]
+    types: [opened, synchronize, reopened, ready_for_review]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: phase-6a-windows-pr-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  windows:
+    if: github.head_ref == 'feat/phase-6a-windows-prototype'
+    name: Build and exercise installed desktop prototype
+    runs-on: windows-latest
+    timeout-minutes: 60
+    defaults:
+      run:
+        shell: pwsh
+    env:
+      EXPECTED_SHA: ${{ github.event.pull_request.head.sha }}
+      RIVERLAB_6A_DIST: ${{ github.workspace }}/work/desktop-6a/dist
+      RIVERLAB_6A_OUTPUT: ${{ github.workspace }}/work/desktop-6a/evidence
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.EXPECTED_SHA }}
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - name: Install locked build dependencies
+        run: npm ci
+      - name: Select the Windows Rust toolchain
+        run: |
+          rustup toolchain install 1.100.0 --profile minimal
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          rustup override set 1.100.0
+      - name: Build the desktop EXE and per-user NSIS installer
+        id: build
+        run: npm run desktop:build
+      - name: Run native SQLite checks with the locked graph
+        id: native
+        run: cargo test --manifest-path src-tauri/Cargo.toml --locked
+      - name: Pack and install the exact distributed bytes
+        id: pack
+        run: ./scripts/6a-package/prepare.ps1
+      - name: Open and close the standalone EXE with no Node on PATH
+        id: standalone
+        run: ./scripts/6a-package/standalone.ps1
+      - name: Exercise installed WebView2 and compare with Edge
+        id: verification
+        run: node scripts/desktop-6a/verify.mjs
+      - name: Write Windows evidence and performance summary
+        if: always()
+        env:
+          STAGE_OUTCOMES: >-
+            {"build":"${{ steps.build.outcome }}","native":"${{ steps.native.outcome }}",
+            "packageAndInstall":"${{ steps.pack.outcome }}","standalone":"${{ steps.standalone.outcome }}",
+            "installedAppAndEdge":"${{ steps.verification.outcome }}"}
+        run: node scripts/6a-package/summary.mjs
+      - name: Upload Windows measurements and diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: Phase-6A-Windows-evidence-${{ env.EXPECTED_SHA }}-${{ github.run_attempt }}
+          path: work/desktop-6a/evidence/
+          if-no-files-found: warn
+          retention-days: 14
+      - name: Upload Windows acceptance kit
+        id: kit
+        uses: actions/upload-artifact@v4
+        with:
+          name: Phase-6A-Windows-x64-${{ env.EXPECTED_SHA }}-${{ github.run_attempt }}
+          path: |
+            work/desktop-6a/package/*.zip
+            work/desktop-6a/package/*.zip.sha256
+          if-no-files-found: error
+          retention-days: 14
+      - name: Summarize the tested package
+        env:
+          PACKAGE_URL: ${{ steps.kit.outputs.artifact-url }}
+          WRAPPER_DIGEST: ${{ steps.kit.outputs.artifact-digest }}
+          ZIP_DIGEST: ${{ steps.pack.outputs.archive_sha256 }}
+        run: |
+          @(
+            "[Download Phase 6A Windows acceptance kit]($env:PACKAGE_URL)"
+            ""
+            "- Source SHA: $env:EXPECTED_SHA"
+            "- Inner ZIP SHA-256: $env:ZIP_DIGEST"
+            "- Actions artifact SHA-256: $env:WRAPPER_DIGEST"
+            "- Windows x64 CI, existing WebView2 runtime, test build. Retained for 14 days."
+          ) >> $env:GITHUB_STEP_SUMMARY
