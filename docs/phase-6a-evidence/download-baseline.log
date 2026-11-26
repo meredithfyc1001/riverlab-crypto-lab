@@ -1,0 +1,9 @@
+Baseline 121e2fb807be68d2f98018f382f4db2c999ed9b2; Linux host harness for original Windows Requested handler
+case=empty profile and original filename; accepted=true
+case=system Downloads has original, WebView supplies (1); accepted=false
+case=existing native target and original suggestion; accepted=false
+original intact=true
+
+thread 'main' (1954) panicked at work/download-baseline/predicate.rs:32:2:
+repeat download must save a separate file
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace

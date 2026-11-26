@@ -1,0 +1,9 @@
+{
+  "fixtureId": "phase-6a-download-regression-v1",
+  "source": "synthetic",
+  "purpose": "Verify exact bytes when saving and retrying a desktop report.",
+  "rows": [
+    { "sequence": 1, "value": "12.50" },
+    { "sequence": 2, "value": "0.00" }
+  ]
+}

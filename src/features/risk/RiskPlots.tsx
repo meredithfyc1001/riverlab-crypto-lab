@@ -44,23 +44,23 @@ export function RiskPlots({ simulation: s }: { simulation: Simulation }) {
         aria-label="重采样权益5、50、95分位带"
       >
         <line x1="40" y1="310" x2="640" y2="310" stroke="currentColor" />
-        <polygon points={area} fill="#6d9eff" opacity=".22" />
+        <polygon points={area} fill="var(--risk-band)" opacity=".22" />
         <polyline
           points={line('p05')}
           fill="none"
-          stroke="#6d9eff"
+          stroke="var(--risk-band)"
           strokeWidth="1.5"
         />
         <polyline
           points={line('p50')}
           fill="none"
-          stroke="#28ad85"
+          stroke="var(--risk-median)"
           strokeWidth="2.5"
         />
         <polyline
           points={line('p95')}
           fill="none"
-          stroke="#6d9eff"
+          stroke="var(--risk-band)"
           strokeWidth="1.5"
         />
         {traces &&
@@ -71,8 +71,7 @@ export function RiskPlots({ simulation: s }: { simulation: Simulation }) {
                 .map((p) => x(p.step) + ',' + y(p.equity))
                 .join(' ')}
               fill="none"
-              stroke="currentColor"
-              opacity=".35"
+              stroke="var(--muted)"
             >
               <title>示例路径{t.path}</title>
             </polyline>
@@ -100,7 +99,7 @@ export function RiskPlots({ simulation: s }: { simulation: Simulation }) {
                 y={190 - h}
                 width={Math.max(1, width - 3)}
                 height={h}
-                fill="#6d9eff"
+                fill="var(--risk-band)"
               />
               <title>
                 {b.lower} 至 {b.upper} USDT：{b.count}条路径

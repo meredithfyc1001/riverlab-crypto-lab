@@ -1,3 +1,4 @@
+import { chartColors } from '../../shared/chart-colors';
 import { useEffect, useRef, useState } from 'react';
 import { CandlestickSeries, ColorType, createChart } from 'lightweight-charts';
 import type {
@@ -42,14 +43,15 @@ export function RegimeChart({
     const frame = requestAnimationFrame(() => {
       try {
         setError('');
+        const palette = chartColors[theme];
         const api = createChart(element, {
           autoSize: true,
           layout: {
             background: {
               type: ColorType.Solid,
-              color: theme === 'dark' ? '#171c1f' : '#ffffff',
+              color: palette.panel,
             },
-            textColor: theme === 'dark' ? '#c4d3ce' : '#294839',
+            textColor: palette.text,
           },
           grid: {
             vertLines: { visible: false },
@@ -63,11 +65,11 @@ export function RegimeChart({
         });
         chart = api;
         const series = api.addSeries(CandlestickSeries, {
-          upColor: '#31986e',
-          downColor: '#bf6052',
+          upColor: palette.up,
+          downColor: palette.down,
           borderVisible: false,
-          wickUpColor: '#31986e',
-          wickDownColor: '#bf6052',
+          wickUpColor: palette.up,
+          wickDownColor: palette.down,
         });
         series.setData(
           candles.map((c) => ({
@@ -104,13 +106,15 @@ export function RegimeChart({
                     const run = runs[i];
                     const left = (run.startUtcMs - first) / interval - 0.5;
                     if (left > range.to + 0.5) break;
-                    context.fillStyle = colors[theme][run.state] + '38';
-                    context.fillRect(
-                      origin + left * step,
-                      0,
-                      run.bars * step,
-                      mediaSize.height,
-                    );
+                    const color = colors[theme][run.state];
+                    const x = origin + left * step;
+                    const width = run.bars * step;
+                    context.fillStyle = color + '38';
+                    context.fillRect(x, 0, width, mediaSize.height);
+                    // Match the legend at full contrast while leaving candles
+                    // visible through the body of each interval.
+                    context.fillStyle = color;
+                    context.fillRect(x, mediaSize.height - 4, width, 4);
                   }
                 });
               },

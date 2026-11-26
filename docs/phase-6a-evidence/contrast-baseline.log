@@ -1,0 +1,14 @@
+source: 121e2fb807be68d2f98018f382f4db2c999ed9b2
+build: npx --no-install vite build --mode desktop-6a --outDir work/contrast-baseline
+platform: linux Chromium 154.0.8037.57
+path: /tests/desktop-6a/index.html, selector: #status {"label":"可开始验证","foreground":"rgb(25, 40, 63)","background":"rgb(16, 20, 22)","scheme":"dark"}
+WCAG contrast: 1.2496:1 required: 4.5:1 FAIL
+
+Unmodified desktop build, Playwright all-route audit (selected failing assertions):
++   "control border 切换为浅色主题 (div) 1.382 < 3",
++   "只读示例 (small) 4.227 < 4.5",
++   "开盘 (th) 4.227 < 4.5",
++   "打开选中数据集 (button) 4.359 < 4.5",
++   "Windows 桌面技术验证 (h1) 1.250 < 3",
++   "下载合成研究报告 (button#download) 2.652 < 4.5",
++   "合成错误提示 (p#sqlite-status) 1.250 < 4.5",

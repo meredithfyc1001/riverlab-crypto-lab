@@ -1,3 +1,4 @@
+import { chartColors } from '../../shared/chart-colors';
 import { useEffect, useRef, useState } from 'react';
 import {
   CandlestickSeries,
@@ -30,15 +31,16 @@ export function ReplayChart({
       setReady(false);
       setError('');
       try {
+        const palette = chartColors[theme];
         chart = createChart(element.current, {
           autoSize: true,
           height: 640,
           layout: {
             background: {
               type: ColorType.Solid,
-              color: theme === 'dark' ? '#171c1f' : '#ffffff',
+              color: palette.panel,
             },
-            textColor: theme === 'dark' ? '#c4d3ce' : '#294839',
+            textColor: palette.text,
             attributionLogo: true,
           },
           timeScale: { timeVisible: true, secondsVisible: true },
@@ -68,11 +70,11 @@ export function ReplayChart({
           .addSeries(
             CandlestickSeries,
             {
-              upColor: '#28ad85',
-              downColor: '#e3656f',
+              upColor: palette.up,
+              downColor: palette.down,
               borderVisible: false,
-              wickUpColor: '#28ad85',
-              wickDownColor: '#e3656f',
+              wickUpColor: palette.up,
+              wickDownColor: palette.down,
               priceFormat: format,
             },
             0,
@@ -91,7 +93,7 @@ export function ReplayChart({
         chart
           .addSeries(
             LineSeries,
-            { title: '已知权益 USDT', color: '#28ad85', priceFormat: format },
+            { title: '已知权益 USDT', color: palette.up, priceFormat: format },
             1,
           )
           .setData(
@@ -103,7 +105,11 @@ export function ReplayChart({
         await new Promise<void>((resolve) => setTimeout(resolve, 0));
         if (disposed) return;
         chart
-          .addSeries(LineSeries, { title: '已知回撤 %', color: '#e3656f' }, 2)
+          .addSeries(
+            LineSeries,
+            { title: '已知回撤 %', color: palette.down },
+            2,
+          )
           .setData(
             curve.map((p) =>
               p.drawdown.value === null

@@ -1,5 +1,35 @@
 # RiverLab Crypto Lab 进度
 
+## Phase 6A Windows 验证原型
+
+### PR #16 · Windows 11 首轮实机反馈
+
+Windows 11 25H2（26200.9457）在提交 `121e2fb8` 上记录两项 FAIL。桌面技术验证页与 Edge 同页的深色文字对比度为 1.25:1。系统下载目录存在同名报告时，安装版两次完成计算却均未交付文件；移开同名文件后，三组桌面与 Edge 配对均通过。原始日志、截图、性能和 SHA-256 清单由首轮验收机保留。基线在修改前复现了同一低对比度及下载回调拒绝同名的条件。[实机结论、基线失败日志及第二轮验收单](docs/phase-6a-verification.md#首轮-windows-11-实机验收与第二轮复测附录)
+
+首轮 50,000 根数值一致性和 SQLite 合成库验证通过。该轮卸载后保留数据为 BLOCKED，物理断网为 NOT TESTED。[Draft PR #16](https://github.com/meredithfyc1001/riverlab-crypto-lab/pull/16)
+
+### PR #16 · Windows 11 第二轮实机与第三轮修复
+
+第二轮在 `326f9694a29150725dfeea8118bbf63ef2ec7f83` 完成。首轮的深色技术验证页和同名下载通过复测，新的 FAIL 是数据、策略、回测和风险四张工作台卡片的实际描边仅 1.3819∶1（项目门槛 3∶1）。两种桌面形式均实测拒写、目录缺失及恢复重试；第二轮实机用独立空目录的 NTFS 删除等待状态产生真实错误 5。浏览器把保存交给系统管理器，Chrome、Edge 均观测到拒写导致下载取消，恢复目录后重新请求并完成。Windows 错误 32/33 在生产桌面上的提示仍为 BLOCKED，独占同名成品时会自动编号并保存；对临时文件的外部故障夹具先遇到了共享冲突。[两轮实机记录与第三轮复测条件](docs/phase-6a-verification.md#第二轮-windows-11-实机结果)
+
+已复查原 5E 运行的五份官方制品及相关本机归档，旧任务当次下载的原始文件直接核对仍为 BLOCKED。使用 `18aefef2` 的原容量场景重新生成并恢复完整 JSON，逐字段核对第二轮的 19 份完整导出，固定输入、计划、各折结果均一致。另用四个环境的底层 Worker 核对逐笔输出与权益曲线。修复候选的质量作业将本次容量导出及读回回执保存在各平台制品中。独立的 253 字节下载故障夹具只验证文件保存路径。托管 Windows CI 在新建临时目录上用 `icacls` 实际拒绝写入并恢复，复核重试文件及原件完整性。[历史 5E 参照、摘要及复核范围](docs/phase-6a-verification.md#历史-5e-原件与可复现参照)
+
+修复开发期间，系统 Chrome 和 Edge 各自通过深浅主题两项卡片专项。深/浅主题的外侧描边分别为 6.870336∶1 / 5.619931∶1，悬停和按下状态的内侧描边分别为 5.726492∶1 / 5.607180∶1。[可重跑的像素专项](tests/e2e/path-card-contrast.spec.ts)
+
+Windows 本地 Vitest 默认并发首跑 673/674。失败项是 `tests/integration/app.test.tsx` 的回测深链接场景，等待“回测配置”超时。保持原断言及时间门槛，用 `npx vitest run --maxWorkers=2` 重新执行全部用例，48 个文件、674/674 通过。系统 Chrome 158.0.8127.37 运行 `node scripts/profile-capacity.mjs`，独立读回 4,401,149 字节的重算导出；完整输入和结果摘要与 5E 参照一致。
+
+第二轮合并建议为保留 Draft。第三轮用户 Windows 11 实机验收为 **NOT TESTED**，卸载、物理断网及历史 IndexedDB 迁移没有新增实测结论。发布包需绑定修复后的提交，托管 CI 运行链接、实际断言数量和 Windows 实机记录按各自提交归档。[CI 与第三轮签收条件](docs/phase-6a-verification.md#托管-ci-与第三轮实机签收)
+
+### 原型构建与 Windows CI 历史
+
+已从 `feat/phase-5e-advanced-research` 的联合验收提交建立独立分支。桌面模式单独构建页面和真实 Worker 验证入口；浏览器的生产构建沿用原入口。原版 5E Linux Chromium 实测的完整计算结果指纹为 `e3fb4410dc0bac12ca6dc1d108d4a6ae2f56107a47fc20bbda789469cbaf5d6b`。SQLite 的锁定依赖测试在 Linux 通过 2 项。Windows runner 的发布包、计时和进程树内存以同次流水线制品为准，Windows 用户实机签收另列。[验证报告与交付说明](docs/phase-6a-verification.md)
+
+Windows 首轮在 `06ce35e` 构建出 EXE 和 NSIS，并通过 2 项原生 SQLite 测试。安装后校验报告独立 EXE 与安装副本摘要不符，GUI 自动化尚未执行。此原型没有 updater；后续构建关闭 CLI 的 bundle 类型二进制修补，并直接读取实际交付文件和安装后文件计算摘要。保留字节一致的门槛。[首轮作业](https://github.com/meredithfyc1001/riverlab-crypto-lab/actions/runs/45747082913/job/139665641004)
+
+第二轮 `7ee85b6` 验证独立 EXE 与安装目录字节一致，PATH 中没有 Node 的松散 EXE 产生可响应窗口、加载 WebView2 后正常退出。系统 Edge 完成页面及 50,000 根计算；WebView2 远程调试连接三次超时，该轮桌面页面和数值比对未通过。后续在同一 EXE 的新建测试配置内运行固定验收流程，用原生回执、磁盘下载 SHA 与外部进程树采样验证。普通启动不启用自动验收。[第二轮作业](https://github.com/meredithfyc1001/riverlab-crypto-lab/actions/runs/45748146765/job/139669126545)
+
+第三轮 `9bc294c` 的原生验收走通中文工作台、SQLite 及已保存回放；50,000 根在 WebView2 157.0.4341.46 的候选子 Worker 报通信错误，同机 Edge 完成。现有错误信息无法确定底层原因。桌面改由页面按调度预算创建同源模块候选，使用 MessagePort 直连两个 Worker。浏览器保留既有嵌套方式，TS 策略和数值内核保持 5E 原版。后续以实际候选通信、同一完整结果 SHA 和落盘下载复验。[第三轮作业](https://github.com/meredithfyc1001/riverlab-crypto-lab/actions/runs/45749871344/job/139674791014)
+
 ## Phase 5E 高级策略研究
 
 PR #14 于 2026-11-25 11:45:05 UTC 合并，最终 5D 功能提交为 `b37094a91614916a35e13bd15c99d9d5270a9081`。合并后 main 的四项作业全部通过。已据此新建分支 `feat/phase-5e-advanced-research`。用户决定 5D 和 5E 共用最终 Windows 测试包，5D 实机和物理断网继续为 **NOT TESTED**。[合并后 CI](https://github.com/meredithfyc1001/riverlab-crypto-lab/actions/runs/45607331060) · [技术设计](docs/phase-5e-design.md) · [联合验收清单](docs/phase-5e-acceptance.md)

@@ -150,6 +150,12 @@ export function App() {
         </header>
 
         <main id="main-content" tabIndex={-1}>
+          {import.meta.env.MODE === 'desktop-6a' && (
+            <aside>
+              6A 验证工作台 · 请使用合成数据或验收样本。{' '}
+              <a href="./tests/desktop-6a/index.html">打开桌面技术验证</a>
+            </aside>
+          )}
           <div className="page-heading">
             <div>
               <p className="eyebrow">RIVERLAB / RESEARCH WORKSPACE</p>

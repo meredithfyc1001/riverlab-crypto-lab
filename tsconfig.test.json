@@ -12,6 +12,7 @@
     "tests/unit",
     "tests/integration",
     "tests/performance",
+    "tests/desktop-6a",
     "tests/setup.ts"
   ]
 }

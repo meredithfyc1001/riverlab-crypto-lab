@@ -1,8 +1,5 @@
 import { responsiveness } from '../responsiveness';
-import type { AdvancedInput } from '../../../src/core/advanced-research';
-import { normalizeConfig } from '../../../src/core/backtests';
-import { normalizeRisk } from '../../../src/core/risk';
-import { sealRule } from '../../../src/core/rule-library';
+import { advancedCapacityInput } from './advanced-input';
 import { advancedTask } from '../../../src/infrastructure/advanced-worker';
 import { prepareBacktest } from '../backtest-input';
 
@@ -17,60 +14,7 @@ async function run() {
 }
 
 async function sample(baseline: Awaited<ReturnType<typeof prepareBacktest>>) {
-  const group = (direction: 'above' | 'below') => ({
-    enabled: true,
-    operator: 'AND',
-    conditions: [
-      {
-        enabled: true,
-        kind: 'cross',
-        average: 'MA',
-        direction,
-        fastPeriod: 2,
-        slowPeriod: 4,
-      },
-    ],
-  });
-  const rule = sealRule(
-    {
-      schemaVersion: 1,
-      revision: 1,
-      buy: group('above'),
-      sell: group('below'),
-    },
-    {
-      familyId: 'capacity-cross',
-      name: '容量测量 MA 交叉',
-      createdUtcMs: 1735689600000,
-    },
-  );
-  const input: AdvancedInput = {
-    dataset: baseline.input.dataset,
-    completedThroughUtcMs: baseline.input.completedThroughUtcMs,
-    config: normalizeConfig({}),
-    risk: normalizeRisk(),
-    ruleRecord: rule,
-    axes: [
-      {
-        side: 'buy',
-        condition: 0,
-        field: 'fastPeriod',
-        min: 1,
-        max: 3,
-        step: 1,
-      },
-    ],
-    search: { kind: 'random', seed: 27, count: 3 },
-    filters: {
-      minReturn: null,
-      maxDrawdown: null,
-      minProfitFactor: null,
-      minTrades: 0,
-    },
-    sort: ['totalReturn', 'maxDrawdown'],
-    evaluation: { kind: 'split', trainBars: 25000 },
-    regime: { lookback: 20, thresholdBps: 500 },
-  };
+  const input = advancedCapacityInput(baseline);
   const request = {
     kind: 'run',
     input,

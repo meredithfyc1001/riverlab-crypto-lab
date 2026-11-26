@@ -1,3 +1,4 @@
+import { desktopCandidateWorkers } from './advanced-desktop-workers';
 import type { AdvancedInput, AdvancedPlan } from '../core/advanced-research';
 import type { AdvancedReport } from '../core/advanced-research/report';
 
@@ -33,6 +34,7 @@ export function advancedTask<Q extends AdvancedRequest>(
     type: 'module',
   });
   let active = true;
+  let peers: ReturnType<typeof desktopCandidateWorkers> | undefined;
   let abort: (e: Error) => void = () => {};
   const promise = new Promise<AdvancedResponse<Q>>((resolve, reject) => {
     function close() {
@@ -41,6 +43,7 @@ export function advancedTask<Q extends AdvancedRequest>(
       worker.onerror = null;
       worker.onmessageerror = null;
       worker.terminate();
+      peers?.close();
     }
     abort = (error) => {
       if (!active) return;
@@ -72,11 +75,24 @@ export function advancedTask<Q extends AdvancedRequest>(
       resolve(data as AdvancedResponse<Q>);
     };
     try {
-      worker.postMessage(request);
+      if (
+        import.meta.env.MODE === 'desktop-6a' &&
+        '__TAURI__' in window &&
+        request.kind === 'run' &&
+        request.concurrency > 1
+      ) {
+        peers = desktopCandidateWorkers(
+          Math.min(4, request.concurrency),
+          abort,
+        );
+        worker.postMessage(request, [peers.control]);
+      } else {
+        worker.postMessage(request);
+      }
     } catch (e) {
       abort(e instanceof Error ? e : new Error('无法传输高级研究输入。'));
     }
   });
-  // Terminating the dedicated worker also terminates its owned subworkers.
+  // The browser coordinator owns its nested Workers; the desktop window owns its peers.
   return { promise, cancel: () => abort(new Error('高级研究任务已取消。')) };
 }

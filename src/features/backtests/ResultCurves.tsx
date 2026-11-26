@@ -1,3 +1,4 @@
+import { chartColors } from '../../shared/chart-colors';
 import { useEffect, useRef, useState } from 'react';
 import { createChart, ColorType, LineSeries } from 'lightweight-charts';
 import type { IChartApi, UTCTimestamp, Time } from 'lightweight-charts';
@@ -31,15 +32,16 @@ export function ResultCurves({
       setReady(false);
       setError('');
       try {
+        const palette = chartColors[theme];
         chart = createChart(element.current, {
           autoSize: true,
           height: 500,
           layout: {
             background: {
               type: ColorType.Solid,
-              color: theme === 'dark' ? '#171c1f' : '#ffffff',
+              color: palette.panel,
             },
-            textColor: theme === 'dark' ? '#c4d3ce' : '#294839',
+            textColor: palette.text,
             attributionLogo: true,
           },
           localization: {
@@ -54,20 +56,20 @@ export function ResultCurves({
         const series = [
           {
             title: '策略权益 USDT',
-            color: '#28ad85',
+            color: palette.up,
             pane: 0,
             value: (p: (typeof points)[number]) => Number(p.equity),
           },
           {
             title: '买入持有 USDT',
-            color: '#6d9eff',
+            color: palette.blue,
             pane: 0,
             value: (p: (typeof points)[number]) =>
               p.benchmarkEquity === null ? null : Number(p.benchmarkEquity),
           },
           {
             title: '收盘回撤 %',
-            color: '#e3656f',
+            color: palette.down,
             pane: 1,
             value: (p: (typeof points)[number]) =>
               p.drawdown.value === null ? null : Number(p.drawdown.value) * 100,
