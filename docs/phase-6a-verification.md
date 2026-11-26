@@ -18,6 +18,8 @@
 
 Linux Chromium 154.0.8037.57 的全新临时配置在未改动的 5E 提交上取得完整 result 摘要 **`e3fb4410dc0bac12ca6dc1d108d4a6ae2f56107a47fc20bbda789469cbaf5d6b`**。该次旧版容量用例串行 4,759.5 ms、双 Worker 2,783 ms，报告文件 4,401,149 字节。6A 两端须重算同一摘要。Linux 上用 6A 的 Cargo.lock 运行两个 Rust SQLite 测试均通过。Windows 包体、WebView2 内存与启动计时只引用 Windows 实际运行的结果。
 
+6A 本地 Linux Chromium 生产构建访问了 11 个页面和对应功能区，实际加载 10 类 Worker，能将 8 根合成行情的回放从第 1 根推进到第 2 根，保存后刷新仍从第 2 根继续。3 次新 profile 启动到工作台分别为 2,132、1,390、1,408 ms，到首个 CSV Worker 响应分别为 2,643、1,900、1,933 ms。首轮完整研究串行 3,865.5 ms、双 Worker 3,637.7 ms，下载文件 4,401,155 字节，经落盘校验。独立的 Linux 全量回归通过 668 项单元/集成、65 项端到端和 11 组 Python 参考。Windows 的原始结果另存为验收制品内的 `verification.json`，随同一运行的 `windows-results.md` 阅读。
+
 ## Windows 验收包与人工验收
 
 从 Draft PR 的 **Phase 6A Windows prototype** 作业下载同一源 SHA、同一运行尝试的两个制品。**Windows x64** 包含应用 EXE、NSIS 安装器及说明，**Windows evidence** 包含度量、功能断言和诊断。验收使用上传制品内层 ZIP 的 SHA-256，Actions 外层包装有另一 SHA。原型使用已安装的 Evergreen WebView2。缺失或版本低于前端基线的干净镜像需先准备微软官方对应架构运行时，离线机器使用 Evergreen Standalone Installer。记录测试发布者/签名和系统的实际提示。[微软运行时分发](https://learn.microsoft.com/microsoft-edge/webview2/concepts/distribution)

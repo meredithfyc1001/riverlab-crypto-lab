@@ -46,7 +46,7 @@ jobs:
         run: npm run desktop:build
       - name: Run native SQLite checks with the locked graph
         id: native
-        run: cargo test --manifest-path src-tauri/Cargo.toml --locked
+        run: cargo test --manifest-path src-tauri/Cargo.toml --locked --release --features custom-protocol
       - name: Pack and install the exact distributed bytes
         id: pack
         run: ./scripts/6a-package/prepare.ps1

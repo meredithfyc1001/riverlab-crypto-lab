@@ -70,6 +70,19 @@ if (verification) {
       '每次启动使用独立空配置，操作系统文件缓存未控制，计时包含连接自动化驱动。¹ 空闲期最后一次进程树采样。² 首轮运行完整工作负载，峰值取进程树采样最大值，共享页面可计入多个进程工作集。',
     );
   }
+  const workloads = verification.runs.filter((run) => run.probe?.timings);
+  if (workloads.length) {
+    lines.push(
+      '',
+      '| 50,000 根负载 | 串行 ms | 双 Worker ms | JSON 导出字节 |',
+      '| --- | ---: | ---: | ---: |',
+    );
+    for (const { kind, probe } of workloads) {
+      lines.push(
+        `| ${kind} | ${probe.timings.serialMs.toFixed(1)} | ${probe.timings.poolMs.toFixed(1)} | ${probe.downloadBytes} |`,
+      );
+    }
+  }
   if (verification.parity) {
     const { bars, evaluations, sha256, completedTrades } = verification.parity;
     lines.push(
@@ -86,3 +99,4 @@ lines.push(
 const markdown = lines.join('\n');
 await writeFile(join(output, 'windows-results.md'), markdown);
 await appendFile(process.env.GITHUB_STEP_SUMMARY, markdown);
+console.log(markdown);

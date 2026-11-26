@@ -6,17 +6,17 @@ import { expect } from '@playwright/test';
 import { setTimeout as pause } from 'node:timers/promises';
 
 const routes = {
-  overview: '工作台',
-  datasets: '数据中心',
-  charts: '行情中心',
-  strategies: '策略中心',
-  backtests: '回测中心',
-  risk: '风险中心',
-  experiments: '实验中心',
-  replay: '历史回放',
-  portfolio: '组合回测',
-  'market-regime': '市场状态研究',
-  'advanced-research': '高级策略研究',
+  overview: ['工作台', '研究路径'],
+  datasets: ['数据中心', '导入历史 K 线 CSV'],
+  charts: ['行情中心', '历史行情与指标'],
+  strategies: ['策略中心', '策略研究配置'],
+  backtests: ['回测中心', '回测配置'],
+  risk: ['风险中心', 'Monte Carlo 风险分析'],
+  experiments: ['实验中心', '已保存回测实验'],
+  replay: ['历史回放', '历史逐根回放与模拟账户'],
+  portfolio: ['组合回测', '组合配置'],
+  'market-regime': ['市场状态研究', '选择实验与观察参数'],
+  'advanced-research': ['高级策略研究', '高级研究报告库'],
 };
 const sha256 = (bytes) => createHash('sha256').update(bytes).digest('hex');
 
@@ -38,10 +38,13 @@ export async function firstWorker(page, origin) {
 }
 
 async function navigation(page, origin) {
-  for (const [id, title] of Object.entries(routes)) {
+  for (const [id, [title, feature]] of Object.entries(routes)) {
     await page.goto(origin + '/#/' + id);
     await page
       .getByRole('heading', { name: title, level: 1, exact: true })
+      .waitFor();
+    await page
+      .getByRole('heading', { name: feature, level: 2, exact: true })
       .waitFor();
     await expect(page.getByLabel('研究风险提示')).toContainText(
       '不提供投资建议',
@@ -64,7 +67,12 @@ async function navigation(page, origin) {
       fonts.some((f) => f.glyphCount > 0),
       'Rendered heading has no platform font glyphs',
     );
-    return { headings: Object.values(routes), lang, fonts };
+    return {
+      headings: Object.values(routes).map(([title]) => title),
+      sections: Object.values(routes).map(([, feature]) => feature),
+      lang,
+      fonts,
+    };
   } finally {
     await cdp.detach();
   }
