@@ -9,13 +9,19 @@
         max-width: 66rem;
         margin: 2rem auto;
         padding: 0 1rem;
-        color: #19283f;
         font:
           16px/1.6 'Segoe UI',
           'Microsoft YaHei',
           sans-serif;
       }
+      nav a {
+        color: var(--accent, LinkText);
+        text-decoration: underline;
+      }
       button {
+        color: var(--text, ButtonText);
+        background-color: var(--panel-hover, ButtonFace);
+        border-color: var(--subtle, ButtonBorder);
         font: inherit;
         padding: 0.3rem 0.8rem;
       }

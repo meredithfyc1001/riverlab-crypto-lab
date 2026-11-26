@@ -31,6 +31,8 @@ $payload = foreach ($file in (Get-ChildItem -LiteralPath $kit -File -Filter '*.e
         authenticode = (Get-AuthenticodeSignature -LiteralPath $file.FullName).Status.ToString()
     }
 }
+$manifestLines = foreach ($file in $payload) { "$($file.sha256)  $($file.name)" }
+(($manifestLines -join "`n") + "`n") | Set-Content -LiteralPath "$kit/SHA256SUMS.txt" -Encoding ascii -NoNewline
 $config = Get-Content -LiteralPath 'src-tauri/tauri.conf.json' -Raw | ConvertFrom-Json
 [ordered]@{
     type = 'Phase 6A Windows acceptance prototype'
@@ -54,10 +56,16 @@ $digest = (Get-FileHash -LiteralPath $archive -Algorithm SHA256).Hash.ToLowerInv
 # Use the actual user-distributed bytes, including the path handling exercised by NSIS.
 $extracted = Join-Path $env:RUNNER_TEMP '河流 实验 验收包'
 Expand-Archive -LiteralPath $archive -DestinationPath $extracted
-foreach ($file in $payload) {
+$extractedSums = foreach ($file in $payload) {
     $extractedHash = (Get-FileHash -LiteralPath (Join-Path $extracted $file.name) -Algorithm SHA256).Hash
     if ($extractedHash.ToLowerInvariant() -cne $file.sha256) { throw "Extraction changed $($file.name)." }
+    "$($extractedHash.ToLowerInvariant())  $($file.name)"
 }
+$manifestPath = Join-Path $extracted 'SHA256SUMS.txt'
+if ((Get-Content -LiteralPath $manifestPath -Raw) -cne (($extractedSums -join "`n") + "`n")) {
+    throw "The packaged SHA256SUMS.txt does not match the extracted EXEs."
+}
+Copy-Item -LiteralPath $manifestPath -Destination $evidence
 $extractedInstaller = Join-Path $extracted 'RiverLab-6A-x64-setup.exe'
 $installDir = Join-Path $env:RUNNER_TEMP '中文 用户 安装目录'
 if (Test-Path -LiteralPath $installDir) { throw "Expected a fresh per-user install directory." }

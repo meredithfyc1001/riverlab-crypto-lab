@@ -114,12 +114,6 @@
 .experiment-center button:hover:enabled {
   border-color: var(--accent);
 }
-.backtest-controls button:disabled,
-.backtest-results button:disabled,
-.experiment-center button:disabled {
-  opacity: 0.5;
-  cursor: default;
-}
 @media (max-width: 600px) {
   .backtest-controls,
   .experiment-center,

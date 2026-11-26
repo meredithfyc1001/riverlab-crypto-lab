@@ -5,9 +5,6 @@ use std::{
     path::{Path, PathBuf},
 };
 
-#[cfg(windows)]
-pub const DOWNLOAD_NAME: &str = "riverlab-6a-synthetic-50000.json";
-
 pub struct Acceptance {
     pub directory: PathBuf,
     engine_version: String,

@@ -15,7 +15,20 @@ const downloadName = 'riverlab-6a-synthetic-50000.json';
 // Captured from the untouched Phase 5E browser's exported result, using its contentHash.
 const phase5eResultHash =
   'e3fb4410dc0bac12ca6dc1d108d4a6ae2f56107a47fc20bbda789469cbaf5d6b';
-let downloadUrl: string | null = null;
+let report: { file: Blob; sha256: string; url?: string } | undefined;
+const desktop = (
+  window as Window & {
+    __TAURI__?: {
+      core: {
+        invoke<T>(
+          command: string,
+          body?: ArrayBuffer,
+          options?: { headers: Record<string, string> },
+        ): Promise<T>;
+      };
+    };
+  }
+).__TAURI__;
 let inFlight: Promise<Awaited<ReturnType<typeof measure>>> | undefined;
 
 async function measureResearch(
@@ -113,7 +126,11 @@ async function measure() {
       format: 'json',
     }).promise;
     const downloadSha256 = await blobSha256(file);
-    downloadUrl = URL.createObjectURL(file);
+    report = {
+      file,
+      sha256: downloadSha256,
+      url: desktop ? undefined : URL.createObjectURL(file),
+    };
     return {
       resultHash: poolHash,
       phase5eResultHash,
@@ -151,8 +168,10 @@ async function measure() {
 function run() {
   if (inFlight) return inFlight;
   runButton.disabled = download.disabled = true;
-  if (downloadUrl) URL.revokeObjectURL(downloadUrl);
-  downloadUrl = null;
+  if (report?.url) URL.revokeObjectURL(report.url);
+  report = undefined;
+  delete status.dataset.downloadState;
+  delete status.dataset.savedPath;
   status.dataset.state = 'running';
   status.textContent = '正在运行合成研究与平台验证';
   output.textContent = '';
@@ -178,12 +197,40 @@ function run() {
   return inFlight;
 }
 
-download.addEventListener('click', () => {
-  if (!downloadUrl) return;
-  const a = document.createElement('a');
-  a.href = downloadUrl;
-  a.download = downloadName;
-  a.click();
+download.addEventListener('click', async () => {
+  if (!report || download.disabled) return;
+  download.disabled = runButton.disabled = true;
+  delete status.dataset.savedPath;
+  status.dataset.downloadState = 'saving';
+  status.textContent = '正在保存下载并校验 SHA-256…';
+  try {
+    if (desktop) {
+      const saved = await desktop.core.invoke<{ path: string; sha256: string }>(
+        'save_report_download',
+        await report.file.arrayBuffer(),
+        { headers: { 'x-report-sha256': report.sha256 } },
+      );
+      if (saved.sha256 !== report.sha256 || !saved.path)
+        throw new Error('保存回执与本次报告不符，请重试。');
+      status.dataset.savedPath = saved.path;
+      status.dataset.downloadState = 'verified';
+      status.textContent = `已保存并校验：${saved.path} · SHA-256：${saved.sha256}`;
+    } else {
+      const link = document.createElement('a');
+      link.href = report.url!;
+      link.download = downloadName;
+      link.click();
+      status.dataset.downloadState = 'requested';
+      status.textContent =
+        '下载请求已交给浏览器，请在浏览器下载列表查看保存状态。';
+    }
+  } catch (error) {
+    status.dataset.downloadState = 'failed';
+    status.textContent =
+      '下载失败：' + (error instanceof Error ? error.message : String(error));
+  } finally {
+    download.disabled = runButton.disabled = false;
+  }
 });
 runButton.addEventListener('click', () => void run().catch(() => {}));
 Object.assign(window, { riverlab6a: { run } });
@@ -191,11 +238,6 @@ runButton.disabled = false;
 status.dataset.state = 'ready';
 status.textContent = '可开始验证';
 
-const desktop = (
-  window as Window & {
-    __TAURI__?: { core: { invoke: (command: string) => Promise<unknown> } };
-  }
-).__TAURI__;
 if (desktop) {
   document.querySelector<HTMLElement>('#sqlite-section')!.hidden = false;
   const button = document.querySelector<HTMLButtonElement>('#sqlite')!;

@@ -83,6 +83,19 @@ if (verification) {
       );
     }
   }
+  const repeats = verification.runs.filter((run) => run.repeatDownload);
+  if (repeats.length) {
+    lines.push(
+      '',
+      '| 安装版次序 | 第一次保存的文件 | 第二次保存的文件 | 两份落盘文件的 SHA-256 |',
+      '| ---: | --- | --- | --- |',
+    );
+    for (const { iteration, download, repeatDownload } of repeats) {
+      lines.push(
+        `| ${iteration} | \`${download.filename}\` | \`${repeatDownload.filename}\` | \`${repeatDownload.sha256}\` |`,
+      );
+    }
+  }
   if (verification.parity) {
     const { bars, evaluations, sha256, completedTrades } = verification.parity;
     lines.push(

@@ -44,7 +44,7 @@ jobs:
       - name: Build the desktop EXE and per-user NSIS installer
         id: build
         run: npm run desktop:build
-      - name: Run native SQLite checks with the locked graph
+      - name: Run native SQLite and download checks with the locked graph
         id: native
         run: cargo test --manifest-path src-tauri/Cargo.toml --locked --release --features custom-protocol
       - name: Pack and install the exact distributed bytes
@@ -55,7 +55,28 @@ jobs:
         run: ./scripts/6a-package/standalone.ps1
       - name: Exercise installed WebView2 and compare with Edge
         id: verification
-        run: node scripts/desktop-6a/verify.mjs
+        run: |
+          # This job uses a disposable hosted runner. Hold our own default-name file
+          # open throughout all three installed/Edge runs, including frontend startup.
+          $downloads = (New-Object -ComObject Shell.Application).NameSpace('shell:Downloads').Self.Path
+          $original = Join-Path $downloads 'riverlab-6a-synthetic-50000.json'
+          $guard = [IO.FileStream]::new($original, [IO.FileMode]::CreateNew, [IO.FileAccess]::ReadWrite,
+            [IO.FileShare]::None, 4096, [IO.FileOptions]::DeleteOnClose)
+          try {
+            $marker = [Text.Encoding]::UTF8.GetBytes('pre-existing synthetic file')
+            $guard.Write($marker, 0, $marker.Length)
+            $guard.Flush()
+            node scripts/desktop-6a/verify.mjs
+            $verify = $LASTEXITCODE
+            $guard.Position = 0
+            if ([Convert]::ToHexString([Security.Cryptography.SHA256]::HashData($guard)) -cne
+                [Convert]::ToHexString([Security.Cryptography.SHA256]::HashData($marker))) {
+              throw "Original file changed during acceptance."
+            }
+            exit $verify
+          } finally {
+            $guard.Dispose()
+          }
       - name: Write Windows evidence and performance summary
         if: always()
         env:

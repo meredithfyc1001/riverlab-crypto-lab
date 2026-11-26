@@ -28,9 +28,13 @@
       "capabilities": [
         {
           "identifier": "prototype-checks",
-          "description": "Run the synthetic SQLite check and submit evidence during an isolated native acceptance run.",
+          "description": "Verify SQLite, save the synthetic report, and submit isolated native acceptance evidence.",
           "windows": ["main"],
-          "permissions": ["allow-verify-sqlite", "allow-qa-record"]
+          "permissions": [
+            "allow-verify-sqlite",
+            "allow-qa-record",
+            "allow-save-report-download"
+          ]
         }
       ]
     }

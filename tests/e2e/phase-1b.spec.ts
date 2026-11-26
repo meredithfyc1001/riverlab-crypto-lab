@@ -1,3 +1,4 @@
+import { chartColors } from '../../src/shared/chart-colors';
 import { test, expect } from '@playwright/test';
 import type { Page } from '@playwright/test';
 import { readFile, mkdir, mkdtemp } from 'node:fs/promises';
@@ -35,6 +36,31 @@ const errorsFor = (page: Page) => {
   return errors;
 };
 
+// The 24-bar fixture has both rising and falling volume bars. Inspect the
+// bottom of the real price pane, after alpha compositing by the renderer.
+async function expectVolumeColors(page: Page, theme: keyof typeof chartColors) {
+  const canvas = page.getByTestId('market-canvas').locator('canvas').first();
+  const colors = Object.values(chartColors[theme].volume);
+  await expect
+    .poll(() =>
+      canvas.evaluate((element, colors) => {
+        const pane = element as HTMLCanvasElement;
+        if (!pane.width || !pane.height) return false;
+        const pixels = pane
+          .getContext('2d')!
+          .getImageData(0, Math.floor(pane.height * 0.98), pane.width, 1).data;
+        const rendered = new Set<number>();
+        for (let i = 0; i < pixels.length; i += 4) {
+          rendered.add(
+            (pixels[i] << 16) | (pixels[i + 1] << 8) | pixels[i + 2],
+          );
+        }
+        return colors.every((hex) => rendered.has(parseInt(hex.slice(1), 16)));
+      }, colors),
+    )
+    .toBe(true);
+}
+
 test('行情中心真实图表：缩放、平移、十字准星、指标周期/开关、主题与窄屏', async ({
   page,
 }, info) => {
@@ -42,6 +68,7 @@ test('行情中心真实图表：缩放、平移、十字准星、指标周期/�
   await importHistorical(page);
   const canvas = page.getByTestId('market-canvas');
   await expect(canvas.locator('canvas').first()).toBeVisible();
+  await expectVolumeColors(page, 'dark');
   await page.mouse.move(0, 0);
   await expect(page.getByTestId('chart-readout')).toContainText(
     '2024-10-28 23:00:00.000 UTC',
@@ -89,6 +116,7 @@ test('行情中心真实图表：缩放、平移、十字准星、指标周期/�
   await page.getByLabel('MA 周期', { exact: true }).fill('3');
   await page.getByRole('button', { name: '切换为浅色主题' }).click();
   await expect(canvas.locator('canvas').first()).toBeVisible();
+  await expectVolumeColors(page, 'light');
   await page.setViewportSize({ width: 390, height: 844 });
   expect(
     await page.evaluate(

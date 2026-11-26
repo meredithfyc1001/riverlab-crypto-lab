@@ -1,5 +1,7 @@
+import { chartColors } from '../../src/shared/chart-colors';
 import {
   CandlestickSeries,
+  ColorType,
   createChart,
   type IChartApi,
   type UTCTimestamp,
@@ -51,14 +53,22 @@ let chart: IChartApi | undefined;
 export async function probeChart() {
   const container = document.querySelector<HTMLDivElement>('#chart')!;
   chart?.remove();
+  const scheme = getComputedStyle(document.documentElement).colorScheme;
+  const palette = chartColors[scheme === 'dark' ? 'dark' : 'light'];
   chart = createChart(container, {
+    layout: {
+      background: { type: ColorType.Solid, color: palette.panel },
+      textColor: palette.text,
+    },
     width: Math.min(container.clientWidth, 640),
     height: 220,
     localization: { locale: 'zh-CN' },
   });
   const series = chart.addSeries(CandlestickSeries, {
-    upColor: '#168763',
-    downColor: '#bb4433',
+    upColor: palette.up,
+    downColor: palette.down,
+    wickUpColor: palette.up,
+    wickDownColor: palette.down,
     borderVisible: false,
   });
   const bars = [101, 108, 104, 99, 105, 109, 102].map((close, index) => ({
@@ -77,13 +87,14 @@ export async function probeChart() {
   const pixels = canvas
     .getContext('2d')!
     .getImageData(0, 0, canvas.width, canvas.height).data;
+  const upRgb = parseInt(palette.up.slice(1), 16);
+  const downRgb = parseInt(palette.down.slice(1), 16);
   let upPixels = 0;
   let downPixels = 0;
   for (let i = 0; i < pixels.length; i += 4) {
-    if (pixels[i] === 22 && pixels[i + 1] === 135 && pixels[i + 2] === 99)
-      upPixels++;
-    if (pixels[i] === 187 && pixels[i + 1] === 68 && pixels[i + 2] === 51)
-      downPixels++;
+    const rgb = (pixels[i] << 16) | (pixels[i + 1] << 8) | pixels[i + 2];
+    if (rgb === upRgb) upPixels++;
+    if (rgb === downRgb) downPixels++;
   }
   if (!upPixels || !downPixels)
     throw new Error('图表未绘出两种方向的合成 K 线');

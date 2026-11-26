@@ -46,10 +46,6 @@
 .advanced-workbench button:enabled:hover {
   border-color: var(--accent);
 }
-.advanced-workbench button:disabled {
-  opacity: 0.55;
-  cursor: default;
-}
 .advanced-workbench > button {
   justify-self: start;
 }

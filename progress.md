@@ -2,6 +2,14 @@
 
 ## Phase 6A Windows 验证原型
 
+### PR #16 · Windows 11 首轮实机反馈
+
+Windows 11 25H2（26200.9457）在提交 `121e2fb8` 上记录两项 FAIL。桌面技术验证页与 Edge 同页的深色文字对比度为 1.25:1。系统下载目录存在同名报告时，安装版两次完成计算却均未交付文件；移开同名文件后，三组桌面与 Edge 配对均通过。原始日志、截图、性能和 SHA-256 清单由首轮验收机保留。基线在修改前复现了同一低对比度及下载回调拒绝同名的条件。[实机结论、基线失败日志及第二轮验收单](docs/phase-6a-verification.md#首轮-windows-11-实机验收与第二轮复测附录)
+
+原 PR 保持 Draft，第二轮 Windows 用户复测待执行。首轮已验证的 50,000 根数值一致性和 SQLite 合成库结果按原记录保留。卸载后保留数据仍为 BLOCKED，物理断网仍为 NOT TESTED。[Draft PR #16](https://github.com/meredithfyc1001/riverlab-crypto-lab/pull/16)
+
+### 原型构建与 Windows CI 历史
+
 已从 `feat/phase-5e-advanced-research` 的联合验收提交建立独立分支。桌面模式单独构建页面和真实 Worker 验证入口；浏览器的生产构建沿用原入口。原版 5E Linux Chromium 实测的完整计算结果指纹为 `e3fb4410dc0bac12ca6dc1d108d4a6ae2f56107a47fc20bbda789469cbaf5d6b`。SQLite 的锁定依赖测试在 Linux 通过 2 项。Windows runner 的发布包、计时和进程树内存以同次流水线制品为准，Windows 用户实机签收另列。[验证报告与交付说明](docs/phase-6a-verification.md)
 
 Windows 首轮在 `06ce35e` 构建出 EXE 和 NSIS，并通过 2 项原生 SQLite 测试。安装后校验报告独立 EXE 与安装副本摘要不符，GUI 自动化尚未执行。此原型没有 updater；后续构建关闭 CLI 的 bundle 类型二进制修补，并直接读取实际交付文件和安装后文件计算摘要。保留字节一致的门槛。[首轮作业](https://github.com/meredithfyc1001/riverlab-crypto-lab/actions/runs/45747082913/job/139665641004)

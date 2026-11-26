@@ -12,7 +12,7 @@
   --border: #293034;
   --text: #e8eeec;
   --muted: #9aa6a5;
-  --subtle: #728180;
+  --subtle: #91a19d;
   --accent: #80e4c0;
   --accent-bg: #18342b;
   --amber: #eac586;
@@ -29,7 +29,7 @@
   --border: #d0dad3;
   --text: #1c3228;
   --muted: #50665b;
-  --subtle: #607369;
+  --subtle: #52665b;
   --accent: #176443;
   --accent-bg: #dbeee2;
   --amber: #735014;
@@ -52,6 +52,23 @@ a {
 button {
   font: inherit;
   cursor: pointer;
+}
+button,
+input,
+select,
+textarea {
+  --border: var(--subtle);
+}
+:root :is(button, input, select, textarea):disabled {
+  color: var(--muted);
+  background-color: var(--panel);
+  border-color: var(--subtle);
+  border-style: dashed;
+  cursor: default;
+}
+::placeholder {
+  color: var(--muted);
+  opacity: 1;
 }
 button,
 a {
@@ -159,7 +176,6 @@ nav {
 .nav-code {
   font-size: 11px;
   font-variant-numeric: tabular-nums;
-  opacity: 0.75;
 }
 .nav-dot {
   width: 5px;

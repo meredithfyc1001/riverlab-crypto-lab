@@ -4,14 +4,17 @@
 #[cfg(any(windows, test))]
 mod acceptance;
 #[cfg(any(windows, test))]
+mod download;
+#[cfg(any(windows, test))]
 mod storage;
 
 #[cfg(windows)]
 mod desktop {
-    use super::acceptance::{Acceptance, DOWNLOAD_NAME};
+    use super::acceptance::Acceptance;
     use std::{env, error::Error, ffi::OsStr, fs, io, sync::Arc};
     use tauri::{
-        webview::{DownloadEvent, NewWindowResponse, PageLoadEvent},
+        ipc::{InvokeBody, Request},
+        webview::{NewWindowResponse, PageLoadEvent},
         Manager, State, WebviewWindow, WebviewWindowBuilder,
     };
     use windows_sys::Win32::UI::WindowsAndMessaging::{MessageBoxW, MB_ICONERROR, MB_OK};
@@ -54,6 +57,44 @@ mod desktop {
     }
 
     struct AcceptanceState(Option<Arc<Acceptance>>);
+
+    #[tauri::command]
+    async fn save_report_download(
+        window: WebviewWindow,
+        state: State<'_, AcceptanceState>,
+        request: Request<'_>,
+    ) -> Result<super::download::SavedReport, String> {
+        let url = window.url().map_err(|error| error.to_string())?;
+        if window.label() != "main"
+            || url.origin().ascii_serialization() != "https://tauri.localhost"
+            || url.path() != "/tests/desktop-6a/index.html"
+        {
+            return Err("下载合成报告仅允许来自内置技术验证页。".into());
+        }
+        let InvokeBody::Raw(bytes) = request.body() else {
+            return Err("下载报告缺少二进制内容。".into());
+        };
+        let expected = request
+            .headers()
+            .get("x-report-sha256")
+            .and_then(|value| value.to_str().ok())
+            .filter(|value| value.len() == 64 && value.bytes().all(|b| b.is_ascii_hexdigit()))
+            .ok_or("报告缺少有效的 SHA-256。")?
+            .to_owned();
+        let directory = match &state.0 {
+            Some(session) => session.directory.clone(),
+            None => window
+                .path()
+                .download_dir()
+                .map_err(|err| format!("无法获取系统下载目录：{err}"))?,
+        };
+        let bytes = bytes.clone();
+        tauri::async_runtime::spawn_blocking(move || {
+            super::download::save_report(&directory, &bytes, &expected)
+        })
+        .await
+        .map_err(|error| error.to_string())?
+    }
 
     #[tauri::command]
     async fn qa_record(
@@ -108,13 +149,11 @@ mod desktop {
             .data_directory(profile.clone())
             .on_navigation(|url| url.origin().ascii_serialization() == "https://tauri.localhost")
             .on_new_window(|_, _| NewWindowResponse::Deny);
-        let acceptance = if env::var_os("RIVERLAB_6A_NATIVE_VERIFY").as_deref()
-            == Some(OsStr::new("1"))
-        {
-            let session = Arc::new(Acceptance::create(&profile, runtime)?);
-            let download = session.directory.join(DOWNLOAD_NAME);
-            let host_evidence = Arc::clone(&session);
-            builder = builder
+        let acceptance =
+            if env::var_os("RIVERLAB_6A_NATIVE_VERIFY").as_deref() == Some(OsStr::new("1")) {
+                let session = Arc::new(Acceptance::create(&profile, runtime)?);
+                let host_evidence = Arc::clone(&session);
+                builder = builder
                 .initialization_script(
                     "Object.defineProperty(window,'__RIVERLAB_6A_NATIVE_VERIFY__',{value:true});",
                 )
@@ -126,25 +165,12 @@ mod desktop {
                             url.path(),
                         );
                     }
-                })
-                .on_download(move |_, event| match event {
-                    DownloadEvent::Requested { url, destination } => {
-                        let expected_report = url.scheme() == "blob"
-                            && url.origin().ascii_serialization() == "https://tauri.localhost"
-                            && destination.file_name() == Some(OsStr::new(DOWNLOAD_NAME));
-                        if !expected_report || download.exists() {
-                            return false;
-                        }
-                        *destination = download.clone();
-                        true
-                    }
-                    _ => true,
                 });
-            Some(session)
-        } else {
-            fs::create_dir_all(&profile)?;
-            None
-        };
+                Some(session)
+            } else {
+                fs::create_dir_all(&profile)?;
+                None
+            };
         app.manage(AcceptanceState(acceptance));
         builder.build()?;
         Ok(())
@@ -161,7 +187,11 @@ mod desktop {
         }
         let profile = profile_name().unwrap_or_else(|error| startup_error(&error.to_string()));
         tauri::Builder::default()
-            .invoke_handler(tauri::generate_handler![verify_sqlite, qa_record])
+            .invoke_handler(tauri::generate_handler![
+                verify_sqlite,
+                qa_record,
+                save_report_download
+            ])
             .setup(move |app| {
                 if let Err(error) = create_window(app, &profile, &runtime) {
                     startup_error(&format!(

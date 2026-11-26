@@ -329,7 +329,25 @@ export async function runNativeAcceptance(host: Host) {
     step = '专用验收 profile 对象存储';
     const storeSchema = await verifyPrototypeStoreSchema('fresh-automation');
     step = '下载';
-    await click('下载合成研究报告');
+    const downloads: string[] = [];
+    for (let i = 0; i < 2; i++) {
+      await click('下载合成研究报告');
+      const saved = await until(
+        '落盘报告及 SHA-256',
+        () => {
+          const status = document.querySelector<HTMLElement>('#status')!;
+          if (status.dataset.downloadState === 'failed')
+            throw new Error(status.textContent ?? '下载失败');
+          return (
+            status.dataset.downloadState === 'verified' &&
+            status.textContent?.includes(probe.downloadSha256) &&
+            status.dataset.savedPath
+          );
+        },
+        30000,
+      );
+      downloads.push(saved.split(/[\\/]/).pop()!);
+    }
     const engine = await engineIdentity();
     await receipt('result', {
       ...engine,
@@ -344,6 +362,7 @@ export async function runNativeAcceptance(host: Host) {
         sha256: probe.downloadSha256,
         bytes: probe.downloadBytes,
         requested: true,
+        verifiedFiles: downloads,
       },
       timings: {
         workbenchMs: state.workbenchMs,

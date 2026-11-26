@@ -37,7 +37,7 @@ function Scatter({ rows }: { rows: CandidateRow[] }) {
         role="img"
         aria-label="训练候选的收益率与最大回撤散点图"
       >
-        <g stroke="var(--border)" fill="none">
+        <g stroke="var(--muted)" fill="none">
           <path d="M80 20 V168 H456" />
           <line x1={80} x2={456} y1={projectY(0)} y2={projectY(0)} />
         </g>

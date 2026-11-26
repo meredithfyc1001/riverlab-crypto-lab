@@ -1,9 +1,9 @@
+import { chartColors } from '../../shared/chart-colors';
 import { useEffect, useRef, useState } from 'react';
 import { createChart, ColorType, LineSeries } from 'lightweight-charts';
 import type { UTCTimestamp, Time, IChartApi } from 'lightweight-charts';
 import type { PortfolioResult } from '../../core/portfolio';
 
-const colors = ['#30af88', '#dfa750', '#638ee7', '#c484db', '#cf7678'];
 const chartTime = (ms: number) => (ms / 1000) as UTCTimestamp;
 export function PortfolioCurves({
   result,
@@ -21,15 +21,16 @@ export function PortfolioCurves({
     const frame = window.requestAnimationFrame(() => {
       try {
         setError('');
+        const palette = chartColors[theme];
         const next = createChart(container, {
           autoSize: true,
           height: 490,
           layout: {
             background: {
               type: ColorType.Solid,
-              color: theme === 'dark' ? '#171c1f' : '#ffffff',
+              color: palette.panel,
             },
-            textColor: theme === 'dark' ? '#c4d3ce' : '#294839',
+            textColor: palette.text,
           },
           localization: {
             timeFormatter: (time: Time) =>
@@ -43,7 +44,7 @@ export function PortfolioCurves({
         next
           .addSeries(LineSeries, {
             title: '组合',
-            color: '#28ad85',
+            color: palette.up,
             lineWidth: 3,
           })
           .setData(
@@ -56,7 +57,7 @@ export function PortfolioCurves({
           next
             .addSeries(LineSeries, {
               title: '买入持有',
-              color: '#729bdd',
+              color: palette.blue,
               lineStyle: 2,
             })
             .setData(
@@ -65,6 +66,13 @@ export function PortfolioCurves({
                 value: Number(p.benchmarkEquity),
               })),
             );
+        const colors = [
+          palette.up,
+          palette.gold,
+          palette.blue,
+          palette.purple,
+          palette.down,
+        ];
         result.assets.forEach((asset, index) => {
           next
             .addSeries(

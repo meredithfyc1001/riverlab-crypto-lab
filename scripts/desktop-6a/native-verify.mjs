@@ -77,38 +77,18 @@ async function stopWindow(child) {
   }
 }
 
-async function verifiedDownload(directory, evidenceDir, probe) {
+async function verifiedDownload(directory, evidenceDir, probe, filename) {
   assert.equal(probe.downloadName, downloadName);
   assert.match(probe.downloadSha256, /^[a-f\d]{64}$/);
   assert(Number.isSafeInteger(probe.downloadBytes) && probe.downloadBytes > 0);
-  const path = join(directory, downloadName);
-  const deadline = Date.now() + 30000;
-  let last = 'file unavailable';
-  do {
-    try {
-      const actual = await stat(path);
-      last = actual.size + ' bytes';
-      if (actual.size === probe.downloadBytes) {
-        const bytes = await readFile(path);
-        const sha256 = createHash('sha256').update(bytes).digest('hex');
-        last = sha256;
-        if (
-          bytes.length === probe.downloadBytes &&
-          sha256 === probe.downloadSha256
-        ) {
-          await writeFile(join(evidenceDir, downloadName), bytes);
-          return { filename: downloadName, bytes: bytes.length, sha256 };
-        }
-      }
-    } catch (error) {
-      if (!['ENOENT', 'EBUSY', 'EPERM'].includes(error.code)) throw error;
-    }
-    await pause(150);
-  } while (Date.now() < deadline);
-  throw new Error(
-    'Downloaded Blob did not match the WebView report; last observation: ' +
-      last,
-  );
+  // The UI only acknowledges completion after a successful no-replace publish.
+  // Re-read the exact final file independently of both the Blob and native receipt.
+  const bytes = await readFile(join(directory, filename));
+  const sha256 = createHash('sha256').update(bytes).digest('hex');
+  assert.equal(bytes.length, probe.downloadBytes);
+  assert.equal(sha256, probe.downloadSha256);
+  await writeFile(join(evidenceDir, filename), bytes, { flag: 'wx' });
+  return { filename, bytes: bytes.length, sha256 };
 }
 
 function checkWorkload({ navigation, replay, probe, sqlite, storeSchema }) {
@@ -210,6 +190,9 @@ export async function runNative({ exe, iteration, runDir, startMemory }) {
   try {
     if (app.pid) memory = startMemory(app.pid, record);
     const ready = await waitFor('ready', 60000);
+    const marker = `preexisting acceptance file for ${profileId}`;
+    if (iteration > 1)
+      await writeFile(join(directory, downloadName), marker, { flag: 'wx' });
     record.workbenchMs = Math.round(ready.mtimeMs - startUtc);
     assert.equal(ready.data.lang, 'zh-CN');
     record.engineVersion = ready.data.engineVersion;
@@ -240,7 +223,20 @@ export async function runNative({ exe, iteration, runDir, startMemory }) {
       chart,
       storeSchema,
     });
-    record.download = await verifiedDownload(directory, evidenceDir, probe);
+    const expectedNames = (iteration === 1 ? [0, 1] : [1, 2]).map((n) =>
+      n === 0 ? downloadName : downloadName.replace('.json', ` (${n}).json`),
+    );
+    assert.deepEqual(data.download.verifiedFiles, expectedNames);
+    [record.download, record.repeatDownload] = await Promise.all(
+      expectedNames.map((name) =>
+        verifiedDownload(directory, evidenceDir, probe, name),
+      ),
+    );
+    if (iteration > 1)
+      assert.equal(
+        await readFile(join(directory, downloadName), 'utf8'),
+        marker,
+      );
     for (const sample of record.memorySamples) {
       const t = sample.utcMs;
       if (t >= worker.mtimeMs && t < worker.mtimeMs + 4000)

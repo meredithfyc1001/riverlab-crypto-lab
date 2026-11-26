@@ -1,5 +1,11 @@
 .risk-center {
+  --risk-band: #6d9eff;
+  --risk-median: #28ad85;
   min-width: 0;
+}
+:root[data-theme='light'] .risk-center {
+  --risk-band: #3e69a3;
+  --risk-median: #117957;
 }
 .risk-panel {
   padding: 1.25rem;
