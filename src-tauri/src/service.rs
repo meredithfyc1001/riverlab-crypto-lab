@@ -54,10 +54,40 @@ pub fn private_directory(path: &Path) -> io::Result<()> {
                     path.display()
                 )));
             }
+            #[cfg(unix)]
+            {
+                use std::os::unix::fs::PermissionsExt;
+                if meta.permissions().mode() & 0o077 != 0 {
+                    return Err(io::Error::new(
+                        io::ErrorKind::PermissionDenied,
+                        format!("数据目录权限必须仅限当前用户：{}", path.display()),
+                    ));
+                }
+            }
             Ok(())
         }
         Err(error) => Err(error),
     }
+}
+
+// Keep the Windows namespace stable while SQLite opens and reopens its WAL sidecars.
+#[cfg(windows)]
+fn hold_directory(path: &Path) -> io::Result<File> {
+    use std::os::windows::fs::OpenOptionsExt;
+    use windows_sys::Win32::Storage::FileSystem::{
+        FILE_FLAG_BACKUP_SEMANTICS, FILE_FLAG_OPEN_REPARSE_POINT, FILE_READ_ATTRIBUTES,
+        FILE_SHARE_READ, FILE_SHARE_WRITE,
+    };
+    let handle = OpenOptions::new()
+        .access_mode(FILE_READ_ATTRIBUTES)
+        .custom_flags(FILE_FLAG_BACKUP_SEMANTICS | FILE_FLAG_OPEN_REPARSE_POINT)
+        .share_mode(FILE_SHARE_READ | FILE_SHARE_WRITE)
+        .open(path)?;
+    let meta = handle.metadata()?;
+    if !meta.is_dir() || is_link(&meta) {
+        return Err(io::Error::other("目录已被重定向。"));
+    }
+    Ok(handle)
 }
 
 fn validate_file(path: &Path) -> io::Result<()> {
@@ -147,6 +177,8 @@ struct Running {
     log: File,
     // Keep the same file and inode across restarts. The OS releases the lock on exit.
     lock: File,
+    #[cfg(windows)]
+    _directories: Vec<File>,
 }
 
 pub struct LocalService {
@@ -157,9 +189,18 @@ pub struct LocalService {
 impl LocalService {
     pub fn start(root: &Path) -> Result<Self, Box<dyn std::error::Error>> {
         private_directory(root)?;
+        #[cfg(windows)]
+        let mut directories = vec![hold_directory(root)?];
         let lock_path = root.join("service.lock");
         validate_file(&lock_path)?;
-        let lock = OpenOptions::new()
+        let mut options = OpenOptions::new();
+        #[cfg(windows)]
+        {
+            use std::os::windows::fs::OpenOptionsExt;
+            use windows_sys::Win32::Storage::FileSystem::{FILE_SHARE_READ, FILE_SHARE_WRITE};
+            options.share_mode(FILE_SHARE_READ | FILE_SHARE_WRITE);
+        }
+        let lock = options
             .read(true)
             .write(true)
             .create(true)
@@ -176,6 +217,8 @@ impl LocalService {
         for directory in ["database", "logs", "backups"] {
             let child = root.join(directory);
             private_directory(&child)?;
+            #[cfg(windows)]
+            directories.push(hold_directory(&child)?);
             write_probe(&child)?;
         }
         if available_bytes(root)? == 0 {
@@ -203,6 +246,8 @@ impl LocalService {
                 repository,
                 log,
                 lock,
+                #[cfg(windows)]
+                _directories: directories,
             })),
         })
     }
@@ -222,53 +267,64 @@ impl LocalService {
     }
 
     pub fn health(&self) -> Result<Health, String> {
-        self.with_repository(|repo| repo.health_check())
-            .map_err(|err| err.to_string())?;
-        for directory in ["database", "logs", "backups"] {
-            let child = self.root.join(directory);
-            let result = fs::symlink_metadata(&child).and_then(|meta| {
-                if !meta.is_dir() || is_link(&meta) {
-                    return Err(io::Error::other("目录类型或权限已变化。"));
-                }
-                write_probe(&child)
-            });
-            result.map_err(|err| format!("目录读写检查失败：{}：{err}", child.display()))?;
-        }
-        Ok(Health {
-            protocol_version: 1,
-            service_version: env!("CARGO_PKG_VERSION"),
-            schema_version: SCHEMA_VERSION,
-            status: "running",
-            data_directory: self.root.clone(),
-            available_bytes: available_bytes(&self.root).map_err(|err| err.to_string())?,
+        self.with_repository(|repo| {
+            repo.health_check()?;
+            for directory in ["database", "logs", "backups"] {
+                let child = self.root.join(directory);
+                let result = fs::symlink_metadata(&child).and_then(|meta| {
+                    if !meta.is_dir() || is_link(&meta) {
+                        return Err(io::Error::other("目录类型或权限已变化。"));
+                    }
+                    write_probe(&child)
+                });
+                result.map_err(|err| {
+                    RepoError::new(
+                        "io",
+                        format!("目录读写检查失败：{}：{err}", child.display()),
+                    )
+                })?;
+            }
+            Ok(Health {
+                protocol_version: 1,
+                service_version: env!("CARGO_PKG_VERSION"),
+                schema_version: SCHEMA_VERSION,
+                status: "running",
+                data_directory: self.root.clone(),
+                available_bytes: available_bytes(&self.root)
+                    .map_err(|err| RepoError::new("io", err.to_string()))?,
+            })
         })
+        .map_err(|err| err.to_string())
     }
 
     pub fn backup(&self) -> Result<PathBuf, String> {
-        let directory = self.root.join("backups");
-        private_directory(&directory).map_err(|err| err.to_string())?;
-        // Close the staging handle so SQLite and Windows can open and rename it.
-        let temporary = tempfile::NamedTempFile::new_in(&directory)
-            .map_err(|err| err.to_string())?
-            .into_temp_path();
-        self.with_repository(|repo| repo.backup(&temporary))
-            .map_err(|err| err.to_string())?;
-        let file = OpenOptions::new()
-            .read(true)
-            .write(true)
-            .open(&temporary)
-            .map_err(|err| err.to_string())?;
-        file.sync_all().map_err(|err| err.to_string())?;
-        drop(file);
-        let name = directory.join(format!(
-            "research-{}-{}.sqlite3",
-            timestamp(),
-            uuid::Uuid::new_v4()
-        ));
-        temporary
-            .persist_noclobber(&name)
-            .map_err(|err| err.to_string())?;
-        Ok(name)
+        self.with_repository(|repo| {
+            let directory = self.root.join("backups");
+            private_directory(&directory).map_err(|err| RepoError::new("io", err.to_string()))?;
+            // Close the staging handle so SQLite and Windows can open and rename it.
+            let temporary = tempfile::NamedTempFile::new_in(&directory)
+                .map_err(|err| RepoError::new("io", err.to_string()))?
+                .into_temp_path();
+            repo.backup(&temporary)?;
+            let file = OpenOptions::new()
+                .read(true)
+                .write(true)
+                .open(&temporary)
+                .map_err(|err| RepoError::new("io", err.to_string()))?;
+            file.sync_all()
+                .map_err(|err| RepoError::new("io", err.to_string()))?;
+            drop(file);
+            let name = directory.join(format!(
+                "research-{}-{}.sqlite3",
+                timestamp(),
+                uuid::Uuid::new_v4()
+            ));
+            temporary
+                .persist_noclobber(&name)
+                .map_err(|err| RepoError::new("io", err.to_string()))?;
+            Ok(name)
+        })
+        .map_err(|err| err.to_string())
     }
 
     // Wait for in-flight transactions, retire the connection and finally unlock.
@@ -378,6 +434,14 @@ mod tests {
     fn os_releases_service_lock_after_abnormal_exit() {
         const KEY: &str = "RIVERLAB_TEST_CHILD_SERVICE_LOCK_ROOT";
         if let Some(root) = std::env::var_os(KEY) {
+            // Even an accidentally inherited test variable cannot reopen a real service.
+            let mut directory = fs::DirBuilder::new();
+            #[cfg(unix)]
+            {
+                use std::os::unix::fs::DirBuilderExt;
+                directory.mode(0o700);
+            }
+            directory.create(&root).unwrap();
             let _service = LocalService::start(Path::new(&root)).unwrap();
             std::process::exit(54);
         }

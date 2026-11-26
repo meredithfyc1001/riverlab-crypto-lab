@@ -46,7 +46,7 @@ type Command =
       op: 'beginSave';
       kind: RepositoryKind;
       id: string;
-      summary: string;
+      summaryLength: number;
       length: number;
     }
   | { op: 'commit'; sha256: string }
@@ -59,13 +59,14 @@ type Reply = { requestId: string } & (
 
 export function isDesktopRepository(): boolean {
   return (
-    typeof window !== 'undefined' &&
-    ('__TAURI__' in window ||
-      window.location.origin === 'https://tauri.localhost')
+    (typeof window !== 'undefined' && '__TAURI__' in window) ||
+    globalThis.location?.origin === 'https://tauri.localhost'
   );
 }
 
 function getInvoke(): Invoke {
+  if (typeof window === 'undefined')
+    throw new Error('桌面存储请求须经工作台窗口。');
   const host = (
     window as Window & { __TAURI__?: { core?: { invoke?: Invoke } } }
   ).__TAURI__;
@@ -205,41 +206,58 @@ async function write(
   body: Blob | Uint8Array<ArrayBuffer>,
   summary: string,
   signal?: AbortSignal,
+  onChunk?: (acceptedBytes: number) => void,
 ) {
   const length = ArrayBuffer.isView(body) ? body.byteLength : body.size;
   if (!length || length > maxBodyBytes)
     throw new Error('桌面记录超过 256 MiB 或为空。');
+  const summaryBytes = new TextEncoder().encode(summary);
+  if (!summaryBytes.length || summaryBytes.length > 20 * chunkBytes)
+    throw new Error('桌面摘要超过 20 MiB 或为空。');
   const frame = await newFrame();
   signal?.throwIfAborted();
+  let commitDispatched = false;
   try {
     const reply = await command(frame, {
       op: 'beginSave',
       kind,
       id,
-      summary,
+      summaryLength: summaryBytes.length,
       length,
     });
     if (reply.status !== 'ready') throw new Error('服务未准备好接收正文。');
     const hash = sha256.create();
-    for (let offset = 0; offset < length; offset += chunkBytes) {
-      signal?.throwIfAborted();
-      const end = Math.min(length, offset + chunkBytes);
-      const chunk = ArrayBuffer.isView(body)
-        ? body.subarray(offset, end)
-        : new Uint8Array(await body.slice(offset, end).arrayBuffer());
-      hash.update(chunk);
-      const accepted = await invoke<number>('repository_upload_chunk', chunk, {
-        headers: {
-          'x-riverlab-version': String(version),
-          'x-riverlab-session': frame.sessionId,
-          'x-riverlab-request': frame.requestId,
-          'x-riverlab-offset': String(offset),
-        },
-      });
-      if (accepted !== end) throw new Error('服务确认的数据块位置不匹配。');
+    let offset = 0;
+    for (const field of [body, summaryBytes]) {
+      const size = ArrayBuffer.isView(field) ? field.byteLength : field.size;
+      for (let pos = 0; pos < size; pos += chunkBytes) {
+        signal?.throwIfAborted();
+        const end = Math.min(size, pos + chunkBytes);
+        const chunk = ArrayBuffer.isView(field)
+          ? field.subarray(pos, end)
+          : new Uint8Array(await field.slice(pos, end).arrayBuffer());
+        hash.update(chunk);
+        const accepted = await invoke<number>(
+          'repository_upload_chunk',
+          chunk,
+          {
+            headers: {
+              'x-riverlab-version': String(version),
+              'x-riverlab-session': frame.sessionId,
+              'x-riverlab-request': frame.requestId,
+              'x-riverlab-offset': String(offset),
+            },
+          },
+        );
+        offset += chunk.length;
+        if (accepted !== offset)
+          throw new Error('服务确认的数据块位置不匹配。');
+        onChunk?.(accepted);
+      }
     }
     signal?.throwIfAborted();
     const commit = { op: 'commit', sha256: bytesToHex(hash.digest()) } as const;
+    commitDispatched = true;
     const receipt = await command(frame, commit).catch((error: unknown) => {
       // Only a transport failure leaves the commit result unknown. Retry the same
       // transfer identity; the native service remembers successful transactions.
@@ -253,7 +271,7 @@ async function write(
     const status = await command(frame, { op: 'cancel' }).catch(
       () => undefined,
     );
-    if (status?.status === 'committed') return;
+    if (commitDispatched && status?.status === 'committed') return;
     throw error;
   }
 }
@@ -280,8 +298,9 @@ export const desktopRepository = {
     body: Uint8Array<ArrayBuffer>,
     summary: string,
     signal?: AbortSignal,
+    onChunk?: (acceptedBytes: number) => void,
   ) {
-    return write(kind, id, body, summary, signal);
+    return write(kind, id, body, summary, signal, onChunk);
   },
   getBytes(kind: RepositoryKind, id: string, signal?: AbortSignal) {
     return read({ op: 'load', kind, id }, signal);
@@ -293,16 +312,31 @@ export const desktopRepository = {
   async list(kind: RepositoryKind): Promise<unknown[]> {
     const bytes = await read({ op: 'list', kind });
     if (!bytes) throw new Error('未读取到摘要列表。');
-    const rows: unknown = JSON.parse(decoder().decode(bytes));
-    if (!Array.isArray(rows)) throw new Error('摘要列表回执无效。');
-    return rows.map((row: unknown) => {
+    const header = new DataView(bytes.buffer);
+    let offset = 0;
+    function nextLength() {
+      if (offset + 4 > header.byteLength) throw new Error('摘要列表帧不完整。');
+      const value = header.getUint32(offset, true);
+      offset += 4;
+      return value;
+    }
+    const count = nextLength();
+    const rows: unknown[] = [];
+    const utf8 = decoder();
+    for (let i = 0; i < count; i++) {
+      const length = nextLength();
+      const end = offset + length;
+      if (end > bytes.length) throw new Error('摘要列表帧不完整。');
       try {
-        return typeof row === 'string' ? JSON.parse(row) : null;
+        rows.push(JSON.parse(utf8.decode(bytes.subarray(offset, end))));
       } catch {
-        // The shared domain validator counts this damaged row and keeps the others.
-        return null;
+        // The shared domain validator counts damaged rows without hiding healthy ones.
+        rows.push(null);
       }
-    });
+      offset = end;
+    }
+    if (offset !== bytes.length) throw new Error('摘要列表帧长度错误。');
+    return rows;
   },
   async remove(kind: RepositoryKind, id: string) {
     const reply = await command(await newFrame(), { op: 'delete', kind, id });

@@ -32,6 +32,8 @@ while (Get-Process -Id $RootProcessId -ErrorAction SilentlyContinue) {
     [Console]::WriteLine((@{
         utcMs = [DateTimeOffset]::UtcNow.ToUnixTimeMilliseconds()
         processCount = $visited.Count
+        hostWorkingSetBytes = [long]$root.WorkingSetSize
+        hostPrivateBytes = [long]$root.PrivatePageCount
         workingSetBytes = $workingSet
         privateBytes = $privateBytes
     } | ConvertTo-Json -Compress))

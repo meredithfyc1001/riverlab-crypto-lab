@@ -201,6 +201,11 @@ mod desktop {
         profile_name: &str,
         runtime: &str,
     ) -> Result<(), Box<dyn Error>> {
+        let acceptance_mode =
+            env::var_os("RIVERLAB_6A_NATIVE_VERIFY").as_deref() == Some(OsStr::new("1"));
+        if acceptance_mode && !profile_name.starts_with("test-ci-") {
+            return Err("原生验收需要独立的 ci-<UUID> 配置。".into());
+        }
         let application = app.path().app_local_data_dir()?;
         private_directory(&application)?;
         let root = if profile_name == "default" {
@@ -219,11 +224,15 @@ mod desktop {
             .data_directory(profile.clone())
             .on_navigation(|url| url.origin().ascii_serialization() == "https://tauri.localhost")
             .on_new_window(|_, _| NewWindowResponse::Deny);
-        let acceptance =
-            if env::var_os("RIVERLAB_6A_NATIVE_VERIFY").as_deref() == Some(OsStr::new("1")) {
-                let session = Arc::new(Acceptance::create(&profile, runtime)?);
-                let host_evidence = Arc::clone(&session);
-                builder = builder
+        let acceptance = if acceptance_mode {
+            let session = Arc::new(Acceptance::create(&profile, runtime)?);
+            let host_evidence = Arc::clone(&session);
+            if env::var_os("RIVERLAB_6B_CAPACITY_VERIFY").as_deref() == Some(OsStr::new("1")) {
+                builder = builder.initialization_script(
+                    "Object.defineProperty(window,'__RIVERLAB_6B_CAPACITY_VERIFY__',{value:true});",
+                );
+            }
+            builder = builder
                 .initialization_script(
                     "Object.defineProperty(window,'__RIVERLAB_6A_NATIVE_VERIFY__',{value:true});",
                 )
@@ -236,11 +245,11 @@ mod desktop {
                         );
                     }
                 });
-                Some(session)
-            } else {
-                private_directory(&profile)?;
-                None
-            };
+            Some(session)
+        } else {
+            private_directory(&profile)?;
+            None
+        };
         app.manage(AcceptanceState(acceptance));
         builder.build()?;
         Ok(())
@@ -271,6 +280,9 @@ mod desktop {
             ])
             .setup(move |app| {
                 if let Err(error) = create_window(app, &profile, &runtime) {
+                    if let Some(service) = app.try_state::<LocalService>() {
+                        let _ = service.stop();
+                    }
                     startup_error(&format!(
                         "无法打开桌面工作台。请检查应用专用目录的写入权限及磁盘空间。\n{error}"
                     ));

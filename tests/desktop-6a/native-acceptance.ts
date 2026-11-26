@@ -6,6 +6,8 @@ import { verifyRepositoryParity } from './repository-parity';
 type ReceiptName =
   | 'ready'
   | 'worker-ready'
+  | 'storage-start'
+  | 'storage-end'
   | 'research-start'
   | 'research-end'
   | 'result'
@@ -278,6 +280,15 @@ export async function runNativeAcceptance(host: Host) {
       await click('打开回放', true);
       await cursor(2);
       const repositoryParity = await verifyRepositoryParity();
+      if (
+        '__RIVERLAB_6B_CAPACITY_VERIFY__' in window &&
+        window.__RIVERLAB_6B_CAPACITY_VERIFY__ === true
+      ) {
+        step = '256 MiB 存储和取消';
+        await receipt('storage-start', { utcMs: Date.now() });
+        const { verifyDesktopCapacity } = await import('./capacity');
+        await receipt('storage-end', await verifyDesktopCapacity());
+      }
       sessionStorage.setItem(
         stateKey,
         JSON.stringify({

@@ -12,11 +12,11 @@ const sqliteHash =
   '34429675a4ac768482806ffe80475cb5e601bf1f2ffa8069cac2a0076f0c0f55';
 const downloadName = 'riverlab-6a-synthetic-50000.json';
 
-function applicationEnvironment(profileId) {
+function applicationEnvironment(profileId, verifyCapacity) {
   const env = Object.fromEntries(
     Object.entries(process.env).filter(
       ([key]) =>
-        !/^(path|node_path|node_options|webview2_.*|riverlab_6a_test_profile|riverlab_6a_native_verify)$/i.test(
+        !/^(path|node_path|node_options|webview2_.*|riverlab_6a_test_profile|riverlab_6a_native_verify|riverlab_6b_capacity_verify)$/i.test(
           key,
         ),
     ),
@@ -27,6 +27,7 @@ function applicationEnvironment(profileId) {
       join(process.env.SystemRoot, 'System32') + ';' + process.env.SystemRoot,
     RIVERLAB_6A_TEST_PROFILE: profileId,
     RIVERLAB_6A_NATIVE_VERIFY: '1',
+    ...(verifyCapacity ? { RIVERLAB_6B_CAPACITY_VERIFY: '1' } : {}),
   };
 }
 
@@ -228,7 +229,7 @@ export async function runNative({ exe, iteration, runDir, startMemory }) {
   };
   const startUtc = Date.now();
   const app = spawn(exe, [], {
-    env: applicationEnvironment(profileId),
+    env: applicationEnvironment(profileId, iteration === 1),
     stdio: 'ignore',
   });
   let launchError;
@@ -282,6 +283,35 @@ export async function runNative({ exe, iteration, runDir, startMemory }) {
     assert(
       record.workbenchMs >= 0 && record.firstCsvWorkerMs >= record.workbenchMs,
     );
+    if (iteration === 1) {
+      const start = await waitFor('storage-start', 120000);
+      const end = await waitFor('storage-end', 600000);
+      assert.equal(end.data.bytes, 256 * 1024 * 1024);
+      assert(
+        end.data.cancelledAfterBytes > 0 &&
+          end.data.cancelledAfterBytes < end.data.bytes,
+      );
+      assert.match(end.data.runHash, /^[a-f0-9]{64}$/);
+      const samples = record.memorySamples.filter(
+        ({ utcMs }) => utcMs >= start.mtimeMs && utcMs <= end.mtimeMs,
+      );
+      assert(samples.length > 0, 'Missing capacity memory samples.');
+      record.storageCapacity = {
+        ...end.data,
+        elapsedMs: end.mtimeMs - start.mtimeMs,
+        peakHostWorkingSetBytes: Math.max(
+          ...samples.map((s) => s.hostWorkingSetBytes),
+        ),
+        peakTreeWorkingSetBytes: Math.max(
+          ...samples.map((s) => s.workingSetBytes),
+        ),
+        peakHostPrivateBytes: Math.max(
+          ...samples.map((s) => s.hostPrivateBytes),
+        ),
+        peakTreePrivateBytes: Math.max(...samples.map((s) => s.privateBytes)),
+      };
+      assert(record.storageCapacity.peakHostWorkingSetBytes > 0);
+    }
     const researchStart = await waitFor('research-start', 120000);
     const researchEnd = await waitFor('research-end', 180000);
     record.researchWindow = {
@@ -318,7 +348,13 @@ export async function runNative({ exe, iteration, runDir, startMemory }) {
       );
     for (const sample of record.memorySamples) {
       const t = sample.utcMs;
-      if (t >= worker.mtimeMs && t < worker.mtimeMs + 4000)
+      if (
+        record.storageCapacity &&
+        t >= record.storageCapacity.startedUtcMs &&
+        t <= record.storageCapacity.endedUtcMs
+      )
+        sample.phase = 'storage';
+      else if (t >= worker.mtimeMs && t < worker.mtimeMs + 4000)
         sample.phase = 'idle';
       else if (t >= worker.mtimeMs + 4000 && t <= completed)
         sample.phase = 'workload';

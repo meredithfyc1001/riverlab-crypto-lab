@@ -4,6 +4,10 @@
 
 Git fetch 与 GitHub PR 元数据已交叉核实。main 停在 `10a5d88`，PR #16 于北京时间 2026-11-26 16:34 合入 `feat/phase-5e-advanced-research`，实际提交 `5a75f34` 包含最新 main。在该合并点建立独立分支 `feat/phase-6b-local-service`。第三轮 Windows 11 用户实机复测仍为 **NOT TESTED**。[设计](docs/phase-6b-design.md) · [Windows 清单](docs/phase-6b-acceptance.md)
 
+Linux 开发验证覆盖了真实 SQLite 写满后的事务回滚、两个并发连接争抢同一 ID，以及子进程直接退出后的 WAL 恢复。曾在重启测试中遇到文件锁释放延迟；连接关闭后显式解锁，回归通过。256 MiB 精确边界的 Rust DAO 专项使用合成 JSON，重开后校验 SHA-256，额外一个字节被拒绝。十一组独立数值参考在本机通过。
+
+在隔离 Chromium 154 中，保存并重开的人工合成行情得到 9 笔成交，费用为 `9.28719551797935`，最终权益为 `1209.64074296063065`。6A 的 50,000 根固定研究仍得到完整结果摘要 `e3fb4410dc0bac12ca6dc1d108d4a6ae2f56107a47fc20bbda789469cbaf5d6b`。工作树并行开发时，首轮本机 E2E 有三个桌面构建在容量夹具落盘前启动而失败；最终提交以 clean checkout 重跑。各平台运行、下载及逐文件 SHA-256 以 [Draft PR #17](https://github.com/meredithfyc1001/riverlab-crypto-lab/pull/17) 对应提交的记录为准。
+
 ## Phase 6A Windows 验证原型
 
 ### PR #16 · Windows 11 首轮实机反馈

@@ -11,6 +11,8 @@ pub const SCHEMA_VERSION: u32 = 1;
 const APPLICATION_ID: u32 = 0x5256_4c42; // RVLB
 const MIB: usize = 1024 * 1024;
 const MAX_BATCH_BYTES: usize = 512 * MIB;
+const MAX_BODY_BYTES: usize = 256 * MIB;
+const MAX_SUMMARY_BYTES: usize = 20 * MIB;
 
 #[derive(Debug, Serialize)]
 pub struct RepoError {
@@ -174,24 +176,34 @@ impl Repository {
                 Ok(Response::Done)
             }
             Operation::List { kind } => {
-                let mut query = self
-                    .db
-                    .prepare("SELECT summary FROM summaries WHERE kind=?1 ORDER BY id")?;
-                let rows = query.query_map([kind.key()], |r| r.get(0))?;
-                Ok(Response::Summaries(
-                    rows.collect::<rusqlite::Result<Vec<_>>>()?,
-                ))
+                let tx = self.db.transaction()?;
+                let rows = read_summaries(&tx, kind, MAX_BODY_BYTES)?;
+                tx.commit()?;
+                Ok(Response::Summaries(rows))
             }
             Operation::Load { kind, id } => {
                 validate_id(&id)?;
-                let body = self
+                // Determine length in SQLite before materializing any stored body.
+                let found: Option<Option<String>> = self
                     .db
                     .query_row(
-                        "SELECT body FROM records WHERE kind=?1 AND id=?2",
-                        params![kind.key(), id],
+                        "SELECT CASE WHEN octet_length(body) <= ?3 THEN body END
+                     FROM records WHERE kind=?1 AND id=?2",
+                        params![kind.key(), id, MAX_BODY_BYTES as i64],
                         |r| r.get(0),
                     )
                     .optional()?;
+                let body = match found {
+                    None => None,
+                    Some(None) => {
+                        return Err(RepoError::new("limit", "正文超过桌面存储字节预算。"))
+                    }
+                    Some(Some(value)) => {
+                        validate_json_id(&value, &id)
+                            .map_err(|_| RepoError::new("corrupt", "正文或记录 ID 损坏。"))?;
+                        Some(value)
+                    }
+                };
                 Ok(Response::Body(body))
             }
             Operation::Delete { kind, id } => {
@@ -214,8 +226,8 @@ impl Repository {
             total = total
                 .saturating_add(record.body.len())
                 .saturating_add(record.summary.len());
-            if record.body.len() > 256 * MIB
-                || record.summary.len() > 20 * MIB
+            if record.body.len() > MAX_BODY_BYTES
+                || record.summary.len() > MAX_SUMMARY_BYTES
                 || total > MAX_BATCH_BYTES
             {
                 return Err(RepoError::new(
@@ -324,6 +336,35 @@ impl Repository {
     }
 }
 
+fn read_summaries(
+    tx: &Transaction<'_>,
+    kind: Kind,
+    limit: usize,
+) -> Result<Vec<String>, RepoError> {
+    // Inspect byte lengths in the same snapshot used by the list read. SQLite
+    // can read octet_length from record headers without loading large TEXT.
+    let bytes: i64 = tx.query_row(
+        "SELECT COALESCE(SUM(octet_length(summary) + ?2),0) FROM summaries WHERE kind=?1",
+        params![kind.key(), std::mem::size_of::<String>() as i64],
+        |r| r.get(0),
+    )?;
+    if bytes > limit as i64 {
+        return Err(RepoError::new("limit", "摘要列表超过本次读取的内存预算。"));
+    }
+    let mut stmt = tx.prepare("SELECT id,summary FROM summaries WHERE kind=?1 ORDER BY id")?;
+    let rows = stmt.query_map([kind.key()], |r| {
+        let id: String = r.get(0)?;
+        // The TS validator isolates invalid rows. An invalid UTF-8 or mismatched
+        // envelope must be counted there without hiding other valid summaries.
+        let value = r.get_ref(1)?.as_str().ok();
+        Ok(value
+            .filter(|json| validate_json_id(json, &id).is_ok())
+            .unwrap_or_default()
+            .to_owned())
+    })?;
+    Ok(rows.collect::<rusqlite::Result<Vec<_>>>()?)
+}
+
 fn validate_id(id: &str) -> Result<(), RepoError> {
     if id.is_empty() || id.encode_utf16().count() > 100 {
         Err(RepoError::new("invalidRequest", "记录 ID 长度不受支持。"))
@@ -392,9 +433,10 @@ fn insert_record(tx: &Transaction<'_>, record: &Record) -> Result<(), RepoError>
 }
 
 fn check_integrity(db: &Connection) -> Result<(), RepoError> {
-    let result: String = db.query_row("PRAGMA integrity_check", [], |r| r.get(0))?;
-    let fk_error = db.prepare("PRAGMA foreign_key_check")?.exists([])?;
-    let missing_summary = db.query_row(
+    let snapshot = db.unchecked_transaction()?;
+    let result: String = snapshot.query_row("PRAGMA integrity_check", [], |r| r.get(0))?;
+    let fk_error = snapshot.prepare("PRAGMA foreign_key_check")?.exists([])?;
+    let missing_summary = snapshot.query_row(
         "SELECT EXISTS(SELECT 1 FROM records r LEFT JOIN summaries s USING(kind,id) WHERE s.id IS NULL)",
         [], |r| r.get::<_, bool>(0),
     )?;
@@ -404,6 +446,7 @@ fn check_integrity(db: &Connection) -> Result<(), RepoError> {
             "数据库完整性、外键或正文/摘要配对检查失败。",
         ));
     }
+    snapshot.commit()?;
     Ok(())
 }
 
@@ -619,6 +662,9 @@ mod tests {
     fn crash_during_transaction_recovers_committed_wal_frames_only() {
         const CHILD_PATH: &str = "RIVERLAB_REPO_CRASH_TEST_DB";
         if let Some(path) = std::env::var_os(CHILD_PATH) {
+            // Even an inadvertently inherited test variable cannot direct
+            // this crash fixture to a pre-existing database.
+            drop(std::fs::File::create_new(&path).unwrap());
             let mut db = Repository::open(Path::new(&path)).unwrap();
             db.db
                 .execute_batch("PRAGMA wal_autocheckpoint=0; PRAGMA cache_size=5;")
@@ -690,6 +736,53 @@ mod tests {
     }
 
     #[test]
+    fn damaged_list_rows_are_isolated_and_integrity_checks_both_directions() {
+        let directory = temp_folder();
+        let mut db = Repository::open(&directory.path().join("library")).unwrap();
+        let good = record(Kind::Risk, "healthy", "original");
+        let good_summary = good.summary.clone();
+        save(&mut db, vec![record(Kind::Risk, "damaged", "old"), good]).unwrap();
+        db.db
+            .execute(
+                "UPDATE summaries SET summary=CAST(x'ff' AS TEXT) WHERE id='damaged'",
+                [],
+            )
+            .unwrap();
+        assert_eq!(
+            db.execute(Operation::List { kind: Kind::Risk }).unwrap(),
+            Response::Summaries(vec![String::new(), good_summary])
+        );
+        {
+            let tx = db.db.transaction().unwrap();
+            assert_eq!(
+                read_summaries(&tx, Kind::Risk, 1).unwrap_err().code,
+                "limit"
+            );
+        }
+        db.db
+            .execute("DELETE FROM summaries WHERE id='damaged'", [])
+            .unwrap();
+        assert_eq!(db.integrity_check().unwrap_err().code, "corrupt");
+        assert_eq!(
+            db.backup(&directory.path().join("staging"))
+                .unwrap_err()
+                .code,
+            "corrupt"
+        );
+        assert!(load(&mut db, Kind::Risk, "healthy").is_some());
+
+        db.db
+            .execute_batch(
+                "DELETE FROM records WHERE id='damaged';
+                             PRAGMA foreign_keys=OFF;
+                             INSERT INTO summaries VALUES ('risk','orphan','{}');
+                             PRAGMA foreign_keys=ON;",
+            )
+            .unwrap();
+        assert_eq!(db.integrity_check().unwrap_err().code, "corrupt");
+    }
+
+    #[test]
     fn unknown_schema_and_unrelated_sqlite_files_are_preserved() {
         let folder = temp_folder();
         for foreign in [false, true] {
@@ -721,6 +814,45 @@ mod tests {
                 "delete"
             );
         }
+    }
+
+    #[test]
+    fn maximum_size_experiment_body_round_trips_and_next_byte_is_rejected() {
+        use sha2::{Digest, Sha256};
+        let directory = temp_folder();
+        let path = directory.path().join("capacity");
+        let mut db = Repository::open(&path).unwrap();
+        // Synthetic transport payload only. Domain experiments are checked by
+        // the research Workers independently of this SQLite byte boundary.
+        let mut body = String::with_capacity(MAX_BODY_BYTES);
+        body.push_str(r#"{"id":"capacity","padding":""#);
+        let chunk = "x".repeat(MIB);
+        let padding = MAX_BODY_BYTES - body.len() - 2;
+        for _ in 0..padding / MIB {
+            body.push_str(&chunk);
+        }
+        body.push_str(&chunk[..padding % MIB]);
+        body.push_str(r#""}"#);
+        assert_eq!(body.len(), MAX_BODY_BYTES);
+        let digest = Sha256::digest(body.as_bytes());
+        let mut record = record(Kind::Experiment, "capacity", "");
+        record.body = body;
+        save(&mut db, vec![record]).unwrap();
+        drop(db);
+        let mut db = Repository::open(&path).unwrap();
+        let body = load(&mut db, Kind::Experiment, "capacity").unwrap();
+        assert_eq!(Sha256::digest(body.as_bytes()), digest);
+        // Use a clone-free move; reserve one additional byte before growing.
+        let mut oversized = Record {
+            kind: Kind::Experiment,
+            id: "capacity".to_owned(),
+            body,
+            summary: r#"{"id":"capacity"}"#.to_owned(),
+        };
+        oversized.body.reserve_exact(1);
+        oversized.body.push(' ');
+        assert_eq!(save(&mut db, vec![oversized]).unwrap_err().code, "limit");
+        db.integrity_check().unwrap();
     }
 
     #[test]

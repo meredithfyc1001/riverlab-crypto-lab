@@ -1,6 +1,8 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { sha256 } from '@noble/hashes/sha2.js';
 import { bytesToHex } from '@noble/hashes/utils.js';
+import { fixtureDataset } from '../fixtures/dataset';
+import { assertDataset, summarizeDataset } from '../../src/core/data/dataset';
 
 const chunk = 1024 * 1024;
 const sessionId = '8bff6bb9-9479-413b-bfaf-10e867a2b7a5';
@@ -94,7 +96,15 @@ describe('Tauri SQLite Repository protocol V1', () => {
       }
       const { frame, command } = data as Packet;
       if (command.op === 'commit') {
-        expect(command.sha256).toBe(bytesToHex(sha256(body)));
+        expect(command.sha256).toBe(
+          bytesToHex(
+            sha256
+              .create()
+              .update(body)
+              .update(new TextEncoder().encode('{}'))
+              .digest(),
+          ),
+        );
         commits.push(frame.requestId);
         if (commits.length === 1) throw new Error('synthetic lost reply');
         return { requestId: frame.requestId, status: 'committed' };
@@ -102,9 +112,88 @@ describe('Tauri SQLite Repository protocol V1', () => {
       return { requestId: frame.requestId, status: 'ready' };
     });
     await desktopRepository.saveBytes('advanced', 'id', body, '{}');
-    expect(offsets).toEqual([0, chunk]);
+    expect(offsets).toEqual([0, chunk, body.length]);
     expect(commits).toHaveLength(2);
     expect(commits[0]).toBe(commits[1]);
+  });
+
+  it('streams both fields of a valid dataset with a summary larger than one chunk', async () => {
+    const record = fixtureDataset();
+    record.quality.issues = [
+      { severity: 'warning', code: 'COVERAGE_UNVERIFIED', message: '合成' },
+      ...Array.from({ length: 999 }, () => ({
+        severity: 'warning' as const,
+        code: 'SYNTHETIC',
+        message: '中'.repeat(400),
+      })),
+    ];
+    record.quality.warningCount = 1000;
+    record.quality.issueCounts = { COVERAGE_UNVERIFIED: 1, SYNTHETIC: 999 };
+    assertDataset(record);
+    const chunks: Uint8Array[] = [];
+    let seen = 0;
+    const summary = JSON.stringify(summarizeDataset(record));
+    const summaryBytes = new TextEncoder().encode(summary);
+    expect(summaryBytes.length).toBeGreaterThan(chunk);
+    const { desktopRepository } = await adapter((name, payload) => {
+      if (name === 'repository_handshake') return handshake;
+      if (name === 'repository_upload_chunk') {
+        const bytes = payload as Uint8Array;
+        expect(bytes.length).toBeLessThanOrEqual(chunk);
+        chunks.push(bytes);
+        seen += bytes.length;
+        return seen;
+      }
+      const { frame, command } = payload as Packet;
+      if (command.op === 'beginSave') {
+        expect(command).toHaveProperty('summaryLength', summaryBytes.length);
+        expect(JSON.stringify(command).length).toBeLessThan(256);
+      }
+      return {
+        requestId: frame.requestId,
+        status: command.op === 'commit' ? 'committed' : 'ready',
+      };
+    });
+    await desktopRepository.save(
+      'dataset',
+      record.id,
+      record,
+      summarizeDataset(record),
+    );
+    expect(chunks).toHaveLength(4);
+    expect(
+      bytesToHex(sha256.create().update(chunks[2]).update(chunks[3]).digest()),
+    ).toBe(bytesToHex(sha256(summaryBytes)));
+  });
+
+  it('isolates a damaged summary within a complete length-prefixed snapshot', async () => {
+    const snapshot = new Uint8Array([
+      2,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      123,
+      7,
+      0,
+      0,
+      0,
+      ...new TextEncoder().encode('{"n":7}'),
+    ]);
+    const { desktopRepository } = await adapter((name, data) => {
+      if (name === 'repository_handshake') return handshake;
+      if (name === 'repository_read_chunk') return snapshot.buffer;
+      return {
+        requestId: (data as Packet).frame.requestId,
+        status: 'download',
+        length: snapshot.length,
+        sha256: bytesToHex(sha256(snapshot)),
+      };
+    });
+    expect(await desktopRepository.list('risk')).toEqual([null, { n: 7 }]);
   });
 
   it('discards a cancelled upload before commit', async () => {

@@ -8,6 +8,7 @@ import type {
 import { summarizeExperiment } from '../core/experiments';
 import { DatasetStore, storageMessage } from '../infrastructure/dataset-store';
 import { ExperimentStore } from '../infrastructure/experiment-store';
+import { isDesktopRepository } from '../infrastructure/desktop-repository';
 import { workerTask } from '../infrastructure/backtest-worker';
 import type { WorkerRequest } from '../infrastructure/backtest-worker';
 
@@ -73,7 +74,7 @@ export function useBacktestWorkbench() {
     request: Extract<WorkerRequest, { kind: 'export' }>,
   ): Promise<Blob>;
   function compute(
-    request: Exclude<WorkerRequest, { kind: 'export' }>,
+    request: Exclude<WorkerRequest, { kind: 'export' | 'save' }>,
   ): Promise<Experiment>;
   async function compute(request: WorkerRequest): Promise<Experiment | Blob> {
     const next = workerTask(request);
@@ -138,7 +139,12 @@ export function useBacktestWorkbench() {
     if (busy) return;
     void perform(async (current) => {
       const summary = summarizeExperiment(next);
-      await store.current.save(next);
+      if (isDesktopRepository()) {
+        const pending = workerTask({ kind: 'save', record: next });
+        task.current = pending;
+        const result = await pending.promise;
+        if (!('saved' in result)) throw new Error('未收到实验事务提交回执。');
+      } else await store.current.save(next);
       if (current()) {
         setExperiments((list) => [
           ...list.filter((item) => item.id !== next.id),
@@ -166,9 +172,14 @@ export function useBacktestWorkbench() {
     setSaved(false);
     setPreview(null);
     void perform(async (current) => {
-      const raw = await store.current.load(id);
-      if (!current()) return;
-      const next = await compute({ kind: 'verify', record: raw });
+      let next: Experiment;
+      if (isDesktopRepository()) {
+        next = await compute({ kind: 'open', id });
+      } else {
+        const raw = await store.current.load(id);
+        if (!current()) return;
+        next = await compute({ kind: 'verify', record: raw });
+      }
       if (current()) {
         setRecord(next);
         setSaved(true);

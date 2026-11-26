@@ -129,7 +129,9 @@ impl Transfer {
     fn size(&self) -> usize {
         match self {
             Self::Upload {
-                length, summary_length, ..
+                length,
+                summary_length,
+                ..
             } => *length + *summary_length,
             Self::Download { buffer, .. } => buffer.len(),
         }
@@ -191,6 +193,30 @@ impl Transfers {
         active.last_activity = Instant::now();
         Ok(&mut active.transfer)
     }
+}
+
+// Count and byte lengths are little-endian u32. Keep individual JSON documents
+// intact, so an invalid row can be isolated without escaping every other row.
+fn encode_summaries(rows: Vec<String>) -> Result<Vec<u8>, WireError> {
+    let length = rows
+        .iter()
+        .try_fold(4usize, |total, row| {
+            total
+                .checked_add(4)?
+                .checked_add(row.len())
+                .filter(|n| *n <= MAX_BODY)
+        })
+        .ok_or_else(|| WireError::new("limit", "摘要列表超过内存预算。"))?;
+    let mut bytes = Vec::new();
+    bytes
+        .try_reserve_exact(length)
+        .map_err(|_| WireError::new("limit", "内存不足，无法读取摘要。"))?;
+    bytes.extend_from_slice(&(rows.len() as u32).to_le_bytes());
+    for row in rows {
+        bytes.extend_from_slice(&(row.len() as u32).to_le_bytes());
+        bytes.extend_from_slice(row.as_bytes());
+    }
+    Ok(bytes)
 }
 
 pub struct Protocol {
@@ -299,7 +325,9 @@ impl Protocol {
                     else {
                         return Err(WireError::new("invalidRequest", "请求不是写入操作。"));
                     };
-                    if length + summary_length != buffer.len() || sha256 != format!("{:x}", hash.finalize()) {
+                    if length + summary_length != buffer.len()
+                        || sha256 != format!("{:x}", hash.finalize())
+                    {
                         return Err(WireError::new(
                             "digestMismatch",
                             "传输长度或 SHA-256 不符，未提交。",
@@ -333,10 +361,7 @@ impl Protocol {
                 };
                 let buffer = match execute(operation)? {
                     Response::Body(body) => body.map(String::into_bytes),
-                    Response::Summaries(rows) => Some(
-                        serde_json::to_vec(&rows)
-                            .map_err(|_| WireError::new("corrupt", "摘要编码失败。"))?,
-                    ),
+                    Response::Summaries(rows) => Some(encode_summaries(rows)?),
                     _ => return Err(WireError::new("unavailable", "未获得读取回执。")),
                 };
                 match buffer {
@@ -385,13 +410,21 @@ impl Protocol {
         else {
             return Err(WireError::new("invalidRequest", "不是写入传输。"));
         };
-        let boundary = if offset < *length { *length } else { *length + *summary_length };
+        let boundary = if offset < *length {
+            *length
+        } else {
+            *length + *summary_length
+        };
         if offset != buffer.len() || chunk.is_empty() || chunk.len() != CHUNK.min(boundary - offset)
         {
             return Err(WireError::new("sequence", "数据块偏移或长度错误。"));
         }
         buffer
-            .try_reserve_exact(if offset == 0 { *length + *summary_length } else { chunk.len() })
+            .try_reserve_exact(if offset == 0 {
+                *length + *summary_length
+            } else {
+                chunk.len()
+            })
             .map_err(|_| WireError::new("limit", "内存不足，写入未提交。"))?;
         buffer.extend_from_slice(chunk);
         hash.update(chunk);
@@ -432,7 +465,7 @@ pub mod commands {
     }
 
     #[tauri::command]
-    pub fn repository_handshake(
+    pub async fn repository_handshake(
         window: WebviewWindow,
         protocol: State<'_, Protocol>,
         protocol_version: u32,
@@ -461,9 +494,9 @@ pub mod commands {
     }
 
     #[tauri::command]
-    pub fn repository_upload_chunk(
+    pub async fn repository_upload_chunk(
         window: WebviewWindow,
-        protocol: State<'_, Protocol>,
+        app: AppHandle,
         request: Request<'_>,
     ) -> Result<usize, WireError> {
         authorize(&window)?;
@@ -487,18 +520,30 @@ pub mod commands {
         let offset = header("x-riverlab-offset")?
             .parse()
             .map_err(|_| WireError::new("sequence", "无效偏移。"))?;
-        protocol.upload(frame, offset, chunk)
+        if chunk.len() > CHUNK {
+            return Err(WireError::new("limit", "数据块超过传输上限。"));
+        }
+        let bytes = chunk.clone();
+        tauri::async_runtime::spawn_blocking(move || {
+            app.state::<Protocol>().upload(frame, offset, &bytes)
+        })
+        .await
+        .map_err(|_| WireError::new("unavailable", "本地写入未完成。"))?
     }
 
     #[tauri::command]
-    pub fn repository_read_chunk(
+    pub async fn repository_read_chunk(
         window: WebviewWindow,
-        protocol: State<'_, Protocol>,
+        app: AppHandle,
         frame: Frame,
         offset: usize,
     ) -> Result<Binary, WireError> {
         authorize(&window)?;
-        protocol.read(frame, offset).map(Binary::new)
+        tauri::async_runtime::spawn_blocking(move || {
+            app.state::<Protocol>().read(frame, offset).map(Binary::new)
+        })
+        .await
+        .map_err(|_| WireError::new("unavailable", "本地读取未完成。"))?
     }
 }
 
@@ -547,6 +592,7 @@ mod tests {
         assert!(protocol.upload(frame(&protocol, key), 1, b"abcde").is_err());
         assert!(protocol.upload(frame(&protocol, key), 0, b"abc").is_err());
         protocol.upload(frame(&protocol, key), 0, b"abcde").unwrap();
+        protocol.upload(frame(&protocol, key), 5, b"{}").unwrap();
         assert!(metadata(
             &protocol,
             key,
@@ -578,8 +624,16 @@ mod tests {
                 offset + chunk.len()
             );
         }
-        protocol.upload(frame(&protocol, key), data.len(), b"{}").unwrap();
-        let wire_hash = format!("{:x}", Sha256::new().chain_update(data).chain_update(b"{}").finalize());
+        protocol
+            .upload(frame(&protocol, key), data.len(), b"{}")
+            .unwrap();
+        let wire_hash = format!(
+            "{:x}",
+            Sha256::new()
+                .chain_update(data)
+                .chain_update(b"{}")
+                .finalize()
+        );
         let calls = Cell::new(0);
         for _ in 0..2 {
             protocol
@@ -629,6 +683,13 @@ mod tests {
             data[CHUNK..]
         );
         assert!(protocol.read(frame(&protocol, key), data.len()).is_err());
+    }
+
+    #[test]
+    fn summary_frame_preserves_original_bytes_and_invalid_rows() {
+        let frame = encode_summaries(vec!["汉".into(), "{".into()]).unwrap();
+        let expected = [2, 0, 0, 0, 3, 0, 0, 0, 0xe6, 0xb1, 0x89, 1, 0, 0, 0, b'{'];
+        assert_eq!(frame, expected);
     }
 
     #[test]
