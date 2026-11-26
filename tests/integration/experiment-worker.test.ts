@@ -33,12 +33,14 @@ it('已取消的回测 Worker 即使迟到也不能替换新预览或写库', as
   const { result } = renderHook(useBacktestWorkbench);
   act(() => result.current.importFile(file));
   const old = ControlledWorker.latest;
+  const queued = old.onmessage!;
   act(() => result.current.cancel());
   expect(old.terminate).toHaveBeenCalled();
+  expect(old.onmessage).toBeNull();
   act(() => result.current.importFile(file));
   const current = ControlledWorker.latest;
   await act(async () => {
-    old.onmessage!({ data: { ok: true, record } });
+    queued({ data: { ok: true, record } });
   });
   expect(result.current.preview).toBeNull();
   expect(result.current.busy).toBe(true);
