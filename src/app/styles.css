@@ -434,6 +434,7 @@ h1 {
   gap: 14px;
 }
 .path-card {
+  border-color: var(--subtle);
   padding: 18px;
   transition: background 0.15s;
 }

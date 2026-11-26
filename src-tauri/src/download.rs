@@ -28,8 +28,17 @@ fn file_error(error: io::Error) -> String {
 }
 
 pub fn save_report(directory: &Path, bytes: &[u8], expected: &str) -> Result<SavedReport, String> {
-    let mut stage = NamedTempFile::new_in(directory).map_err(file_error)?;
-    stage.write_all(bytes).map_err(file_error)?;
+    let stage = NamedTempFile::new_in(directory).map_err(file_error)?;
+    save_staged_report(stage, directory, expected, |file| file.write_all(bytes))
+}
+
+fn save_staged_report(
+    mut stage: NamedTempFile,
+    directory: &Path,
+    expected: &str,
+    write_report: impl FnOnce(&mut fs::File) -> io::Result<()>,
+) -> Result<SavedReport, String> {
+    write_report(stage.as_file_mut()).map_err(file_error)?;
     stage.as_file().sync_all().map_err(file_error)?;
     stage.rewind().map_err(file_error)?;
     let mut hash = Sha256::new();
@@ -56,7 +65,11 @@ pub fn save_report(directory: &Path, bytes: &[u8], expected: &str) -> Result<Sav
             {
                 stage = failure.file;
             }
-            Err(failure) => return Err(file_error(failure.error)),
+            Err(failure) => {
+                // Close our own handle before the temporary path attempts cleanup on Windows.
+                drop(failure.file.into_temp_path());
+                return Err(file_error(failure.error));
+            }
         }
     }
     Err("下载目录中同名文件过多，无法分配新文件名。".into())
@@ -66,9 +79,24 @@ pub fn save_report(directory: &Path, bytes: &[u8], expected: &str) -> Result<Sav
 mod tests {
     use super::*;
 
+    const SAMPLE: &[u8] = include_bytes!("../../tests/fixtures/desktop-download-synthetic.json");
+    const SAMPLE_SHA: &str = "66488534115389a00ba3d4955ccae5a8c9d74eb06704f018098a8d943ed6451f";
+
     fn save_sample(dir: &Path) -> Result<SavedReport, String> {
-        let bytes = b"synthetic report";
-        save_report(dir, bytes, &format!("{:x}", Sha256::digest(bytes)))
+        save_report(dir, SAMPLE, SAMPLE_SHA)
+    }
+
+    fn verify_retry_preserves_original(dir: &Path, original: &Path, original_bytes: &[u8]) {
+        assert_eq!(fs::read(original).unwrap(), original_bytes);
+        assert_eq!(fs::read_dir(dir).unwrap().count(), 1);
+        let retry = save_sample(dir).unwrap();
+        assert_eq!(retry.path, dir.join(format!("{REPORT_STEM} (1).json")));
+        let bytes = fs::read(&retry.path).unwrap();
+        assert_eq!(bytes, SAMPLE);
+        assert_eq!(retry.sha256, SAMPLE_SHA);
+        assert_eq!(format!("{:x}", Sha256::digest(&bytes)), SAMPLE_SHA);
+        assert_eq!(fs::read(original).unwrap(), original_bytes);
+        assert_eq!(fs::read_dir(dir).unwrap().count(), 2);
     }
 
     #[test]
@@ -88,7 +116,8 @@ mod tests {
                 dir.path().join(format!("{REPORT_STEM} ({}).json", i + 1))
             );
             let content = fs::read(&report.path).unwrap();
-            assert_eq!(content, b"synthetic report");
+            assert_eq!(content, SAMPLE);
+            assert_eq!(report.sha256, SAMPLE_SHA);
             assert_eq!(format!("{:x}", Sha256::digest(content)), report.sha256);
         }
         assert_eq!(fs::read(original).unwrap(), b"user content");
@@ -109,38 +138,121 @@ mod tests {
 
     #[test]
     fn unwritable_directory_reports_permission_error_and_can_retry() {
-        let dir = tempfile::tempdir().unwrap();
+        let root = tempfile::tempdir().unwrap();
+        let dir = root.path().join("downloads");
+        fs::create_dir(&dir).unwrap();
+        let original = dir.join(format!("{REPORT_STEM}.json"));
+        let original_bytes = b"synthetic pre-existing download";
+        fs::write(&original, original_bytes).unwrap();
         #[cfg(unix)]
-        let previous = {
+        let result = {
             use std::os::unix::fs::PermissionsExt;
-            let previous = fs::metadata(dir.path()).unwrap().permissions();
-            fs::set_permissions(dir.path(), fs::Permissions::from_mode(0o555)).unwrap();
-            previous
+            let previous = fs::metadata(&dir).unwrap().permissions();
+            fs::set_permissions(&dir, fs::Permissions::from_mode(0o555)).unwrap();
+            let result = save_sample(&dir);
+            fs::set_permissions(&dir, previous).unwrap();
+            result
         };
         #[cfg(windows)]
-        {
+        let result = {
             let deny = std::process::Command::new("icacls")
-                .arg(dir.path())
+                .arg(&dir)
                 .args(["/deny", "*S-1-1-0:(WD)"])
                 .status()
                 .unwrap();
             assert!(deny.success());
-        }
-        let result = save_sample(dir.path());
-        #[cfg(unix)]
-        fs::set_permissions(dir.path(), previous).unwrap();
-        #[cfg(windows)]
-        {
+            let result = save_sample(&dir);
             let restore = std::process::Command::new("icacls")
-                .arg(dir.path())
+                .arg(&dir)
                 .args(["/remove:d", "*S-1-1-0"])
                 .status()
                 .unwrap();
             assert!(restore.success());
-        }
-        assert!(result.unwrap_err().contains("权限不足"));
-        assert_eq!(fs::read_dir(dir.path()).unwrap().count(), 0);
-        assert!(save_sample(dir.path()).is_ok());
+            result
+        };
+        let error = result.unwrap_err();
+        assert!(error.starts_with("下载目录权限不足"), "{error}");
+        #[cfg(windows)]
+        assert!(error.contains("os error 5"), "{error}");
+        verify_retry_preserves_original(&dir, &original, original_bytes);
+    }
+
+    #[test]
+    fn unavailable_directory_reports_save_error_and_retries_after_restoration() {
+        let root = tempfile::tempdir().unwrap();
+        let directory = root.path().join("downloads");
+        fs::create_dir(&directory).unwrap();
+        let original = directory.join(format!("{REPORT_STEM}.json"));
+        let original_bytes = b"synthetic pre-existing download";
+        fs::write(&original, original_bytes).unwrap();
+        let aside = root.path().join("disconnected");
+        fs::rename(&directory, &aside).unwrap();
+        let error = save_sample(&directory).unwrap_err();
+        assert!(error.starts_with("无法保存报告"), "{error}");
+        assert!(!directory.exists());
+        fs::rename(aside, &directory).unwrap();
+        verify_retry_preserves_original(&directory, &original, original_bytes);
+    }
+
+    #[test]
+    fn disk_full_after_a_partial_write_publishes_nothing_and_can_retry() {
+        let dir = tempfile::tempdir().unwrap();
+        let original = dir.path().join(format!("{REPORT_STEM}.json"));
+        let original_bytes = b"synthetic pre-existing download";
+        fs::write(&original, original_bytes).unwrap();
+        let stage = NamedTempFile::new_in(dir.path()).unwrap();
+        let stage_path = stage.path().to_owned();
+
+        // Store a real prefix, then inject a disk-full error without filling the disk.
+        let error = save_staged_report(stage, dir.path(), SAMPLE_SHA, |file| {
+            file.write_all(&SAMPLE[..17])?;
+            assert_eq!(file.metadata()?.len(), 17);
+            #[cfg(windows)]
+            let disk_full = io::Error::from_raw_os_error(112); // ERROR_DISK_FULL
+            #[cfg(not(windows))]
+            let disk_full = io::Error::from_raw_os_error(28); // ENOSPC
+            Err(disk_full)
+        })
+        .unwrap_err();
+        assert!(error.starts_with("无法保存报告"), "{error}");
+        #[cfg(windows)]
+        assert!(error.contains("os error 112"), "{error}");
+        assert!(!stage_path.exists());
+        verify_retry_preserves_original(dir.path(), &original, original_bytes);
+    }
+
+    #[cfg(windows)]
+    #[test]
+    fn exclusive_stage_reports_real_sharing_violation_and_retry_publishes_verified_bytes() {
+        use std::os::windows::fs::OpenOptionsExt;
+        let dir = tempfile::tempdir().unwrap();
+        let original = dir.path().join(format!("{REPORT_STEM}.json"));
+        let original_bytes = b"synthetic pre-existing download";
+        fs::write(&original, original_bytes).unwrap();
+
+        // Only this test creates the verified staging file without FILE_SHARE_DELETE.
+        // Windows denies the production no-replace rename until this handle is closed.
+        let stage = tempfile::Builder::new()
+            .make_in(dir.path(), |path| {
+                fs::OpenOptions::new()
+                    .create_new(true)
+                    .read(true)
+                    .write(true)
+                    .share_mode(0)
+                    .open(path)
+            })
+            .unwrap();
+        let stage_path = stage.path().to_owned();
+        let error =
+            save_staged_report(stage, dir.path(), SAMPLE_SHA, |file| file.write_all(SAMPLE))
+                .unwrap_err();
+        assert!(error.starts_with("文件被占用"), "{error}");
+        assert!(error.contains("os error 32"), "{error}");
+        assert!(
+            !stage_path.exists(),
+            "private staging file leaked after failure"
+        );
+        verify_retry_preserves_original(dir.path(), &original, original_bytes);
     }
 
     #[cfg(windows)]

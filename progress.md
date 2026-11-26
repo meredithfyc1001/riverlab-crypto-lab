@@ -6,7 +6,19 @@
 
 Windows 11 25H2（26200.9457）在提交 `121e2fb8` 上记录两项 FAIL。桌面技术验证页与 Edge 同页的深色文字对比度为 1.25:1。系统下载目录存在同名报告时，安装版两次完成计算却均未交付文件；移开同名文件后，三组桌面与 Edge 配对均通过。原始日志、截图、性能和 SHA-256 清单由首轮验收机保留。基线在修改前复现了同一低对比度及下载回调拒绝同名的条件。[实机结论、基线失败日志及第二轮验收单](docs/phase-6a-verification.md#首轮-windows-11-实机验收与第二轮复测附录)
 
-原 PR 保持 Draft，第二轮 Windows 用户复测待执行。首轮已验证的 50,000 根数值一致性和 SQLite 合成库结果按原记录保留。卸载后保留数据仍为 BLOCKED，物理断网仍为 NOT TESTED。[Draft PR #16](https://github.com/meredithfyc1001/riverlab-crypto-lab/pull/16)
+首轮 50,000 根数值一致性和 SQLite 合成库验证通过。该轮卸载后保留数据为 BLOCKED，物理断网为 NOT TESTED。[Draft PR #16](https://github.com/meredithfyc1001/riverlab-crypto-lab/pull/16)
+
+### PR #16 · Windows 11 第二轮实机与第三轮修复
+
+第二轮在 `326f9694a29150725dfeea8118bbf63ef2ec7f83` 完成。首轮的深色技术验证页和同名下载通过复测，新的 FAIL 是数据、策略、回测和风险四张工作台卡片的实际描边仅 1.3819∶1（项目门槛 3∶1）。两种桌面形式均实测拒写、目录缺失及恢复重试；第二轮实机用独立空目录的 NTFS 删除等待状态产生真实错误 5。浏览器把保存交给系统管理器，Chrome、Edge 均观测到拒写导致下载取消，恢复目录后重新请求并完成。Windows 错误 32/33 在生产桌面上的提示仍为 BLOCKED，独占同名成品时会自动编号并保存；对临时文件的外部故障夹具先遇到了共享冲突。[两轮实机记录与第三轮复测条件](docs/phase-6a-verification.md#第二轮-windows-11-实机结果)
+
+已复查原 5E 运行的五份官方制品及相关本机归档，旧任务当次下载的原始文件直接核对仍为 BLOCKED。使用 `18aefef2` 的原容量场景重新生成并恢复完整 JSON，逐字段核对第二轮的 19 份完整导出，固定输入、计划、各折结果均一致。另用四个环境的底层 Worker 核对逐笔输出与权益曲线。修复候选的质量作业将本次容量导出及读回回执保存在各平台制品中。独立的 253 字节下载故障夹具只验证文件保存路径。托管 Windows CI 在新建临时目录上用 `icacls` 实际拒绝写入并恢复，复核重试文件及原件完整性。[历史 5E 参照、摘要及复核范围](docs/phase-6a-verification.md#历史-5e-原件与可复现参照)
+
+修复开发期间，系统 Chrome 和 Edge 各自通过深浅主题两项卡片专项。深/浅主题的外侧描边分别为 6.870336∶1 / 5.619931∶1，悬停和按下状态的内侧描边分别为 5.726492∶1 / 5.607180∶1。[可重跑的像素专项](tests/e2e/path-card-contrast.spec.ts)
+
+Windows 本地 Vitest 默认并发首跑 673/674。失败项是 `tests/integration/app.test.tsx` 的回测深链接场景，等待“回测配置”超时。保持原断言及时间门槛，用 `npx vitest run --maxWorkers=2` 重新执行全部用例，48 个文件、674/674 通过。系统 Chrome 158.0.8127.37 运行 `node scripts/profile-capacity.mjs`，独立读回 4,401,149 字节的重算导出；完整输入和结果摘要与 5E 参照一致。
+
+第二轮合并建议为保留 Draft。第三轮用户 Windows 11 实机验收为 **NOT TESTED**，卸载、物理断网及历史 IndexedDB 迁移没有新增实测结论。发布包需绑定修复后的提交，托管 CI 运行链接、实际断言数量和 Windows 实机记录按各自提交归档。[CI 与第三轮签收条件](docs/phase-6a-verification.md#托管-ci-与第三轮实机签收)
 
 ### 原型构建与 Windows CI 历史
 

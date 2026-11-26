@@ -1,9 +1,11 @@
 import { rssKiB } from './profile-browser-rss.mjs';
 import assert from 'node:assert/strict';
-import { mkdir, mkdtemp, rm } from 'node:fs/promises';
+import { createHash } from 'node:crypto';
+import { mkdir, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
 import { chromium } from '@playwright/test';
 import { build, preview } from 'vite';
+import { contentHash } from '../src/core/backtests/identity.ts';
 
 await mkdir('work', { recursive: true });
 const outDir = await mkdtemp(resolve('work/capacity-'));
@@ -80,10 +82,14 @@ try {
       page.waitForEvent('download', { timeout: 120000 }),
     ]);
     assert.equal(await downloaded.failure(), null);
+    // Keep this run's synthetic export in the existing browser CI artifact.
+    await mkdir('test-results', { recursive: true });
+    const exportPath = resolve(
+      'test-results/advanced-capacity-recomputed.json',
+    );
+    await downloaded.saveAs(exportPath);
     await fresh.goto(url);
-    await fresh
-      .getByLabel('恢复研究文件')
-      .setInputFiles(await downloaded.path());
+    await fresh.getByLabel('恢复研究文件').setInputFiles(exportPath);
     const restored = await fresh.evaluate(() =>
       globalThis.restoreAdvancedCapacity(),
     );
@@ -103,6 +109,31 @@ try {
         ),
         restoreMs: restored.restoreMs,
       }),
+    );
+    const bytes = await readFile(exportPath);
+    const { input, result } = JSON.parse(bytes);
+    const receipt = {
+      filename: 'advanced-capacity-recomputed.json',
+      bytes: bytes.length,
+      sha256: createHash('sha256').update(bytes).digest('hex'),
+      inputHash: contentHash(input),
+      resultHash: contentHash(result),
+    };
+    await writeFile(
+      exportPath + '.receipt.json',
+      JSON.stringify(receipt, null, 2),
+    );
+    assert.equal(input.dataset.candles.length, 50_000);
+    assert.equal(sample.evaluations, 100_000);
+    assert.equal(sample.completedTrades, 2_082);
+    // Frozen business data from the Phase 5E reference; the envelope has a new ID/time.
+    assert.equal(
+      receipt.inputHash,
+      '666ecfb0cd67fea63488ce6e94ee46f8abe3109145ed8443dc3ddda67c12909e',
+    );
+    assert.equal(
+      receipt.resultHash,
+      'e3fb4410dc0bac12ca6dc1d108d4a6ae2f56107a47fc20bbda789469cbaf5d6b',
     );
   } finally {
     sampling = false;
