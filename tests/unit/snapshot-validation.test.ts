@@ -260,7 +260,8 @@ describe('full snapshot original records', () => {
       await fresh.accept('replay', 'body', changed.id, changed, captured),
     ).toMatchObject([{ code: 'invalidBody' }]);
     const otherDataset = structuredClone(dataset);
-    otherDataset.candles[0].volume++;
+    const candle = otherDataset.candles[0];
+    otherDataset.candles[0] = { ...candle, volume: candle.volume + 1 };
     const otherScan = validation();
     expect(
       await otherScan.accept('dataset', 'body', dataset.id, otherDataset),
