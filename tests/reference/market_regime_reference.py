@@ -7,6 +7,7 @@ for its orders, then rebuilds per-symbol cost basis and period P&L here.
 import argparse
 import json
 import sys
+from collections import defaultdict
 from decimal import Decimal as D, ROUND_DOWN, localcontext
 from itertools import groupby
 from pathlib import Path
@@ -62,6 +63,8 @@ def labels(closes, stamps, n, bps, interval=MINUTE):
 
 def analyze(opens, closes, initial, bars, lookback, threshold, start_time=START, interval=MINUTE):
     stamps = [start_time + i * interval for i in range(len(closes))]
+    if [bar['closeUtcMs'] for bar in bars] != [stamp + interval for stamp in stamps]:
+        raise ValueError('ledger close timestamps differ from the reference asset')
     at_close = labels(closes, stamps, lookback, threshold, interval)
     effective = ['UNKNOWN', *at_close[:-1]]
     equity = [initial, *(D(b['equity']) for b in bars)]
@@ -98,14 +101,20 @@ def analyze(opens, closes, initial, bars, lookback, threshold, start_time=START,
                 netPnl=text(equity[-1] - initial))
 
 
-def ledger(initial, marks, fills):
+def ledger(initial, marks, fills, start_time=START, interval=MINUTE):
     """Book net sale proceeds against pro rata remaining 18-place cost."""
     quantities, costs = {}, {}
     cash = initial
     prev_floating = D(0)
     rows = []
+    events_by_bar = defaultdict(list)
+    for fill in fills:
+        index = fill['barIndex']
+        if type(index) is not int or not 0 <= index < len(marks):
+            raise ValueError('fill outside attribution timeline')
+        events_by_bar[index].append(fill)
     for i, closing in enumerate(marks):
-        events = [f for f in fills if f['barIndex'] == i]
+        events = events_by_bar.get(i, ())
         realized = fees = D(0)
         covered_intrabar = False
         for f in events:
@@ -125,7 +134,7 @@ def ledger(initial, marks, fills):
                 covered_intrabar |= f['phase'] == 'protection-after-buys'
         value = sum((q * closing[s]).quantize(ATOM, rounding=ROUND_DOWN) for s, q in quantities.items())
         floating = value - sum(costs.values())
-        rows.append(dict(closeUtcMs=START+(i+1)*MINUTE, equity=text(cash + value),
+        rows.append(dict(closeUtcMs=start_time+(i+1)*interval, equity=text(cash + value),
                          realizedDelta=text(realized), unrealizedDelta=text(floating-prev_floating),
                          fills=len(events), fees=text(fees), exposed=covered_intrabar or any(q > 0 for q in quantities.values())))
         prev_floating = floating

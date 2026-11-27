@@ -1,5 +1,9 @@
 # RiverLab Crypto Lab 工作指令
 
+当前阶段为 Phase 6C-B。仅从显式提供的隔离测试 RLIDB001 文件生成新 SQLite 候选库。沿用 6C-A 正式读取器和 6B Repository 契约。保留原键、业务 Hash、正文、摘要、克隆描述及历史版本。READY 需绑定候选与重算、独立核验及恢复回执。每次重试使用新目录。正式切换须用户单独确认，用户日常浏览器库不在本阶段范围内。6B/6C/6D 联合实机验收、6E 总验收，物理断网由用户执行。[本轮设计](docs/phase-6c-b-migration.md)
+
+## Phase 6C-A 历史基线
+
 当前工作为 Phase 6C-A 浏览器完整快照。开发分支基于 #17 的 6B head，所有导出与故障测试只使用隔离浏览器 profile 和合成/冻结夹具。导出只读原始 IndexedDB，保持桌面 SQLite 的既有行为。6B 至 6D 的用户 Windows 实机统一由 6E 签收。[设计与映射](docs/phase-6c-a-snapshot.md)
 
 ## Phase 6B 历史基线

@@ -44,7 +44,6 @@ jobs:
           npm audit
           npm audit --omit=dev
       - uses: actions/setup-python@v5
-        if: runner.os == 'macOS'
         with:
           python-version: '3.13'
       - name: Install Chromium on macOS
@@ -69,6 +68,8 @@ jobs:
           python tests/reference/advanced_research_reference.py --check
       - name: Test the independent browser snapshot reader
         run: python -B tests/reference/test_phase6c_bundle.py
+      - name: Test independent migration history references
+        run: python -B -m unittest discover -s tests/reference -p "test_phase6cb_*.py" -v
       - name: Verify exact 256 MiB migration codec boundary
         run: node scripts/profile-snapshot-codec.mjs
       - run: npm run check
@@ -94,6 +95,76 @@ jobs:
             playwright-report/
             test-results/
             work/phase-6c-a/
+            work/phase-6c-b/
+          retention-days: 14
+
+  migration:
+    name: Isolated migration / ${{ matrix.os }}
+    needs: quality
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+            browser: chromium
+            project: chromium-linux
+          - os: macos-latest
+            browser: chromium
+            project: chromium-darwin
+          - os: windows-latest
+            browser: chrome
+            project: chrome-win32
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 30
+    env:
+      PROJECT: ${{ matrix.project }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - run: npm ci
+      - uses: actions/download-artifact@v4
+        with:
+          name: browser-${{ matrix.os }}-${{ matrix.browser }}
+          path: work/quality
+      - name: Select the native Rust toolchain
+        run: rustup toolchain install 1.100.0 --profile minimal
+      - name: Reconcile archives, exercise the actual Repository and recover from faults
+        shell: bash
+        run: |
+          set -eu
+          sample="work/quality/work/phase-6c-b/$PROJECT"
+          prior="work/quality/work/phase-6c-a/$PROJECT"
+          read_sha() { node -p "JSON.parse(require('node:fs').readFileSync(process.argv[1],'utf8')).fileSha256" "$1/browser-receipt.json"; }
+          out=work/migration-evidence
+          mkdir "$out"
+          python -B scripts/phase6c/migrate_candidate.py "$sample/synthetic-versions.riverlab-migration" --sha256 "$(read_sha "$sample")" --candidate-dir "$out/candidate"
+          cargo +1.100.0 run --quiet --locked --manifest-path src-tauri/Cargo.toml --example verify_migration -- "$out/candidate/research.sqlite" "$out/candidate/reference.json" > "$out/repository.json"
+          python -B tests/reference/test_phase6cb_faults.py --snapshot "$prior/synthetic-full.riverlab-migration" --sha256 "$(read_sha "$prior")" --report "$out/faults.json"
+      - name: Build and exercise the extracted Windows isolated test kit
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          $sample = "work/quality/work/phase-6c-b/$env:PROJECT"
+          $out = 'work/migration-evidence/kit'
+          python -B scripts/phase6c/package_test_kit.py build --archive "$sample/synthetic-versions.riverlab-migration" --receipt "$sample/browser-receipt.json" --out $out
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          Expand-Archive (Get-ChildItem "$out/*.zip").FullName -DestinationPath 'work/独立 测试'
+          & 'work/独立 测试/run-isolated.cmd'
+          exit $LASTEXITCODE
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: migration-${{ matrix.os }}-${{ github.event.pull_request.head.sha || github.sha }}
+          path: work/migration-evidence/
           retention-days: 14
 
   local-test-package:

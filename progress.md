@@ -1,5 +1,11 @@
 # RiverLab Crypto Lab 进度
 
+## Phase 6C-B 隔离 SQLite 迁移
+
+#17 修补提交 `cb8ae30b8139cdb190859a34776a3fa50089ccc9` 在 Linux 通过 32 项 Rust 回归。#18 的 5B 观察修补提交为 `0ff14e8802c1f912b5c19500e46c85e608e4a992`，随后合入 #17，得到 `e0d3476344aa667b6a2bfc4e9b41b89ccc11292a`。在该提交重新安装依赖并通过 728 项 Vitest、77 项 Chromium E2E、11 组数值参考和 10 项快照读取回归。旧的 5 秒失败原文保留在 #18；局部显示等待、20 秒完成门槛和 1,000 毫秒主线程间隔保持原值。[6B 修补](https://github.com/meredithfyc1001/riverlab-crypto-lab/pull/17) · [6C-A 修补](https://github.com/meredithfyc1001/riverlab-crypto-lab/pull/18)
+
+6C-B 合成场景含规则 V1/V2 与各自的实验，17 个源 store 共 22 条记录。候选业务表分别有 12 条正文和 12 条摘要，原始 `versions` 的两条规则各派生一条 SQLite 列表项。逐条投影、原克隆描述、版本、业务 Hash 及冷启动重算详见交付证据。托管 CI 与用户 Windows 实机分别登记。[对账格式](docs/phase-6c-b-migration.md) · [Windows 清单](docs/phase-6c-b-acceptance.md)
+
 ## Phase 6C-A 浏览器完整导出
 
 2026-11-27 核对远端。#17 仍是 Draft，head 为 `80c367a`，base 为 `feat/phase-5e-advanced-research` 上 #16 的实际合并点 `5a75f34`。其四组浏览器作业与 Ubuntu/macOS Rust 通过，Windows 浏览器 ZIP 作业失败，安装态作业跳过。6C-A 从 #17 的 head 派生并以该分支为 PR base。6A 第三轮和 6E Windows 用户实机保持待测。[6B 工作流](https://github.com/meredithfyc1001/riverlab-crypto-lab/actions/runs/45788772852)
