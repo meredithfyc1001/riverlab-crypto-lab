@@ -91,7 +91,10 @@ export function assertExperimentMetadata(
     throw new Error('身份、格式或校验和不符');
 }
 /** Run in Worker at storage trust boundaries; verifies supported versions and recomputes. */
-export function verifyExperiment(value: unknown): Experiment {
+export function verifyExperiment(
+  value: unknown,
+  observeReplay?: (replayed: Experiment) => void,
+): Experiment {
   const e = value as Experiment;
   try {
     assertExperimentMetadata(e);
@@ -118,8 +121,9 @@ export function verifyExperiment(value: unknown): Experiment {
     });
     // The first digest checked every imported field. Hash the same canonical
     // byte stream of the independent replay without materializing two full reports as strings.
-    if (contentHash(actual) !== e.payloadHash)
-      throw new Error('重算结果不一致');
+    const payloadHash = contentHash(actual);
+    if (payloadHash !== e.payloadHash) throw new Error('重算结果不一致');
+    observeReplay?.({ ...e, payload: actual, payloadHash });
     return e;
   } catch (error) {
     throw new Error(

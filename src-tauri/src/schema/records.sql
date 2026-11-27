@@ -1,0 +1,4 @@
+CREATE TABLE records (
+    kind TEXT NOT NULL, id TEXT NOT NULL, body TEXT NOT NULL,
+    PRIMARY KEY(kind, id)
+) STRICT, WITHOUT ROWID;

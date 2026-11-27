@@ -43,8 +43,8 @@ def distribution(values):
                 volatility=text(ratio(variance.sqrt())) if len(values) >= 2 else None)
 
 
-def labels(closes, stamps, n, bps):
-    if any(y - x != MINUTE for x, y in zip(stamps, stamps[1:])):
+def labels(closes, stamps, n, bps, interval=MINUTE):
+    if any(y - x != interval for x, y in zip(stamps, stamps[1:])):
         raise ValueError('discontinuous UTC axis')
     # Compare to the exact two price levels. Rounding a ratio before this
     # comparison would lose a strict crossing smaller than one return tick.
@@ -60,9 +60,9 @@ def labels(closes, stamps, n, bps):
     return result
 
 
-def analyze(opens, closes, initial, bars, lookback, threshold):
-    stamps = [START + i * MINUTE for i in range(len(closes))]
-    at_close = labels(closes, stamps, lookback, threshold)
+def analyze(opens, closes, initial, bars, lookback, threshold, start_time=START, interval=MINUTE):
+    stamps = [start_time + i * interval for i in range(len(closes))]
+    at_close = labels(closes, stamps, lookback, threshold, interval)
     effective = ['UNKNOWN', *at_close[:-1]]
     equity = [initial, *(D(b['equity']) for b in bars)]
     pnl = [y - x for x, y in zip(equity, equity[1:])]
@@ -73,7 +73,7 @@ def analyze(opens, closes, initial, bars, lookback, threshold):
         indices = [i for i, _ in grouped]
         start, stop = indices[0], indices[-1] + 1
         change = equity[stop] - equity[start]
-        runs.append(dict(state=state, startUtcMs=stamps[start], endUtcMs=START + stop * MINUTE,
+        runs.append(dict(state=state, startUtcMs=stamps[start], endUtcMs=start_time + stop * interval,
                          bars=len(indices), startEquity=text(equity[start]), endEquity=text(equity[stop]),
                          netPnl=text(change), returnFraction=text(ratio(change/equity[start])) if equity[start] else None))
 
@@ -84,12 +84,12 @@ def analyze(opens, closes, initial, bars, lookback, threshold):
         rows = [bars[i] for i in ix]
         def total(field):
             return text(sum(D(b[field]) for b in rows))
-        summaries.append(dict(state=state, bars=len(ix), durationMs=len(ix)*MINUTE,
+        summaries.append(dict(state=state, bars=len(ix), durationMs=len(ix)*interval,
                               timeFraction=text(ratio(D(len(ix)) / len(bars))),
                               occurrences=sum(r['state'] == state for r in runs),
                               netPnl=text(sum(pnl[i] for i in ix)), realizedDelta=total('realizedDelta'),
                               unrealizedDelta=total('unrealizedDelta'), fills=sum(b['fills'] for b in rows),
-                              fees=total('fees'), exposedMs=held*MINUTE,
+                              fees=total('fees'), exposedMs=held*interval,
                               exposureFraction=text(ratio(D(held) / len(ix))) if ix else None,
                               periodReturns=distribution([ratio(pnl[i]/equity[i]) for i in ix if equity[i]]),
                               assetReturns=distribution([ratio((asset[i+1]-asset[i])/asset[i]) for i in ix])))

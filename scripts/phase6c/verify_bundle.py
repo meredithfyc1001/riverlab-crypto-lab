@@ -31,6 +31,33 @@ class InvalidArchive(ValueError):
     """A required invariant of the v1 archive failed."""
 
 
+class MemberValidationError(InvalidArchive):
+    def __init__(self, error, database, store, row, frame):
+        self.detail = {'issue': 'damaged', 'database': database, 'store': store, 'row': row}
+        if frame[0] == 2:
+            try:
+                identity = parse_json(frame[1])
+                if isinstance(identity, dict) and isinstance(identity.get('key'), str):
+                    self.detail['declaredKey'] = identity['key']
+            except (ValueError, RecursionError):
+                pass
+        super().__init__(f'{error}: ' + json.dumps(self.detail, ensure_ascii=True))
+
+
+class MemberIdentityError(InvalidArchive):
+    """Retain both source identities on rejection for candidate diagnostics."""
+
+    def __init__(self, member, previous):
+        same_id = member['key'] == previous['key']
+        same_content = all(member[k] == previous[k] for k in ('projectionSha256', 'cloneSha256'))
+        self.detail = {
+            'issue': ('duplicate' if same_content else 'conflict') if same_id else 'order',
+            'database': member['database'], 'store': member['store'], 'id': member['key'],
+            'first': previous, 'second': member,
+        }
+        super().__init__('duplicate or out-of-order source key: ' + json.dumps(self.detail, ensure_ascii=True))
+
+
 def require(condition, message):
     if not condition:
         raise InvalidArchive(message)
@@ -418,14 +445,30 @@ def read_archive(stream, expected_hash, stage, member_list, check_frozen):
         for store in db['stores']:
             keys_digest = sha256()
             previous = None
+            previous_member = None
             for _ in range(store['count']):
                 rows += 1
-                member, fixture = read_row(reader, reader.next_frame(), db['name'], db['kind'],
-                                           store, rows, stage, check_frozen)
+                frame = reader.next_frame()
+                try:
+                    member, fixture = read_row(reader, frame, db['name'], db['kind'],
+                                               store, rows, stage, check_frozen)
+                except (ValueError, TypeError, RecursionError, OverflowError) as error:
+                    raise MemberValidationError(error, db['name'], store['name'], rows, frame) from error
                 # IndexedDB strings compare by UTF-16 code unit, not Unicode scalar.
                 key = member['key'].encode('utf-16-be', 'surrogatepass')
-                require(previous is None or previous < key, 'duplicate or out-of-order source key')
-                previous = key
+                if previous is not None and previous >= key:
+                    prior = previous_member
+                    # The normal sorted scan keeps one key. Consult the on-disk
+                    # inventory only when an out-of-order row may repeat an earlier ID.
+                    if key != previous and member_list is not None:
+                        member_list.seek(0)
+                        for entry in member_list:
+                            seen = json.loads(entry)
+                            if all(seen[k] == member[k] for k in ('database', 'store', 'id')):
+                                prior = seen
+                                break
+                    raise MemberIdentityError(member, prior)
+                previous, previous_member = key, member
                 keys_digest.update(len(key).to_bytes(8, 'big'))
                 keys_digest.update(key)
                 if member_list is not None:

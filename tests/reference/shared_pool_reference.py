@@ -168,7 +168,13 @@ def protect(account, risk, bar, at_open):
     return None
 
 
-def simulate(spec):
+def simulate(spec, *, signal_tapes=None):
+    # The committed 5C-B vectors use the fixed one-bar breakout. A migration
+    # supplies decisions independently regenerated from each original strategy.
+    # Preserve the older vector projection while auditing every live round.
+    audit_history = signal_tapes is not None
+    allocations = []
+    benchmark_reasons = []
     inputs = sorted(spec["assets"], key=lambda a: a["symbol"])
     symbols = [a["symbol"] for a in inputs]
     tapes = [[[units(p) for p in candle] for candle in a["bars"]] for a in inputs]
@@ -182,10 +188,13 @@ def simulate(spec):
     passive_qty = [0 for _ in inputs]
     benchmark_rejects = []
     for j in indices:
+        if not weights[j]:
+            continue
         allocation = initial * weights[j] // (100 * U)
         fill = quote(True, tapes[j][0][0], allocation, inputs[j]["costs"])
         if isinstance(fill, str):
             benchmark_rejects.append(symbols[j])
+            benchmark_reasons.append(dict(symbol=symbols[j], reason=fill))
         else:
             _, passive_qty[j], notional, fee = fill
             passive_cash -= notional + fee
@@ -218,6 +227,9 @@ def simulate(spec):
         nonlocal cash
         a = holdings[j]
         result = quote(buy, ref, limit, inputs[j]["costs"])
+        stop = inputs[j]["risk"].get("stopLossBps", 0)
+        if buy and stop and not isinstance(result, str) and result[0] * (10_000-stop) // 10_000 == 0:
+            result = "stop-price-underflow"
         if isinstance(result, str):
             rejects.append(dict(barIndex=i, symbol=symbols[j], phase=phase, rejection=result))
             return
@@ -261,8 +273,12 @@ def simulate(spec):
             if rebalance and values[j] > target:
                 sell_qty = (values[j] - target) * U // opens[j]
                 trade(j, False, "sell", opens[j], sell_qty)
-            elif not every and signals[j] == "sell" and holdings[j].quantity and j not in blocked:
-                trade(j, False, "sell", opens[j], holdings[j].quantity)
+            elif not every and signals[j] == "sell":
+                if j not in blocked and holdings[j].quantity:
+                    trade(j, False, "sell", opens[j], holdings[j].quantity)
+                elif audit_history:
+                    reason = "risk-priority" if j in blocked else "position-already-flat"
+                    rejects.append(dict(barIndex=i, symbol=symbols[j], phase="sell", rejection=reason))
 
         values = [h.quantity * p // U for h, p in zip(holdings, opens)]
         equity = cash + sum(values)
@@ -274,6 +290,7 @@ def simulate(spec):
             shortfall = equity * weights[j] // (100 * U) - values[j]
             requests.append(max(shortfall, 0) if eligible else 0)
         approvals = prorate(requests, available)
+        cash_before_buys = cash
         for j in indices:
             if requests[j]:
                 grants.append(dict(barIndex=i, symbol=symbols[j], requestedBudget=fmt(requests[j]),
@@ -281,12 +298,25 @@ def simulate(spec):
                 if approvals[j]:
                     trade(j, True, "buy", opens[j], approvals[j])
                 else:
-                    reason = "cash-reserve" if reserve and available == 0 and cash else "insufficient-cash"
+                    reason = "cash-reserve" if equity * reserve // (100 * U) and available == 0 and cash_before_buys else "insufficient-cash"
                     rejects.append(dict(barIndex=i, symbol=symbols[j], phase="buy", rejection=reason))
+            elif audit_history and not every and signals[j] == "buy":
+                if holdings[j].quantity or j in blocked:
+                    reason = "risk-priority" if j in blocked else "position-already-open"
+                    rejects.append(dict(barIndex=i, symbol=symbols[j], phase="buy", rejection=reason))
+                else:
+                    trade(j, True, "buy", opens[j], 0)
+        if audit_history and (rebalance or 'buy' in signals):
+            allocations.append(dict(barIndex=i, openEquity=fmt(equity), cashBeforeBuys=fmt(cash_before_buys),
+                                    reserve=fmt(equity * reserve // (100*U)), capacity=fmt(available),
+                                    requested=fmt(sum(requests)), approved=fmt(sum(approvals)),
+                                    spent=fmt(cash_before_buys-cash), cashAfterBuys=fmt(cash)))
         for j in indices:
             if j in blocked:
                 continue
-            ref = protect(holdings[j], inputs[j]["risk"], bars[j], False)
+            ref = protect(holdings[j], inputs[j]["risk"], bars[j], True)
+            if ref is None:
+                ref = protect(holdings[j], inputs[j]["risk"], bars[j], False)
             if ref is not None:
                 trade(j, False, "protection-after-buys", ref, holdings[j].quantity)
 
@@ -297,13 +327,15 @@ def simulate(spec):
                                                      for w, t in zip(after_weights, weights + [reserve])]))
         passive = passive_cash + sum(q * p // U for q, p in zip(passive_qty, closes))
         mark(closes, passive)
-        if i and not every:
+        if audit_history and not every:
+            signals = [signal_tapes[s][i]["action"] for s in symbols]
+        elif i and not every:
             for j in indices:
                 _, prior_high, prior_low, _ = tapes[j][i - 1]
                 signals[j] = ("buy" if closes[j] > prior_high else
                               "sell" if closes[j] < prior_low else "hold")
 
-    return dict(fills=fills, rejects=rejects, grants=grants, curve=curve, rebalances=rebalances,
+    expected = dict(fills=fills, rejects=rejects, grants=grants, curve=curve, rebalances=rebalances,
                 netPnl=fmt(units(curve[-1]["equity"]) - initial), fees=fmt(sum(a.fees for a in holdings)),
                 maxDrawdown=ratio(worst_num, worst_den),
                 benchmarkReturn=ratio(units(curve[-1]["benchmarkEquity"]) - initial, initial),
@@ -311,6 +343,9 @@ def simulate(spec):
                 assets=[dict(symbol=symbols[j], quantity=fmt(h.quantity), fees=fmt(h.fees),
                              buySpend=fmt(h.bought), sellProceeds=fmt(h.sold),
                              netPnl=curve[-1]["contributions"][j]) for j, h in enumerate(holdings)])
+    if audit_history:
+        expected.update(allocations=allocations, benchmarkReasons=benchmark_reasons)
+    return expected
 
 
 if __name__ == "__main__":
