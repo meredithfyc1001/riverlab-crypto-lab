@@ -1,0 +1,3 @@
+47c505b06d30b9dba2b23bd5eab8a301a5b2e59f56170a00b5abe059de9c3d03  RiverLab-1.3.0-test.1-Windows-isolated-test-08bb7e0c1d61.members.sha256
+103a62f0c380e949b6d4b3dd1cf67dff4c5a3345033f5d0fb6d0a5e99a3fe59a  RiverLab-1.3.0-test.1-Windows-isolated-test-08bb7e0c1d61.zip
+ecd7deff28da59ffadd02c5fcf848920081473551e8482546ab2a72126f3d476  synthetic-evidence.zip
