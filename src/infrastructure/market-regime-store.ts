@@ -65,7 +65,7 @@ export type RegimeSummary = Pick<
   RegimeReport,
   'id' | 'name' | 'createdUtcMs' | 'reportHash'
 >;
-function checkSummary(row: RegimeSummary) {
+export function checkSummary(row: RegimeSummary) {
   if (
     !row ||
     typeof row.id !== 'string' ||

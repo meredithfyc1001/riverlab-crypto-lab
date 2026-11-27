@@ -7,12 +7,14 @@ export default defineConfig(({ mode }) => ({
   build: {
     cssCodeSplit: false,
     target: ['chrome120', 'edge120'],
-    ...(mode === 'desktop-6a' && {
-      outDir: 'work/desktop-6a/dist',
-      rollupOptions: {
-        input: ['index.html', 'tests/desktop-6a/index.html'],
-      },
-    }),
+    ...(mode === 'desktop-6a' && { outDir: 'work/desktop-6a/dist' }),
+    rollupOptions: {
+      input: [
+        'index.html',
+        'export.html',
+        ...(mode === 'desktop-6a' ? ['tests/desktop-6a/index.html'] : []),
+      ],
+    },
   },
   test: {
     environment: 'jsdom',

@@ -1,5 +1,7 @@
 # RiverLab Crypto Lab
 
+Phase 6C-A 浏览器完整快照可从工作台“导出浏览器研究库快照”进入，或从 Windows 浏览器包运行 `start-snapshot.bat` 直达专用导出页。[九库映射与格式](docs/phase-6c-a-snapshot.md) · [使用与文件校验](docs/phase-6c-a-acceptance.md)
+
 ## Windows 桌面版 · Phase 6B
 
 桌面工作台使用每用户 SQLite 数据库。打开工作台的“桌面数据存储”可查看目录、可用空间及服务版本，执行完整性检查或创建手动备份。安装版和独立 EXE 共享同一账户的数据目录。浏览器版继续使用自己的 IndexedDB。Windows 桌面运行需要 WebView2；下文的 Node.js 和 BAT 步骤用于浏览器测试包。[桌面设计](docs/phase-6b-design.md) · [安装与验收清单](docs/phase-6b-acceptance.md)

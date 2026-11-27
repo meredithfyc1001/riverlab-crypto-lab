@@ -10,3 +10,4 @@ test-results/
 *.local
 src-tauri/target/
 src-tauri/gen/schemas/
+__pycache__/

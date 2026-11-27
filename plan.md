@@ -1,5 +1,9 @@
 # RiverLab Crypto Lab 执行计划
 
+## Phase 6C-A 浏览器完整导出
+
+从 #17 源提交 `80c367ac429ee86d9287b00527fdffcfe6b23008` 独立开发。先固定全库快照范围与可证明的一致切面，交付真实游标导出、同源写入屏障、独立校验与隔离重建对账。以浏览器 Windows ZIP、SHA-256、测试与人工清单验收。[设计与映射](docs/phase-6c-a-snapshot.md)
+
 ## Phase 6B 本地服务
 
 从 `5a75f34` 开展服务生命周期与数据目录、SQLite 事务、版本化 IPC、九类 Repository 接入和 Worker 边界调整。以隔离数据验证三操作系统原生测试、浏览器和已安装桌面的同输入研究对照，再交付同提交 Windows 安装器、独立 EXE、校验值和 Draft PR。[数据架构](docs/phase-6b-design.md) · [Windows 验收清单](docs/phase-6b-acceptance.md)

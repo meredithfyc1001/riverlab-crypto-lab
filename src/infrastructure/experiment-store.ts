@@ -3,7 +3,7 @@ import { summarizeExperiment } from '../core/experiments';
 import { LibraryStore } from './repository';
 import { readSummaryList } from './summary-list';
 
-function assertExperimentSummary(row: ExperimentSummary) {
+export function assertExperimentSummary(row: ExperimentSummary) {
   if (
     !row ||
     typeof row.id !== 'string' ||

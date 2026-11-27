@@ -25,7 +25,7 @@ jobs:
           - os: windows-latest
             browser: msedge
     runs-on: ${{ matrix.os }}
-    timeout-minutes: 15
+    timeout-minutes: 30
     env:
       E2E_BROWSER: ${{ matrix.browser }}
     steps:
@@ -67,6 +67,10 @@ jobs:
           python tests/reference/shared_pool_reference.py --check
           python tests/reference/market_regime_reference.py --check
           python tests/reference/advanced_research_reference.py --check
+      - name: Test the independent browser snapshot reader
+        run: python -B tests/reference/test_phase6c_bundle.py
+      - name: Verify exact 256 MiB migration codec boundary
+        run: node scripts/profile-snapshot-codec.mjs
       - run: npm run check
       - name: Profile 50,000 candles in the platform browser
         run: node scripts/profile-backtest.mjs
@@ -89,13 +93,14 @@ jobs:
           path: |
             playwright-report/
             test-results/
+            work/phase-6c-a/
           retention-days: 14
 
   local-test-package:
     name: Windows local test ZIP / Chrome + Edge
     needs: quality
     runs-on: windows-latest
-    timeout-minutes: 15
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
         with:
@@ -134,6 +139,7 @@ jobs:
             work/local-package/RiverLab-Crypto-Lab-Local-Test.zip.sha256
             work/local-package/package-*-evidence.json
             work/local-package/package-*.png
+            work/local-package/snapshot-*/
           if-no-files-found: error
           retention-days: 14
       - name: Publish package identity and download link

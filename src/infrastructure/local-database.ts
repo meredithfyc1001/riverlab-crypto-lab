@@ -1,3 +1,5 @@
+export const SNAPSHOT_FENCE = 'riverlab-crypto-lab:snapshot-v1';
+
 export class LocalDatabase {
   constructor(
     private readonly factory: () => IDBFactory = () => indexedDB,
@@ -17,6 +19,7 @@ export class LocalDatabase {
           request.transaction?.abort();
           return;
         }
+        clearTimeout(timer);
         const db = request.result;
         for (const name of this.stores)
           db.createObjectStore(name, { keyPath: 'id' });
@@ -45,19 +48,50 @@ export class LocalDatabase {
     mode: IDBTransactionMode,
     run: (tx: IDBTransaction, result: (v: T) => void) => void,
   ): Promise<T> {
+    // Even an application read opens lazily and may create a database.
+    // Windows and Workers that support Web Locks coordinate from before open.
+    // Older clients retain normal IDB access. A snapshot can certify them
+    // only with overlapping whole-database readonly transactions.
+    let entered = false;
+    try {
+      const locks = globalThis.navigator?.locks;
+      if (locks)
+        return await locks.request(SNAPSHOT_FENCE, { mode: 'shared' }, () => {
+          entered = true;
+          return this.runTransaction(mode, run);
+        });
+    } catch (error) {
+      // A blocked LockManager can exist even when IDB works. Never retry a
+      // failed IDB operation after the callback has run.
+      if (
+        entered ||
+        !(error instanceof DOMException) ||
+        !['SecurityError', 'NotSupportedError'].includes(error.name)
+      )
+        throw error;
+    }
+    return this.runTransaction(mode, run);
+  }
+
+  private async runTransaction<T>(
+    mode: IDBTransactionMode,
+    run: (tx: IDBTransaction, result: (v: T) => void) => void,
+  ): Promise<T> {
     const db = await this.open();
     return new Promise<T>((resolve, reject) => {
       let value: T;
       let tx: IDBTransaction | undefined;
+      let failure: { error: unknown } | undefined;
       try {
         tx = db.transaction(this.stores, mode);
         tx.oncomplete = () => {
           db.close();
-          resolve(value);
+          if (failure) reject(failure.error);
+          else resolve(value);
         };
         tx.onabort = () => {
           db.close();
-          reject(tx!.error ?? new Error('事务被中止'));
+          reject(failure?.error ?? tx!.error ?? new Error('事务被中止'));
         };
         tx.onerror = () => {
           /* abort settles the promise; never report request success as commit */
@@ -66,13 +100,17 @@ export class LocalDatabase {
           value = next;
         });
       } catch (error) {
-        try {
-          tx?.abort();
-        } catch {
-          /* transaction may already have aborted */
+        if (tx) {
+          failure = { error };
+          try {
+            tx.abort();
+          } catch {
+            // A commit or abort is already in flight. Its terminal event releases the lock.
+          }
+        } else {
+          db.close();
+          reject(error);
         }
-        db.close();
-        reject(error);
       }
     });
   }

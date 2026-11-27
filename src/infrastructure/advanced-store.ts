@@ -11,7 +11,7 @@ export type AdvancedSummary = Pick<
   'id' | 'name' | 'createdUtcMs' | 'reportHash'
 >;
 
-function checkSummary(summary: AdvancedSummary) {
+export function checkSummary(summary: AdvancedSummary) {
   assertMetadata(summary);
   if (
     typeof summary.reportHash !== 'string' ||

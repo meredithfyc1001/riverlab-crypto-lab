@@ -17,6 +17,7 @@ const featureNames = [
   'portfolio',
   'market-regime',
   'advanced-research',
+  'snapshot',
 ];
 
 export default tseslint.config(
