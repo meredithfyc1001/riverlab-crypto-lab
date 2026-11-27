@@ -22,7 +22,7 @@ import {
   sealRiskStudy,
   summarizeRisk,
 } from '../../src/core/risk-analysis';
-import { verifyRuleRecord } from '../../src/core/rule-library';
+import { sealRule, verifyRuleRecord } from '../../src/core/rule-library';
 import { verifySharedPoolExperiment } from '../../src/core/shared-pool/report';
 import { START, INTERVAL, market } from '../fixtures/backtest';
 
@@ -34,7 +34,9 @@ export type FixtureDatabase = {
 
 // Produce real historical domain values and their original library summaries.
 // The source and target are always separate Playwright-owned contexts.
-export function syntheticLibraries(): FixtureDatabase[] {
+export function syntheticLibraries(
+  includeRuleHistory = false,
+): FixtureDatabase[] {
   const dataset = market(
     Array.from({ length: 36 }, (_, i) => 100 + Math.abs((i % 12) - 6)),
   );
@@ -162,7 +164,7 @@ export function syntheticLibraries(): FixtureDatabase[] {
       note: dataset.source.note,
     },
   };
-  return [
+  const libraries = [
     paired('', 'datasets', storedDataset, summarizeDataset(storedDataset)),
     paired(
       '-experiments',
@@ -187,6 +189,44 @@ export function syntheticLibraries(): FixtureDatabase[] {
     paired('-market-regime', 'reports', regime, reportSummary(regime)),
     paired('-advanced-research', 'reports', advanced, reportSummary(advanced)),
   ];
+  if (includeRuleHistory) {
+    const second = sealRule(
+      {
+        ...rule.rule,
+        revision: 2,
+        buy: {
+          ...rule.rule.buy,
+          conditions: [
+            {
+              kind: 'breakout',
+              enabled: true,
+              lookback: 3,
+              direction: 'above',
+            },
+          ],
+        },
+      },
+      { familyId: rule.familyId, name: rule.name, createdUtcMs: end },
+    );
+    const versions = libraries.find((db) => db.name.endsWith('-rules'))!;
+    versions.stores[0].values.push(second);
+    const experiments = libraries.find((db) =>
+      db.name.endsWith('-experiments'),
+    )!;
+    for (const revision of [rule, second]) {
+      const historical = sealExperiment(
+        runExperiment({
+          dataset,
+          strategy: { kind: 'rules', rule: revision.rule },
+          completedThroughUtcMs: end,
+        }),
+        { ...metadata('synthetic-run-' + revision.id), elapsedMs: 1 },
+      );
+      experiments.stores[0].values.push(historical);
+      experiments.stores[1].values.push(summarizeExperiment(historical));
+    }
+  }
+  return libraries;
 }
 
 // This helper refuses every nonempty target. The test uses it only on a new

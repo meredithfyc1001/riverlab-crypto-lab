@@ -28,7 +28,7 @@ import {
   verifyRiskStudy,
   type RiskSummary,
 } from '../core/risk-analysis';
-import { verifyRuleRecord } from '../core/rule-library';
+import { sealRule, verifyRuleRecord } from '../core/rule-library';
 import { verifySharedPoolExperiment } from '../core/shared-pool/report';
 import {
   checkSummary as assertAdvancedSummary,
@@ -175,7 +175,16 @@ export class SnapshotValidation {
   private readonly pairs = new Map<RepositoryKind, Map<string, Pair>>();
   private readonly datasetIds = new Set<string>();
 
-  constructor(private readonly options: { observedUtcMs: number }) {
+  constructor(
+    private readonly options: {
+      observedUtcMs: number;
+      observeReplay?: (
+        kind: RepositoryKind,
+        original: unknown,
+        rebuilt: unknown,
+      ) => void;
+    },
+  ) {
     if (
       !Number.isSafeInteger(options.observedUtcMs) ||
       options.observedUtcMs < 0 ||
@@ -194,19 +203,24 @@ export class SnapshotValidation {
     value: unknown,
     readDataset?: ReadDataset,
   ) {
-    const { observedUtcMs } = this.options;
+    const { observedUtcMs, observeReplay } = this.options;
+    const observe =
+      observeReplay &&
+      ((rebuilt: unknown) => observeReplay(kind, value, rebuilt));
     switch (kind) {
       case 'dataset': {
         assertDataset(value);
         validateSnapshotFields(value);
         return summarizeDataset(value);
       }
-      case 'rule':
-        verifyRuleRecord(value);
+      case 'rule': {
+        const verified = verifyRuleRecord(value);
+        if (observe) observe(sealRule(verified.rule, verified));
         return undefined;
+      }
       case 'experiment': {
         checkEnvelope(value, experimentFields);
-        const verified = verifyExperiment(value);
+        const verified = verifyExperiment(value, observe);
         this.checkCompletion(
           verified.payload.result.manifest.completedThroughUtcMs,
         );
@@ -230,12 +244,16 @@ export class SnapshotValidation {
           );
         // Replays only the revealed prefix, applying original decisions and
         // checking sourceHash, result/state hashes and the full checkpoint.
-        ReplaySession.restore(dataset, value);
+        const restored = ReplaySession.restore(dataset, value);
+        if (observe) {
+          const { id, name, createdUtcMs } = value;
+          observe(restored.checkpoint({ id, name, createdUtcMs }));
+        }
         return summarizeReplay(value);
       }
       case 'risk': {
         checkEnvelope(value, riskFields);
-        const verified = verifyRiskStudy(value);
+        const verified = verifyRiskStudy(value, undefined, observe);
         this.checkCompletion(
           verified.payload.source.input.completedThroughUtcMs,
         );
@@ -244,16 +262,22 @@ export class SnapshotValidation {
       }
       case 'portfolio':
         return summarizePortfolio(
-          verifyPortfolioExperiment(value, observedUtcMs),
+          verifyPortfolioExperiment(value, observedUtcMs, observe),
         );
       case 'shared_pool':
         return summarizePortfolio(
-          verifySharedPoolExperiment(value, observedUtcMs),
+          verifySharedPoolExperiment(value, observedUtcMs, observe),
         );
-      case 'regime':
-        return reportSummary(verifyRegimeReport(value, observedUtcMs));
-      case 'advanced':
-        return reportSummary(verifyAdvancedReport(value, observedUtcMs));
+      case 'regime': {
+        const rebuilt = verifyRegimeReport(value, observedUtcMs);
+        observe?.(rebuilt);
+        return reportSummary(rebuilt);
+      }
+      case 'advanced': {
+        const rebuilt = verifyAdvancedReport(value, observedUtcMs);
+        observe?.(rebuilt);
+        return reportSummary(rebuilt);
+      }
     }
   }
 

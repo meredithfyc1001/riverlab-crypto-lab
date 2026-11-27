@@ -1,0 +1,418 @@
+{
+  "format": "riverlab-6c-b-performance-v1",
+  "corpus": "isolated-synthetic",
+  "operatingSystem": "Linux-6.18.57-x86_64-with-glibc2.41",
+  "python": "3.12.14",
+  "node": "24.19.0",
+  "chromium": "154.0.8037.57",
+  "cgroupCpuQuota": 4,
+  "cgroupMemoryGiB": 16,
+  "windowsNative": "BLOCKED",
+  "measurement": "Maximum sampled sum of root and descendant working sets (KiB); shared pages can be counted more than once, short peaks can be missed. Poll gap 100ms plus process enumeration time.",
+  "profiles": {
+    "baseline-full": {
+      "status": "PASS",
+      "sourceSha256": "d377e7f106cbac5d6d727046569b4cd1c6dca1af358fa426808fc602c0b186c2",
+      "snapshotContentId": "da5a03bb410c69b46803e712fe4f715f7d80974f790f9965247d7a6e40d54fae",
+      "archiveBytes": 149197,
+      "sourceRows": 17,
+      "sqliteBytes": 180224,
+      "sqliteCounts": {
+        "records": 9,
+        "summaries": 9,
+        "migration_members": 17
+      },
+      "sqliteSha256": "e4765f861132081603d57e0cafcdd77740bbff79fbbe723cb63645b379317c6e",
+      "receiptSha256": {
+        "reconciliation.json": "4215baea42465dadabd539d2edba32daf36001cd16f7c95c1a6c8e982ef9a20f",
+        "recomputation.json": "54aa99b9b63cc2dacb5d98d5e93e842541106d29e6355123dd51a96f0ae6278c",
+        "reference.json": "635547ed12af2322a13dab6159069331f56e5f29a1abf0f139203aaf1fe368f8",
+        "recovery.json": "754a5d8f130c24f6331c462c741c323ded13ce29ceb85d6d71606d47483e83e8",
+        "research.sqlite": "e4765f861132081603d57e0cafcdd77740bbff79fbbe723cb63645b379317c6e"
+      },
+      "candidateTotalMs": 743.88,
+      "timings": {
+        "commitMs": 6.356,
+        "rollbackMs": null,
+        "fileHashMs": 0.334,
+        "archiveDecodeAndHashMs": 58.643,
+        "insertMs": 2.177,
+        "coldReadAndHashMs": 7.669,
+        "recomputationMs": 472.268,
+        "independentMs": 110.758,
+        "backupRestoreAndVerifyMs": 77.597
+      },
+      "process": {
+        "exitCode": 0,
+        "wallMs": 836.938,
+        "sampledPeakProcessTreeRssKiB": 96280,
+        "rssSamples": 8,
+        "log": "migration.log"
+      }
+    },
+    "multi-version-full": {
+      "status": "PASS",
+      "sourceSha256": "7a688362ed904ab5edc98c3a0531243e1c95f64e879e1ce04c4349ab81fe51e2",
+      "snapshotContentId": "6f54aed609d5eee7187f9a5d1d9c6044e668ecd4757bea964be771fb2e36011e",
+      "archiveBytes": 226629,
+      "sourceRows": 22,
+      "sqliteBytes": 262144,
+      "sqliteCounts": {
+        "records": 12,
+        "summaries": 12,
+        "migration_members": 22
+      },
+      "sqliteSha256": "1d54a421aadee2fa8055774bdd06550a2e98bf30af1fb9cf465849b2c22e2128",
+      "receiptSha256": {
+        "reconciliation.json": "262a9216da6559f3f3d2cedba5fe9cf6666e7772e8b5a3da69a4eb0e98b6df30",
+        "recomputation.json": "560861b1efec0a76d40a53e120f5361bc8b6072e24759c0659d91a56673bc7ee",
+        "reference.json": "614ed11589013174e0482016a55fe3ed0af08def880b936a9d5d5c9f53cd29ae",
+        "recovery.json": "8f6dac75f29d2c4210f5d1e8169777d2ca89dcf45ff9df1f673d8dd2b964cd55",
+        "research.sqlite": "1d54a421aadee2fa8055774bdd06550a2e98bf30af1fb9cf465849b2c22e2128"
+      },
+      "candidateTotalMs": 818.193,
+      "timings": {
+        "commitMs": 4.938,
+        "rollbackMs": null,
+        "fileHashMs": 0.696,
+        "archiveDecodeAndHashMs": 60.983,
+        "insertMs": 2.902,
+        "coldReadAndHashMs": 5.889,
+        "recomputationMs": 422.571,
+        "independentMs": 225.009,
+        "backupRestoreAndVerifyMs": 89.722
+      },
+      "process": {
+        "exitCode": 0,
+        "wallMs": 954.686,
+        "sampledPeakProcessTreeRssKiB": 100476,
+        "rssSamples": 8,
+        "log": "migration.log"
+      }
+    },
+    "full-export-repeat": {
+      "status": "PASS",
+      "sourceSha256": "db0c19fdb6f248168f0003785776b2b1bf4b990fa0e2c684250b450f3a9ebc64",
+      "snapshotContentId": "da5a03bb410c69b46803e712fe4f715f7d80974f790f9965247d7a6e40d54fae",
+      "archiveBytes": 149197,
+      "sourceRows": 17,
+      "sqliteBytes": 180224,
+      "sqliteCounts": {
+        "records": 9,
+        "summaries": 9,
+        "migration_members": 17
+      },
+      "sqliteSha256": "e4765f861132081603d57e0cafcdd77740bbff79fbbe723cb63645b379317c6e",
+      "receiptSha256": {
+        "reconciliation.json": "f8f6d318b34a5474117de863611cb93623f501b1fe31ce51f4905d4d3c6d6043",
+        "recomputation.json": "d32a36eb79f541636471c01d5050b16ff07883d995a7d4a6051f26e422fcd53c",
+        "reference.json": "b81b55fc362ea8b9d2ffce063f8b59780e6f14fa220180306fb477c907f46305",
+        "recovery.json": "f0675e98d61ea178b6dd0a5976c35ead2a603e27717f8491df58877b017bf391",
+        "research.sqlite": "e4765f861132081603d57e0cafcdd77740bbff79fbbe723cb63645b379317c6e"
+      },
+      "candidateTotalMs": 547.387,
+      "timings": {
+        "commitMs": 6.911,
+        "rollbackMs": null,
+        "fileHashMs": 0.88,
+        "archiveDecodeAndHashMs": 40.389,
+        "insertMs": 2.722,
+        "coldReadAndHashMs": 4.902,
+        "recomputationMs": 299.607,
+        "independentMs": 103.43,
+        "backupRestoreAndVerifyMs": 83.531
+      },
+      "process": {
+        "exitCode": 0,
+        "wallMs": 638.759,
+        "sampledPeakProcessTreeRssKiB": 98540,
+        "rssSamples": 6,
+        "log": "migration.log"
+      }
+    },
+    "large-report": {
+      "status": "PASS",
+      "sourceSha256": "5796c66e820b6144bf08ee2e4db8e8c10a88c92261784ce3043c72002c605bea",
+      "snapshotContentId": "36bda19c196a84f2d5004c48df40ca372dea7ebc1dff2e6de0f6ebf6618926a1",
+      "archiveBytes": 9904815,
+      "sourceRows": 21,
+      "sqliteBytes": 9949184,
+      "sqliteCounts": {
+        "records": 11,
+        "summaries": 11,
+        "migration_members": 21
+      },
+      "sqliteSha256": "c448d97ddceb7bdc1d88ac1a1f053acac888e92b7fc547b0b519b35574c35a70",
+      "receiptSha256": {
+        "reconciliation.json": "97cf741aaeb0b97b59df5aa07702489cb7aa7bf6a80e1ca4173c8c4bb2c8e0e5",
+        "recomputation.json": "b1f94422ffe753b35fbcf79acb60667664e6e5c4e5949105d5d594dc11385851",
+        "reference.json": "e0a49700e07a25d882e454af8111a73a15b6ce7385805632c8648e9b5391cac4",
+        "recovery.json": "665f6bb901f58e6b33b5e66542bcc740215d91e297796046419e73277134e878",
+        "research.sqlite": "c448d97ddceb7bdc1d88ac1a1f053acac888e92b7fc547b0b519b35574c35a70"
+      },
+      "candidateTotalMs": 15104.734,
+      "timings": {
+        "commitMs": 13.106,
+        "rollbackMs": null,
+        "fileHashMs": 11.052,
+        "archiveDecodeAndHashMs": 1439.911,
+        "insertMs": 65.329,
+        "coldReadAndHashMs": 41.893,
+        "recomputationMs": 4532.313,
+        "independentMs": 4943.206,
+        "backupRestoreAndVerifyMs": 4033.233
+      },
+      "process": {
+        "exitCode": 0,
+        "wallMs": 15191.113,
+        "sampledPeakProcessTreeRssKiB": 332340,
+        "rssSamples": 135,
+        "log": "migration.log"
+      },
+      "generation": {
+        "exitCode": 0,
+        "wallMs": 9269.125,
+        "sampledPeakProcessTreeRssKiB": 1129488,
+        "rssSamples": 80,
+        "log": "export.log",
+        "browser": "154.0.8037.57",
+        "barsPerAdditionalDataset": 10000,
+        "extraDatasets": 1,
+        "datasetProjectionBytes": 889251,
+        "reportProjectionBytes": 7754802,
+        "sourceNoteCharacters": 3000,
+        "exportAndReadbackMs": 4426.199999999255
+      }
+    },
+    "near-capacity": {
+      "status": "PASS",
+      "sourceSha256": "7a6afb297f148f6c3abf2661cd989f51c49a923cfebc141f90ee49965686ace1",
+      "snapshotContentId": "079ea898759b0832eae6bb9e5d9f21d689936b2bca36a3e7313776d352635686",
+      "archiveBytes": 261034618,
+      "sourceRows": 135,
+      "sqliteBytes": 261513216,
+      "sqliteCounts": {
+        "records": 68,
+        "summaries": 68,
+        "migration_members": 135
+      },
+      "sqliteSha256": "e27717562481c9dd2f6b98082e3e33e54faac323fa9b276b978a99bfd4a1f662",
+      "receiptSha256": {
+        "reconciliation.json": "5b949fd6650dafcd416e142cb7c87b5f5f2fdc47dc25357fb1ec07557ad9e231",
+        "recomputation.json": "ea7d9a9f88ea55469b0e2799222856c9be24a9bb7f3d3a165471038dee1aa9d3",
+        "reference.json": "c44a907ec95543e7c0502eead610bb1e6f0552751236828bf636503383d02d29",
+        "recovery.json": "8ee04b1677eaf07fdff376c304de2350084e16728c1f6fd0aadf2104adb859cc",
+        "research.sqlite": "e27717562481c9dd2f6b98082e3e33e54faac323fa9b276b978a99bfd4a1f662"
+      },
+      "candidateTotalMs": 290028.105,
+      "timings": {
+        "commitMs": 96.623,
+        "rollbackMs": null,
+        "fileHashMs": 256.805,
+        "archiveDecodeAndHashMs": 52675.897,
+        "insertMs": 3523.911,
+        "coldReadAndHashMs": 2124.931,
+        "recomputationMs": 48611.073,
+        "independentMs": 92006.351,
+        "backupRestoreAndVerifyMs": 90172.449
+      },
+      "process": {
+        "exitCode": 0,
+        "wallMs": 290208.129,
+        "sampledPeakProcessTreeRssKiB": 396924,
+        "rssSamples": 2616,
+        "log": "migration.log"
+      },
+      "generation": {
+        "exitCode": 0,
+        "wallMs": 89900.421,
+        "sampledPeakProcessTreeRssKiB": 1363060,
+        "rssSamples": 796,
+        "log": "export.log",
+        "browser": "154.0.8037.57",
+        "barsPerAdditionalDataset": 50000,
+        "extraDatasets": 59,
+        "datasetProjectionBytes": 260190995,
+        "reportProjectionBytes": 0,
+        "sourceNoteCharacters": 3000,
+        "exportAndReadbackMs": 60772
+      }
+    },
+    "retry": {
+      "status": "PASS",
+      "sourceSha256": "db0c19fdb6f248168f0003785776b2b1bf4b990fa0e2c684250b450f3a9ebc64",
+      "snapshotContentId": "da5a03bb410c69b46803e712fe4f715f7d80974f790f9965247d7a6e40d54fae",
+      "archiveBytes": 149197,
+      "sourceRows": 17,
+      "sqliteBytes": 180224,
+      "sqliteCounts": {
+        "records": 9,
+        "summaries": 9,
+        "migration_members": 17
+      },
+      "sqliteSha256": "e4765f861132081603d57e0cafcdd77740bbff79fbbe723cb63645b379317c6e",
+      "receiptSha256": {
+        "reconciliation.json": "f8f6d318b34a5474117de863611cb93623f501b1fe31ce51f4905d4d3c6d6043",
+        "recomputation.json": "2e5b4c744d330c94906a822a240ebc30b6cf49c07e04ee2f4134551f4113874b",
+        "reference.json": "b81b55fc362ea8b9d2ffce063f8b59780e6f14fa220180306fb477c907f46305",
+        "recovery.json": "f0675e98d61ea178b6dd0a5976c35ead2a603e27717f8491df58877b017bf391",
+        "research.sqlite": "e4765f861132081603d57e0cafcdd77740bbff79fbbe723cb63645b379317c6e"
+      },
+      "candidateTotalMs": 669.248,
+      "timings": {
+        "commitMs": 6.76,
+        "rollbackMs": null,
+        "fileHashMs": 0.328,
+        "archiveDecodeAndHashMs": 107.746,
+        "insertMs": 16.46,
+        "coldReadAndHashMs": 16.485,
+        "recomputationMs": 336.57,
+        "independentMs": 94.558,
+        "backupRestoreAndVerifyMs": 72.255
+      },
+      "process": {
+        "exitCode": 0,
+        "wallMs": 742.308,
+        "sampledPeakProcessTreeRssKiB": 96928,
+        "rssSamples": 7,
+        "log": "migration.log"
+      },
+      "injectedFailure": {
+        "status": "PASS",
+        "process": {
+          "exitCode": 1,
+          "wallMs": 149.735,
+          "sampledPeakProcessTreeRssKiB": 13708,
+          "rssSamples": 2,
+          "log": "rollback.log"
+        },
+        "receipt": {
+          "status": "FAILED",
+          "stage": "sqlite-transaction",
+          "errorType": "IntegrityError",
+          "error": "UNIQUE constraint failed: records.kind, records.id",
+          "detail": null,
+          "transaction": "rolled-back",
+          "ready": false,
+          "stagingRetained": false,
+          "cleanupError": null,
+          "expectedSourceSha256": "db0c19fdb6f248168f0003785776b2b1bf4b990fa0e2c684250b450f3a9ebc64",
+          "sourceSha256Before": "db0c19fdb6f248168f0003785776b2b1bf4b990fa0e2c684250b450f3a9ebc64",
+          "sourceSha256After": "db0c19fdb6f248168f0003785776b2b1bf4b990fa0e2c684250b450f3a9ebc64",
+          "sourceUnchanged": true,
+          "productionDatabaseOpened": false,
+          "retry": "new-directory",
+          "report": null,
+          "timings": {
+            "commitMs": null,
+            "rollbackMs": 0.075,
+            "fileHashMs": 0.303,
+            "archiveDecodeAndHashMs": 42.465
+          }
+        }
+      }
+    }
+  },
+  "codecOnly": {
+    "process": {
+      "exitCode": 0,
+      "wallMs": 9223.461,
+      "sampledPeakProcessTreeRssKiB": 652132,
+      "rssSamples": 82,
+      "log": "codec.log"
+    },
+    "check": "standalone encoder limits; no SQLite migration",
+    "status": "PASS",
+    "measurement": {
+      "check": "synthetic codec byte boundary",
+      "projectionBytes": 268435456,
+      "chunks": 4096,
+      "projectionSha256": "fe69274e481c7432a30f9f05208ef1f2f5331abfe8706aa62a97c87e185a40bf",
+      "extraByteRejected": true,
+      "depth64ProjectionSha256": "e270ddd24a87f53e990b14619baf860dac940d7252f8f237331bf6b2d9a71373",
+      "depth65Rejected": true,
+      "node": "v24.19.0",
+      "peakRssKiB": 648852
+    }
+  },
+  "independentRssTraceCheck": {
+    "small-migration": {
+      "status": "PASS",
+      "peak": 99436,
+      "samples": [
+        {
+          "elapsed_ms": "12.104",
+          "process_count": "1",
+          "rss_kib": "5820"
+        },
+        {
+          "elapsed_ms": "121.893",
+          "process_count": "2",
+          "rss_kib": "35876"
+        },
+        {
+          "elapsed_ms": "229.97",
+          "process_count": "3",
+          "rss_kib": "85876"
+        },
+        {
+          "elapsed_ms": "338.941",
+          "process_count": "3",
+          "rss_kib": "99436"
+        },
+        {
+          "elapsed_ms": "448.47",
+          "process_count": "1",
+          "rss_kib": "18428"
+        }
+      ]
+    },
+    "retry-rollback": {
+      "status": "PASS",
+      "peak": 5088,
+      "samples": [
+        {
+          "elapsed_ms": "11.116",
+          "process_count": "1",
+          "rss_kib": "5088"
+        }
+      ]
+    },
+    "retry-migration": {
+      "status": "PASS",
+      "peak": 94060,
+      "samples": [
+        {
+          "elapsed_ms": "7.808",
+          "process_count": "1",
+          "rss_kib": "4736"
+        },
+        {
+          "elapsed_ms": "115.624",
+          "process_count": "2",
+          "rss_kib": "41608"
+        },
+        {
+          "elapsed_ms": "236.81",
+          "process_count": "3",
+          "rss_kib": "84172"
+        },
+        {
+          "elapsed_ms": "348.735",
+          "process_count": "3",
+          "rss_kib": "94060"
+        },
+        {
+          "elapsed_ms": "456.859",
+          "process_count": "1",
+          "rss_kib": "15508"
+        },
+        {
+          "elapsed_ms": "566.15",
+          "process_count": "1",
+          "rss_kib": "18552"
+        }
+      ]
+    }
+  }
+}

@@ -1,5 +1,9 @@
 # RiverLab Crypto Lab
 
+## Phase 6C-B 隔离 SQLite 迁移
+
+从合成浏览器快照及其导出回执生成独立 SQLite 候选库。每条原始正文、摘要和结构化克隆均可追溯到源 store 与键。候选回执列出冷启动重算、独立验证及备份恢复结果。测试包使用本项目版本 1.3.0-test.1 和源码 SHA 标识。用户将在 6B/6C/6D 完成后联合验收，6E 进行总验收。[候选库、测试 ZIP 及 SHA-256](docs/phase-6c-b-evidence/README.md) · [迁移命令与对账说明](docs/phase-6c-b-migration.md) · [Windows 待验清单](docs/phase-6c-b-acceptance.md)
+
 Phase 6C-A 浏览器完整快照可从工作台“导出浏览器研究库快照”进入，或从 Windows 浏览器包运行 `start-snapshot.bat` 直达专用导出页。[九库映射与格式](docs/phase-6c-a-snapshot.md) · [使用与文件校验](docs/phase-6c-a-acceptance.md)
 
 ## Windows 桌面版 · Phase 6B

@@ -1,5 +1,9 @@
 # RiverLab Crypto Lab 执行计划
 
+## Phase 6C-B 隔离迁移与验收
+
+从包含两项修补的 #18 提交 `e0d3476344aa667b6a2bfc4e9b41b89ccc11292a` 开发。以外部 SHA 锁定的合成快照导入新候选目录，逐项验收九库十七 store、克隆、跨库关联、历史重算和冷恢复。正式切换需要用户另行确认。Windows 原生构建、安装、WebView2、文件锁和 ACL 纳入待验清单，6A 遗留回归与 6B/6C/6D 联合实机验收一并登记，6E 总验收。[迁移说明](docs/phase-6c-b-migration.md)
+
 ## Phase 6C-A 浏览器完整导出
 
 从 #17 源提交 `80c367ac429ee86d9287b00527fdffcfe6b23008` 独立开发。先固定全库快照范围与可证明的一致切面，交付真实游标导出、同源写入屏障、独立校验与隔离重建对账。以浏览器 Windows ZIP、SHA-256、测试与人工清单验收。[设计与映射](docs/phase-6c-a-snapshot.md)

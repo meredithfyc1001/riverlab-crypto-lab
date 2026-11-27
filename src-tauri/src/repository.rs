@@ -7,17 +7,14 @@ use rusqlite::{
 use serde::{Deserialize, Serialize};
 use std::{error::Error, fmt, path::Path, time::Duration};
 
+#[path = "clone_read.rs"]
+mod clone_read;
+pub const MAX_CLONE_FRAME: usize = MAX_BODY_BYTES + MAX_SUMMARY_BYTES + 12;
+
 pub const SCHEMA_VERSION: u32 = 1;
 const APPLICATION_ID: u32 = 0x5256_4c42; // RVLB
-const RECORDS_DDL: &str = "CREATE TABLE records (
-    kind TEXT NOT NULL, id TEXT NOT NULL, body TEXT NOT NULL,
-    PRIMARY KEY(kind, id)
-) STRICT, WITHOUT ROWID";
-const SUMMARIES_DDL: &str = "CREATE TABLE summaries (
-    kind TEXT NOT NULL, id TEXT NOT NULL, summary TEXT NOT NULL,
-    PRIMARY KEY(kind, id),
-    FOREIGN KEY(kind, id) REFERENCES records(kind, id) ON DELETE CASCADE
-) STRICT, WITHOUT ROWID";
+const RECORDS_DDL: &str = include_str!("schema/records.sql");
+const SUMMARIES_DDL: &str = include_str!("schema/summaries.sql");
 const MIB: usize = 1024 * 1024;
 const MAX_BATCH_BYTES: usize = 512 * MIB;
 const MAX_BODY_BYTES: usize = 256 * MIB;
@@ -105,6 +102,8 @@ pub struct Record {
 pub enum Operation {
     Save { records: Vec<Record> },
     List { kind: Kind },
+    ListStructured { kind: Kind },
+    LoadStructured { kind: Kind, id: String },
     Load { kind: Kind, id: String },
     Delete { kind: Kind, id: String },
 }
@@ -115,10 +114,12 @@ pub enum Response {
     Done,
     Body(Option<String>),
     Summaries(Vec<String>),
+    Structured(Option<Vec<u8>>),
 }
 
 pub struct Repository {
     db: Connection,
+    has_clone_metadata: bool,
 }
 
 impl Repository {
@@ -160,7 +161,14 @@ impl Repository {
             return Err(RepoError::new("io", "当前数据目录无法启用 SQLite WAL。"));
         }
         db.execute_batch("PRAGMA synchronous=FULL; PRAGMA wal_autocheckpoint=1000;")?;
-        Ok(Self { db })
+        let has_clone_metadata = db.query_row(
+            "SELECT EXISTS(SELECT 1 FROM main.sqlite_schema WHERE type='table' AND name='migration_members')",
+            [], |r| r.get(0),
+        )?;
+        Ok(Self {
+            db,
+            has_clone_metadata,
+        })
     }
 
     pub fn execute(&mut self, op: Operation) -> Result<Response, RepoError> {
@@ -168,6 +176,21 @@ impl Repository {
             Operation::Save { records } => {
                 self.insert_batch(&records)?;
                 Ok(Response::Done)
+            }
+            Operation::LoadStructured { kind, id } => {
+                validate_id(&id)?;
+                if self.has_clone_metadata {
+                    clone_read::read(&mut self.db, kind, Some(&id))
+                } else {
+                    self.execute(Operation::Load { kind, id })
+                }
+            }
+            Operation::ListStructured { kind } => {
+                if self.has_clone_metadata {
+                    clone_read::read(&mut self.db, kind, None)
+                } else {
+                    self.execute(Operation::List { kind })
+                }
             }
             Operation::List { kind } => {
                 let tx = self.db.transaction()?;

@@ -208,6 +208,7 @@ export function assertRiskStudy(value: unknown): asserts value is RiskStudy {
 export function verifyRiskStudy(
   value: unknown,
   progress?: (done: number, total: number) => void,
+  observeReplay?: (replayed: RiskStudy) => void,
 ): RiskStudy {
   assertRiskStudy(value);
   const s = value.payload.source,
@@ -237,6 +238,11 @@ export function verifyRiskStudy(
   );
   if (canonicalJson(actual) !== canonicalJson(value.payload))
     throw new Error('风险报告重算不一致；未自动修复。');
+  observeReplay?.({
+    ...value,
+    payload: actual,
+    payloadHash: contentHash(actual),
+  });
   return value;
 }
 export function summarizeRisk(e: RiskStudy): RiskSummary {

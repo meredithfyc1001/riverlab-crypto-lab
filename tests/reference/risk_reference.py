@@ -32,9 +32,9 @@ configs = [
     dict(method='iid',seed=0,paths=20,steps=1,blockSize=1,thresholdPct=50),
 ]
 
-def sample(config):
+def sample(config, source_equities=None, *, trace_steps=None):
     draw = pcg(config['seed'])
-    source = list(map(Decimal, equities))
+    source = list(map(Decimal, equities if source_equities is None else source_equities))
     def bounded(n):
         threshold = (2**32) % n
         word = draw()
@@ -74,20 +74,26 @@ def sample(config):
     for step in range(config['steps']+1):
         ordered=sorted(h[step] for h in histories)
         bands.append(dict(step=step,p05=dec(ordered[rank(5)]),p50=dec(ordered[rank(50)]),p95=dec(ordered[rank(95)])))
-    return dict(config=config,indices=draws,paths=paths,quantiles=quantiles,bands=bands,meanFinalEquity=dec((sum(final)/config['paths']).quantize(Decimal('0.000000000000000001'),rounding=ROUND_FLOOR)),lossCount=sum(v<source[0] for v in final),thresholdHitCount=sum(p['thresholdHit'] for p in paths))
+    result = dict(config=config,indices=draws,paths=paths,quantiles=quantiles,bands=bands,meanFinalEquity=dec((sum(final)/config['paths']).quantize(Decimal('0.000000000000000001'),rounding=ROUND_FLOOR)),lossCount=sum(v<source[0] for v in final),thresholdHitCount=sum(p['thresholdHit'] for p in paths))
 
-parser=argparse.ArgumentParser()
-parser.add_argument('--check',action='store_true')
-args=parser.parse_args()
-with localcontext() as ctx:
-    ctx.prec=100
-    generator=pcg(42)
-    words=[generator() for _ in range(6)]
-    assert words == [0xa15c02b7,0x7b47f409,0xba1d3330,0x83d2f293,0xbfa4784b,0xcbed606e]
-    result=dict(equities=equities,pcg42=words,cases=[sample(c) for c in configs])
-    path=Path(__file__).parents[1]/'fixtures'/'risk-reference.json'
-    if args.check:
-        assert json.loads(path.read_text(encoding='utf-8'))==result
-        print('Independent PCG32/Decimal100/Fraction risk reference matched: 3 methods/seed cases.')
-    else:
-        path.write_text(json.dumps(result,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
+    if trace_steps is not None:
+        result['traces'] = [dict(path=i + 1, points=[dict(step=s, equity=dec(history[s])) for s in trace_steps])
+                            for i, history in enumerate(histories[:5])]
+    return result
+
+if __name__ == '__main__':
+    parser=argparse.ArgumentParser()
+    parser.add_argument('--check',action='store_true')
+    args=parser.parse_args()
+    with localcontext() as ctx:
+        ctx.prec=100
+        generator=pcg(42)
+        words=[generator() for _ in range(6)]
+        assert words == [0xa15c02b7,0x7b47f409,0xba1d3330,0x83d2f293,0xbfa4784b,0xcbed606e]
+        result=dict(equities=equities,pcg42=words,cases=[sample(c) for c in configs])
+        path=Path(__file__).parents[1]/'fixtures'/'risk-reference.json'
+        if args.check:
+            assert json.loads(path.read_text(encoding='utf-8'))==result
+            print('Independent PCG32/Decimal100/Fraction risk reference matched: 3 methods/seed cases.')
+        else:
+            path.write_text(json.dumps(result,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')

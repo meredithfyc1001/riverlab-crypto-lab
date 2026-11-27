@@ -89,6 +89,7 @@ export function createSharedPoolExperiment(
 export function verifySharedPoolExperiment(
   value: unknown,
   observedUtcMs: number,
+  observeReplay?: (replayed: SharedPoolExperiment) => void,
 ): SharedPoolExperiment {
   const r = value as SharedPoolExperiment;
   if (!r || r.format !== FORMAT || r.schemaVersion !== SCHEMA)
@@ -152,8 +153,15 @@ export function verifySharedPoolExperiment(
     previous = symbol;
   }
   const replay = runSharedPool(r.input);
-  if (digest(r.input, replay, r) !== r.payloadHash)
+  const payloadHash = digest(r.input, replay, r);
+  if (payloadHash !== r.payloadHash)
     throw new Error('共享资金池完整重算不一致。');
+  observeReplay?.({
+    ...r,
+    result: replay,
+    payloadHash,
+    recordHash: contentHash(header(r, payloadHash)),
+  });
   return r;
 }
 

@@ -84,6 +84,7 @@ export function createPortfolioExperiment(
 export function verifyPortfolioExperiment(
   value: unknown,
   observedUtcMs: number,
+  observeReplay?: (replayed: PortfolioExperiment) => void,
 ): PortfolioExperiment {
   const record = value as PortfolioExperiment;
   if (!record || record.format !== FORMAT || record.schemaVersion !== VERSION)
@@ -137,8 +138,15 @@ export function verifyPortfolioExperiment(
   )
     throw new Error('组合实验 Hash 校验不一致。');
   const replay = runPortfolio(record.input);
-  if (digestPayload(record.input, replay, record) !== record.payloadHash)
+  const payloadHash = digestPayload(record.input, replay, record);
+  if (payloadHash !== record.payloadHash)
     throw new Error('组合实验重算不一致，无法打开。');
+  observeReplay?.({
+    ...record,
+    result: replay,
+    payloadHash,
+    recordHash: contentHash(header(record, payloadHash)),
+  });
   return record;
 }
 

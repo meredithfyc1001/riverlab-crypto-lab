@@ -45,6 +45,20 @@ try {
     encodeSnapshotValue('experiment', 'body', value),
     /容量限制/,
   );
+  // Arbitrary nested fields exercise the format independently of business schemas.
+  let nested = 'synthetic';
+  for (let level = 0; level < 63; level++) nested = { next: nested };
+  const depth64 = await encodeSnapshotValue('experiment', 'body', {
+    id: 'depth',
+    nested,
+  });
+  await assert.rejects(
+    encodeSnapshotValue('experiment', 'body', {
+      id: 'depth',
+      nested: { next: nested },
+    }),
+    /超过 64/,
+  );
   console.log(
     JSON.stringify({
       check: 'synthetic codec byte boundary',
@@ -52,6 +66,8 @@ try {
       chunks,
       projectionSha256: expectedSha,
       extraByteRejected: true,
+      depth64ProjectionSha256: depth64.projectionSha256,
+      depth65Rejected: true,
       node: process.version,
       peakRssKiB: process.resourceUsage().maxRSS,
     }),

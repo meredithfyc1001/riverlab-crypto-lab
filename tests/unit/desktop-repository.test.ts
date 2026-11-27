@@ -224,3 +224,70 @@ describe('Tauri SQLite Repository protocol V1', () => {
     expect(steps).toEqual(['beginSave', 'cancel']);
   });
 });
+
+it('negotiates clone-preserving get, list and Worker reads while serving raw projection bytes on demand', async () => {
+  const id = '迁移';
+  const projection = JSON.stringify({
+    id,
+    source: { label: 'x' },
+    second: { label: 'x' },
+  });
+  const descriptor = JSON.stringify({
+    version: 1,
+    objects: [
+      { path: ['source'], keys: ['url', 'label'], undefinedKeys: ['url'] },
+    ],
+    aliases: [{ path: ['second'], target: ['source'] }],
+  });
+  const p = new TextEncoder().encode(projection),
+    d = new TextEncoder().encode(descriptor);
+  const framed = new Uint8Array(12 + p.length + d.length);
+  const header = new DataView(framed.buffer);
+  header.setUint32(0, 1, true);
+  header.setUint32(4, p.length, true);
+  header.setUint32(8, d.length, true);
+  framed.set(p, 12);
+  framed.set(d, 12 + p.length);
+  let current = p;
+  const ops: string[] = [];
+  const { desktopRepository } = await adapter((name, data) => {
+    if (name === 'repository_handshake')
+      return {
+        ...handshake,
+        capabilities: [...handshake.capabilities, 'structured-read-v1'],
+      };
+    if (name === 'repository_read_chunk') return current.buffer;
+    const { frame, command } = data as Packet;
+    ops.push(command.op);
+    current = command.op === 'load' ? p : framed;
+    return {
+      requestId: frame.requestId,
+      status: current === p ? 'download' : 'structuredDownload',
+      length: current.length,
+      sha256: bytesToHex(sha256(current)),
+    };
+  });
+  function check(value: unknown) {
+    const body = value as { source: object; second: object };
+    expect(Object.keys(body.source)).toEqual(['url', 'label']);
+    expect(body.source).toBe(body.second);
+  }
+  check(await desktopRepository.get('dataset', id));
+  check((await desktopRepository.list('dataset'))[0]);
+  const raw = await desktopRepository.getBytes('dataset', id);
+  expect(Array.from(raw!)).toEqual(Array.from(p));
+  const { openWorkerSource, readWorkerSource } =
+    await import('../../src/infrastructure/worker-source');
+  const source = openWorkerSource('dataset')!;
+  try {
+    check(await readWorkerSource(source.port, id));
+  } finally {
+    source.close();
+  }
+  expect(ops).toEqual([
+    'loadStructured',
+    'listStructured',
+    'load',
+    'loadStructured',
+  ]);
+});

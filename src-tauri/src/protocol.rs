@@ -73,6 +73,13 @@ pub enum Command {
     List {
         kind: Kind,
     },
+    LoadStructured {
+        kind: Kind,
+        id: String,
+    },
+    ListStructured {
+        kind: Kind,
+    },
     Delete {
         kind: Kind,
         id: String,
@@ -89,7 +96,7 @@ pub struct Handshake<'a> {
     session_id: &'a str,
     chunk_bytes: usize,
     max_body_bytes: usize,
-    capabilities: [&'static str; 4],
+    capabilities: [&'static str; 5],
 }
 
 #[derive(Serialize)]
@@ -108,6 +115,7 @@ enum Outcome {
     Committed,
     Cancelled,
     Download { length: usize, sha256: String },
+    StructuredDownload { length: usize, sha256: String },
 }
 
 enum Transfer {
@@ -243,7 +251,7 @@ impl Protocol {
             session_id: &self.session,
             chunk_bytes: CHUNK,
             max_body_bytes: MAX_BODY,
-            capabilities: ["read", "list", "write", "delete"],
+            capabilities: ["read", "list", "write", "delete", "structured-read-v1"],
         })
     }
 
@@ -352,28 +360,43 @@ impl Protocol {
                     Outcome::Committed
                 }
             }
-            Command::Load { .. } | Command::List { .. } => {
+            Command::Load { .. }
+            | Command::List { .. }
+            | Command::LoadStructured { .. }
+            | Command::ListStructured { .. } => {
                 transfers.prepare(key)?;
                 let operation = match command {
                     Command::Load { kind, id } => Operation::Load { kind, id },
                     Command::List { kind } => Operation::List { kind },
+                    Command::ListStructured { kind } => Operation::ListStructured { kind },
+                    Command::LoadStructured { kind, id } => Operation::LoadStructured { kind, id },
                     _ => unreachable!(),
                 };
-                let buffer = match execute(operation)? {
-                    Response::Body(body) => body.map(String::into_bytes),
-                    Response::Summaries(rows) => Some(encode_summaries(rows)?),
+                let (buffer, structured) = match execute(operation)? {
+                    Response::Body(body) => (body.map(String::into_bytes), false),
+                    Response::Summaries(rows) => (Some(encode_summaries(rows)?), false),
+                    Response::Structured(bytes) => (bytes, true),
                     _ => return Err(WireError::new("unavailable", "未获得读取回执。")),
                 };
                 match buffer {
                     None => Outcome::Missing,
                     Some(buffer) => {
                         let length = buffer.len();
-                        if length == 0 || length > MAX_BODY {
+                        let limit = if structured {
+                            crate::repository::MAX_CLONE_FRAME
+                        } else {
+                            MAX_BODY
+                        };
+                        if length == 0 || length > limit {
                             return Err(WireError::new("limit", "读取内容超过协议限制。"));
                         }
                         let sha256 = format!("{:x}", Sha256::digest(&buffer));
                         transfers.insert(key, Transfer::Download { buffer, offset: 0 })?;
-                        Outcome::Download { length, sha256 }
+                        if structured {
+                            Outcome::StructuredDownload { length, sha256 }
+                        } else {
+                            Outcome::Download { length, sha256 }
+                        }
                     }
                 }
             }
@@ -683,6 +706,122 @@ mod tests {
             data[CHUNK..]
         );
         assert!(protocol.read(frame(&protocol, key), data.len()).is_err());
+    }
+
+    #[test]
+    fn structured_reads_bind_verified_migration_descriptors_to_each_sqlite_snapshot() {
+        use crate::repository::Repository;
+        use rusqlite::{params, Connection};
+        let dir = tempfile::tempdir().unwrap();
+        let path = dir.path().join("test.sqlite");
+        let text = r#"{"id":"a","source":{"status":"test"}}"#;
+        let descriptor = r#"{"version":1,"objects":[{"path":["source"],"keys":["url","status"],"undefinedKeys":["url"]}],"aliases":[]}"#;
+        let mut repo = Repository::open(&path).unwrap();
+        let save = |body: &str| Operation::Save {
+            records: vec![Record {
+                kind: Kind::Dataset,
+                id: "a".into(),
+                body: body.into(),
+                summary: body.into(),
+            }],
+        };
+        repo.execute(save(text)).unwrap();
+        let protocol = Protocol::new();
+        assert!(protocol
+            .handshake(VERSION)
+            .unwrap()
+            .capabilities
+            .contains(&"structured-read-v1"));
+        let load = || Command::LoadStructured {
+            kind: Kind::Dataset,
+            id: "a".into(),
+        };
+        let key = Uuid::new_v4();
+        let reply = protocol
+            .command(frame(&protocol, key), load(), |op| repo.execute(op))
+            .unwrap();
+        assert!(matches!(reply.result, Outcome::Download { .. }));
+        assert_eq!(
+            protocol.read(frame(&protocol, key), 0).unwrap(),
+            text.as_bytes()
+        );
+        drop(repo);
+        let writer = Connection::open(&path).unwrap();
+        writer.execute_batch("PRAGMA foreign_keys=ON;
+          CREATE TABLE migration_members(kind TEXT,id TEXT,role TEXT,descriptor TEXT,projection_sha256 TEXT,clone_sha256 TEXT,
+          PRIMARY KEY(kind,id,role),FOREIGN KEY(kind,id) REFERENCES records(kind,id) ON DELETE CASCADE);").unwrap();
+        let digest = |s: &str| format!("{:x}", Sha256::digest(s.as_bytes()));
+        for role in ["body", "summary"] {
+            writer
+                .execute(
+                    "INSERT INTO migration_members VALUES ('dataset','a',?1,?2,?3,?4)",
+                    params![role, descriptor, digest(text), digest(descriptor)],
+                )
+                .unwrap();
+        }
+        let mut repo = Repository::open(&path).unwrap();
+        let expected = |body: &str, desc: &str| {
+            let mut frame = Vec::new();
+            for n in [1u32, body.len() as u32, desc.len() as u32] {
+                frame.extend_from_slice(&n.to_le_bytes());
+            }
+            frame.extend_from_slice(body.as_bytes());
+            frame.extend_from_slice(desc.as_bytes());
+            frame
+        };
+        let read = |repo: &mut Repository, cmd| {
+            let key = Uuid::new_v4();
+            let reply = protocol
+                .command(frame(&protocol, key), cmd, |op| repo.execute(op))
+                .unwrap();
+            assert!(matches!(reply.result, Outcome::StructuredDownload { .. }));
+            protocol.read(frame(&protocol, key), 0).unwrap()
+        };
+        let list = || Command::ListStructured {
+            kind: Kind::Dataset,
+        };
+        assert_eq!(read(&mut repo, load()), expected(text, descriptor));
+        assert_eq!(read(&mut repo, list()), expected(text, descriptor));
+        writer
+            .execute(
+                "UPDATE migration_members SET clone_sha256='' WHERE role='body'",
+                [],
+            )
+            .unwrap();
+        assert_eq!(
+            repo.execute(Operation::LoadStructured {
+                kind: Kind::Dataset,
+                id: "a".into()
+            })
+            .unwrap_err()
+            .code,
+            "corrupt"
+        );
+        writer
+            .execute(
+                "UPDATE migration_members SET clone_sha256=?1 WHERE role='body'",
+                [digest(descriptor)],
+            )
+            .unwrap();
+        writer
+            .execute("UPDATE summaries SET summary='{}' WHERE id='a'", [])
+            .unwrap();
+        assert_eq!(read(&mut repo, list()), expected("", ""));
+        // The transfer pins the old body and its descriptor before a different
+        // connection deletes/recreates the same ID, even with identical JSON.
+        let key = Uuid::new_v4();
+        protocol
+            .command(frame(&protocol, key), load(), |op| repo.execute(op))
+            .unwrap();
+        writer
+            .execute("DELETE FROM records WHERE id='a'", [])
+            .unwrap();
+        repo.execute(save(text)).unwrap();
+        assert_eq!(
+            protocol.read(frame(&protocol, key), 0).unwrap(),
+            expected(text, descriptor)
+        );
+        assert_eq!(read(&mut repo, load()), expected(text, ""));
     }
 
     #[test]
