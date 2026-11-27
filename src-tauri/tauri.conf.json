@@ -1,9 +1,9 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
-  "productName": "RiverLab Crypto Lab 6A",
-  "mainBinaryName": "riverlab-6a",
-  "version": "0.6.0-alpha.1",
-  "identifier": "org.riverlab.cryptolab.prototype6a",
+  "productName": "RiverLab Crypto Lab",
+  "mainBinaryName": "riverlab-desktop",
+  "version": "0.6.1",
+  "identifier": "org.riverlab.crypto-lab.desktop",
   "build": {
     "beforeBuildCommand": "npm run build:desktop-6a",
     "frontendDist": "../work/desktop-6a/dist"
@@ -13,7 +13,7 @@
     "windows": [
       {
         "label": "main",
-        "title": "RiverLab Crypto Lab · Phase 6A 验证原型",
+        "title": "RiverLab Crypto Lab",
         "create": false,
         "width": 1280,
         "height": 820,
@@ -27,10 +27,17 @@
       "csp": "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; worker-src 'self'; connect-src 'self' ipc: https://ipc.localhost; object-src 'none'; frame-src 'none'; base-uri 'none'; form-action 'none'",
       "capabilities": [
         {
-          "identifier": "prototype-checks",
-          "description": "Verify SQLite, save the synthetic report, and submit isolated native acceptance evidence.",
+          "identifier": "desktop-local-service",
+          "description": "Access local research records and service diagnostics from the bundled main window.",
           "windows": ["main"],
           "permissions": [
+            "allow-local-service-health",
+            "allow-local-service-integrity",
+            "allow-local-service-backup",
+            "allow-repository-handshake",
+            "allow-repository-command",
+            "allow-repository-upload-chunk",
+            "allow-repository-read-chunk",
             "allow-verify-sqlite",
             "allow-qa-record",
             "allow-save-report-download"

@@ -243,7 +243,7 @@ export function ReplayCenter(props: Props) {
               </button>
             </div>
             <p>
-              状态JSON不含行情；恢复须原保存数据集仍在且hash一致。未保存进度刷新丢失，IndexedDB不是永久备份。
+              状态JSON不含行情；恢复须原保存数据集仍在且hash一致。未保存进度刷新丢失，请另行导出JSON备份。
             </p>
           </>
         )}

@@ -1,3 +1,4 @@
+import { openWorkerSource } from './worker-source';
 import type { RegimeParams } from '../core/market-regime/model';
 import type { RegimeReport } from '../core/market-regime/report';
 import type { SourceKind } from '../core/market-regime/source';
@@ -21,5 +22,16 @@ export function marketRegimeTask<Q extends RegimeRequest>(request: Q) {
     }),
     request,
     '市场状态',
+    request.kind === 'run'
+      ? openWorkerSource(
+          (
+            {
+              single: 'experiment',
+              portfolio: 'portfolio',
+              shared: 'shared_pool',
+            } as const
+          )[request.input.sourceKind],
+        )
+      : undefined,
   );
 }

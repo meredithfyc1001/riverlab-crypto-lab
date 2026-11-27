@@ -36,7 +36,14 @@ impl Acceptance {
     pub fn record(&self, name: &str, json: &str) -> Result<(), String> {
         if !matches!(
             name,
-            "ready" | "worker-ready" | "research-start" | "research-end" | "result" | "error"
+            "ready"
+                | "worker-ready"
+                | "research-start"
+                | "research-end"
+                | "storage-start"
+                | "storage-end"
+                | "result"
+                | "error"
         ) {
             return Err("未知的验收阶段。".into());
         }

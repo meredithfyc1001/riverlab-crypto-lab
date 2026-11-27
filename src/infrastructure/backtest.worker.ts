@@ -1,3 +1,4 @@
+import { readWorkerSource } from './worker-source';
 import { readExperimentFile } from './experiment-file';
 import { sealWorkerExperiment } from './experiment-hash';
 import {
@@ -5,13 +6,14 @@ import {
   verifyExperiment,
   tradesCsv,
   reportJson,
+  summarizeExperiment,
 } from '../core/experiments';
 import type { WorkerRequest, WorkerResponse } from './backtest-worker';
 const scope = globalThis as unknown as {
   onmessage: ((event: MessageEvent<WorkerRequest>) => void) | null;
-  postMessage: (value: WorkerResponse) => void;
+  postMessage: (value: WorkerResponse, transfer?: Transferable[]) => void;
 };
-scope.onmessage = async ({ data }) => {
+scope.onmessage = async ({ data, ports }) => {
   try {
     if (data.kind === 'run') {
       const start = performance.now();
@@ -26,8 +28,23 @@ scope.onmessage = async ({ data }) => {
     } else if (data.kind === 'import') {
       const record = await readExperimentFile(data.file);
       scope.postMessage({ ok: true, record });
+    } else if (data.kind === 'save') {
+      // The run/import path delivered a validated snapshot. Encode it away from
+      // the window; transferring ownership avoids serializing the report a second time.
+      const bytes = new TextEncoder().encode(JSON.stringify(data.record));
+      const summary = JSON.stringify(summarizeExperiment(data.record));
+      scope.postMessage({ ok: true, write: { bytes, summary } }, [
+        bytes.buffer,
+      ]);
     } else {
-      const record = verifyExperiment(data.record);
+      let raw: unknown;
+      if (data.kind === 'open') {
+        if (!ports?.[0]) throw new Error('无法连接桌面实验库。');
+        raw = await readWorkerSource(ports[0], data.id);
+      } else raw = data.record;
+      const record = verifyExperiment(raw);
+      if (data.kind === 'open' && record.id !== data.id)
+        throw new Error('实验正文与选定 ID 不一致。');
       if (data.kind === 'export') {
         const file =
           data.format === 'json'

@@ -2716,10 +2716,11 @@ dependencies = [
 ]
 
 [[package]]
-name = "riverlab-6a"
-version = "0.6.0-alpha.1"
+name = "riverlab-desktop"
+version = "0.6.1"
 dependencies = [
  "rusqlite",
+ "rustix",
  "serde",
  "serde_json",
  "sha2 0.10.9",

@@ -1,3 +1,4 @@
+import { isDesktopRepository } from '../../infrastructure/desktop-repository';
 import { useState } from 'react';
 import type { Experiment, ExperimentSummary } from '../../core/experiments';
 export function ExperimentCenter({
@@ -24,8 +25,10 @@ export function ExperimentCenter({
     <section className="panel experiment-center">
       <h2>已保存回测实验</h2>
       <p>
-        仅明确保存的实验会在刷新后出现在此列表，需选择打开。打开时校验并重算；未保存结果和配置刷新后丢失。浏览器存储并非永久可靠，请另行下载
-        JSON 备份。不同浏览器、用户配置或本机端口的存储相互隔离。
+        仅明确保存的实验会在刷新后出现在此列表，需选择打开。打开时校验并重算；未保存结果和配置刷新后丢失。
+        {isDesktopRepository()
+          ? '桌面实验保存在当前用户的 SQLite 数据库。请另行导出 JSON 备份。'
+          : '浏览器存储并非永久可靠，请另行下载 JSON 备份。不同浏览器、用户配置或本机端口的存储相互隔离。'}
       </p>
       <label>
         导入回测实验 JSON（最多 256 MiB）

@@ -29,11 +29,12 @@ assert(
   'The packaged Tauri verification requires Windows. Set RIVERLAB_6A_BROWSER_ONLY=1 for a separate browser baseline.',
 );
 const out = resolve(
-  process.env.RIVERLAB_6A_OUTPUT || 'work/desktop-6a/evidence',
+  process.env.RIVERLAB_6A_OUTPUT || 'work/desktop-6b/evidence',
 );
 const dist = resolve(process.env.RIVERLAB_6A_DIST || 'work/desktop-6a/dist');
 const exe = resolve(
-  process.env.RIVERLAB_6A_EXE || 'src-tauri/target/release/riverlab-6a.exe',
+  process.env.RIVERLAB_6A_EXE ||
+    'src-tauri/target/release/riverlab-desktop.exe',
 );
 const installer = process.env.RIVERLAB_6A_INSTALLER;
 const installFolder = process.env.RIVERLAB_6A_INSTALL_DIR;
@@ -231,6 +232,12 @@ async function runBrowser(iteration, origin) {
     if (child.pid) memory = startMemory(child.pid, record);
     browser = await attachBrowser(port, child, errors);
     page = await currentPage(browser, origin);
+    // The browser driver owns this new profile and origin for this run only.
+    await page.addInitScript(() => {
+      Object.defineProperty(globalThis, '__RIVERLAB_FRESH_BROWSER_QA__', {
+        value: true,
+      });
+    });
     page.setDefaultTimeout(12000);
     page.context().on('request', (request) => {
       const u = new URL(request.url());
@@ -337,6 +344,15 @@ function comparePair(native, browser) {
     assert.equal(receipt.download.bytes, receipt.probe.downloadBytes);
     assert.equal(receipt.probe.resultHash, receipt.probe.phase5eResultHash);
   }
+  assert.deepEqual(native.repositoryParity, browser.probe.repositoryParity);
+  assert.deepEqual(native.repositoryParity, {
+    runHash: 'ae81f9b7bea46c9ca783fcb80ad4358f97726bfb5b0e5fde6c8b2b59e3a7c1f7',
+    payloadHash:
+      'a4ced2d170b7d1bb7e790a4fb4d92c769848ed20ce79f5cbf60cb632d6218501',
+    fills: 9,
+    fees: '9.28719551797935',
+    equity: '1209.64074296063065',
+  });
   assert.equal(app.candles, edge.candles);
   assert.equal(app.evaluations, edge.evaluations);
   assert.equal(app.completedTrades, edge.completedTrades);
@@ -361,6 +377,7 @@ function comparePair(native, browser) {
     evaluations: app.evaluations,
     completedTrades: app.completedTrades,
     sha256: app.resultHash,
+    reopenedRepositoryParity: native.repositoryParity,
   };
 }
 

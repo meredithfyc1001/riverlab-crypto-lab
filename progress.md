@@ -1,5 +1,17 @@
 # RiverLab Crypto Lab 进度
 
+## Phase 6B 桌面本地服务
+
+Git fetch 与 GitHub PR 元数据已交叉核实。main 停在 `10a5d88`，PR #16 于北京时间 2026-11-26 16:34 合入 `feat/phase-5e-advanced-research`，实际提交 `5a75f34` 包含最新 main。在该合并点建立独立分支 `feat/phase-6b-local-service`。第三轮 Windows 11 用户实机复测仍为 **NOT TESTED**。[设计](docs/phase-6b-design.md) · [Windows 清单](docs/phase-6b-acceptance.md)
+
+Linux 开发验证覆盖了真实 SQLite 写满后的事务回滚、两个并发连接争抢同一 ID，以及子进程直接退出后的 WAL 恢复。曾在重启测试中遇到文件锁释放延迟；连接关闭后显式解锁，回归通过。256 MiB 精确边界的 Rust DAO 专项使用合成 JSON，重开后校验 SHA-256，额外一个字节被拒绝。十一组独立数值参考在本机通过。
+
+在隔离 Chromium 154 中，保存并重开的人工合成行情得到 9 笔成交，费用为 `9.28719551797935`，最终权益为 `1209.64074296063065`。6A 的 50,000 根固定研究仍得到完整结果摘要 `e3fb4410dc0bac12ca6dc1d108d4a6ae2f56107a47fc20bbda789469cbaf5d6b`。工作树并行开发时，首轮本机 E2E 有三个桌面构建在容量夹具落盘前启动而失败；最终提交以 clean checkout 重跑。候选 `dfe3f95` 在四个浏览器作业均发现回测 Worker 取消测试仍在注销之后读取事件回调。现改为先捕获已排队的回调，再断言注销及迟到消息无法覆盖新任务。各平台运行、下载及逐文件 SHA-256 以 [Draft PR #17](https://github.com/meredithfyc1001/riverlab-crypto-lab/pull/17) 对应提交的记录为准。
+
+首版 macOS Chromium 的 trace 显示高级研究表单在分包切换前选中了策略中心的同名控件；组合测试在第二份行情仍由 Worker 准备时看到了第一份的成功提示。用例现限定到目标表单，并在导航前等待指定币种出现于库中。Windows Chrome 的旧研究用例实测运行 3342 ms，最大主线程间隔 46.1 ms；第二次运行的启动点击直到约 2.3 秒后才交还驱动，届时取消按钮已消失。改为同时等待本次运行的取消控件及启动点击。性能门槛、取消后的结果断言均保留。
+
+精确 256 MiB 的合成合法 JSON 在 Linux Chromium 经临时 stdio 适配器进入实际 Rust 服务与 SQLite，8 MiB 确认后取消、同 ID 重试和完整重开均通过。含测试转发耗时 171.49 秒，Rust RSS 峰值 792,876 KiB，结束时 7,488 KiB。Windows Tauri 传输的测量见同提交 CI。[本机容量原始记录](docs/phase-6b-linux-capacity.json)
+
 ## Phase 6A Windows 验证原型
 
 ### PR #16 · Windows 11 首轮实机反馈
@@ -522,3 +534,7 @@ React/TypeScript/Vite、中文八入口、深浅主题、4 条明确标识的合
 用户明确回复“启动 Phase 3 设计与开发”，替代此前范围待定状态。基线main33b1d669不变，继续独立分支PR#7并按最终实现重写描述；禁止自动合并。设计/授权/验收清单已更新，新增纯TS研究、Worker、策略UI和确定复现报告、独立Decimal参考及时间隔离/离线/性能测试。原307/24回归保留。
 
 本轮云执行环境配置失败，exec_command不可用，本机npm ci/check未执行。使用GitHub树/提交API仅写独立分支并由CI实际执行；启动时新CI尚待结果；后续实际结果已归档于当前恢复入口。格式失败后只读Prettier诊断不修改checkout，修正必须提交后重新完整检查。
+
+## 2026-11-27 · Phase 6B 合并准备复查
+
+在独立临时库中复核 `80c367a`，发现旧检查会接受应用标识和版本相同、实际缺少复合主键或外键的文件，导致冲突 ID 和孤立摘要未被报告。现使用 SQLite 元数据核实两表、列、索引、排序规则和级联外键；保存与删除在写事务内复核结构。完整性检查和备份验证在一致快照中逐行核对正文、摘要与原始 ID，规则版本额外核对完整正文。新增合成回归覆盖上述异常和正常 v1 兼容性。Linux 原版 27 项 Rust 测试已通过，Windows 原生验证待执行。

@@ -7,6 +7,7 @@ import { ExperimentStore } from './experiment-store';
 import { PortfolioStore } from './portfolio-store';
 import { SharedPoolStore } from './shared-pool-store';
 import { readRegimeFile, exportRegimeFile } from './market-regime-file';
+import { readWorkerSource } from './worker-source';
 import type { RegimeRequest, RegimeSourceKind } from './market-regime-worker';
 import type { ReportResponse } from './report-worker-client';
 
@@ -28,14 +29,16 @@ function storeFor(kind: RegimeSourceKind) {
   }
 }
 
-scope.onmessage = async ({ data }) => {
+scope.onmessage = async ({ data, ports }) => {
   try {
     const now = Date.now();
     switch (data.kind) {
       case 'run': {
         const { sourceKind, sourceId, expectedHash, reference, params } =
           data.input;
-        const original = await storeFor(sourceKind).load(sourceId);
+        const original = ports?.[0]
+          ? await readWorkerSource(ports[0], sourceId)
+          : await storeFor(sourceKind).load(sourceId);
         if (
           !original ||
           typeof original !== 'object' ||

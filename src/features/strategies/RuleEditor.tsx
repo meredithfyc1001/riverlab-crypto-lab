@@ -1,3 +1,4 @@
+import { isDesktopRepository } from '../../infrastructure/desktop-repository';
 import { useEffect, useRef, useState } from 'react';
 import {
   defaultRule,
@@ -162,7 +163,7 @@ export function RuleEditor({
     >
       <h2>可视化规则策略 · V1</h2>
       <p>
-        单币种现货多头历史模拟。买卖各最多5条件；不执行用户代码。草稿离开此页或刷新会重置，保存版本可重开；IndexedDB不保证永久保存，请导出JSON。
+        单币种现货多头历史模拟。买卖各最多5条件；不执行用户代码。草稿离开此页或刷新会重置，保存版本可重开；请另行导出JSON备份。
       </p>
       <div className="sample-actions">
         <button disabled={busy} onClick={() => fresh(false)}>
@@ -185,8 +186,13 @@ export function RuleEditor({
         />
       </label>
       <p data-testid="rule-version">
-        版本 v{rule.revision} · {saved ? '浏览器已保存' : '内存待保存'} ·{' '}
-        {familyId}
+        版本 v{rule.revision} ·{' '}
+        {saved
+          ? isDesktopRepository()
+            ? '桌面已保存'
+            : '浏览器已保存'
+          : '内存待保存'}{' '}
+        · {familyId}
       </p>
       <fieldset disabled={busy} className="rule-sides">
         <legend>买卖条件</legend>

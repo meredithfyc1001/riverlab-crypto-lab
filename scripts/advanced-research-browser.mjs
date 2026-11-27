@@ -45,12 +45,16 @@ export async function prepareAdvancedResearch(
     .getByRole('button', { name: '打开策略 5E 合成突破验收 v1', exact: true })
     .waitFor();
   await page.getByRole('link', { name: '高级策略研究 →' }).click();
-  const data = page.getByLabel('研究数据集'),
+  // The previous strategy page also has a dataset picker while this route loads.
+  const setup = page.locator('section').filter({
+    has: page.getByRole('heading', { name: '配置参数搜索', exact: true }),
+  });
+  const data = setup.getByLabel('研究数据集'),
     option = data.locator('option').filter({ hasText: 'SYNTHETIC/5E' });
   await option.waitFor({ state: 'attached' });
   await data.selectOption(await option.getAttribute('value'));
-  await page.getByLabel('研究规则版本').selectOption('phase-5e-breakout@1');
-  await page.getByRole('checkbox', { name: /我确认所选数据集/ }).check();
+  await setup.getByLabel('研究规则版本').selectOption('phase-5e-breakout@1');
+  await setup.getByRole('checkbox', { name: /我确认所选数据集/ }).check();
   await page.getByLabel('最大值', { exact: true }).fill('3');
   await page.getByLabel('优化模式').selectOption('rolling');
   await page.getByLabel('训练长度（根）').fill('24');

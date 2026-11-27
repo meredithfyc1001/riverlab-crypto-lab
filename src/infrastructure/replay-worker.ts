@@ -1,3 +1,4 @@
+import { openWorkerSource } from './worker-source';
 import type { BacktestConfig } from '../core/backtests';
 import type { RiskConfig } from '../core/risk';
 import type { ReplayCheckpoint, ReplayView } from '../core/replay';
@@ -34,6 +35,7 @@ export function replayWorker() {
   const pending = new Map<
     number,
     {
+      source: ReturnType<typeof openWorkerSource>;
       resolve: (v: Extract<ReplayResponse, { ok: true }>) => void;
       reject: (error: Error) => void;
     }
@@ -41,8 +43,10 @@ export function replayWorker() {
   const stop = (message: string) => {
     closed = true;
     worker.terminate();
-    for (const p of pending.values())
+    for (const p of pending.values()) {
+      p.source?.close();
       p.reject(Object.assign(new Error(message), { fatal: true }));
+    }
     pending.clear();
   };
   worker.onmessage = (event: MessageEvent<ReplayResponse>) => {
@@ -50,6 +54,7 @@ export function replayWorker() {
       p = pending.get(data.id);
     if (!p) return;
     pending.delete(data.id);
+    p.source?.close();
     if (data.ok) p.resolve(data);
     else
       p.reject(Object.assign(new Error(data.message), { fatal: data.fatal }));
@@ -66,10 +71,16 @@ export function replayWorker() {
       const id = ++sequence;
       return new Promise<Extract<ReplayResponse, { ok: true }>>(
         (resolve, reject) => {
-          pending.set(id, { resolve, reject });
+          const source =
+            request.kind === 'start' || request.kind === 'restore'
+              ? openWorkerSource('dataset')
+              : undefined;
+          pending.set(id, { resolve, reject, source });
           try {
-            worker.postMessage({ id, request });
+            if (source) worker.postMessage({ id, request }, [source.port]);
+            else worker.postMessage({ id, request });
           } catch (error) {
+            source?.close();
             pending.delete(id);
             reject(error);
           }

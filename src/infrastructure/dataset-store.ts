@@ -1,4 +1,5 @@
-import { LocalDatabase } from './local-database';
+import { isDesktopRepository } from './desktop-repository';
+import { LibraryStore } from './repository';
 import { readSummaryList } from './summary-list';
 import {
   assertDataset,
@@ -7,9 +8,12 @@ import {
 } from '../core/data/dataset';
 import type { Dataset, DatasetSummary } from '../core/data/dataset';
 
-const STORE = 'datasets';
 export const MAX_BACKUP_BYTES = 20 * 1024 * 1024;
 export function storageMessage(error: unknown): string {
+  if (isDesktopRepository()) {
+    const reason = error instanceof Error ? error.message : '未知错误';
+    return `本地存储操作失败：${reason}。请检查桌面服务状态和数据目录权限、剩余空间。`;
+  }
   const name =
     error instanceof Error || error instanceof DOMException ? error.name : '';
   const reason =
@@ -22,40 +26,13 @@ export function storageMessage(error: unknown): string {
           : '未知存储错误';
   return `本地存储操作失败：${reason}。未确认成功；可导出备份并检查浏览器权限/空间。`;
 }
-export class DatasetStore extends LocalDatabase {
+export class DatasetStore extends LibraryStore {
+  constructor(factory?: () => IDBFactory, name?: string) {
+    super('dataset', factory, name);
+  }
   async save(dataset: Dataset): Promise<void> {
     assertDataset(dataset);
-    const summary = summarizeDataset(dataset);
-    let failure: unknown;
-    try {
-      await this.transaction<void>('readwrite', (tx, done) => {
-        const bodies = tx.objectStore(STORE),
-          summaries = tx.objectStore('summaries');
-        const body = bodies.get(dataset.id),
-          metadata = summaries.get(dataset.id);
-        // Both reads and writes share one transaction. Saving an identical current
-        // dataset is idempotent, including across tabs; conflicting rows stay intact.
-        metadata.onsuccess = () => {
-          try {
-            if (body.result === undefined && metadata.result === undefined) {
-              bodies.put(dataset);
-              summaries.put(summary);
-            } else if (
-              JSON.stringify(body.result) !== JSON.stringify(dataset) ||
-              JSON.stringify(metadata.result) !== JSON.stringify(summary)
-            ) {
-              throw new Error('相同 ID 的数据集或摘要内容冲突，已拒绝覆盖。');
-            }
-            done(undefined);
-          } catch (error) {
-            failure = error;
-            tx.abort();
-          }
-        };
-      });
-    } catch (error) {
-      throw failure ?? error;
-    }
+    await this.repository.insert(dataset, summarizeDataset(dataset));
   }
   listAvailable() {
     return readSummaryList<DatasetSummary>(this, assertDatasetSummary);
@@ -67,20 +44,10 @@ export class DatasetStore extends LocalDatabase {
     return items;
   }
   async load(id: string): Promise<Dataset> {
-    const dataset = await this.transaction<unknown>('readonly', (tx, done) => {
-      const request = tx.objectStore(STORE).get(id);
-      request.onsuccess = () => done(request.result);
-    });
+    const dataset = await this.repository.get(id);
     if (!dataset) throw new Error('找不到数据集，可能已被另一标签页删除。');
     assertDataset(dataset);
     return dataset;
-  }
-  async delete(id: string): Promise<void> {
-    await this.transaction<void>('readwrite', (tx, done) => {
-      tx.objectStore(STORE).delete(id);
-      tx.objectStore('summaries').delete(id);
-      done(undefined);
-    });
   }
 }
 async function sha256(text: string): Promise<string> {

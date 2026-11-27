@@ -1,7 +1,7 @@
 # Confirm the loose EXE can open and close without the install tree or a Node PATH.
 $ErrorActionPreference = 'Stop'
 Set-StrictMode -Version Latest
-$evidence = 'work/desktop-6a/evidence/standalone.json'
+$evidence = 'work/desktop-6b/evidence/standalone.json'
 $oldPath = $env:PATH
 $app = $null
 $result = [ordered]@{

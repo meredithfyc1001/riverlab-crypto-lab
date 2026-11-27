@@ -184,7 +184,9 @@ export function useAdvancedWorkbench() {
   function save() {
     if (!report || saved) return;
     operate('正在保存报告…', async (current) => {
-      await advancedTask({ kind: 'save', record: report }).promise;
+      const task = advancedTask({ kind: 'save', record: report });
+      cancelTask.current = task.cancel;
+      await task.promise;
       if (!current()) return;
       setSaved(true);
       setMessage('高级研究报告已保存。');

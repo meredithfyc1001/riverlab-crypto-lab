@@ -1,3 +1,4 @@
+import { isDesktopRepository } from '../../infrastructure/desktop-repository';
 import { useState } from 'react';
 import type { ReportView } from './worker-types';
 
@@ -21,7 +22,7 @@ export function ImportActions({
       <h2>使用已检查数据</h2>
       <p>
         有错误或待确认项时不截取有效子集，不允许用于图表或保存。通过检查的数据将完整保留{' '}
-        {report.validRows} 根 K 线，原 CSV 不保存到浏览器。
+        {report.validRows} 根 K 线，另行保留原 CSV 文件。
       </p>
       {!eligible && (
         <p className="import-error">
@@ -66,7 +67,9 @@ export function ImportActions({
         </a>
       )}
       <p className="muted">
-        浏览器本地存储可能被清理、拒绝或因隐私模式丢失，不是永久可靠存储；请另外导出备份。
+        {isDesktopRepository()
+          ? '保存后可从桌面数据集列表重开。重要数据请另外导出备份。'
+          : '浏览器本地存储可能被清理、拒绝或因隐私模式丢失，不是永久可靠存储；请另外导出备份。'}
       </p>
     </section>
   );

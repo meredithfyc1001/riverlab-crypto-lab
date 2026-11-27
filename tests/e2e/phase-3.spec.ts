@@ -253,9 +253,12 @@ test('50,000根三策略批量实际运行：记录硬件浏览器与主线程�
   await expect(
     page.getByRole('table', { name: '收益回撤比较' }).locator('tbody tr'),
   ).toHaveCount(3);
-  // Cancellation is meaningful on this large actual workload.
-  await page.getByRole('button', { name: '运行策略研究', exact: true }).click();
-  await page.getByRole('button', { name: '取消策略研究' }).click();
+  // Watch for the real cancel control before dispatching the second run. The
+  // browser can finish a fast worker before the launch click returns to the driver.
+  await Promise.all([
+    page.getByRole('button', { name: '取消策略研究' }).click(),
+    page.getByRole('button', { name: '运行策略研究', exact: true }).click(),
+  ]);
   await expect(page.getByRole('alert')).toContainText('取消');
   await expect(page.getByTestId('research-results')).toHaveCount(0);
 });

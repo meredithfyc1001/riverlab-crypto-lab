@@ -1,5 +1,9 @@
 # RiverLab Crypto Lab 执行计划
 
+## Phase 6B 本地服务
+
+从 `5a75f34` 开展服务生命周期与数据目录、SQLite 事务、版本化 IPC、九类 Repository 接入和 Worker 边界调整。以隔离数据验证三操作系统原生测试、浏览器和已安装桌面的同输入研究对照，再交付同提交 Windows 安装器、独立 EXE、校验值和 Draft PR。[数据架构](docs/phase-6b-design.md) · [Windows 验收清单](docs/phase-6b-acceptance.md)
+
 ## Phase 6A 桌面技术验证
 
 从已验收的 5E 功能树建立独立验证分支。先固化同输入的 50,000 根完整研究结果，再用同一生产资源验证桌面壳和 Edge。以原型独立目录内的 SQLite 验证读写、事务和备份冷恢复。Windows 候选同时交付安装器、应用 EXE、采集环境、制品摘要与测量；人工通过后再决定是否启动 6B。[八项技术决策](docs/phase-6a-architecture.md) · [验证规程与证据](docs/phase-6a-verification.md)

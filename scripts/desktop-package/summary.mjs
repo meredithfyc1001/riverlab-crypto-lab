@@ -24,7 +24,7 @@ for (const commit of [install?.sourceSha, verification?.commit]) {
 }
 const steps = JSON.parse(process.env.STAGE_OUTCOMES);
 const lines = [
-  '# Phase 6A Windows x64 验收记录',
+  '# Phase 6B Windows x64 验收记录',
   '',
   `PR 提交 \`${sha}\`。`,
   '',
@@ -95,6 +95,31 @@ if (verification) {
         `| ${iteration} | \`${download.filename}\` | \`${repeatDownload.filename}\` | \`${repeatDownload.sha256}\` |`,
       );
     }
+  }
+  const repositoryResult =
+    verification.parityRuns?.[0]?.reopenedRepositoryParity;
+  if (repositoryResult) {
+    lines.push(
+      '',
+      `同一份合成数据经桌面 SQLite 和浏览器 IndexedDB 保存、重开并重新计算，成交 ${repositoryResult.fills} 笔、费用 ${repositoryResult.fees}、权益 ${repositoryResult.equity}。`,
+      `runHash 为 \`${repositoryResult.runHash}\`，payloadHash 为 \`${repositoryResult.payloadHash}\`。`,
+    );
+  }
+  const installed = verification.runs.find((run) => run.reinstallPreservedData);
+  if (installed) {
+    lines.push(
+      '',
+      `同版 NSIS 覆盖安装前后，独立只读连接重开数据库，核对 ${installed.reopened.rows} 条合成记录及摘要。SHA-256 为 \`${installed.reopened.sha256}\`。`,
+    );
+  }
+  const storage = verification.runs.find(
+    (run) => run.storageCapacity,
+  )?.storageCapacity;
+  if (storage) {
+    lines.push(
+      '',
+      `最大档案实测 ${storage.bytes} 字节，传输取消时已接收 ${storage.cancelledAfterBytes} 字节。全过程 ${storage.elapsedMs} ms，宿主与整棵进程树采样工作集峰值分别为 ${storage.peakHostWorkingSetBytes}、${storage.peakTreeWorkingSetBytes} 字节。`,
+    );
   }
   if (verification.parity) {
     const { bars, evaluations, sha256, completedTrades } = verification.parity;

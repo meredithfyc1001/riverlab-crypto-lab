@@ -1,5 +1,5 @@
 import { readSummaryList } from './summary-list';
-import { LocalDatabase } from './local-database';
+import { LibraryStore } from './repository';
 import { assertRiskStudy, summarizeRisk } from '../core/risk-analysis';
 import type { RiskStudy, RiskSummary } from '../core/risk-analysis';
 function checkSummary(s: RiskSummary) {
@@ -26,20 +26,13 @@ function checkSummary(s: RiskSummary) {
     throw new Error('风险摘要损坏，未自动修复。');
 }
 
-export class RiskStore extends LocalDatabase {
-  constructor(
-    factory: () => IDBFactory = () => indexedDB,
-    name = 'riverlab-crypto-lab-risk',
-  ) {
-    super(factory, name, ['studies', 'summaries']);
+export class RiskStore extends LibraryStore {
+  constructor(factory?: () => IDBFactory, name?: string) {
+    super('risk', factory, name);
   }
   async save(record: RiskStudy) {
     assertRiskStudy(record);
-    await this.transaction<void>('readwrite', (tx, done) => {
-      tx.objectStore('studies').add(record);
-      tx.objectStore('summaries').add(summarizeRisk(record));
-      done(undefined);
-    });
+    await this.repository.insert(record, summarizeRisk(record));
   }
   listAvailable() {
     return readSummaryList(this, checkSummary);
@@ -50,18 +43,8 @@ export class RiskStore extends LocalDatabase {
     return items;
   }
   async load(id: string): Promise<unknown> {
-    const value = await this.transaction<unknown>('readonly', (tx, done) => {
-      const r = tx.objectStore('studies').get(id);
-      r.onsuccess = () => done(r.result);
-    });
+    const value = await this.repository.get(id);
     if (!value) throw new Error('风险报告不存在，可能已删除。');
     return value;
-  }
-  async delete(id: string) {
-    await this.transaction<void>('readwrite', (tx, done) => {
-      tx.objectStore('studies').delete(id);
-      tx.objectStore('summaries').delete(id);
-      done(undefined);
-    });
   }
 }

@@ -168,7 +168,7 @@ export function RiskCenter(props: Props) {
       <section className="panel risk-panel">
         <h2>已保存风险报告</h2>
         <p>
-          刷新仅保留明确保存的列表，需主动打开；未保存结果会丢失。JSON导入仅内存，仍需保存；源复现输入已内嵌，源实验删除后也可重算，原数据和实验不覆盖。IndexedDB不是永久备份。
+          刷新仅保留明确保存的列表，需主动打开；未保存结果会丢失。JSON导入仅内存，仍需保存；源复现输入已内嵌，源实验删除后也可重算，原数据和实验不覆盖。请另行导出JSON备份。
         </p>
         <label>
           恢复风险 JSON（25MiB以内）

@@ -1,3 +1,5 @@
+import { DesktopStorage } from './DesktopStorage';
+import { isDesktopRepository } from '../infrastructure/desktop-repository';
 import { useRuleLibrary } from './useRuleLibrary';
 import { RuleEditor } from '../features/strategies';
 import { useRiskWorkbench } from './useRiskWorkbench';
@@ -31,6 +33,7 @@ import { DatasetLibrary } from '../features/datasets';
 import { DatasetCenter } from '../features/datasets';
 
 export function App() {
+  const desktop = isDesktopRepository();
   const library = useDatasetLibrary();
   const rules = useRuleLibrary();
   const backtest = useBacktestWorkbench();
@@ -124,7 +127,9 @@ export function App() {
         </nav>
         <div className="sidebar-bottom">
           <span className="status-dot" /> 离线优先 · 本地研究
-          <small>v{version} / Phase 5E</small>
+          <small>
+            {desktop ? '桌面版 / Phase 6B' : `v${version} / Phase 5E`}
+          </small>
         </div>
       </aside>
 
@@ -152,7 +157,6 @@ export function App() {
         <main id="main-content" tabIndex={-1}>
           {import.meta.env.MODE === 'desktop-6a' && (
             <aside>
-              6A 验证工作台 · 请使用合成数据或验收样本。{' '}
               <a href="./tests/desktop-6a/index.html">打开桌面技术验证</a>
             </aside>
           )}
@@ -162,7 +166,7 @@ export function App() {
               <h1>{activePage.label}</h1>
               <p className="page-description">{activePage.description}</p>
             </div>
-            <span className="badge">Phase 5E</span>
+            <span className="badge">{desktop ? 'Phase 6B' : 'Phase 5E'}</span>
           </div>
 
           <PageBoundary key={activeId}>
@@ -310,6 +314,7 @@ export function App() {
                         ))}
                     </div>
                   </section>
+                  {desktop && <DesktopStorage />}
                   <SyntheticPreview dataset={syntheticExample} />
                 </>
               ) : activeId === 'datasets' ? (

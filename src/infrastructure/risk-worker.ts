@@ -1,3 +1,4 @@
+import { openWorkerSource } from './worker-source';
 import type {
   RiskSettings,
   RiskStudy,
@@ -38,6 +39,14 @@ export function riskTask(
   const worker = new Worker(new URL('./risk.worker.ts', import.meta.url), {
     type: 'module',
   });
+  const source =
+    request.kind === 'inspect' || request.kind === 'run'
+      ? openWorkerSource('experiment')
+      : undefined;
+  const close = () => {
+    source?.close();
+    worker.terminate();
+  };
   let rejectTask: (e: Error) => void = () => {};
   const promise = new Promise<Extract<RiskResponse, { kind: 'success' }>>(
     (resolve, reject) => {
@@ -48,20 +57,21 @@ export function riskTask(
           progress(r.completed, r.total);
           return;
         }
-        worker.terminate();
+        close();
         if (r.kind === 'success') resolve(r);
         else reject(new Error(r.message));
       };
       const fail = () => {
-        worker.terminate();
+        close();
         reject(new Error('风险Worker启动或通信失败，未生成报告。'));
       };
       worker.onerror = fail;
       worker.onmessageerror = fail;
       try {
-        worker.postMessage(request);
+        if (source) worker.postMessage(request, [source.port]);
+        else worker.postMessage(request);
       } catch (error) {
-        worker.terminate();
+        close();
         reject(error);
       }
     },
@@ -69,7 +79,7 @@ export function riskTask(
   return {
     promise,
     cancel: () => {
-      worker.terminate();
+      close();
       rejectTask(new Error('风险任务已取消；没有部分结果。'));
     },
   };

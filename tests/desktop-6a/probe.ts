@@ -79,6 +79,14 @@ async function measureResearch(
 async function measure() {
   const began = performance.now();
   const idb = await probeDisposableIdb();
+  const storeSchema =
+    '__RIVERLAB_FRESH_BROWSER_QA__' in window &&
+    window.__RIVERLAB_FRESH_BROWSER_QA__ === true
+      ? await (await import('./store-schema')).verifyPrototypeStoreSchema()
+      : undefined;
+  const repositoryParity = storeSchema
+    ? await (await import('./repository-parity')).verifyRepositoryParity()
+    : undefined;
   const chart = await probeChart();
   const moduleWorkers = await runModuleWorkers();
   const input = advancedCapacityInput(await prepareBacktest());
@@ -148,6 +156,8 @@ async function measure() {
       evaluations: preview.plan.bars,
       moduleWorkers: [...moduleWorkers, 'advanced', 'advanced-candidate'],
       idb,
+      storeSchema,
+      repositoryParity,
       chart,
       reportHash: pool.record.reportHash,
       downloadSha256,

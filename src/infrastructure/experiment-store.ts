@@ -1,6 +1,6 @@
 import type { Experiment, ExperimentSummary } from '../core/experiments';
 import { summarizeExperiment } from '../core/experiments';
-import { LocalDatabase } from './local-database';
+import { LibraryStore } from './repository';
 import { readSummaryList } from './summary-list';
 
 function assertExperimentSummary(row: ExperimentSummary) {
@@ -28,21 +28,14 @@ function assertExperimentSummary(row: ExperimentSummary) {
 }
 
 /** Same complete/abort transaction adapter as datasets; isolated DB, never writes datasets. */
-export class ExperimentStore extends LocalDatabase {
-  constructor(
-    factory: () => IDBFactory = () => indexedDB,
-    name = 'riverlab-crypto-lab-experiments',
-  ) {
-    super(factory, name, ['experiments', 'summaries']);
+export class ExperimentStore extends LibraryStore {
+  constructor(factory?: () => IDBFactory, name?: string) {
+    super('experiment', factory, name);
   }
   async save(e: Experiment): Promise<void> {
     // Full hash/recalculation occurs in the Worker before this adapter is called.
     try {
-      await this.transaction<void>('readwrite', (tx, done) => {
-        tx.objectStore('experiments').add(e);
-        tx.objectStore('summaries').add(summarizeExperiment(e));
-        done(undefined);
-      });
+      await this.repository.insert(e, summarizeExperiment(e));
     } catch (error) {
       if (error instanceof DOMException && error.name === 'ConstraintError')
         throw new Error('相同 ID 的实验已存在，已拒绝覆盖。', { cause: error });
@@ -59,18 +52,8 @@ export class ExperimentStore extends LocalDatabase {
     return items;
   }
   async load(id: string): Promise<unknown> {
-    const record = await this.transaction<unknown>('readonly', (tx, done) => {
-      const r = tx.objectStore('experiments').get(id);
-      r.onsuccess = () => done(r.result);
-    });
+    const record = await this.repository.get(id);
     if (!record) throw new Error('找不到实验，可能已被另一标签页删除。');
     return record; // Caller must verify in Worker before presenting any result.
-  }
-  async delete(id: string): Promise<void> {
-    await this.transaction<void>('readwrite', (tx, done) => {
-      tx.objectStore('experiments').delete(id);
-      tx.objectStore('summaries').delete(id);
-      done(undefined);
-    });
   }
 }

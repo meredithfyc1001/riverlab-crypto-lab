@@ -1,5 +1,9 @@
 # RiverLab Crypto Lab
 
+## Windows 桌面版 · Phase 6B
+
+桌面工作台使用每用户 SQLite 数据库。打开工作台的“桌面数据存储”可查看目录、可用空间及服务版本，执行完整性检查或创建手动备份。安装版和独立 EXE 共享同一账户的数据目录。浏览器版继续使用自己的 IndexedDB。Windows 桌面运行需要 WebView2；下文的 Node.js 和 BAT 步骤用于浏览器测试包。[桌面设计](docs/phase-6b-design.md) · [安装与验收清单](docs/phase-6b-acceptance.md)
+
 RiverLab 是中文、Windows 优先的本地现货历史研究工具。Phase 5E 测试版为 **1.3.0-test.1**。在策略中心进入高级研究，选择已保存的规则版本与行情，设置候选和训练窗口；每个窗口独立显示训练选参、样本外验证和市场状态贡献。开发基线为 PR #14 合并提交 `10a5d88847b043e4705eca5a3b0716e218804040`。[5E 设计](docs/phase-5e-design.md) · [联合验收](docs/phase-5e-acceptance.md)
 
 **仅供学习研究 · 不提供投资建议 · 历史表现不代表未来表现。** 不连接真实账户、不接收密钥、不处理真实资金。

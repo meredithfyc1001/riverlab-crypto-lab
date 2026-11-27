@@ -177,6 +177,10 @@ export async function exercise(page, origin, folder, record) {
   });
   assert.equal(probe.completedTrades, 2082);
   assert.equal(probe.evaluations, 100000);
+  assert.equal(probe.storeSchema.databases, 9);
+  assert.equal(probe.storeSchema.stores, 17);
+  assert.equal(probe.storeSchema.abortAtomic, true);
+  assert.equal(probe.idb, true);
   record.probe = probe;
   record.download = await diskDownload(page, probe, folder);
 }

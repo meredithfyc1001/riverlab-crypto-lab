@@ -30,6 +30,13 @@ async function saveHistory(page: Page, symbol: string, offset: number) {
   await expect(
     page.getByText('已保存数据集（IndexedDB 事务已完成）。请另行备份。'),
   ).toBeVisible();
+  // The previous import has the same receipt while the next CSV Worker prepares its candles.
+  await expect(
+    page
+      .getByRole('combobox', { name: '已保存的数据集' })
+      .locator('option')
+      .filter({ hasText: symbol + '/USDT' }),
+  ).toHaveCount(1);
 }
 async function download(page: Page, label: string) {
   const pending = page.waitForEvent('download');

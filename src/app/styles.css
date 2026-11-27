@@ -805,3 +805,19 @@ tbody tr:last-child > * {
 .regime-entry {
   margin-inline-start: 16px;
 }
+
+.desktop-storage dd,
+.desktop-storage [role='status'] {
+  overflow-wrap: anywhere;
+}
+.desktop-storage dt {
+  color: var(--muted);
+}
+.desktop-storage dd {
+  margin: 0 0 0.6rem;
+}
+.desktop-storage .button-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
