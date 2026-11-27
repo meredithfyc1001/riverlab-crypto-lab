@@ -1,5 +1,9 @@
 # RiverLab Crypto Lab 进度
 
+## Phase 6C-A 浏览器完整导出
+
+2026-11-27 核对远端。#17 仍是 Draft，head 为 `80c367a`，base 为 `feat/phase-5e-advanced-research` 上 #16 的实际合并点 `5a75f34`。其四组浏览器作业与 Ubuntu/macOS Rust 通过，Windows 浏览器 ZIP 作业失败，安装态作业跳过。6C-A 从 #17 的 head 派生并以该分支为 PR base。6A 第三轮和 6E Windows 用户实机保持待测。[6B 工作流](https://github.com/meredithfyc1001/riverlab-crypto-lab/actions/runs/45788772852)
+
 ## Phase 6B 桌面本地服务
 
 Git fetch 与 GitHub PR 元数据已交叉核实。main 停在 `10a5d88`，PR #16 于北京时间 2026-11-26 16:34 合入 `feat/phase-5e-advanced-research`，实际提交 `5a75f34` 包含最新 main。在该合并点建立独立分支 `feat/phase-6b-local-service`。第三轮 Windows 11 用户实机复测仍为 **NOT TESTED**。[设计](docs/phase-6b-design.md) · [Windows 清单](docs/phase-6b-acceptance.md)

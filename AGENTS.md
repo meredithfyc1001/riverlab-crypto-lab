@@ -1,5 +1,9 @@
 # RiverLab Crypto Lab 工作指令
 
+当前工作为 Phase 6C-A 浏览器完整快照。开发分支基于 #17 的 6B head，所有导出与故障测试只使用隔离浏览器 profile 和合成/冻结夹具。导出只读原始 IndexedDB，保持桌面 SQLite 的既有行为。6B 至 6D 的用户 Windows 实机统一由 6E 签收。[设计与映射](docs/phase-6c-a-snapshot.md)
+
+## Phase 6B 历史基线
+
 当前阶段为 Phase 6B。独立分支 `feat/phase-6b-local-service` 从 PR #16 实际合并提交 `5a75f34` 建立。桌面端使用 Rust 本地服务、受限 Tauri IPC 和用户级 SQLite，浏览器保留原 IndexedDB。仅以隔离 profile、临时目录、固定夹具或合成数据验收。第三轮 Windows 11 实机复测待用户完成。[设计](docs/phase-6b-design.md) · [Windows 清单](docs/phase-6b-acceptance.md)
 
 ## Phase 6A 历史基线
