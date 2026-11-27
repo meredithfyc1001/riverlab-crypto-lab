@@ -87,6 +87,36 @@ function inspect(chunks: Uint8Array<ArrayBuffer>[]) {
 }
 
 describe('RLIDB001', () => {
+  it('waits for destination acknowledgement of the validated layout before reading rows', async () => {
+    const source = layout(1);
+    let begin!: (bytes: Uint8Array<ArrayBuffer>) => void;
+    const started = new Promise<Uint8Array<ArrayBuffer>>((resolve) => {
+      begin = resolve;
+    });
+    let rejectWrite!: (error: Error) => void;
+    const ack = new Promise<void>((_, reject) => {
+      rejectWrite = reject;
+    });
+    const creating = SnapshotWriter.create(
+      {
+        write: (bytes) => {
+          begin(bytes);
+          return ack;
+        },
+      },
+      source,
+    );
+    // If creation returns before a write, fail immediately instead of timing out.
+    const first = await Promise.race([started, creating.then(() => undefined)]);
+    expect(first).toBeDefined();
+    const { frames } = inspect([first!]);
+    expect(frames.map((frame) => frame.tag)).toEqual([1, 16]);
+    expect(JSON.parse(frames[1].payload.toString()).databases).toHaveLength(9);
+    const failure = new Error('destination refused layout');
+    rejectWrite(failure);
+    await expect(creating).rejects.toBe(failure);
+  });
+
   it('matches the independent fixed content fingerprint of nine existing empty databases', async () => {
     for (const now of [1700000000000, 1700086400000]) {
       const source = layout(0, now);

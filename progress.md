@@ -6,6 +6,8 @@
 
 真实 Chromium 合成验证已完成九库十七 store 的完整导出及独立 Python 复读。用新浏览器上下文重建后逐项比较主键、正文、摘要和共享引用；重复导出的稳定指纹为 `da5a03bb410c69b46803e712fe4f715f7d80974f790f9965247d7a6e40d54fae`。早期实现拒绝了合法的共享对象引用，在原实验 signals 与高级研究的 fold/window 上暴露；V1 现保存非循环引用的类型化路径并验证读回。现有 11 组独立数值参考和 Linux 原生 27 项回归通过。不同操作系统及最终提交 SHA 的质量、制品摘要和待验项目见 [Draft PR #18](https://github.com/meredithfyc1001/riverlab-crypto-lab/pull/18)。[完整格式](docs/phase-6c-a-snapshot.md) · [Windows 清单](docs/phase-6c-a-acceptance.md)
 
+清洁构建的 Linux Chromium 全量 E2E 曾有两项失败。149,197 字节的合成包小于 256 KiB 输出缓冲，首次目标写入延后至九库只读事务完成；旧标签页已能提交写入或申请升级。现于全部事务仍覆盖共同屏障时发送布局并等待目标确认，再读取各库的记录。
+
 ## Phase 6B 桌面本地服务
 
 Git fetch 与 GitHub PR 元数据已交叉核实。main 停在 `10a5d88`，PR #16 于北京时间 2026-11-26 16:34 合入 `feat/phase-5e-advanced-research`，实际提交 `5a75f34` 包含最新 main。在该合并点建立独立分支 `feat/phase-6b-local-service`。第三轮 Windows 11 用户实机复测仍为 **NOT TESTED**。[设计](docs/phase-6b-design.md) · [Windows 清单](docs/phase-6b-acceptance.md)

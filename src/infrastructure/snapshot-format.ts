@@ -166,6 +166,8 @@ export class SnapshotWriter {
       }),
     );
     await writer.frame(0x10, metadata(map));
+    // Confirm the destination can accept the layout while all source transactions are pinned.
+    await writer.flush();
     return writer;
   }
 
