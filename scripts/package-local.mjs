@@ -3,12 +3,20 @@ import { join, resolve } from 'node:path';
 import { execFileSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
 import { gunzipSync } from 'node:zlib';
+const sha = execFileSync('git', ['rev-parse', 'HEAD'], {
+  encoding: 'utf8',
+}).trim();
 const root = resolve('work/local-package'),
   folder = join(root, 'RiverLab-Crypto-Lab-Local-Test');
 await rm(root, { recursive: true, force: true });
 await mkdir(folder, { recursive: true });
 await cp('dist', join(folder, 'dist'), { recursive: true });
-for (const file of ['server.mjs', 'start-local.bat', 'README-local-test.md']) {
+for (const file of [
+  'server.mjs',
+  'start-local.bat',
+  'start-snapshot.bat',
+  'README-local-test.md',
+]) {
   const data = await readFile(join('scripts/local-test', file));
   await writeFile(
     join(folder, file),
@@ -22,9 +30,28 @@ const references = join(acceptance, 'reference');
 await mkdir(fixtures, { recursive: true });
 await mkdir(references);
 await cp(
+  'scripts/phase6c/verify_bundle.py',
+  join(references, 'verify_bundle.py'),
+);
+await cp(
   'scripts/local-test/acceptance-library-fixture.js',
   join(acceptance, 'acceptance-library-fixture.js'),
 );
+const sourceUrl = `https://github.com/meredithfyc1001/riverlab-crypto-lab/blob/${sha}/`;
+for (const name of ['phase-6c-a-snapshot.md', 'phase-6c-a-acceptance.md']) {
+  const guide = await readFile(join('docs', name), 'utf8');
+  const portable = guide
+    .replaceAll(
+      '](../scripts/phase6c/verify_bundle.py)',
+      '](reference/verify_bundle.py)',
+    )
+    .replaceAll('](../', '](' + sourceUrl)
+    .replaceAll(
+      '](phase-6b-design.md)',
+      '](' + sourceUrl + 'docs/phase-6b-design.md)',
+    );
+  await writeFile(join(acceptance, name), portable);
+}
 for (const phase of ['5d', '5e']) {
   const name = `phase-${phase}-acceptance.md`;
   await cp(join('docs', name), join(acceptance, name));
@@ -92,16 +119,13 @@ for (const [name, bars, shift] of [
     [header, ...rows].join('\n') + '\n',
   );
 }
-const sha = execFileSync('git', ['rev-parse', 'HEAD'], {
-  encoding: 'utf8',
-}).trim();
 const dirty = Boolean(
   execFileSync('git', ['status', '--porcelain'], { encoding: 'utf8' }).trim(),
 );
 if (process.env.CI && dirty)
   throw new Error('CI package must be built from a clean commit.');
 const pkg = JSON.parse(await readFile('package.json', 'utf8'));
-const phase = 'Phase 5E';
+const phase = 'Phase 6C-A';
 await writeFile(
   join(folder, 'build-info.json'),
   JSON.stringify(

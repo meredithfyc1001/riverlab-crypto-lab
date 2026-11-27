@@ -21,6 +21,7 @@ import {
 import { exerciseAdvancedResearch } from './advanced-research-browser.mjs';
 import { exerciseLegacyLibrary } from './legacy-library-browser.mjs';
 import { exerciseSharedModes } from './shared-pool-browser.mjs';
+import { checkSnapshotPackage } from './snapshot-package-check.mjs';
 const zip = resolve('work/local-package/RiverLab-Crypto-Lab-Local-Test.zip');
 const target = resolve(
   `work/Windows 中文 空格测试 ${process.env.E2E_BROWSER ?? 'chromium'}`,
@@ -96,7 +97,7 @@ for (const row of manifest.trim().split('\n')) {
 const build = JSON.parse(
   await readFile(join(folder, 'build-info.json'), 'utf8'),
 );
-assert.equal(build.phase, 'Phase 5E');
+assert.equal(build.phase, 'Phase 6C-A');
 assert.equal(
   build.version,
   JSON.parse(await readFile('package.json', 'utf8')).version,
@@ -108,7 +109,8 @@ assert.equal(
 if (process.env.CI) assert.equal(build.dirty, false);
 const port = 4173,
   url = `http://127.0.0.1:${port}`;
-function launch(extra = []) {
+function launch(extra = [], snapshot = false) {
+  const launcher = snapshot ? 'start-snapshot.bat' : 'start-local.bat';
   const child =
     process.platform === 'win32'
       ? spawn(
@@ -117,7 +119,7 @@ function launch(extra = []) {
             '/d',
             '/s',
             '/c',
-            `""${join(folder, 'start-local.bat')}" --no-open ${extra.join(' ')}"`,
+            `""${join(folder, launcher)}" --no-open ${extra.join(' ')}"`,
           ],
           {
             stdio: ['pipe', 'pipe', 'pipe'],
@@ -127,7 +129,12 @@ function launch(extra = []) {
         )
       : spawn(
           process.execPath,
-          [join(folder, 'server.mjs'), '--no-open', ...extra],
+          [
+            join(folder, 'server.mjs'),
+            '--no-open',
+            ...(snapshot ? ['--snapshot'] : []),
+            ...extra,
+          ],
           { stdio: ['pipe', 'pipe', 'pipe'] },
         );
   let logs = '';
@@ -368,6 +375,16 @@ try {
     });
     return page;
   }
+  const snapshotPage = await freshPage();
+  const snapshot = await checkSnapshotPackage(
+    snapshotPage,
+    url,
+    folder,
+    resolve(
+      'work/local-package/snapshot-' + (process.env.E2E_BROWSER ?? 'chromium'),
+    ),
+  );
+  await snapshotPage.context().close();
   const page = await freshPage();
   await page.goto(url + '/#/datasets');
   await page
@@ -771,6 +788,7 @@ try {
     libraryIsolation,
     advancedResearch,
     legacyLibraryIsolation,
+    snapshot,
     externalRequests: external,
     errors,
     resources: responses,
@@ -816,6 +834,17 @@ try {
     probe.listen(port, '127.0.0.1', resolve);
   });
   await new Promise((resolve) => probe.close(resolve));
+  running = launch([], true);
+  await waitFor(
+    () => running.logs().includes('READY '),
+    'export-only launcher',
+  );
+  assert.equal((await raw('/')).body, (await raw('/export.html')).body);
+  assert.equal((await raw('/export.html')).status, 200);
+  assert.equal((await raw('/index.html')).status, 404);
+  running.child.stdin.write('\r\n');
+  assert.equal(await running.exit, 0);
+  running = null;
   await rm(join(folder, 'dist'), { recursive: true });
   const missing = launch();
   await waitFor(() => missing.logs().includes('START FAILED'), 'missing dist');

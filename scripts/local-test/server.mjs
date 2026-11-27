@@ -23,8 +23,15 @@ async function main() {
     );
   const args = process.argv.slice(2),
     portArg = args.find((a) => a.startsWith('--port='));
-  if (args.some((a) => a !== '--no-open' && !/^--port=\d+$/.test(a)))
-    throw new Error('Usage: node server.mjs [--port=4173] [--no-open]');
+  const snapshot = args.includes('--snapshot');
+  if (
+    args.some(
+      (a) => a !== '--snapshot' && a !== '--no-open' && !/^--port=\d+$/.test(a),
+    )
+  )
+    throw new Error(
+      'Usage: node server.mjs [--port=4173] [--no-open] [--snapshot]',
+    );
   const port = portArg ? Number(portArg.slice(7)) : 4173;
   if (!Number.isInteger(port) || port < 1024 || port > 65535)
     throw new Error('Port must be 1024..65535.');
@@ -43,6 +50,10 @@ async function main() {
   if (!allowed.has('index.html'))
     throw new Error(
       'dist/index.html is missing. Extract the complete ZIP before starting.',
+    );
+  if (snapshot && !allowed.has('export.html'))
+    throw new Error(
+      'Missing export.html. Extract the complete Phase 6C-A ZIP.',
     );
   const server = createServer(async (req, res) => {
     res.setHeader('X-Content-Type-Options', 'nosniff');
@@ -73,7 +84,12 @@ async function main() {
         respond(403, 'Forbidden path');
         return;
       }
-      const key = path === '/' ? 'index.html' : path.slice(1);
+      const entry = snapshot ? 'export.html' : 'index.html';
+      const key = path === '/' ? entry : path.slice(1);
+      if (snapshot && key.endsWith('.html') && key !== entry) {
+        respond(404, 'Export only');
+        return;
+      }
       if (!allowed.has(key)) {
         respond(404, 'Not found');
         return;
@@ -130,7 +146,7 @@ async function main() {
   });
   process.on('SIGINT', () => stop());
   process.on('SIGTERM', () => stop());
-  const url = `http://127.0.0.1:${port}`;
+  const url = `http://127.0.0.1:${port}${snapshot ? '/export.html' : ''}`;
   process.stdout.write(
     `READY ${url}\nKeep this window open. Press Enter, q+Enter, or Ctrl+C to stop.\n`,
   );

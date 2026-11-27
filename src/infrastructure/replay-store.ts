@@ -3,7 +3,7 @@ import { LibraryStore } from './repository';
 import { assertReplayCheckpoint, summarizeReplay } from '../core/replay';
 import type { ReplayCheckpoint, ReplaySummary } from '../core/replay';
 
-function checkSummary(r: ReplaySummary) {
+export function checkSummary(r: ReplaySummary) {
   if (
     !r ||
     typeof r.id !== 'string' ||

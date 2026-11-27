@@ -2,7 +2,7 @@ import { readSummaryList } from './summary-list';
 import { LibraryStore } from './repository';
 import { assertRiskStudy, summarizeRisk } from '../core/risk-analysis';
 import type { RiskStudy, RiskSummary } from '../core/risk-analysis';
-function checkSummary(s: RiskSummary) {
+export function checkSummary(s: RiskSummary) {
   if (
     !s ||
     typeof s.id !== 'string' ||

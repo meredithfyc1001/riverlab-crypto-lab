@@ -328,6 +328,11 @@ export function App() {
                 </>
               ) : activeId === 'charts' ? (
                 <>
+                  {!desktop && (
+                    <a className="text-link" href="./export.html">
+                      导出浏览器研究库快照
+                    </a>
+                  )}
                   <DatasetLibrary {...library} />
                   <ChartCenter
                     key={library.dataset?.id ?? 'empty'}

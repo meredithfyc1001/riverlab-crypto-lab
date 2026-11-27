@@ -1,14 +1,16 @@
-# RiverLab Crypto Lab Phase 5E · Windows 本地验收清单
+# RiverLab Crypto Lab Phase 6C-A · Windows 浏览器测试包
 
 仅供学习研究。所有交易、费用和权益均为本地模拟结果。历史表现不代表未来表现，本工具不提供投资建议。
 
-本次包含两份完整清单。[5D 市场状态与报告库](acceptance/phase-5d-acceptance.md) · [5E 高级研究及四库回归](acceptance/phase-5e-acceptance.md)。样本与参考位于 acceptance 文件夹。5D 用户实机及物理断网继续为 NOT TESTED。
+双击 `start-snapshot.bat` 可在原本机 origin 直接打开完整快照导出页。此入口只加载导出页面，不打开工作台。读取旧历史请选原浏览器、原 profile 和原端口。本轮验收请用单独测试 profile 和合成样本。Windows 浏览器包需要系统安装 Node.js 24，独立校验器使用 Python 3。[6C-A 验收](acceptance/phase-6c-a-acceptance.md) · [格式与九库映射](acceptance/phase-6c-a-snapshot.md)
+
+常规工作台仍由 `start-local.bat` 打开，既有研究和样本保留。[5D 清单](acceptance/phase-5d-acceptance.md) · [5E 清单](acceptance/phase-5e-acceptance.md)
 
 ## 核对测试包并启动
 
-1. 使用有仓库访问权的 GitHub 账号，打开 Phase 5E Draft PR 最终提交对应的 Project quality 运行。Windows local test ZIP 作业摘要提供下载链接、完整提交 SHA、内层 ZIP 和 Actions 外层制品各自的 SHA-256。制品自上传起保留 14 天，过期时间以 GitHub 制品记录为准。
+1. 使用有仓库访问权的 GitHub 账号，打开 Phase 6C-A Draft PR 最终提交对应的 Project quality 运行。Windows local test ZIP 作业摘要提供下载链接、完整提交 SHA、内层 ZIP 和 Actions 外层制品各自的 SHA-256。制品自上传起保留 14 天，过期时间以 GitHub 制品记录为准。
 2. 下载并解开 Actions 外层 ZIP。用 PowerShell 对内层 ZIP 执行 `Get-FileHash .\RiverLab-Crypto-Lab-Local-Test.zip -Algorithm SHA256`，与同名 `.sha256` 文件及作业摘要比对。在含中文和空格的目录“全部解压”内层 ZIP。
-3. 在内层解压目录确认 `build-info.json` 中 `version=1.3.0-test.1`、`phase=Phase 5E`、`dirty=false` 及完整提交 SHA 与 PR 最终提交一致。使用以下 PowerShell 命令检查包内文件。
+3. 在内层解压目录确认 `build-info.json` 中 `version=1.3.0-test.1`、`phase=Phase 6C-A`、`dirty=false` 及完整提交 SHA 与 PR 最终提交一致。使用以下 PowerShell 命令检查包内文件。
 
 ```powershell
 Get-Content -Encoding utf8 .\SHA256SUMS.txt | ForEach-Object {
