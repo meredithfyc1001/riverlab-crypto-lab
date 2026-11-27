@@ -2,8 +2,10 @@
 // ownership of the original UTF-8 bytes; decoding and validation run in the Worker.
 import { desktopRepository, isDesktopRepository } from './desktop-repository';
 
+import { decodeDesktopBody, type DesktopRead } from './desktop-read';
+
 type SourceKind = 'dataset' | 'experiment' | 'portfolio' | 'shared_pool';
-type Reply = { bytes: Uint8Array<ArrayBuffer> } | { error: string };
+type Reply = DesktopRead | { error: string };
 
 export function openWorkerSource(kind: SourceKind) {
   if (!isDesktopRepository()) return;
@@ -14,14 +16,14 @@ export function openWorkerSource(kind: SourceKind) {
     try {
       if (typeof id !== 'string' || !id || id.length > 100)
         throw new Error('研究来源 ID 无效。');
-      const bytes = await desktopRepository.getBytes(
+      const result = await desktopRepository.getDomainBytes(
         kind,
         id,
         controller.signal,
       );
-      if (!bytes) throw new Error('找不到所选来源，请重新检查研究库。');
+      if (!result) throw new Error('找不到所选来源，请重新检查研究库。');
       if (!controller.signal.aborted)
-        port1.postMessage({ bytes } satisfies Reply, [bytes.buffer]);
+        port1.postMessage(result satisfies Reply, [result.bytes.buffer]);
     } catch (e) {
       if (!controller.signal.aborted)
         port1.postMessage({
@@ -50,11 +52,7 @@ export function readWorkerSource(
       port.close();
       try {
         if ('error' in data) throw new Error(data.error);
-        resolve(
-          JSON.parse(
-            new TextDecoder('utf-8', { fatal: true }).decode(data.bytes),
-          ),
-        );
+        resolve(decodeDesktopBody(data));
       } catch (error) {
         reject(error);
       }

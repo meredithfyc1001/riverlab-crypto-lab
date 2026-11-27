@@ -1,3 +1,8 @@
+import {
+  decodeDesktopBody,
+  decodeDesktopSummaries,
+  type DesktopRead,
+} from './desktop-read';
 import { sha256 } from '@noble/hashes/sha2.js';
 import { bytesToHex } from '@noble/hashes/utils.js';
 
@@ -40,8 +45,12 @@ interface Frame {
 }
 
 type Command =
-  | { op: 'load' | 'delete'; kind: RepositoryKind; id: string }
-  | { op: 'list'; kind: RepositoryKind }
+  | {
+      op: 'load' | 'loadStructured' | 'delete';
+      kind: RepositoryKind;
+      id: string;
+    }
+  | { op: 'list' | 'listStructured'; kind: RepositoryKind }
   | {
       op: 'beginSave';
       kind: RepositoryKind;
@@ -54,7 +63,11 @@ type Command =
 
 type Reply = { requestId: string } & (
   | { status: 'ready' | 'missing' | 'committed' | 'cancelled' }
-  | { status: 'download'; length: number; sha256: string }
+  | {
+      status: 'download' | 'structuredDownload';
+      length: number;
+      sha256: string;
+    }
 );
 
 export function isDesktopRepository(): boolean {
@@ -159,17 +172,24 @@ async function command(frame: Frame, operation: Command) {
 async function read(
   operation: Command,
   signal?: AbortSignal,
-): Promise<Uint8Array<ArrayBuffer> | undefined> {
+): Promise<DesktopRead | undefined> {
   const frame = await newFrame();
   signal?.throwIfAborted();
   try {
     const start = await command(frame, operation);
     if (start.status === 'missing') return undefined;
     if (
-      start.status !== 'download' ||
+      (start.status !== 'download' && start.status !== 'structuredDownload') ||
+      (start.status === 'structuredDownload' &&
+        operation.op !== 'loadStructured' &&
+        operation.op !== 'listStructured') ||
       !Number.isSafeInteger(start.length) ||
       start.length < 1 ||
-      start.length > maxBodyBytes ||
+      start.length >
+        (start.status === 'structuredDownload' &&
+        operation.op === 'loadStructured'
+          ? maxBodyBytes + 20 * chunkBytes + 12
+          : maxBodyBytes) ||
       !/^[a-f\d]{64}$/.test(start.sha256)
     )
       throw new Error('桌面数据长度或 SHA-256 回执无效。');
@@ -193,7 +213,7 @@ async function read(
     signal?.throwIfAborted();
     if (bytesToHex(hash.digest()) !== start.sha256)
       throw new Error('桌面数据 SHA-256 校验失败。');
-    return bytes;
+    return { bytes, structured: start.status === 'structuredDownload' };
   } catch (error) {
     await command(frame, { op: 'cancel' }).catch(() => {});
     throw error;
@@ -276,7 +296,19 @@ async function write(
   }
 }
 
-const decoder = () => new TextDecoder('utf-8', { fatal: true });
+async function getDomainBytes(
+  kind: RepositoryKind,
+  id: string,
+  signal?: AbortSignal,
+) {
+  const supportsClones = (await session()).capabilities.includes(
+    'structured-read-v1',
+  );
+  return read(
+    { op: supportsClones ? 'loadStructured' : 'load', kind, id },
+    signal,
+  );
+}
 
 export const desktopRepository = {
   async save(
@@ -302,41 +334,24 @@ export const desktopRepository = {
   ) {
     return write(kind, id, body, summary, signal, onChunk);
   },
-  getBytes(kind: RepositoryKind, id: string, signal?: AbortSignal) {
-    return read({ op: 'load', kind, id }, signal);
+  async getBytes(kind: RepositoryKind, id: string, signal?: AbortSignal) {
+    return (await read({ op: 'load', kind, id }, signal))?.bytes;
   },
+  getDomainBytes,
   async get(kind: RepositoryKind, id: string): Promise<unknown> {
-    const bytes = await read({ op: 'load', kind, id });
-    return bytes && JSON.parse(decoder().decode(bytes));
+    const result = await getDomainBytes(kind, id);
+    return result && decodeDesktopBody(result);
   },
   async list(kind: RepositoryKind): Promise<unknown[]> {
-    const bytes = await read({ op: 'list', kind });
-    if (!bytes) throw new Error('未读取到摘要列表。');
-    const header = new DataView(bytes.buffer);
-    let offset = 0;
-    function nextLength() {
-      if (offset + 4 > header.byteLength) throw new Error('摘要列表帧不完整。');
-      const value = header.getUint32(offset, true);
-      offset += 4;
-      return value;
-    }
-    const count = nextLength();
-    const rows: unknown[] = [];
-    const utf8 = decoder();
-    for (let i = 0; i < count; i++) {
-      const length = nextLength();
-      const end = offset + length;
-      if (end > bytes.length) throw new Error('摘要列表帧不完整。');
-      try {
-        rows.push(JSON.parse(utf8.decode(bytes.subarray(offset, end))));
-      } catch {
-        // The shared domain validator counts damaged rows without hiding healthy ones.
-        rows.push(null);
-      }
-      offset = end;
-    }
-    if (offset !== bytes.length) throw new Error('摘要列表帧长度错误。');
-    return rows;
+    const supportsClones = (await session()).capabilities.includes(
+      'structured-read-v1',
+    );
+    const result = await read({
+      op: supportsClones ? 'listStructured' : 'list',
+      kind,
+    });
+    if (!result) throw new Error('未读取到摘要列表。');
+    return decodeDesktopSummaries(result);
   },
   async remove(kind: RepositoryKind, id: string) {
     const reply = await command(await newFrame(), { op: 'delete', kind, id });

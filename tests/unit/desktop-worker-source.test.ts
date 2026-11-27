@@ -31,7 +31,13 @@ const mocks = vi.hoisted(() => ({
 }));
 vi.mock('../../src/infrastructure/desktop-repository', () => ({
   isDesktopRepository: mocks.desktop,
-  desktopRepository: { getBytes: mocks.getBytes, saveBytes: mocks.saveBytes },
+  desktopRepository: {
+    async getDomainBytes(kind: string, id: string, signal?: AbortSignal) {
+      const bytes = await mocks.getBytes(kind, id, signal);
+      return bytes && { bytes, structured: false };
+    },
+    saveBytes: mocks.saveBytes,
+  },
 }));
 
 afterEach(() => {
