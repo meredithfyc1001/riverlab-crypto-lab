@@ -110,8 +110,8 @@ def indicators(ledger, initial):
     losses = sum(max(-units(t["netPnl"]), 0) for t in trades)
     return {
         "metrics": dict(
-            totalReturn=ratio(equities[-1] - initial, initial),
-            maxDrawdown=ratio(drop, denominator),
+            totalReturn=ratio(equities[-1] - initial, initial) if initial else None,
+            maxDrawdown=ratio(drop, denominator) if peak else None,
             profitFactor=ratio(profits, losses) if losses else None,
             completedTrades=len(trades),
             netPnl=fmt(equities[-1] - initial),
@@ -153,7 +153,7 @@ def check_statistics(stats, ledger, values, dataset, config):
         dict(
             timestampUtcMs=first,
             equity=fmt(initial),
-            drawdown=metric("0"),
+            drawdown=metric("0") if initial else metric(None, "峰值权益为0"),
             benchmarkEquity=None if invalid else fmt(initial),
         )
     ]
@@ -176,7 +176,7 @@ def check_statistics(stats, ledger, values, dataset, config):
             dict(
                 timestampUtcMs=when,
                 equity=fmt(equity),
-                drawdown=metric(ratio(drop, peak)),
+                drawdown=metric(ratio(drop, peak)) if peak else metric(None, "峰值权益为0"),
                 benchmarkEquity=None if invalid else fmt(passive_equity),
             )
         )
@@ -188,7 +188,7 @@ def check_statistics(stats, ledger, values, dataset, config):
     year = 365 * 86400000
     if duration >= year and len(bars) >= 252:
         last = values["equities"][-1]
-        if last <= 0:
+        if not initial or last <= 0:
             annual = metric(None, "年化需要初始和末权益均大于0")
         else:
             try:
@@ -223,7 +223,7 @@ def check_statistics(stats, ledger, values, dataset, config):
     checked_subset(
         stats["benchmark"],
         {
-            "return": passive_metric(ratio(passive_equity - initial, initial)),
+            "return": passive_metric(ratio(passive_equity - initial, initial) if initial else None),
             "netPnl": passive_metric(fmt(passive_equity - initial)),
             "fee": fmt(fee),
             "quantity": fmt(passive_qty),
@@ -255,8 +255,18 @@ def check_experiment_payload(dataset, result, stats, config, strategy, risk, end
     equal(stats["completedTrades"], values["trades"], "completed trades")
     equal(stats["fees"], values["fees"], "statistics fees")
     equal(stats["netPnl"], values["metrics"]["netPnl"], "statistics PnL")
-    for metric in ("totalReturn", "maxDrawdown", "profitFactor"):
-        equal(stats[metric]["value"], values["metrics"][metric], "statistics " + metric)
+    na = {
+        "totalReturn": "初始本金为0",
+        "maxDrawdown": "没有正峰值权益",
+        "profitFactor": "已完成交易没有净亏损，分母为0" if values["trades"] else "没有已完成交易",
+    }
+    for metric, empty_reason in na.items():
+        value = values["metrics"][metric]
+        equal(
+            stats[metric],
+            {"value": value, "reason": empty_reason if value is None else None},
+            "statistics " + metric,
+        )
     equal(
         [p["equity"] for p in stats["curve"]], list(map(fmt, values["equities"])), "all equity curve points"
     )

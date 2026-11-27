@@ -12,7 +12,7 @@ import unittest
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "scripts" / "phase6c"))
-from historical_reference import advanced_plan, indicators, portfolio, replay
+from historical_reference import advanced_plan, check_statistics, indicators, portfolio, replay
 from reference_ledger import historical_hash, run_ledger, signals, units
 from verify_candidate import check_schema
 from advanced_research_reference import seeded_grid_vector
@@ -45,6 +45,51 @@ class IndependentOracleTests(unittest.TestCase):
         result = signals(bars([10, 10, 10, 12, 10, 8]), dict(kind="rsi", period=2, lower=35, upper=75))
         self.assertEqual([r["action"] for r in result], ["hold", "hold", "hold", "sell", "buy", "buy"])
         self.assertEqual([r["reason"] for r in result[:3]], ["warmup", "warmup", "rsi-middle"])
+
+    def test_zero_initial_cash_retains_undefined_returns_and_drawdowns(self):
+        tape = bars([100, 99])
+        params = dict(config(), initialCash="0", quantityDecimals=0)
+        intent = dict(candleIndex=0, action="buy", reason="manual-buy", quantity="all")
+        ledger, _ = run_ledger(tape, params, 60000, [intent], interactive=True)
+        self.assertEqual(ledger["orders"][0]["reason"], "zero-quantity")
+        values = indicators(ledger, 0)
+        self.assertIsNone(values["metrics"]["totalReturn"])
+        self.assertIsNone(values["metrics"]["maxDrawdown"])
+
+        def unavailable(reason):
+            return dict(value=None, reason=reason)
+
+        no_benchmark = unavailable("基准买入被拒绝：zero-quantity")
+        expected = dict(
+            curve=[
+                dict(
+                    timestampUtcMs=i * 60000,
+                    equity="0",
+                    drawdown=unavailable("峰值权益为0"),
+                    benchmarkEquity=None,
+                )
+                for i in range(3)
+            ],
+            realizedPnl="0",
+            remainingCostBasis="0",
+            unrealizedPnl="0",
+            winRate=unavailable("没有已完成交易"),
+            maxDrawdownAmount="0",
+            maxDrawdownDurationMs=0,
+            ongoingDrawdownMs=0,
+            exposedMs=0,
+            exposureFraction="0",
+            annualizedReturn=unavailable("需要至少365天且252根有效收盘样本"),
+            benchmark={
+                "return": no_benchmark,
+                "netPnl": no_benchmark,
+                "finalEquity": no_benchmark,
+                "fee": "0",
+                "quantity": "0",
+                "cash": "0",
+            },
+        )
+        check_statistics(expected, ledger, values, dict(candles=tape, parsing={"intervalMs": 60000}), params)
 
     def test_partial_sale_assigns_remaining_cost_to_final_exit(self):
         tape = bars([10, 10, 12, 11])
