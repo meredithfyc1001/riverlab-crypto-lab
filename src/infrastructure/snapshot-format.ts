@@ -3,6 +3,7 @@
 import { sha256 } from '@noble/hashes/sha2.js';
 import { bytesToHex } from '@noble/hashes/utils.js';
 import { layouts } from './database-layouts';
+import { SNAPSHOT_FENCE } from './local-database';
 import type {
   SnapshotLayout,
   SnapshotRow,
@@ -79,14 +80,19 @@ function structure(layout: SnapshotLayout) {
 }
 
 function verifyBarrier(layout: SnapshotLayout) {
+  const reads = layout.databases.flatMap((db) => [
+    db.firstRead,
+    db.postBarrierRead,
+  ]);
   if (
+    new Set(reads).size !== reads.length ||
     !Number.isSafeInteger(layout.startedUtcMs) ||
     layout.startedUtcMs < 0 ||
     !Number.isSafeInteger(layout.barrierUtcMs) ||
     layout.barrierUtcMs < layout.startedUtcMs ||
     !Number.isSafeInteger(layout.barrierSequence) ||
-    !layout.fenceName ||
-    !layout.fenceId ||
+    layout.fenceName !== SNAPSHOT_FENCE ||
+    !/^[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12}$/.test(layout.fenceId) ||
     layout.fenceVersion !== 1 ||
     !layout.databases.every(
       (db) =>
@@ -232,8 +238,7 @@ export class SnapshotWriter {
         (this.previousKey !== undefined && key <= this.previousKey) ||
         !row.value ||
         typeof row.value !== 'object' ||
-        !Object.hasOwn(row.value, 'id') ||
-        (row.value as { id: unknown }).id !== key
+        Object.getOwnPropertyDescriptor(row.value, 'id')?.value !== key
       )
         throw new Error('主键重复、乱序或与实际行 ID 不符。');
       const { database, role } = store;
@@ -282,6 +287,8 @@ export class SnapshotWriter {
         ...report.databases.map((db) => db.postBarrierRead),
       );
       if (
+        new Set(report.databases.map((db) => db.completed)).size !==
+          report.databases.length ||
         this.stores.some((store) => store.remaining !== 0) ||
         JSON.stringify(map) !== JSON.stringify(structure(this.initial)) ||
         report.origin !== this.initial.origin ||
