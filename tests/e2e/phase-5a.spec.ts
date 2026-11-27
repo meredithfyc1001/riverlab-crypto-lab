@@ -1,3 +1,4 @@
+import { runAndExpectBacktestSuccess } from './backtest-success';
 import { test, expect } from '@playwright/test';
 import type { Page } from '@playwright/test';
 import { readFile, writeFile } from 'node:fs/promises';
@@ -41,10 +42,7 @@ async function prepare(page: Page, rows = 60, flat = false) {
   await page.getByLabel('MA 快线周期').fill('2');
   await page.getByLabel('MA 慢线周期').fill('4');
   await page.getByRole('checkbox', { name: /我确认本数据集全部 K 线/ }).check();
-  await page.getByRole('button', { name: '运行回测', exact: true }).click();
-  await expect(
-    page.getByText('回测成功；结果尚未保存，刷新会丢失。'),
-  ).toBeVisible();
+  await runAndExpectBacktestSuccess(page);
   await page.getByRole('button', { name: '保存回测实验', exact: true }).click();
   await expect(
     page.getByText('实验已保存（事务已完成）。请另行导出JSON备份。'),

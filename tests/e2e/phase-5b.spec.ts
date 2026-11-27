@@ -1,3 +1,4 @@
+import { runAndExpectBacktestSuccess } from './backtest-success';
 import { test, expect } from '@playwright/test';
 import type { Page } from '@playwright/test';
 import { readFile, writeFile } from 'node:fs/promises';
@@ -54,10 +55,7 @@ async function selectRule(page: Page) {
   await page.getByRole('checkbox', { name: /我确认本数据集全部 K 线/ }).check();
 }
 async function run(page: Page) {
-  await page.getByRole('button', { name: '运行回测', exact: true }).click();
-  await expect(
-    page.getByText('回测成功；结果尚未保存，刷新会丢失。'),
-  ).toBeVisible();
+  await runAndExpectBacktestSuccess(page);
   await expect(page.getByTestId('result-curves')).toHaveAttribute(
     'data-ready',
     'true',
